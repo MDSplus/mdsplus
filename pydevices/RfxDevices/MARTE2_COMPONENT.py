@@ -23,7 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device, Data, TreeNode, Range, TreePath, Int8, Uint8, Int16, Uint16, Int32, Uint32, Int64, Uint64, Float32, Float64, Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Int64Array, Uint64Array, Float32Array, Float64Array
+import MDSplus
+import RfxDevices
 import numpy as np
 
 
@@ -33,36 +34,38 @@ class MARTE2_COMPONENT(Device):
     MODE_INPUT = 2
     MODE_SYNCH_INPUT = 3
     MODE_OUTPUT = 4
-
-    TIMEBASE_GENERATOR = 1
-    TIMEBASE_FROM_SAME_THREAD = 2
-    TIMEBASE_FROM_ANOTHER_THREAD = 2
+    MODE_INTERFACE = 5
 
     @classmethod
-    def buildParameters(cls, parts):
-        parts.append({'path': '.PARAMETERS', 'type': 'structure'})
+    def buildParameters(cls, parts, prefix = 'PARAMETERS', buildParameters = None):
         idx = 1
-        for parameter in cls.parameters:
-            parts.append({'path': '.PARAMETERS.PAR_' +
+        if buildParameters == None:
+            buildParameters = cls.parameters
+        for parameter in buildParameters:
+            parts.append({'path': prefix + '.PAR_' +
                           str(idx), 'type': 'structure'})
-            parts.append({'path': '.PARAMETERS.PAR_'+str(idx) +
+            parts.append({'path': prefix + '.PAR_'+str(idx) +
                           ':NAME', 'type': 'text', 'value': parameter['name']})
-            if(parameter['type'] == 'string'):
+            if(parameter['type'] == 'structure'):
+                parts.append({'path': prefix + '.PAR_'+str(idx) +
+                                  '.VALUE', 'type': 'structure'}) 
+                cls.buildParameters(parts,  prefix = prefix + '.PAR_'+str(idx) +'.VALUE', buildParameters = parameter['value'])
+            elif(parameter['type'] == 'string'):
                 if 'value' in parameter:
-                    parts.append({'path': '.PARAMETERS.PAR_'+str(idx) +
+                    parts.append({'path': prefix + '.PAR_'+str(idx) +
                                   ':VALUE', 'type': 'text', 'value': parameter['value']})
                 else:
-                    parts.append({'path': '.PARAMETERS.PAR_' +
+                    parts.append({'path': prefix + '.PAR_' +
                                   str(idx)+':VALUE', 'type': 'text'})
             else:
                 if 'value' in parameter:
-                    parts.append({'path': '.PARAMETERS.PAR_'+str(idx)+':VALUE',
+                    parts.append({'path': prefix + '.PAR_'+str(idx)+':VALUE',
                                   'type': 'numeric', 'value': parameter['value']})
                 else:
-                    parts.append({'path': '.PARAMETERS.PAR_' +
+                    parts.append({'path': prefix + '.PAR_' +
                                   str(idx)+':VALUE', 'type': 'numeric'})
             idx = idx+1
-
+ 
     @classmethod
     def buildOutputs(cls, parts):
         parts.append({'path': '.OUTPUTS', 'type': 'structure'})
@@ -79,57 +82,52 @@ class MARTE2_COMPONENT(Device):
         # CPU Mask for MdsWriter thread
         parts.append({'path': '.OUTPUTS:CPU_MASK',
                       'type': 'numeric', 'value': 15})
-        idx = 1
         nameList = []
-        for output in cls.outputs:
+        cls.buildOutputsRec(parts, currOutputs = cls.outputs, prefix = '.OUTPUTS')
+
+
+    @classmethod
+    def buildOutputsRec(cls, parts, currOutputs = None, prefix = '', nameList = []):
+        for output in currOutputs:
             #        sigName = output['name'][0:12]
             sigName = cls.convertName(output['name'], nameList)
-            parts.append({'path': '.OUTPUTS.'+sigName, 'type': 'structure'})
-            parts.append({'path': '.OUTPUTS.'+sigName+':NAME',
+            parts.append({'path': prefix + '.'+sigName, 'type': 'structure'})
+            parts.append({'path': prefix + '.'+sigName+':NAME',
                           'type': 'text', 'value': output['name']})
-            parts.append({'path': '.OUTPUTS.'+sigName+':TYPE',
+            parts.append({'path': prefix + '.'+sigName+':TYPE',
                           'type': 'text', 'value': output['type']})
-            parts.append({'path': '.OUTPUTS.'+sigName+':SAMPLES',
+            parts.append({'path': prefix + '.'+sigName+':SAMPLES',
                           'type': 'numeric', 'value': 1})
-            parts.append({'path': '.OUTPUTS.'+sigName+':DIMENSIONS',
+            parts.append({'path': prefix + '.'+sigName+':DIMENSIONS',
                           'type': 'numeric', 'value': Data.compile(str(output['dimensions']))})
             if 'seg_len' in output:
-                parts.append({'path': '.OUTPUTS.'+sigName+':SEG_LEN',
+                parts.append({'path': prefix + '.'+sigName+':SEG_LEN',
                               'type': 'numeric', 'value': output['seg_len']})
             else:
-                parts.append({'path': '.OUTPUTS.'+sigName +
+                parts.append({'path': prefix + '.'+sigName +
                               ':SEG_LEN', 'type': 'numeric', 'value': 0})
             if 'stream' in output:
-                parts.append({'path': '.OUTPUTS.'+sigName+':STREAM',
+                parts.append({'path': prefix + '.'+sigName+':STREAM',
                               'type': 'text', 'value': output['stream']})
             else:
-                parts.append({'path': '.OUTPUTS.'+sigName +
+                parts.append({'path': prefix + '.'+sigName +
                               ':STREAM', 'type': 'text'})
 
             if(output['type'] == 'string'):
                 parts.append(
-                    {'path': '.OUTPUTS.'+sigName+':VALUE', 'type': 'text'})
+                    {'path': prefix + '.'+sigName+':VALUE', 'type': 'text'})
             else:
-                parts.append({'path': '.OUTPUTS.'+sigName +
+                parts.append({'path': prefix + '.'+sigName +
                               ':VALUE', 'type': 'signal'})
-            pars = output['parameters']
-            idx = 1
-            parts.append({'path': '.OUTPUTS.'+sigName +
+            try:
+                pars = output['parameters']
+            except:
+                pars = []
+            parts.append({'path': prefix + '.'+sigName +
                           '.PARAMETERS', 'type': 'structure'})
             if len(pars) > 0:
-                for par in pars:
-                    parts.append(
-                        {'path': '.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx), 'type': 'structure'})
-                    parts.append({'path': '.OUTPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                  str(idx)+':NAME', 'type': 'text', 'value': par['name']})
-                    if(par['type'] == 'string'):
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                      str(idx)+':VALUE', 'type': 'text', 'value': par['value']})
-                    else:
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                      str(idx)+':VALUE', 'type': 'numeric', 'value': par['value']})
+                cls.buildParameters(parts, prefix = prefix + '.'+sigName+'.PARAMETERS', buildParameters = None)
 
-                    idx = idx + 1
             # structured outputs
             try:
                 fields = output['fields']
@@ -138,79 +136,44 @@ class MARTE2_COMPONENT(Device):
             if len(fields) > 0:
                 parts.append({'path': '.OUTPUTS.'+sigName +
                               '.FIELDS', 'type': 'structure'})
-                for field in fields:
-                    fieldName = cls.convertName(field['name'], nameList)
-                    parts.append({'path': '.OUTPUTS.'+sigName +
-                                  '.FIELDS.'+fieldName, 'type': 'structure'})
-                    parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
-                                  fieldName+':NAME', 'type': 'text', 'value': field['name']})
-                    parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
-                                  fieldName+':TYPE', 'type': 'text', 'value': field['type']})
-                    parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
-                                  fieldName+':SAMPLES', 'type': 'numeric', 'value': 1})
-                    parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':DIMENSIONS',
-                                  'type': 'numeric', 'value': Data.compile(str(field['dimensions']))})
-                    if 'seg_len' in field:
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName +
-                                      ':SEG_LEN', 'type': 'numeric', 'value': field['seg_len']})
-                    else:
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
-                                      fieldName+':SEG_LEN', 'type': 'numeric', 'value': 0})
-                    if 'stream' in field:
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName +
-                                      ':STREAM', 'type': 'text', 'value': field['stream']})
-                    else:
-                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
-                                      fieldName+':STREAM', 'type': 'text'})
-
-                    if(field['type'] == 'string'):
-                        parts.append(
-                            {'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':VALUE', 'type': 'text'})
-                    else:
-                        parts.append(
-                            {'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':VALUE', 'type': 'signal'})
+                cls.buildOutputsRec(parts, currOutputs = fields, prefix = prefix+'.'+sigName+'.FIELDS', nameList=nameList)
 
     @classmethod
     def buildInputs(cls, parts):
         parts.append({'path': '.INPUTS', 'type': 'structure'})
-        idx = 1
         nameList = []
-        for input in cls.inputs:
+        cls.buildInputsRec(parts, inputs = cls.inputs, prefix = '.INPUTS')
+
+    @classmethod
+    def buildInputsRec(cls, parts, nameList = [], prefix = '', inputs = None):
+
+        for input in inputs:
             #        sigName = input['name'][0:12]
             sigName = cls.convertName(input['name'], nameList)
-            parts.append({'path': '.INPUTS.'+sigName, 'type': 'structure'})
-            parts.append({'path': '.INPUTS.'+sigName+':TYPE',
+            parts.append({'path': prefix+'.'+sigName, 'type': 'structure'})
+            parts.append({'path': prefix+'.'+sigName+':TYPE',
                           'type': 'text', 'value': input['type']})
-            parts.append({'path': '.INPUTS.'+sigName+':DIMENSIONS',
+            parts.append({'path': prefix+'.'+sigName+':DIMENSIONS',
                           'type': 'numeric', 'value': Data.compile(str(input['dimensions']))})
-            parts.append({'path': '.INPUTS.'+sigName+':COL_ORDER',
+            parts.append({'path': prefix+'.'+sigName+':COL_ORDER',
                           'type': 'text', 'value': 'NO'})
-            parts.append({'path': '.INPUTS.'+sigName +
+            parts.append({'path': prefix+'.'+sigName +
                           ':VALUE', 'type': 'signal'})
             if 'name' in input:
-                parts.append({'path': '.INPUTS.'+sigName+':NAME',
+                parts.append({'path': prefix+'.'+sigName+':NAME',
                               'type': 'text', 'value': input['name']})
             else:
                 parts.append(
-                    {'path': '.INPUTS.'+sigName+':NAME', 'type': 'text'})
+                    {'path': prefix+'.'+sigName+':NAME', 'type': 'text'})
 
-            pars = input['parameters']
-            idx = 1
+            try:
+                pars = input['parameters']
+            except:
+                pars = []
             parts.append({'path': '.INPUTS.'+sigName +
                           '.PARAMETERS', 'type': 'structure'})
             if len(pars) > 0:
-                for par in pars:
-                    parts.append(
-                        {'path': '.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx), 'type': 'structure'})
-                    parts.append({'path': '.INPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                  str(idx)+':NAME', 'type': 'text', 'value': par['name']})
-                    if(par['type'] == 'string'):
-                        parts.append({'path': '.INPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                      str(idx)+':VALUE', 'type': 'text', 'value': par['value']})
-                    else:
-                        parts.append({'path': '.INPUTS.'+sigName+'.PARAMETERS.PAR_' +
-                                      str(idx)+':VALUE', 'type': 'numeric', 'value': par['value']})
-                    idx = idx + 1
+                cls.buildParameters(parts, prefix = prefix + '.'+sigName+'.PARAMETERS', buildParameters = None)
 
             try:
                 fields = input['fields']
@@ -219,50 +182,442 @@ class MARTE2_COMPONENT(Device):
             if len(fields) > 0:
                 parts.append({'path': '.INPUTS.'+sigName +
                               '.FIELDS', 'type': 'structure'})
-                for field in fields:
-                    fieldName = cls.convertName(field['name'], nameList)
-                    parts.append({'path': '.INPUTS.'+sigName +
-                                  '.FIELDS.'+fieldName, 'type': 'structure'})
-                    parts.append({'path': '.INPUTS.'+sigName+'.FIELDS.' +
-                                  fieldName+':TYPE', 'type': 'text', 'value': field['type']})
-                    parts.append({'path': '.INPUTS.'+sigName+'.FIELDS.'+fieldName+':DIMENSIONS',
-                                  'type': 'numeric', 'value': Data.compile(str(field['dimensions']))})
-                    parts.append({'path': '.INPUTS.'+sigName+'.FIELDS.' +
-                                  fieldName+':COL_ORDER', 'type': 'text', 'value': 'NO'})
-                    if 'name' in field:
-                        parts.append({'path': '.INPUTS.'+sigName+'.FIELDS.' +
-                                      fieldName+':NAME', 'type': 'text', 'value': field['name']})
-                    else:
-                        parts.append(
-                            {'path': '.INPUTS.'+sigName+'.FIELDS.'+fieldName+':NAME', 'type': 'text'})
-                    parts.append(
-                        {'path': '.INPUTS.'+sigName+'.FIELDS.'+fieldName+':VALUE', 'type': 'signal'})
+                cls.buildInputsRec(parts, nameList = nameList, prefix = '.'+sigName+'.FIELDS', inputs = fields)
 
     @classmethod
     def buildGam(cls, parts, clazz, mode, timebaseExpr=None):
+
         parts.append({'path': ':GAM_CLASS', 'type': 'text', 'value': clazz})
         parts.append({'path': ':MODE', 'type': 'numeric', 'value': mode})
-        if timebaseExpr == None:
-            parts.append({'path': ':TIMEBASE', 'type': 'numeric'})
-        else:
-            parts.append({'path': ':TIMEBASE', 'type': 'numeric',
-                          'value': Data.compile(timebaseExpr)})
+        if mode != MARTE2_COMPONENT.MODE_INTERFACE:
+            if timebaseExpr == None:
+                parts.append({'path': ':TIMEBASE', 'type': 'numeric'})
+            else:
+                parts.append({'path': ':TIMEBASE', 'type': 'numeric',
+                            'value': Data.compile(timebaseExpr)})
 
+        parts.append({'path': '.PARAMETERS', 'type': 'structure'})
         cls.buildParameters(parts)
-        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
+        if (mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT) and mode != MARTE2_COMPONENT.MODE_INTERFACE:
             cls.buildInputs(parts)
 
-        if mode != MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode != MARTE2_COMPONENT.MODE_OUTPUT and mode != MARTE2_COMPONENT.MODE_INTERFACE:
             cls.buildOutputs(parts)
+        if mode != MARTE2_COMPONENT.MODE_INTERFACE:
+            parts.append({'path': ':PORT', 'type': 'numeric'})
+    # add debug definition. When 'ENABLED' input and outputs will be printed via LoggerDataSOurce
+            parts.append(
+                {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
 
-# add timebase division, valid only if the timebase refers to a MASRTE2 device belonging to a different thread
-        parts.append({'path': ':TIMEBASE_DIV', 'type': 'numeric'})
-# add debug definition. When 'ENABLED' input and outputs will be printed via LoggetDataSOurce
-        parts.append(
-            {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
 
-#        for part in parts:
-#          print(part)
+    @classmethod
+    # NON USATA QUA PER IL MOMENTO
+    def convertName(cls, name, nameList):
+        # remove angulars (possibly from simuluink)
+        if name[0] == '<':
+            name = name[1:-1]
+        if len(name) <= 12:
+            nameList.append(name)
+            return name
+        name1 = name[:12]
+        if not name1 in nameList:
+            nameList.append(name1)
+            return name1
+        i = 0
+        while name1 in nameList:
+            name1 = name[:10]+str(i)
+            i = i+1
+        nameList.append(name1)
+        return name1
+    
+    def getParametersDict(self, parRoot):   
+        pars = {}
+        for parNode in parRoot.getChildren():
+            name = parNode.getNode('name').data()
+            valNode = parNode.getNode('value')
+            childPars = valNode.getChildren()
+            if len(childPars) > 0:
+                val = self.getParametersDict(valNode)
+            else:
+                try:
+                    val = parNode.getNode('value').getData()
+                except:
+                    print('Warning: Empty value for parameter '+parNode.getPath())
+                    continue
+                if isinstance(val, MDSplus.Apd):
+                    if not isinstance(val, MDSplus.Dictionary):
+                        raise Exception('Wrong parameter in ' + parNode.getPath()+' Only Dictionaries, string, scalar and arrays supported')
+                else:
+                    val = val.data()
+            pars[name] = val
+        return pars
+    
+    # get the name associated with that signal node subtree, including name of nested signals
+    def getSignalName(self, sigNode):
+        try:
+            name = sigNode.getNode('NAME').data()
+        except:
+            name = sigNode.getName()
+        currSigNode = sigNode
+        while currSigNode.getParent().getParent().getNid() != self.getNid():
+            currSigNode = currSigNode.getParent().getParent()
+            try:
+                currName = currSigNode.getNode('NAME').data()
+            except:
+                currName = currSigNode.getName()
+            name = currName+'_'+name
+        return name
+    
+
+
+    #return the containing MARTE2 device 
+    def getMarteDevice(self, node):
+        currNode = node
+        while not isinstance(currNode, RfxDevices.MARTE2_COMPONENT):
+            if currNode.getParent().getNid() == 0: #TOP reached
+                raise Exception('Node '+ node.getPath() +' is not contained in a MARTe2 device')
+            currNode = currNode.getParent()
+        return currNode
+
+
+   #return the containing MARTE2 device name. The name is obtained from the full path (except \\experiment::TOP) replacing : and . with _ 
+    def getMarteDeviceName(self, node):
+        currNode = self.getMarteDevice(node)
+        devName = currNode.getFullPath()
+        return devName[devName.index('::TOP')+6:].replace(':', '_').replace('.', '_')
+    
+    #Check whether the passed value is a reference to TIMEBASE of this device
+    def isTimebase(self, value):
+      if isinstance(value, MDSplus.TreeNode) and value.getNid() == self.getNode('TIMEBASE').getNid():
+          return True
+      return false
+
+    #Check whether the value refers to a MARTe2 device
+    def isMarteDeviceRef(self, value):
+        try:
+            self.getMarteDevice(value)            
+        except:
+            return False
+        return True
+
+   def checkMarteDeviceRef(self, value, sigNode) 
+        #If we arrive here, value refers to MARTe2 device.
+        #Consistency checks
+        try:
+            refSigNode = value.getParent()
+            if refSigNode.getNode('TYPE').data() != sigNode.getNode('TYPE'):
+                raise Exception ('Invalid type for signal '+ self.getSignalName() + ' of '+self.getPath()) 
+            if refSigNode.getNode('DIMENSION').data() != sigNode.getNode('DIMENSION'):
+                raise Exception ('Invalid dimension for signal '+ self.getSignalName() + ' of '+self.getPath()) 
+            return True
+        except:
+            raise Exception('Invalid reference for signal '+ self.getSignalName() + ' of '+self.getPath()) 
+
+   #check whether MARTe2 device referred by value belongs to the same supervisor
+    def hostedInSameSupervisor(self, value):
+      return if self.getNid() == self.getMarteDevice(value).getNid()
+      
+    #check whether  MARTe2 thread referred by value belongs to the same thread for this device 
+    def hostedInSameThread(self, value, threadMap):
+        if not self.hostedInSameSupervisor(value):
+            retrun False
+        # threadMap is a Dictionary with two keys:
+        # 'DeviceInfo': defining for every MARTe2 device NID a dictionary:
+        #       'ThreadName': name of the thread it belongs to
+        #       'SuperivsorNid': NID of the supervirsor hosting the thread
+        # 'ThreadInfo': defining for every thread for this supervisor a dictionary:
+        #       'SyncThreadName': The name of the Synchronizing thread or None if this thread is not synchronized
+        #       'SyncThreadSupervisor': The NID of the MARTE2 superviso hosting the synchronizing thread or None if not synchronized
+        #       'SyncDiv': Frequency division from synchronizing thread or None is not synchronized
+    
+        valueNid = self.getMarteDevice(value).getNid()
+        thisNid = self.getNid()
+        return threadMap['DeviceInfo'][valueNid]['ThreadName'] == threadMap['DeviceInfo'][thisNid]['ThreadName'] and 
+             threadMap['DeviceInfo'][valueNid]['SupervisorNid'] == threadMap['DeviceInfo'][thisNid]['SupervisorNid']
+
+    #Check  whether MARTe2 thread synchronizes the thread for this device 
+    def hostedInSynchThread(self, value, threadMap):   
+        valueNid = self.getMarteDevice(value).getNid()
+        thisNid = self.getNid()
+        refThreadName = threadMap['DeviceInfo'][valueNid]['ThreadName']
+        thisThreadName = threadMap['DeviceInfo'][thisNid]['ThreadName']
+        refSupervisorNid = threadMap['DeviceInfo'][valueNid]['SupervisorNid']
+        thisSupervisorNid = threadMap['DeviceInfo'][thisNid]['SupervisorNid']
+
+        return threadMap['ThreadInfo'][thisThreadName]['SynchThreadName'] == refThreadName and
+            threadMap['ThreadInfo'][thisThreadName]['SyncSupervisorNid'] == refSupervisorNid
+
+    #Get subsamplingRatio for synchronized thread
+    def getSubsamplingRatio(self, value, threadMap):
+        valueNid = self.getMarteDevice(value).getNid()
+        thisNid = self.getNid()
+        refThreadName = threadMap['DeviceInfo'][valueNid]['ThreadName']
+        thisThreadName = threadMap['DeviceInfo'][thisNid]['ThreadName']
+        refSupervisorNid = threadMap['DeviceInfo'][valueNid]['SupervisorNid']
+        thisSupervisorNid = threadMap['DeviceInfo'][thisNid]['SupervisorNid']
+
+        if not (threadMap['ThreadInfo'][thisThreadName]['SynchThreadName'] == refThreadName and
+            threadMap['ThreadInfo'][thisThreadName]['SyncSupervisorNid'] == refSupervisorNid):
+            raise Exception('Internal error: getSubsamplingRation called for non sychronized threads')
+
+        return  threadMap['ThreadInfo'][thisThreadName]['SyncDiv']
+
+    #returns the type of the referenced output
+    def getReferencedType(self, value):
+        try:
+            return value.getParent().getNode('TYPE').data()
+        except:
+            raise Exception('Internal error: getReferenced Type failed for node '+value.getPath())
+
+
+    #Build the representation of the Input signals of a MARTe2 device (Array of dictionaries) and complete the auxiliary
+    #passed information 
+    def getInputSignalsDict(self, sigNodes, threadMap, typeDicts, resampledSyncSigs, syncInputsToBeReceived, 
+                            asyncInputsToBeReceived, treeRefs, constRefs, inputsToBePacked, timeDDB, timeType, isFieldCheck = False):
+        sigDicts = []
+        for sigNode in sigNodes:
+            currSig = {}
+#Value. Missing value forces skipping the input. Here skipping will be carried out also for struct inputs that are defined element by element
+            try:
+                value = sigNode.getNode(':VALUE').getData()
+            except:
+                if isFieldCheck:
+                    #If isFieldCheck getInputSignalsDict is working on the flattened field nodes that are assured not to  be empty
+                    raise Exception('Internal error: Unexpected empty field for '+sigNode.getPath())
+                try:
+                    numFields = len(currSig.getNode('FIELDS').getChildren())
+                except:
+                    numFields = 0
+                if numFields == 0:
+                    continue #Missing value for non strct inputs forces skipping the input.
+ # we need to handle here the possible case of a structured input
+ # getFlattenedFields check also that if a field is non empty, then all fields must be nonempty. If all fields are empty, [] is returned
+                fieldNodes = self.getFlattenedFields(sigNode)
+                fieldDicts = self.getInputSignalDict(fieldNodes, threadMap, typeDicts, resampledSyncSigs, syncInputsToBeReceived,
+                                                     asyncInputsToBeReceived, treeRefs, constRefs, [], timeDDB, timeType, True)
+                for fieldDict in fieldDicts:
+                    fieldDict['root'] = sigNode.getNid()
+                    inputsToBePacked.append(fieldDict)
+                value = None
+#Name
+            currSig['Name'] = self.getSignalName(sigNode)
+#Type
+            try:
+                numFields = len(sigNode.getNode('FIELDS').getChildren())
+            except:
+                numFields = 0
+
+            if numFields > 0:
+                type = self.buildType(sigNode.getNode('FIELDS'), typeDicts)
+            else:
+                try:
+                    type = sigNode.getNode(':TYPE').data()
+                except:
+                    raise Exception('Missing type definition for '+sigNode.getNode(':TYPE').getPath())
+            currSig['Type'] = type
+
+#NumberOfElements, NumberOfDimensions
+            if numFields == 0:
+                try:
+                    dimensions = sigNode.getNode(':DIMENSIONS').data()
+                except:
+                    raise Exception('Missing dimension definition for '+sigNode.getNode(':DIMENSIONS').getPath())
+                if np.isscalar(dimensions):
+                    if dimensions != 0:
+                        raise Exception('Scalar value for dimensions can be only 0 '+sigNode.getNode(':DIMENSIONS').getPath())
+                    currSig['NumberOfElements'] = 1
+                    currSig['NumberOfDimensions'] = 0
+                else:
+                    currSig['NumberOfDimensions'] = len(dimensions)
+                    numEls = 1
+                    for dim in dimensions:
+                        numEls *= dim
+                    currSig['NumberOfElements'] = numEls
+            else:
+                currSig['NumberOfElements'] = 1
+                currSig['NumberOfDimensions'] = 0
+#Parameters
+            if not isFieldCheck:
+                try:
+                    numParameters = len(sigNode.getNode('PARAMETERS').getChildren())
+                except:
+                    numParameters = 0
+            else:
+                numParameters = 0
+            if numParameters > 0:
+                currSig['Parameters'] = self.getParametersDict(sigNode.getNode('PARAMETERS'))
+#Data Source
+            if value == None: #Handle the case the structured input has been defined by means of its fields
+                currSig['DataSource'] = self.getMarteDeviceName(currSig)+'_Input_Bus_DDB'
+                sigDicts.append(currSig)
+                continue
+
+            if self.isTimebase(value):
+                currSig['DataSource'] = timeDDB
+                currSig['Type'] = timeType
+                currSig['NumberOfElements'] = 1
+                currSig['NumberOfDimensions'] = 0
+                sigDicts.append(currSig)
+                continue
+                
+                
+            if self.isMarteDeviceRef(value): #If it is the reference to the output of another MARTe2 device (consistency checks also carried out) 
+                self.checkMarteDeviceRef(self, value, sigNode) #Perform consistecny checks, raise Exception on case
+                currSig['Alias'] = self.getSignalName(value)
+                if self.hostedInSameThread(value, threadMap):  #Reference within same thread
+                    if isFieldRef(value):
+                        currSig['DataSource'] = self.getMarteDeviceName(value)+'_Expanded_Out_DDB'
+                    else:
+                        currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_DDB'
+                else:
+                    if self.hostedInSameSupervisor(value): #Reference within same supervisor
+                        if self.hostedInSynchThread(value, threadMap):
+                            subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
+                            if  subsamplingRatio > 1:
+                                currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
+                                resampledSyncSigs.append({'Name':currSig['Name'], 
+                                                      'DataSource': getMarteDeviceName(value)+'_Output_Synch',
+                                                      'Type': currSig['Type'],
+                                                      'NumberOfDimensions': currSig['NumberOfDimensions'],
+                                                      'NumberOfElements' : currSig['NumberOfElements'],
+                                                      'Alias' : currSig['Alias'],
+                                                      'Samples': subsamplingRatio,
+                                                      })
+                            else:
+                                currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_Synch'
+                        else:
+                            currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_Asynch'
+                    else: #Reference from another supervisor
+                         if self.hostedInSynchThread(value, threadMap):
+                            syncInputsToBeReceived.append({'Name':currSig['Name'], 
+                                                      'DataSource': getMarteDeviceName(value)+'_Output_Synch',
+                                                      'Type': currSig['Type'],
+                                                      'NumberOfDimensions': currSig['NumberOfDimensions'],
+                                                      'NumberOfElements' : currSig['NumberOfElements'],
+                                                      'Alias' : currSig['Alias'],
+                                                      })
+                            subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
+                            if subsamplingRatio > 1:
+                                currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
+                                resampledSyncSigs.append({'Name':currSig['Name'], 
+                                                        'DataSource': getMarteDeviceName(value)+'_SYNC_RTN_IN',
+                                                        'Type': currSig['Type'],
+                                                        'NumberOfDimensions': currSig['NumberOfDimensions'],
+                                                        'NumberOfElements' : currSig['NumberOfElements'],
+                                                        'Alias' : currSig['Alias'],
+                                                        'Samples': subsamplingRatio,
+                                                        })
+                            else: #Not subsampled
+                                currSig['DataSource'] = self.getMarteDeviceName(value)+'_SYNC_RTN_IN'
+                        else: #not synchronous
+                            asyncInputsToBeReceived.append({'Name':currSig['Name'], 
+                                    'DataSource': getMarteDeviceName(value)+'_Output_Synch',
+                                    'Type': currSig['Type'],
+                                    'NumberOfDimensions': currSig['NumberOfDimensions'],
+                                    'NumberOfElements' : currSig['NumberOfElements'],
+                                    'Alias' : currSig['Alias'],
+                                    })
+                            currSig['DataSource'] = self.getMarteDeviceName(value)+'_ASYNC_RTN_IN'
+            else: #Not a reference to the output of a MARTe2 device
+                if isinstance(value.evaluate(), MDSplus.Signal):
+                    currSig['DataSource'] = self.getMarteDeviceName(currSig)+'+TreeInDDB'
+                    treeRefs.append({'Name':currSig['name'], 'Expression': value})
+                else: #It is a constant
+                    if not isinstance(value.evaluate(), MDSplus.Scalar):
+                        raise Exception('Invalid input for '+sigNode.getPath()+': '+value.decompile())
+                    currSig['DataSource'] = self.getMarteDeviceName(currSig)+'+ConstInDDB'
+                    constRefs.append({'Name':currSig['Name'], 'Value': value.data()})
+            sigDicts.append(currSig)
+        #endfor
+        return sigDicts
+
+    #Management of the trigger input for storing outputs, if defined. It does not declares anything but possibly affects the passed structures
+    def handleOutputTrigger(self):
+        try:
+            value = self.getNode('OUTPUTS:TRIGGER').getData()
+        except:
+            return #No trigger defined
+        if self.isMarteDeviceRef(value): #If it is the reference to the output of another MARTe2 device (consistency checks also carried out) 
+            alias = self.getSignalName(value)
+            if self.hostedInSameSupervisor(value): #Reference within same supervisor
+                if self.hostedInSynchThread(value, threadMap):
+                    subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
+                    if  subsamplingRatio > 1:
+                        resampledSyncSigs.append({'Name':'OutputTrigger', 
+                                                      'DataSource': self.getMarteDeviceName(value)+'_Output_Synch',
+                                                      'Type': self.getReferencedType(value),
+                                                      'NumberOfDimensions': 0,
+                                                      'NumberOfElements' : 1,
+                                                      'Alias' : alias,
+                                                      'Samples': subsamplingRatio,
+                                                      })
+                    else: #Reference from another supervisor
+                        if self.hostedInSynchThread(value, threadMap):
+                            syncInputsToBeReceived.append({'Name':'OutputTrigger', 
+                                                      'DataSource': self.getMarteDeviceName(value)+'_Output_Synch',
+                                                      'Type': self.getReferencedType(value),
+                                                      'NumberOfDimensions': 0,
+                                                      'NumberOfElements' : 1,
+                                                      'Alias' : alias,
+                                                      })
+                            subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
+                            if subsamplingRatio > 1:
+                                resampledSyncSigs.append({'Name':'OutputTrigger', 
+                                                        'DataSource': self.getMarteDeviceName(value)+'_SYNC_RTN_IN',
+                                                        'Type': self.getReferencedType(value),
+                                                        'NumberOfDimensions': 0,
+                                                        'NumberOfElements' : 1,
+                                                        'Alias' : alias,
+                                                        'Samples': subsamplingRatio,
+                                                        })
+                        else: #Not synchornized to other supervisor's thread
+                            asyncInputsToBeReceived.append({'Name':'OutputTrigger', 
+                                                      'DataSource': self.getMarteDeviceName(value)+'_Output_Synch',
+                                                      'Type': self.getReferencedType(value),
+                                                      'NumberOfDimensions': 0,
+                                                      'NumberOfElements' : 1,
+                                                      'Alias' : alias,
+                                                       })
+
+            else: #Not a reference to the output of a MARTe2 device
+                if isinstance(value.evaluate(), MDSplus.Signal):
+                    treeRefs.append('OutputTrigger')
+                          
+    #Return DataSource definition (dictionary) handling the inputs to be received form other supervisors
+    def handleInputsToBeReceived(self, inputs, isSync):
+        retData = {}
+        try :
+            port = self.getNode('PORT').data()
+        except:
+            raise Exception('Missing Port definition for device '+ self.getPath())
+        retData['Class'] = 'RTNIn'
+        if isSync:
+            retData['Parameters'] = {'IsSync':'Yes', 'Circuit': self.getNid(), 'Port':port}
+        else:
+            retData['Parameters'] = {'IsSync':'No', 'Circuit': self.getNid(), 'Port':port}
+         signals = []
+        for syncInput in syncInputs:
+            signals.append(syncInput)
+        retData['Signals'] = signals
+        return retData
+
+    def 
+
+
+
+
+            
+
+            
+
+
+
+
+
+
+
+
+*************************************************************************************************
 
     name = None
     inputs = []
@@ -391,25 +746,6 @@ class MARTE2_COMPONENT(Device):
                 outText += '   '
             outText += '}\n'
         return outText
-
-    @classmethod
-    def convertName(cls, name, nameList):
-        # remove angulars (possibly from simuluink)
-        if name[0] == '<':
-            name = name[1:-1]
-        if len(name) <= 12:
-            nameList.append(name)
-            return name
-        name1 = name[:12]
-        if not name1 in nameList:
-            nameList.append(name1)
-            return name1
-        i = 0
-        while name1 in nameList:
-            name1 = name[:10]+str(i)
-            i = i+1
-        nameList.append(name1)
-        return name1
 
     def getGamInfo(self):
         try:
@@ -2671,7 +3007,7 @@ class MARTE2_COMPONENT(Device):
             try:
                 syncDiv = self.timebase_div.data()
             except:
-                synchDiv = 1
+                syncDiv = 1
 
             if outputTrigger != None  and syncDiv == 1:  # If using output trigger, the trigger must be converted to uint8 GAB OCTOBER 2023
                 gamText += '    Class = ConversionGAM\n'
@@ -2825,6 +3161,7 @@ class MARTE2_COMPONENT(Device):
                     mdsReaderText += '        UseColumnOrder = 0\n'
                 mdsReaderText += '        DataManagement = 1\n'
                 mdsReaderText += '      }\n'
+                mdsReaderText += '    }\n'
                 mdsReaderText += '  }\n'
             gams.append(mdsReaderText)
          # Some outputs are connected to devices on separate synchronized theads
@@ -3089,7 +3426,7 @@ class MARTE2_COMPONENT(Device):
                         aliasName = inputDict['value'].getParent().getNode(
                             ':name').data()
 
-               #   signalGamName = inputDict['value'].getParent().getNode(':name').data()
+                    #signalGamName = inputDict['value'].getParent().getNode(':name').data()
                     signalGamName = inputDict['name']
                     aliasName = inputDict['value'].getParent().getNode(
                         ':name').data()
@@ -3115,7 +3452,8 @@ class MARTE2_COMPONENT(Device):
                     forceUsingSamples = False
 
                     signalNames.append(signalGamName)
-                    gamText += '      '+signalGamName+' = {\n'
+ #                   gamText += '      '+signalGamName+' = {\n'
+                    gamText += '      '+aliasName+' = {\n'
                     if isInputStructField:  
                         gamText += '        DataSource = '+sourceGamName+'_Expanded_Output_DDB\n'
                         signalSamples.append(1)
@@ -3198,7 +3536,7 @@ class MARTE2_COMPONENT(Device):
 
         # There are input references to tree nodes, we need to build a MdsReader DataSource named <gam name>_TreeInput
         if len(nonGamInputNodes) > 0:
-            dataSourceText = '  +'+DataSourceName+'_TreeInDDB = {\n'
+            dataSourceText = '  +'+dataSourceName+'_TreeInDDB = {\n'
             dataSourceText += '    Class = GAMDataSource\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
@@ -3235,6 +3573,7 @@ class MARTE2_COMPONENT(Device):
                     mdsReaderText += '        UseColumnOrder = 0\n'
                 mdsReaderText += '        DataManagement = 1\n'
                 mdsReaderText += '      }\n'
+                mdsReaderText += '    }\n'
                 mdsReaderText += '  }\n'
             gams.append(mdsReaderText)
        #Head and parameters
