@@ -38,6 +38,10 @@ if (BRANCH_NAME == "stable") {
     schedule = "0 19 * * *";
 }
 
+def new_version = '0.0.0';
+
+def release_file_list = [];
+
 pipeline {
     agent any
     
@@ -81,6 +85,33 @@ pipeline {
             }
         }
 
+        stage("Calculate Version") {
+            when {
+                anyOf {
+                    branch 'alpha';
+                    branch 'stable';
+                }
+            }
+            steps {
+                script {
+                    ws("${WORKSPACE}/publish") {
+                        checkout scm;
+
+                        new_version = sh(
+                            script: "./deploy/get_new_version.py",
+                            returnStdout: true
+                        ).trim()
+
+                        if (new_version == '0.0.0') {
+                            error "Failed to calculate new version"
+                        }
+
+                        echo "Calculated new version to be ${new_version}"
+                    }
+                }
+            }
+        }
+
         stage('Distributions') {
             steps {
                 script {
@@ -93,7 +124,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME}"
+                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --version=${new_version}"
 
                                         if (OS.endsWith("armhf")) {
                                             sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
@@ -113,9 +144,17 @@ pipeline {
                                         }
                                     }
 
-                                    if (env.CHANGE_ID && !OS.startsWith("test-")) {
-                                        stage("${OS} Test Packaging") {
-                                            sh "./deploy/build.sh --os=${OS} --release"
+                                    if (!OS.startsWith("test-")) {
+                                        stage("${OS} Release") {
+                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version}"
+                                            
+                                            findFiles(glob: "packages/*.tgz").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
+
+                                            findFiles(glob: "packages/*.exe").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
                                         }
                                     }
                                 }
@@ -166,56 +205,19 @@ pipeline {
             }
             steps {
                 script {
-                    def new_version = '0.0.0'
 
-                    stage("Calculate Version") {
-                        ws("${WORKSPACE}/publish") {
-                            checkout scm;
-
-                            new_version = sh(
-                                script: "./deploy/get_new_version.py",
-                                returnStdout: true
-                            ).trim()
-
-                            if (new_version == '0.0.0') {
-                                error "Failed to calculate new version"
-                            }
-
-                            echo "Calculated new version to be ${new_version}"
-                        }
-                    }
-
-                    release_file_list = []
 
                     parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
-                        OS -> [ "${OS} Release & Publish": {
-                            stage("${OS} Release & Publish") {
+                        OS -> [ "${OS} Publish": {
+                            stage("${OS} Publish") {
                                 ws("${WORKSPACE}/${OS}") {
-                                    stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --version=${new_version}"
-                                    }
-
-                                    stage("${OS} Release") {
-                                        sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version}"
-                                        
-                                        findFiles(glob: "packages/*.tgz").each {
-                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
-                                        }
-
-                                        findFiles(glob: "packages/*.exe").each {
-                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
-                                        }
-                                    }
-
-                                    stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
-                                    }
+                                    sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
                                 }
                             }
                         }]
                     }
 
-                    stage("Publish Version") {
+                    stage("Publish to GitHub") {
                         ws("${WORKSPACE}/publish") {
                             def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
                             echo "Creating GitHub Release and Tag for ${tag}"
