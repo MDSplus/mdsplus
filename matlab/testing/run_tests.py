@@ -1,48 +1,228 @@
+#!/usr/bin/env python3
+
 # TODO: This only tests the "thin-client" API for MATLAB.  Eventually, should
 # also incorporate the "thick-client" API tests in the "mdstest.m" file.
 # NOTE: The following test harness and tests are derived from the IDL tests.
 
 import os
 import subprocess
+import argparse
 import string
 
-server = 'localhost'
-if 'TEST_MDSIP_SERVER' in os.environ:
-    server = os.environ['TEST_MDSIP_SERVER']
+# The default values are intended to be used from within the PSFC network
+# If you want to run these tests on your own infrastructure, provide the
+# details as arguments to customize the tests to your servers/trees/nodes
 
-tree = os.environ['TEST_TREE']
-shot = os.environ['TEST_SHOT']
-node1 = os.environ['TEST_NODE1']
-node1_value = os.environ['TEST_NODE1_VALUE']
-node2 = os.environ['TEST_NODE2']
-node2_value = os.environ['TEST_NODE2_VALUE']
-dbname = os.environ['TEST_DB_NAME']
-ascii = os.environ['TEST_ASCII']
-ascii_value = os.environ['TEST_ASCII_VALUE']
-numeric = os.environ['TEST_NUMERIC']
-numeric_value = os.environ['TEST_NUMERIC_VALUE']
-signal = os.environ['TEST_SIGNAL']
-signal_value = os.environ['TEST_SIGNAL_VALUE']
-fullpath = os.environ['TEST_FULLPATH']
-fullpath_value = os.environ['TEST_FULLPATH_VALUE']
-relative_def = os.environ['TEST_RELATIVE_DEF']
-relative = os.environ['TEST_RELATIVE']
-relative_value = os.environ['TEST_RELATIVE_VALUE']
-reset_def = os.environ['TEST_RESET_DEF']
-tag = os.environ['TEST_TAG']
-tag_value = os.environ['TEST_TAG_VALUE']
-wildcard = os.environ['TEST_WILDCARD']
-wildcard_value = os.environ['TEST_WILDCARD_VALUE']
-getnci = os.environ['TEST_GETNCI']
-getnci_value = os.environ['TEST_GETNCI_VALUE']
-rank = os.environ['TEST_RANK']
-rank_value = os.environ['TEST_RANK_VALUE']
-ndims = os.environ['TEST_NDIMS']
-ndims_value = os.environ['TEST_NDIMS_VALUE']
-dim_of = os.environ['TEST_DIM_OF']
-dim_of_value = os.environ['TEST_DIM_OF_VALUE']
-units_of = os.environ['TEST_UNITS_OF']
-units_of_value = os.environ['TEST_UNITS_OF_VALUE']
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    '--mdsip-server',
+    default='alcdaq6',
+    help='The server to call mdsconnect() on'
+)
+
+parser.add_argument(
+    '--database-name',
+    default='logbook',
+    help='The database to call set_database() on'
+)
+
+parser.add_argument(
+    '--tree',
+    default='cmod',
+    help='The tree to mdsopen()'
+)
+
+parser.add_argument(
+    '--shot',
+    default=1090909009,
+    help='The shot to mdsopen()'
+)
+
+parser.add_argument(
+    '--node1',
+    default='SUM(\\IP)',
+    help='An expression to evaluate and compare against --node1-value'
+)
+
+parser.add_argument(
+    '--node1-value',
+    default='-69662768',
+    help='The value of evaluating the --node1 expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--node2',
+    default='TSTART',
+    help='An expression to evaluate and compare against --node2-value'
+)
+
+parser.add_argument(
+    '--node2-value',
+    default='-4',
+    help='The value of evaluating the --node2 expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--text',
+    default='ADMIN.LOGBOOK.STATISTICS:ANAL_DONE',
+    help='An expression to evaluate and compare against --text-value'
+)
+
+parser.add_argument(
+    '--text-value',
+    default='9-SEP-2009 11:29:41.00',
+    help='The value of evaluating the --text expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--numeric',
+    default='SEQUENCE_NUM',
+    help='An expression to evaluate and compare against --numeric-value'
+)
+
+parser.add_argument(
+    '--numeric-value',
+    default='35575',
+    help='The value of evaluating the --numeric expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--signal',
+    default='ADMIN.FAST_WINDOW.XTOMO:OPTIONS',
+    help='An expression to evaluate and compare against --signal-value'
+)
+
+#    default="{'none   '}    {'25kHz  '}    {'50kHz  '}    {'83.3kHz'}"
+parser.add_argument(
+    '--signal-value',
+    default='"none   "    "25kHz  "    "50kHz  "    "83.3kHz"',
+    help='The value of evaluating the --signal expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--fullpath',
+    default='\\CMOD::TOP.ELECTRONS.ECE.RESULTS:APERTURE',
+    help='An expression to evaluate and compare against --fullpath-value'
+)
+
+parser.add_argument(
+    '--fullpath-value',
+    default='39.1000',
+    help='The value of evaluating the --fullpath expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--relative-def',
+    default='\CMOD::TOP.ELECTRONS.ECE',
+    help='An expression to change the default position in the tree'
+)
+
+parser.add_argument(
+    '--relative',
+    default='.RESULTS:ZPD',
+    help='An expression to evaluate and compare against --relative-value'
+)
+
+parser.add_argument(
+    '--relative-value',
+    default='57',
+    help='The value of evaluating the --relative expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--reset-def',
+    default='\CMOD::TOP',
+    help='An expression to reset the default position to the top of the tree'
+)
+
+parser.add_argument(
+    '--tag',
+    default='\\DNB::TSTART',
+    help='An expression to evaluate and compare against --tag-value'
+)
+
+parser.add_argument(
+    '--tag-value',
+    default='-4',
+    help='The value of evaluating the --tag expression, ignoring leading/trailing whitespace'
+)
+
+# The parser is converting "\\" into "\", so to get desired path of "\\CMOD::" must use "\\\\"
+parser.add_argument(
+    '--wildcard',
+    default='SUBSCRIPT(GETNCI("\\\\CMOD::TOP.***:CPLD_START", "FULLPATH"),0)',
+    help='An expression to evaluate and compare against --wildcard-value'
+)
+
+parser.add_argument(
+    '--wildcard-value',
+    default='\CMOD::TOP.DNB.MIT_CXRS:CPLD_START',
+    help='The value of evaluating the --wildcard expression, ignoring leading/trailing whitespace'
+)
+
+# The parser is converting "\\" into "\", so to get desired path of "\\CMOD::" must use "\\\\"
+parser.add_argument(
+    '--getnci',
+    default=' SUBSCRIPT(GETNCI("\\\\CMOD::TOP.DNB.MIT_CXRS:CPLD_START", "USAGE"),0) ',
+    help='An expression to evaluate and compare against --getnci-value'
+)
+
+parser.add_argument(
+    '--getnci-value',
+    default='5',
+    help='The value of evaluating the --getnci expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--rank',
+    default='RANK(\\IP)',
+    help='An expression to evaluate and compare against --rank-value'
+)
+
+parser.add_argument(
+    '--rank-value',
+    default='1',
+    help='The value of evaluating the --rank expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--ndims',
+    default='NDIMS(\\IP)',
+    help='An expression to evaluate and compare against --ndims-value'
+)
+
+parser.add_argument(
+    '--ndims-value',
+    default='1',
+    help='The value of evaluating the --ndims expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--dim-of',
+    default='DIM_OF(\\CMOD::TOP.ADMIN.FAST_WINDOW.XTOMO:OPTIONS, 0)',
+    help='An expression to evaluate and compare against --dim-of-value'
+)
+
+parser.add_argument(
+    '--dim-of-value',
+    default='1   1   1   1',
+    help='The value of evaluating the --dim-of expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--units-of',
+    default='UNITS_OF(\\CMOD::TOP.MHD.XTOMO.SIGNALS.ARRAY_1:CHORD_01)',
+    help='An expression to evaluate and compare against --units-of-value'
+)
+
+parser.add_argument(
+    '--units-of-value',
+    default='watts',
+    help='The value of evaluating the --units-of expression, ignoring leading/trailing whitespace'
+)
+
+args = parser.parse_args()
 
 
 #---------------------------------------------------------------------------
@@ -104,6 +284,8 @@ def matlab_test(code, expected_output):
     code_lines = list(filter(None, code_lines))
     code = '\n'.join(code_lines)
 
+    # Write the test to a MATLAB script file, test.m
+
     code = '% placeholder comment\n' + code + '\nexit\n'
     open('test.m', 'wt').write(code)
 
@@ -112,8 +294,6 @@ def matlab_test(code, expected_output):
 
     print('Running:')
     for line in code_lines:
-        line = line.replace(server, '******')
-        line = line.replace(dbname, '******')
         print(f'MATLAB> {line}')
     print()
 
@@ -128,6 +308,8 @@ def matlab_test(code, expected_output):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
     )
+
+    # We call our test.m module
 
     proc.stdin.write('test\n'.encode())
     proc.stdin.flush()
@@ -144,24 +326,16 @@ def matlab_test(code, expected_output):
 
         line = line.strip(strip_set)
 
-        if not hide_output:
+        if line is not None and not hide_output:
             if line != '':
                 print(line)
                 lines.append(line.strip())
         
+        # Skip the MATLAB header and licensing information, which is everything
+        # above this line
         if line == header_end:
             hide_output = False
     print()
-
-    #stdout, _ = proc.communicate('test\n'.encode())
-    #lines = [line.strip() for line in stdout.splitlines() ]
-    lines = list(filter(None, lines))
-
-    # Skip the MATLAB header and License information
-    for i, line in enumerate(lines):
-        if line == header_end:
-            lines = lines[i + 1:]
-
 
     this_test_passed = True
  
@@ -186,18 +360,18 @@ def matlab_test(code, expected_output):
 matlab_test(f'''
          
 testid = 'MATLAB-tree-read';
-mdsconnect('{server}');
-mdsopen('{tree}', {shot});
-disp(mdsvalue('{node1}'));
-disp(mdsvalue('{node2}'));
+mdsconnect('{args.mdsip_server}');
+mdsopen('{args.tree}', {args.shot});
+disp(mdsvalue('{args.node1}'));
+disp(mdsvalue('{args.node2}'));
 mdsclose();
 mdsdisconnect();
 
 ''',
 f'''
 
-{node1_value}
-{node2_value}
+{args.node1_value}
+{args.node2_value}
 
 ''')
 
@@ -225,40 +399,40 @@ matlab_test(f'''
             
 testid = 'MATLAB-read-various'; 
                     
-mdsconnect('{server}');
-mdsopen('{tree}', {shot});
-disp(mdsvalue('{ascii}'));
-disp(mdsvalue('{numeric}'));
-disp(transpose(mdsvalue('{signal}')));
-disp(mdsvalue('{fullpath}'));
-mdstcl('set def {relative_def}');
-disp(mdsvalue('{relative}'));
-mdstcl('set def {reset_def}');
-disp(mdsvalue('{tag}'));
-disp(mdsvalue('{wildcard}'));
-disp(mdsvalue('{getnci}'));
-disp(mdsvalue('{rank}'));
-disp(mdsvalue('{ndims}'));
-disp(transpose(mdsvalue('{dim_of}')));
-disp(mdsvalue('{units_of}'));
+mdsconnect('{args.mdsip_server}');
+mdsopen('{args.tree}', {args.shot});
+disp(mdsvalue('{args.text}'));
+disp(mdsvalue('{args.numeric}'));
+disp(transpose(mdsvalue('{args.signal}')));
+disp(mdsvalue('{args.fullpath}'));
+mdstcl('set def {args.relative_def}');
+disp(mdsvalue('{args.relative}'));
+mdstcl('set def {args.reset_def}');
+disp(mdsvalue('{args.tag}'));
+disp(mdsvalue('{args.wildcard}'));
+disp(mdsvalue('{args.getnci}'));
+disp(mdsvalue('{args.rank}'));
+disp(mdsvalue('{args.ndims}'));
+disp(transpose(mdsvalue('{args.dim_of}')));
+disp(mdsvalue('{args.units_of}'));
 mdsclose();
 mdsdisconnect();
 
 ''',
 f'''
 
-{ascii_value}
-{numeric_value}
-{signal_value}
-{fullpath_value}
-{relative_value}
-{tag_value}
-{wildcard_value}
-{getnci_value}
-{rank_value}
-{ndims_value}
-{dim_of_value}
-{units_of_value}
+{args.text_value}
+{args.numeric_value}
+{args.signal_value}
+{args.fullpath_value}
+{args.relative_value}
+{args.tag_value}
+{args.wildcard_value}
+{args.getnci_value}
+{args.rank_value}
+{args.ndims_value}
+{args.dim_of_value}
+{args.units_of_value}
 
 ''')
 
