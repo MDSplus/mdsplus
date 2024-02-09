@@ -1032,7 +1032,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Timebase div. (if from another thread):");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(174);
+        deviceField2.setOffsetNid(201);
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
@@ -1046,7 +1046,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Write CPU Mask: ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(101);
+        deviceField4.setOffsetNid(128);
         jPanel3.add(deviceField4);
 
         jButton1.setText("Fill fields");
@@ -1070,13 +1070,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField77.setIdentifier("");
         deviceField77.setLabelString("MDS write trigger:");
         deviceField77.setNumCols(30);
-        deviceField77.setOffsetNid(96);
+        deviceField77.setOffsetNid(123);
         jPanel47.add(deviceField77);
 
         deviceField78.setIdentifier("");
         deviceField78.setLabelString("Post trig. Samples: ");
         deviceField78.setNumCols(6);
-        deviceField78.setOffsetNid(98);
+        deviceField78.setOffsetNid(125);
         jPanel47.add(deviceField78);
 
         jPanel1.add(jPanel47);

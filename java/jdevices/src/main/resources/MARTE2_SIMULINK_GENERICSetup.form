@@ -1683,7 +1683,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div. (if from another thread):"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="174"/>
+                <Property name="offsetNid" type="int" value="201"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -1705,7 +1705,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="101"/>
+                <Property name="offsetNid" type="int" value="128"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton1">
@@ -1745,7 +1745,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MDS write trigger:"/>
                 <Property name="numCols" type="int" value="30"/>
-                <Property name="offsetNid" type="int" value="96"/>
+                <Property name="offsetNid" type="int" value="123"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField78">
@@ -1753,7 +1753,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Post trig. Samples: "/>
                 <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="98"/>
+                <Property name="offsetNid" type="int" value="125"/>
               </Properties>
             </Component>
           </SubComponents>
