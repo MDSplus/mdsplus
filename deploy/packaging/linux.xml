@@ -788,6 +788,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
   <package name="matlab" arch="noarch" summary="Mathworks MATLAB extensions" description="Mathworks MATLAB extensions">
     <requires package="java"/>
     <include dir="/usr/local/mdsplus/matlab"/>
+    <exclude dir="/usr/local/mdsplus/matlab/testing"/>    
   </package>
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
