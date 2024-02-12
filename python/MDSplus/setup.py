@@ -54,7 +54,7 @@ def setupkw():
             "All of the MDSplus data types such as signal are represented as python classes.\n"
         ),
         author="MDSplus Development Team",
-        author_email="twf@www.mdsplus.org",
+        author_email="mdsplusadmin@psfc.mit.edu",
         url="http://www.mdsplus.org/",
         license="MIT",
         classifiers=[
@@ -63,7 +63,10 @@ def setupkw():
             "Environment :: Console",
             "Topic :: Scientific/Engineering",
         ],
-        keywords=["physics", "mdsplus",],
+        keywords=[
+            "physics",
+            "mdsplus",
+        ],
     )
 
 

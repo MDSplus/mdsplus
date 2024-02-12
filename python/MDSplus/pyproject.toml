@@ -5,7 +5,7 @@
 [project]
     name='MDSplus'
     authors = [
-        {name = "MDSplus Development Team", email = "twf@www.mdsplus.org"},
+        {name = "MDSplus Development Team", email = "mdsplusadmin@psfc.mit.edu"},
     ]
     license = {text = "MIT License"}
     description = "MDSplus Python Object interface"
