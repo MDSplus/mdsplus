@@ -140,7 +140,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("PV name");
-        deviceField9.setOffsetNid(60);
+        deviceField9.setOffsetNid(66);
         deviceField9.setTextOnly(true);
         jPanel4.add(deviceField9);
 
@@ -177,7 +177,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("PV name");
-        deviceField13.setOffsetNid(87);
+        deviceField13.setOffsetNid(93);
         deviceField13.setTextOnly(true);
         jPanel5.add(deviceField13);
 
