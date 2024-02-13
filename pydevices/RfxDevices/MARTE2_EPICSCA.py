@@ -7,9 +7,10 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_EPICSCA(MC.MARTE2_COMPONENT):
     parameters = [
         {'name':'+PV1', 'type':'structure', 'value': [
-            {'name':'Class', 'type':'string', 'value':'EPICSInterface::EPICSPV'},
+            {'name':'Class', 'type':'string', 'value':'EPICS::EPICSPV'},
             {'name':'PVName', 'type':'string', 'value':'PV1'},
             {'name':'PVType', 'type':'string', 'value':'int32'},
+            {'name':'NumberOfElements', 'type':'int32', 'value':1},
             {'name':'Event', 'type':'structure', 'value':[
                 {'name':'Destination','type':'string', 'value':'GAMDest1'},
                 {'name':'PVValue','type':'string', 'value':'Parameter'},
@@ -17,9 +18,10 @@ class MARTE2_EPICSCA(MC.MARTE2_COMPONENT):
             ]},
         ]},
         {'name':'+PV2', 'type':'structure', 'value': [
-            {'name':'Class', 'type':'string', 'value':'EPICSInterface::EPICSPV'},
+            {'name':'Class', 'type':'string', 'value':'EPICS::EPICSPV'},
             {'name':'PVName', 'type':'string', 'value':'PV2'},
             {'name':'PVType', 'type':'string', 'value':'int32'},
+            {'name':'NumberOfElements', 'type':'int32', 'value':1},
             {'name':'Event', 'type':'structure', 'value':[
                 {'name':'Destination','type':'string', 'value':'GAMDest1'},
                 {'name':'PVValue','type':'string', 'value':'Parameter'},
@@ -27,9 +29,10 @@ class MARTE2_EPICSCA(MC.MARTE2_COMPONENT):
             ]},
         ]},
         {'name':'+PV3', 'type':'structure', 'value': [
-            {'name':'Class', 'type':'string', 'value':'EPICSInterface::EPICSPV'},
+            {'name':'Class', 'type':'string', 'value':'EPICS::EPICSPV'},
             {'name':'PVName', 'type':'string', 'value':'PV3'},
             {'name':'PVType', 'type':'string', 'value':'int32'},
+            {'name':'NumberOfElements', 'type':'int32', 'value':1},
             {'name':'Event', 'type':'structure', 'value':[
                 {'name':'Destination','type':'string', 'value':'GAMDest1'},
                 {'name':'PVValue','type':'string', 'value':'Parameter'},
@@ -37,9 +40,10 @@ class MARTE2_EPICSCA(MC.MARTE2_COMPONENT):
             ]},
         ]},
         {'name':'+PV4', 'type':'structure', 'value': [
-            {'name':'Class', 'type':'string', 'value':'EPICSInterface::EPICSPV'},
+            {'name':'Class', 'type':'string', 'value':'EPICS::EPICSPV'},
             {'name':'PVName', 'type':'string', 'value':'PV4'},
             {'name':'PVType', 'type':'string', 'value':'int32'},
+            {'name':'NumberOfElements', 'type':'int32', 'value':1},
             {'name':'Event', 'type':'structure', 'value':[
                 {'name':'Destination','type':'string', 'value':'GAMDest1'},
                 {'name':'PVValue','type':'string', 'value':'Parameter'},
