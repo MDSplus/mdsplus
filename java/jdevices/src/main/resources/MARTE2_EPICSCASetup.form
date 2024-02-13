@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value=" MARTE2_EPICSCA Setup"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_EPICSCA"/>
     <Property name="height" type="int" value="400"/>
-    <Property name="width" type="int" value="900"/>
+    <Property name="width" type="int" value="1200"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -21,7 +21,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,3,123"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,3,-46"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -85,7 +85,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Destination"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="21"/>
+                <Property name="offsetNid" type="int" value="24"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -94,8 +94,16 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Function"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="27"/>
+                <Property name="offsetNid" type="int" value="30"/>
                 <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField4">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Num. Elements: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="18"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -115,7 +123,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="PV name"/>
-                <Property name="offsetNid" type="int" value="36"/>
+                <Property name="offsetNid" type="int" value="39"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -131,7 +139,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Type"/>
-                <Property name="offsetNid" type="int" value="39"/>
+                <Property name="offsetNid" type="int" value="42"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -140,7 +148,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Destination"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="45"/>
+                <Property name="offsetNid" type="int" value="51"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -149,8 +157,16 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Function"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="51"/>
+                <Property name="offsetNid" type="int" value="57"/>
                 <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField8">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Num. Elements: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="45"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -186,7 +202,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Type"/>
-                <Property name="offsetNid" type="int" value="63"/>
+                <Property name="offsetNid" type="int" value="69"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -195,7 +211,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Destination"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="69"/>
+                <Property name="offsetNid" type="int" value="78"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -204,8 +220,16 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Function"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="75"/>
+                <Property name="offsetNid" type="int" value="84"/>
                 <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField12">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Num. Elements: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="72"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -225,7 +249,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="PV name"/>
-                <Property name="offsetNid" type="int" value="84"/>
+                <Property name="offsetNid" type="int" value="87"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -241,7 +265,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Type"/>
-                <Property name="offsetNid" type="int" value="87"/>
+                <Property name="offsetNid" type="int" value="111"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -250,7 +274,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Destination"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="93"/>
+                <Property name="offsetNid" type="int" value="105"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
@@ -259,8 +283,16 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Function"/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="99"/>
+                <Property name="offsetNid" type="int" value="111"/>
                 <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField16">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Num. Elements: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="99"/>
               </Properties>
             </Component>
           </SubComponents>
