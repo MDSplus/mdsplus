@@ -216,6 +216,18 @@ parser.add_argument(
     help='The value of evaluating the --units-of expression, ignoring leading/trailing whitespace'
 )
 
+parser.add_argument(
+    '--write-tree',
+    default='idl_tests',
+    help='Name of tree to create for exercising write functions of the API'
+)
+
+parser.add_argument(
+    '--write-shot',
+    default=100,
+    help='Shot number of tree to create for exercising write functions of the API'
+)
+
 args = parser.parse_args()
 
 
@@ -263,9 +275,8 @@ def build_write_tree(tree, shot):
     t.write()
     t.close()
 
-write_tree = 'write'
-write_shot = 123
-build_write_tree(write_tree, write_shot)
+
+build_write_tree(args.write_tree, args.write_shot)
 
 
 all_tests_passed = True
@@ -1562,7 +1573,7 @@ idl_test(f'''
             
 testid = 'IDL-write-various'         
 
-mdsopen, '{write_tree}', '{write_shot}'
+mdsopen, '{args.write_tree}', '{args.write_shot}'
 mdsput, 'A_TEXT', ' "string_a" '
 mdsput, 'B_NUM', '22'
 mdsput, 'C_SIGNAL', 'build_signal([10,-10,5,-5,0],[10.2,-10.2,5.4,-5.4,0.0], [0 .. 4])'
@@ -1571,9 +1582,9 @@ mdsput, 'SUBTREE_1.E_UNITS', 'build_with_units(55, "volts")'
 mdsset_def, 'SUBTREE_1'
 mdsput, '.-.SUBTREE_2:F_NUM', '66'
 mdsput, '\TAG_G', '77'
-mdsclose, '{write_tree}', '{write_shot}'
+mdsclose, '{args.write_tree}', '{args.write_shot}'
          
-mdsopen, '{write_tree}', '{write_shot}'
+mdsopen, '{args.write_tree}', '{args.write_shot}'
 print, mdsvalue('A_TEXT')
 print, mdsvalue('B_NUM')
 print, mdsvalue('DATA(C_SIGNAL)')
@@ -1584,7 +1595,7 @@ print, mdsvalue('SUBTREE_1.E_UNITS')
 print, mdsvalue('UNITS_OF(SUBTREE_1.E_UNITS)')
 print, mdsvalue('SUBTREE_2:F_NUM')
 print, mdsvalue('SUBTREE_2:G_NUM')
-mdsclose, '{write_tree}', '{write_shot}'
+mdsclose, '{args.write_tree}', '{args.write_shot}'
 
 ''',
 '''
