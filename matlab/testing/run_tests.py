@@ -93,7 +93,6 @@ parser.add_argument(
     help='An expression to evaluate and compare against --signal-value'
 )
 
-#    default="{'none   '}    {'25kHz  '}    {'50kHz  '}    {'83.3kHz'}"
 parser.add_argument(
     '--signal-value',
     default='"none   "    "25kHz  "    "50kHz  "    "83.3kHz"',
@@ -222,6 +221,18 @@ parser.add_argument(
     help='The value of evaluating the --units-of expression, ignoring leading/trailing whitespace'
 )
 
+parser.add_argument(
+    '--write-tree',
+    default='matlab_tests',
+    help='Name of tree to create for exercising write functions of the API'
+)
+
+parser.add_argument(
+    '--write-shot',
+    default=100,
+    help='Shot number of tree to create for exercising write functions of the API'
+)
+
 args = parser.parse_args()
 
 
@@ -269,9 +280,8 @@ def build_write_tree(tree, shot):
     t.write()
     t.close()
 
-write_tree = 'write'
-write_shot = 123
-build_write_tree(write_tree, write_shot)
+
+build_write_tree(args.write_tree, args.write_shot)
 
 
 all_tests_passed = True
@@ -446,7 +456,7 @@ matlab_test(f'''
             
 testid = 'MATLAB-write-various';         
 
-mdsopen('{write_tree}', {write_shot});
+mdsopen('{args.write_tree}', {args.write_shot});
 mdsput('A_TEXT', ' "string_a" ');
 mdsput('B_NUM', '22');
 mdsput('C_SIGNAL', 'build_signal([10,-10,5,-5,0],[10.2,-10.2,5.4,-5.4,0.0], [0 .. 4])');
@@ -457,7 +467,7 @@ mdsput('.-.SUBTREE_2:F_NUM', '66');
 mdsput('\TAG_G', '77');
 mdsclose();
          
-mdsopen('{write_tree}', {write_shot});
+mdsopen('{args.write_tree}', {args.write_shot});
 disp(mdsvalue('A_TEXT'));
 disp(mdsvalue('B_NUM'));
 disp(transpose(mdsvalue('DATA(C_SIGNAL)')));
