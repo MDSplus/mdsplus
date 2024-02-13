@@ -23,80 +23,90 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
 import sys
 import os
 
+import setuptools
+from setuptools import setup
+
 
 def setupkw():
+    from runpy import run_path
     try:
-        version = ()
         mod_dir = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(mod_dir, '_version.py')) as f:
-            exec(f.read())
+        ver_data = run_path(os.path.join(mod_dir, "_version.py"))
+        version = ver_data["version"]
         release = "%d.%d.%d" % version
+        release_tag = ver_data["release_tag"]
+
     except Exception:
-        release = '0.0.0'
-        release_tag = 'Unknown'
+        release = "0.0.0"
+        release_tag = "Unknown"
     pth_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return dict(
-        name='MDSplus',
-        extra_path=('mdsplus', pth_dir),
+        name="MDSplus",
+        extra_path=("mdsplus", pth_dir),
         version=release,
-        description='MDSplus Python Objects - '+release_tag,
+        description="MDSplus Python Objects - " + release_tag,
         long_description=(
             "This module provides all of the functionality of MDSplus TDI natively in python.\n"
             "All of the MDSplus data types such as signal are represented as python classes.\n"
         ),
-        author='MDSplus Development Team',
-        author_email='twf@www.mdsplus.org',
-        url='http://www.mdsplus.org/',
-        license='MIT',
+        author="MDSplus Development Team",
+        author_email="mdsplusadmin@psfc.mit.edu",
+        url="http://www.mdsplus.org/",
+        license="MIT",
         classifiers=[
-            'Programming Language :: Python',
-            'Intended Audience :: Science/Research',
-            'Environment :: Console',
-            'Topic :: Scientific/Engineering',
+            "Programming Language :: Python",
+            "Intended Audience :: Science/Research",
+            "Environment :: Console",
+            "Topic :: Scientific/Engineering",
         ],
-        keywords=['physics', 'mdsplus', ],
+        keywords=[
+            "physics",
+            "mdsplus",
+        ],
     )
 
 
-def use_distutils():
-    from distutils.core import setup
-    from distutils.cmd import Command
+if setuptools.__version__ < "60.0.0":
+    # assume that setuptools can't directly use pyproject.toml
+    # for the [project] section, so need the old setup.py
 
-    class TestCommand(Command):
-        user_options = []
+    print(sys.argv)
+    if "develop" in sys.argv:
+        # old setuptools can't have both --editable and --user
+        # but it defaults to user anyway!
+        if "--user" in sys.argv:
+            import site
 
-        def initialize_options(self):
-            """nothing to do."""
+            print("Removing --user")
+            argv = sys.argv
+            argv.remove("--user")
+            argv.append("--install-dir")
+            argv.append(site.getusersitepackages())
+            sys.argv = argv
 
-        def finalize_options(self):
-            """nothing to do."""
-
-        def run(self):
-            import subprocess
-            raise SystemExit(
-                subprocess.call([sys.executable, '-m', 'tests.__init__']))
-
-    setup(cmdclass={'test': TestCommand}, **setupkw())
-
-
-def use_setuptools():
-    from setuptools import setup
     setup(
-        include_package_data=True,
-        test_suite='tests.test_all',
+        test_suite="tests.test_all",
         zip_safe=False,
+        packages=["MDSplus",
+                  "MDSplus.wsgi",
+                  "MDSplus.widgets",
+                  "MDSplus.tests"],
+        package_dir={"MDSplus": ".",
+                     "MDSplus.widgets":"widgets",
+                     "MDSplus.wsgi":"wsgi",
+                     "MDSplus.tests":"tests"},
+        package_data={"MDSplus.wsgi":[
+            'html/*',
+            'conf/*',
+            'js/*',
+            '*.tbl']},
         **setupkw()
     )
 
-
-if __name__ == '__main__':
-    if 'pip-egg-info' in sys.argv:
-        print("When using pip to install MDSplus use 'pip install -e <dir>'")
-        sys.exit(1)
-    try:
-        use_setuptools()
-    except (ImportError, RuntimeError):
-        use_distutils()
+else:
+    # setuptools can use pyproject.toml
+    setup()

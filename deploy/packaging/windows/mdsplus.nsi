@@ -412,7 +412,7 @@ SectionGroup /e "!APIs" apis
   Section "!MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /x modpython.py /x setup.py python/MDSplus/*.py
+	File /x modpython.py /x setup.py python/MDSplus/*.py python/MDSplus/pyproject.toml
 	File /workspace/releasebld/64/python/MDSplus/_version.py
   SectionEnd ; python_cp
   Section "tests" python_tst
