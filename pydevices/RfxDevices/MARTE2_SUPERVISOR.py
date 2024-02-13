@@ -10,7 +10,7 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 
 class MARTE2_SUPERVISOR(Device):
-    """National Instrument 6683 device. Generation of clock and triggers and recording of events """
+    """MARTe2 Supervisor """
     parts = [{'path': ':NAME', 'type': 'text'}, {'path': ':COMMENT',
                                                  'type': 'text'}, {'path': ':NUM_STATES', 'type': 'numeric'}]
     for stateIdx in range(10):
@@ -58,8 +58,7 @@ class MARTE2_SUPERVISOR(Device):
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
-
-
+    parts.append({'path': ':INTERFACES', 'type': 'numeric'})
     parts.append({'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
                   'options': ('no_write_shot',)})
@@ -334,6 +333,67 @@ class MARTE2_SUPERVISOR(Device):
         typeDecl += '}\n'
         return typeDecl
 
+
+    def buildInterfaces(self, confText):
+        try:
+            interfaces = self.interfaces.getData()
+        except:
+            return confText
+        interfaceNodes = []
+        if isinstance(interfaces, VECTOR):
+            for i in range(interfaces.getNumDescs()):
+                currInterfaceNode = interfaces.getDescAt(i)
+                interfaceNodes.append(currInterfaceNode)
+        else:
+            for interfaceName1 in interfaces.data():
+                if isinstance(interfaceName1, str):
+                    interfaceName = interfaceName1
+                else:
+                    interfaceName = str(interfaceName1, 'utf_8')
+                currInterfaceNode = t.getNode(interfaceName)
+                interfaceNodes.append(currInterfaceNode)
+
+        for interfaceNode in interfaceNodes:
+            confText = self.buildInterface(confText, interfaceNode)
+        return confText
+
+
+    def buildInterface(self, confText, interfaceRoot):
+        print(interfaceRoot)
+        intName =  interfaceRoot.getNodeName()
+        intClass = interfaceRoot.gam_class.data()
+        confText += '+'+intName+' = {\n'
+        confText += '    Class = '+intClass+'\n'
+        confText = self.buildInterfaceParameters(confText, 1, interfaceRoot.getNode('parameters'))
+        confText += '}\n'
+        return confText
+
+
+    def buildInterfaceParameters(self, confText, tabCount, parRoot):
+        for parNode in parRoot.getChildren():
+            try:
+                parName = parNode.getNode('name').data()
+            except: 
+                continue
+            for currT in range(tabCount):
+                confText += '    '
+            if len(parNode.getNode('value').getChildren()) > 0:
+                confText += parName + ' =  {\n'
+                confText = self.buildInterfaceParameters(confText, tabCount + 1, parNode.getNode('value'))
+                for currT in range(tabCount):
+                    confText += '    '
+                confText += '}\n'
+            else:
+                parValue = parNode.getNode('value').data()
+                if isinstance(parValue, str):
+                    confText += parName + ' = '+str(parValue)+'\n'
+                elif isinstance(parValue, np.ndarray):
+                    confText += parName + ' = '+str(parValue).replace('[', '{').replace(']', '}')+'\n'
+                else:
+                   confText += parName + ' = '+str(parValue)+'\n'
+        return confText
+                   
+
     def buildConfiguration(self):
         print('START BUILD')
         error, info, threadMap, typeDicts = self.getInfo()
@@ -368,6 +428,8 @@ class MARTE2_SUPERVISOR(Device):
         confText += '    MaxNumberOfThreads = 8\n'
         confText += '    MinNumberOfThreads = 1\n'
         confText += '}    \n'
+
+        confText = self.buildInterfaces(confText)
 
         confText += ' +StateMachine = {\n'
         confText += '    Class = StateMachine\n'
