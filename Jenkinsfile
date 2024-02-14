@@ -175,6 +175,7 @@ pipeline {
                                 sh """
                                     set +x
                                     . \$MDSPLUS_DIR/setup.sh
+                                    export PYTHONPATH=\$MDSPLUS_DIR/python/
                                     set -x
                                     ./idl/testing/run_tests.py
                                 """
