@@ -8,6 +8,7 @@ import os
 import subprocess
 import argparse
 import string
+import tempfile
 
 # The default values are intended to be used from within the PSFC network
 # If you want to run these tests on your own infrastructure, provide the
@@ -239,28 +240,9 @@ args = parser.parse_args()
 #---------------------------------------------------------------------------
 # Each write test should start with a clean tree.
 # Write tests use a local tree, but eventually will be upgraded to use mdsip.
-# TODO: The default_tree_path is temporary; will change when switch to mdsip.
 #
 def build_write_tree(tree, shot):
-    import os
     import MDSplus as mds
-
-    test_dir = os.getenv('MDSPLUS_DIR') + '/matlab/testing/'
-    os.environ['default_tree_path'] = test_dir  # required to write tree
-
-    tree_name = tree + '_' + str(shot)
-    tree_file = test_dir + tree_name
-
-    tc = tree_file + '.characteristics'
-    td = tree_file + '.datafile'
-    tt = tree_file + '.tree' 
-
-    if os.path.exists(tc):
-        os.remove(tc)
-    if os.path.exists(td):
-        os.remove(td)
-    if os.path.exists(tt):
-        os.remove(tt)
 
     t = mds.Tree(tree, shot, 'new')
 
@@ -281,8 +263,12 @@ def build_write_tree(tree, shot):
     t.close()
 
 
-build_write_tree(args.write_tree, args.write_shot)
+# Temporary directory for transient test scripts and artifacts
+TEST_DIR = tempfile.TemporaryDirectory(prefix='test_matlab_', dir='/tmp')
+os.environ['default_tree_path'] = TEST_DIR.name
+os.environ['MATLABPATH'] = os.getenv('MATLABPATH') + ':' + TEST_DIR.name
 
+build_write_tree(args.write_tree, args.write_shot)
 
 all_tests_passed = True
 def matlab_test(code, expected_output):
@@ -297,7 +283,8 @@ def matlab_test(code, expected_output):
     # Write the test to a MATLAB script file, test.m
 
     code = '% placeholder comment\n' + code + '\nexit\n'
-    open('test.m', 'wt').write(code)
+    test_file = TEST_DIR.name + '/test.m'
+    open(test_file, 'wt').write(code)
 
     expected_lines = [ line.strip() for line in expected_output.splitlines() ]
     expected_lines = list(filter(None, expected_lines))
