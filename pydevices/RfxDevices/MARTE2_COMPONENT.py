@@ -26,7 +26,7 @@
 import MDSplus
 import RfxDevices
 import numpy as np
-
+import copy
 
 class MARTE2_COMPONENT(Device):
     """MARTE2 components superclass"""
@@ -394,7 +394,7 @@ class MARTE2_COMPONENT(Device):
                     currField['Type'] = fieldNode.getNode('TYPE').data()
                 except:
                     raise Exception("Missing required type definition for "+fieldNode.getPath())
-            numDims, numEls = self.parseDimension(fieldNide.getNode('DIMENSIONS').data())
+            numDims, numEls = self.parseDimension(fieldNode.getNode('DIMENSIONS').data())
             currField['NumberOfElements'] = numEls
             retType.append(currField)
         
@@ -485,7 +485,7 @@ class MARTE2_COMPONENT(Device):
  # getFlattenedFields check also that if a field is non empty, then all fields must be nonempty. If all fields are empty, [] is returned
                 fieldNodes = self.getFlattenedFields(sigNode.getNode('FIELDS'))
                 fieldDicts = {}
-                fieldDicts['Inputs'] = self.getInputSignalDict(fieldNodes, threadMap, typeDicts, resampledSyncSigs, syncInputsToBeReceived,
+                fieldDicts['Inputs'] = self.getInputSignalsDict(fieldNodes, threadMap, typeDicts, resampledSyncSigs, syncInputsToBeReceived,
                                                      asyncInputsToBeReceived, treeRefs, constRefs, [], True)
                 fieldDicts['Name'] = self.getSignalName(sigNode)
                 fieldDicts['Type'] = self.getTypeName(sigNode.getNode('FIELDS'), typesDict)
@@ -524,7 +524,7 @@ class MARTE2_COMPONENT(Device):
                 samples = sigNode.getNode(':SAMPLES').data()
             except:
                 samples = 1
-            currSig['samples'] = samples
+            currSig['Samples'] = samples
  #Parameters
             if not isFieldCheck:
                 try:
@@ -775,6 +775,12 @@ class MARTE2_COMPONENT(Device):
                         return True
         return False
 
+    # Check if any output value node is referenced by any of the inputs passed in inputs
+    def isAnyReferenced(self, outValNodes, inputNodes):
+        for outValNode in outValNodes:
+            if self.isReferenced(outValNode, inputNodes):
+                return True
+        return False
 
 
 
@@ -803,6 +809,26 @@ class MARTE2_COMPONENT(Device):
                 return True
         return False
 
+  # Check if the passed output value node is referenced another MARTe2 device in any Thread
+     def isReferencedByAnyThread(self, outValNode, threadMap):
+        thisNid = self.getNid()
+        marteNids = threadMap['DeviceInfo'].keys()
+        for marteNid in marteNids:
+            if marteNid == thisNid:
+                continue
+            inputNodes = MDSplus.TreeNode(marteNid).getNode('INPUTS').getChildren()
+            if self.isReferenced(outValNode, inputNodes):
+                return True
+            if self.isReferenced(outValNode, [MDSplus.TreeNode(marteNid).getNode('OUTPUTS:TRIGGER')])
+                return True
+        return False
+
+  # Check if any passed output value node is referenced another MARTe2 device in any Thread
+     def isAnyOutputReferencedByAnyThread(self, outValNodes, threadMap):
+        for outValNode in outValNodes:
+            if self.isReferencedByAnyThread(outValNode):
+                return True
+ 
     #get IP and Port of referenced device
     def getReferencedNetInfo(self, outValNode, threadMap):
         outValNid = outValNode.getNid()
@@ -860,6 +886,7 @@ class MARTE2_COMPONENT(Device):
                 return True
         return False
 
+    #Check if the passed output is referenced by a sychornized thread of the same supervisor
     def isReferencedBySynchronizedThreadSameSupervisor(self, outValNode, threadMap):
         thisNid = self.getNid()
         thisThreadName = threadMap['DeviceInfo'][thisNid]['ThreadName']
@@ -881,10 +908,19 @@ class MARTE2_COMPONENT(Device):
                     return True
         return False
 
- 
+    #Check if if any output is requested data storage (seg_len > 0)
+    def isAnyOutputStored(self, fieldNodes):
+        for fieldNode in fieldNodes:
+            try:
+                if fieldNode.getNode('SEG_LEN').data() > 0:
+                    return True
+            except:
+                pass
+        return False
+
 
     def getOutputSignalsDict(self, sigNodes, threadMap, typesDict, synchThreadSignals, asyncThreadSignals, outputsToBeSent, 
-        signalsToBeStored, isFieldCheck = False):
+        signalsToBeStored, outputsToBeUnpacked, isFieldCheck = False):
         sigDicts = []
         for sigNode in sigNodes:
             currSig = {}
@@ -920,14 +956,15 @@ class MARTE2_COMPONENT(Device):
                 except:
                     samples = 1
             else: #structured output. Not occurring if isCheckField == True
-                fieldNodes = self.getFlattenedFields(sigNode.getNode('FIELDS'))
-                self.getOutputSignalsDict(fieldNodes, threadMap, typesDict, synchThreadSignals, asyncThreadSignals, outputsToBeSent, 
-                    signalsToBeStored, isFieldCheck = True)
-
                 currType = self.getTypeName(sigNode.getNode('FIELDS'), typesDict)
                 numDims = 0
                 numEls = 1
                 samples = 1
+                fieldNodes = self.getFlattenedFields(sigNode.getNode('FIELDS'))
+                if self.isAnyOutputReferencedByAnyThread(fieldNodes, threadMap) or self.isAnyOutputStored(fieldNodes):
+                    unpackedOutputs = self.getOutputSignalsDict(fieldNodes, threadMap, typesDict, synchThreadSignals, asyncThreadSignals, outputsToBeSent, 
+                        signalsToBeStored, [], isFieldCheck = True)
+                    outputsToBeUnpacked.append({'Input':{'Name': currName, 'Type': currType}, 'Outputs': unpackedOutputs})
 
             currSig['Name'] = currName
             currSig['Type'] = currType
@@ -977,10 +1014,213 @@ class MARTE2_COMPONENT(Device):
 
         return sigDicts
     
-    #Retuurns the dict definition of theIOGAM carrying out signal unpacking
-    def handleOutputUnpack(self, outputsToBeExpanded):
+    #Returns the dict definition of theIOGAM carrying out signal unpacking
+    def handleOutputUnpack(self, outputsToBeUnpacked):
         retGam = {}
         retGam['Class'] = 'IOGAM'
+        inputs = []
+        outputs = []
+        for currUnpacked in outputsToBeUnpacked:
+            inputs.append{'Name': currUnpacked['Input'][Name],'Type': currUnpacked['Input']['Type'], 
+                'dataSource': self.getMarteDeviceName(currSig)+'_Output_DDB'}
+            outputs += currUnpacked['Outputs']
+        retGam['Inputs'] = inputs
+        for currOuptut in outputs:
+            currOutput['DataSource'] = self.getMarteDeviceName(currSig)+'_Expanded_Output_DDB'
+        retGam['Outputs'] = outputs
+
+        return retGam
+
+    #Returns the dict definition of theIOGAM carrying out synchronized signals
+    def handleSynchronoutOutputs(self, syncSignals):
+        retGam = {}
+        retGam['Class'] = 'IOGAM'
+        inputs = []
+        outputs = []
+        for syncSignal in syncSignals:
+            inputs.append(copy.deepcopy(syncSignal))
+            currOuptut = copy.deepcopy(syncSignal)
+            currOutput['DataSource'] =  self.getMarteDeviceName(syncSignal)+'_Output_Sync'
+            outputs.append(currOutput)
+        retGam['Inputs'] = inputs
+        retGam['Outputs'] = outputs
+
+        return retGam
+ 
+    #Returns the dict definition of theIOGAM carrying out synchronized signals
+    def handleAynchronoutOutputs(self, asyncSignals):
+        retGam = {}
+        retGam['Class'] = 'IOGAM'
+        inputs = []
+        outputs = []
+        for asyncSignal in asyncSignals:
+            inputs.append(copy.deepcopy(asyncSignal))
+            currOuptut = copy.deepcopy(asyncSignal)
+            currOutput['DataSource'] =  self.getMarteDeviceName(ssyncSignal)+'_Output_Async'
+            outputs.append(currOutput)
+        retGam['Inputs'] = inputs
+        retGam['Outputs'] = outputs
+
+        return retGam
+
+    #Return the definitions of MDSWriter DataSource and ConversionGAM GAM for handling the stored outputs
+    def handleOutputsStorage(self, signalsToBeStored, threadMap):
+        retDataSource = {}
+        retDataSource['Class'] = 'MDSWriter'
+        parameters = {}
+        try:
+            cpuMask = setf.getNode('OUTPUTS:CPU_MASK').data()
+            parameters['CPUMask'] = cpuMask
+        except:
+            pass
+        parameters['PulseNumber'] = self.getTree().shot
+        parameters['Trreename'] = self.getTree().name
+        try:
+            trigger = self.getNode('OUTPUTS:TRIGGER').getData()
+        except:
+            trigger = None
+        if trigger != None:
+            parameters['StoreOnTrigger'] = 1
+        else:
+            parameters['StoreOnTrigger'] = 0
+        retDataSource['Parameters'] = parameters
+
+        signals = []
+        if trigger != None:
+            signals.append({'name': 'Trigger', 'Type': 'uint8'})
+        signals.append({
+            'name': 'Time', 
+            'Type': self.timerType, 
+            'NodeName': self.getNode('OUTPUTS:OUT_TIME').getFullPath(),
+            'AutomaticSegmentation': 0,
+            'TimeSignal': 1 if trigger != None else 0
+            })
+        for sigNode in signalsToBeStored:
+            sigDef = {}
+            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Period'] = self.timerPeriod
+            sigDef['MakeSegmentAfterWrite'] = sigNode.getNode('SEG_LEN').data()
+            sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
+            signals.append(sigDef)
+        retDataSource['Signals'] = signals
+
+        retGam = {}
+        if trigger == None:
+            retGam['Class'] = 'IOGAM'
+        else:
+            retGam['Class'] = 'ConversionGAM'
+        inputs = []
+        if trigger != None:
+            currInput={'Name': self.getSignalName(trigger), 'Type':  self.getReferencedType(trigger)}
+            if self.hostedInSameThread(trigger, threadMap):
+                currInput['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
+            elif self.hostedInSameSupervisor(trigger, threadMap):
+                if self.hostedInSynchronizingThread(trigger, threadMap):
+                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_Output_Synch'
+                else:
+                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_Output_Asynch'
+            else: #Hosted in another supervisor
+                if self.hostedInSynchronizingThread(trigger, threadMap):
+                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_SYNC_RTN_IN'
+                else:
+                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_ASYNC_RTN_IN'
+            inputs.append(currInput)
+
+        inputs.append({'Name': 'Time', 'Type': self.timerType, 'DataSource': self.TimerDDB})
+        for sigNode in signalsToBeStored:
+            sigDef = {}
+            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Type'] = sigNode.getNode('Type').data()
+            sigDef['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
+            numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
+            sigDef['NumberOfDimensions'] = numDims
+            sigDef['NumberOfElements'] = numEls
+            try:
+                samples = sigNode.getNode('Samples').data()
+            except:
+                samples = 1
+            if samples > 1:
+                sigDef['Samples'] = samples
+            inputs.append(sigDef)
+        retGam['Inputs'] = inputs
+
+        outputs = []
+        if trigger != None:
+            outputs.append({
+                'Name':self.getSignalName(trigger),
+                'Type':'uint8', 
+                'DataSource':self.getMarteDeviceName(self)+'_TreeOut'})
+        outputs.append({'Name': 'Time', 'Type': self.timerType, 'DataSource': self.getMarteDeviceName(self)+'_TreeOut'})
+        for sigNode in signalsToBeStored:
+            sigDef = {}
+            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Type'] = sigNode.getNode('Type').data()
+            sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
+            numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
+            sigDef['NumberOfDimensions'] = numDims
+            sigDef['NumberOfElements'] = numEls
+            try:
+                samples = sigNode.getNode('Samples').data()
+            except:
+                samples = 1
+            if samples > 1:
+                sigDef['Samples'] = samples
+            outputs.append(sigDef)
+        retGam['Outputs'] = outputs
+
+        return retDataSource, retGam
+
+
+    #Return the definitions of RTNOut DataSource and IOGAM for handling data sending to other supervisors
+    def handleOuptutsToBeSent(self, outputsToBeSent):
+        retDataSource = {}
+        retDataSource['Class'] = 'RTNOut'
+        signals = []
+        for currOutput in outputsToBeSent:
+            signals.append([
+                'Name': currOutput['Name'],
+                'Type': currOutput['Type'],
+                'NumberOfDimensions': currOutput['NumberOfDimensions'],
+                'NumberOfElements': currOutput['NumberOfElements'],
+                'Samples': currOutput['Samples'],
+                'Ip': currOutput['Ip'],
+                'Port': currOutput['Port'],
+                'Id': currOutput['Nid'],
+            ])
+        retDataSource['Signals'] = signals
+
+        retGam = {}
+        retGam['Class'] = 'IOGAM'
+        inputs = []
+        for currOutput in outputsToBeSent:
+            inputs.append([
+                'Name': currOutput['Name'],
+                'Type': currOutput['Type'],
+                'NumberOfDimensions': currOutput['NumberOfDimensions'],
+                'NumberOfElements': currOutput['NumberOfElements'],
+                'Samples': currOutput['Samples'],
+                'DataSource': currOutput['DataSource'],
+            ])
+        retGam['Inputs'] = inputs
+        outputs = []
+        for currOutput in outputsToBeSent:
+            outputs.append([
+                'Name': currOutput['Name'],
+                'Type': currOutput['Type'],
+                'NumberOfDimensions': currOutput['NumberOfDimensions'],
+                'NumberOfElements': currOutput['NumberOfElements'],
+                'Samples': currOutput['Samples'],
+                'DataSource': self.getMarteDeviceName(self)+'_RTN_OUT'
+            ])
+        retGam['Outputs'] = outputs
+
+        return retDataSource, retGam
+
+
+ ###########Overall Generation
+
+        
+        
 
 
 
