@@ -3,7 +3,7 @@ from MDSplus import Data
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('EPICSInterface::EPICSCAClient', MC.MARTE2_COMPONENT.MODE_INTERFACE)
+@MC.BUILDER('EPICS::EPICSCAClient', MC.MARTE2_COMPONENT.MODE_INTERFACE)
 class MARTE2_EPICSCA(MC.MARTE2_COMPONENT):
     parameters = [
         {'name':'+PV1', 'type':'structure', 'value': [
