@@ -212,9 +212,10 @@ class _Connection:
         for i, arg in enumerate(args):
             self._send_arg(arg, i+1, num)
         retSerialized = self._get_answer(timeout)
-        if isinstance(retSerialized, _sca.Scalar):
-            return retSerialized
-        return retSerialized.deserialize()
+        return retSerialized
+#        if isinstance(retSerialized, _sca.Scalar):
+#            return retSerialized
+#        return retSerialized.deserialize()
 
 
 class Connection(object):
