@@ -1,5 +1,6 @@
 
-from MDSplus import Device, Event, VECTOR, Uint8Array
+import  MDSplus
+import RfxDevices
 import subprocess
 import numpy as np
 import time
@@ -11,15 +12,25 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 class MARTE2_SUPERVISOR(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
-    parts = [{'path': ':NAME', 'type': 'text'}, {'path': ':COMMENT',
-                                                 'type': 'text'}, {'path': ':NUM_STATES', 'type': 'numeric'}]
-    for stateIdx in range(10):
+    parts = [
+        {'path': ':NAME', 'type': 'text'}, 
+        {'path': ':COMMENT','type': 'text'}, 
+        {'path': ':IP_ADDRESS','type': 'text'}, 
+        {'path': ':NUM_STATES', 'type': 'numeric'},
+        {'path': ':INTERFACES', 'type': 'numeric'},
+        {'path': ':SUPERVISORS', 'type': 'numeric'},
+        ]
+
+    MAX_STATES = 10
+    MAX_THREADS = 10
+
+    for stateIdx in range(MAX_STATES):
         parts.append({'path': '.STATE_'+str(stateIdx+1), 'type': 'structure'})
         parts.append(
             {'path': '.STATE_'+str(stateIdx+1)+':NAME', 'type': 'text'})
         parts.append({'path': '.STATE_'+str(stateIdx+1) +
                       ':NUM_THREADS', 'type': 'numeric'})
-        for threadIdx in range(10):
+        for threadIdx in range(MAX_THREADS):
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1), 'type': 'structure'})
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
@@ -28,11 +39,19 @@ class MARTE2_SUPERVISOR(Device):
                           '.THREAD_'+str(threadIdx+1)+':CORE', 'type': 'numeric'})
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAMS', 'type': 'numeric'})
+            parts.append({'path': '.STATE_'+str(stateIdx+1) +
+                          '.THREAD_'+str(threadIdx+1)+':TIMEBASE_MOD', 'type': 'string', 'value': 'EXTERNAL'})
+            parts.append({'path': '.STATE_'+str(stateIdx+1) +
+                          '.THREAD_'+str(threadIdx+1)+':TIMEBASE_DEF', 'type': 'numeric'})
+            parts.append({'path': '.STATE_'+str(stateIdx+1) +
+                          '.THREAD_'+str(threadIdx+1)+':TIMEBASE_DIV', 'type': 'numeric'})
+            parts.append({'path': '.STATE_'+str(stateIdx+1) +
+                          '.THREAD_'+str(threadIdx+1)+':TIME_PORT', 'type': 'numeric'})
     parts.append({'path': '.TIMES', 'type': 'structure'})
-    for stateIdx in range(10):
+    for stateIdx in range(MAX_STATES):
         parts.append({'path': '.TIMES.STATE_' +
                       str(stateIdx+1), 'type': 'structure'})
-        for threadIdx in range(10):
+        for threadIdx in range(MAX_THREADS):
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1), 'type': 'structure'})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1)+'.THREAD_' +
@@ -72,29 +91,571 @@ class MARTE2_SUPERVISOR(Device):
 
     MODE_GAM = 1
     MODE_INPUT = 2
-    MODE_SYNCH_INPUT = 3
+    MODE_SYNC_INPUT = 3
     MODE_OUTPUT = 4
+    MODE_INTERFACE = 5
 
-    def getGamList(self, state, thread):
+
+   #Return the list (TreeNodes) of MARTe2 devices associated based on thread Node
+    def getThreadGamNodes(self, threadNode):
         t = self.getTree()
-        gams = getattr(self, 'state_%d_thread_%d_gams' %
-                       (state+1, thread+1)).getData()
-        gamNids = []
+        try:
+            gams = threadNode.getNode('GAMS').getData()
+        except:
+            return []
+
+        return self.convertGamNodes()
+
+    def convertGamNodes(self, gams):
+        gamNodes = []
         if isinstance(gams, VECTOR):
             for i in range(gams.getNumDescs()):
-                currGamNid = gams.getDescAt(i)
-                gamNids.append(currGamNid)
+                currGamNode = gams.getDescAt(i)
+                gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
                 if isinstance(gam1, str):
                     gam = gam1
                 else:
                     gam = str(gam1, 'utf_8')
-                currGamNid = t.getNode(gam)
-                gamNids.append(currGamNid)
-        print(gamNids)
-        return gamNids
+                currGamNode = t.getNode(gam)
+                gamNids.append(currGamNode)
+        #Check
+        for currGamNode in gamNodes:
+            if not isinstance(currGamNode, RfxDevices.MARTE2_COMPONENT):
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode(getPath()))
+            gamMode = currGamNode.getPath('MODE').data()
+            if not (gamMode == MODE_GAM or gamMode == MODE_INPUT or gamMode == MODE_SYNC_INPUT or gamMode == MODE_OUTPUT):
+                raise Exception('Declared MARTE2 device can only be GAM, Input or Output: '+ currGamNode.getPath())
 
+        return gamNodes
+
+
+
+    #Return the list (TreeNodes) of MARTe2 devices associated with a given thread based on threda and state idx
+    def getGamNodes(self, state, thread):
+        t = self.getTree()
+        try:
+            gams = getattr(self, 'state_%d_thread_%d_gams' %
+                       (state+1, thread+1)).getData()
+        except:
+            return []
+        return self.convertGamNodes(gams)
+ 
+    #return the list (TreeNodes) of declared interfaces
+     def getInterfaceNodes(self):
+        t = self.getTree()
+        try:
+            interfaces = self.getNode('INTERFACES').getData()
+        except:
+            return []
+
+        interfaceNodes = []
+        if isinstance(interfaces, VECTOR):
+            for i in range(interfaces.getNumDescs()):
+                currInterface = interfaces.getDescAt(i)
+                interfaceNodes.append(currInterface)
+        else:
+            for interf1 in interfaces.data():
+                if isinstance(interf1, str):
+                    interf = interf1
+                else:
+                    interf = str(interf1, 'utf_8')
+                currInterface = t.getNode(interf)
+                interfaceNodes.append(currInterface)
+        #Check
+        for currInterface in interfaceNodes:
+            if not isinstance(currInterface, RfxDevices.MARTE2_COMPONENT):
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currInterface(getPath()))
+            gamMode = currInterface.getPath('MODE').data()
+            if not (gamMode == MODE_INTERFACE):
+                raise Exception('Declared MARTE2 device can only be Interface: '+ currInterface.getPath())
+        return interfaceNodes
+
+   #return the list (TreeNodes) of associated MARTE2 supervisor
+     def getSupervisorNodes(self):
+        t = self.getTree()
+        try:
+            supervisors = self.getNode('SUPERVISOR').getData()
+        except:
+            return []
+
+        supervisorNodes = []
+        if isinstance(supervisors, VECTOR):
+            for i in range(supervisors.getNumDescs()):
+                currSupervisor = supervisors.getDescAt(i)
+                supervisorNodes.append(currSupervisor)
+        else:
+            for superv1 in supervisors.data():
+                if isinstance(superv1, str):
+                    superv = superv1
+                else:
+                    superv = str(superv1, 'utf_8')
+                currSupervisor = t.getNode(superv)
+                supervisorNodes.append(currSupervisor)
+        #Check
+        for currSupervisor in supervisorNodes:
+            if not isinstance(currSupervisor, RfxDevices.MARTE2_SUPERVISOR):
+                raise Exception('Declared node is not a MARTE2_SUPERVISOR: '+ currsupervisor(getPath()))
+        return supervisorNodes
+
+ 
+
+        #return threadMap dictionary
+        # threadMap is a Dictionary with two keys:
+        # 'DeviceInfo': defining for every MARTe2 device NID a dictionary:
+        #       'ThreadName': name of the thread it belongs to
+        #       'SupervisorNid': NID of the supervirsor hosting the device
+        #       'SupervisorIp': IP address of the superisor hosting the device
+        #       'DevicePort': Port number foir that device
+        # 'ThreadInfo': defining for every thread for this supervisor a dictionary:
+        #       'SyncThreadName': The name of the Synchronizing thread or None if this thread is not synchronized
+        #       'SyncThreadSupervisor': The NID of the MARTE2 supervisor hosting the synchronizing thread or None if not synchronized
+        #       'SyncDiv': Frequency division from synchronizing thread or None is not synchronized
+    def getThreadMap(self, stateIdx):
+        threadMap = {}
+        threadInfo = {}
+        deviceInfo = {}
+        supervisors = self.getSupervisors()
+        supervisors.append(self)
+        for supervisorNode in supervisors:
+            try: 
+                supervisorIp = supervisorNode.getNode('IP_ADDRESS').data()
+            except:
+                raise Exception('IP ADDRESS not defined foir supervisor '+ supervisorNode.getPath())
+            
+            threadNames = []
+            for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+                threadDevices = supervisorNode.getGamNodes(stateIdx, threadIdx)
+                if len(threadDevices) == 0: #if no components defined for this thread
+                    continue
+                try:
+                    threadName = self.getNode('STATE_%d_THREAD_%d_NAME').data()
+                except:
+                    raise Exception('Missing NAME for thread '+str(threadIdx)+' in state '+str(stateIdx))
+                if threadName in ThreadNames:
+                    raise Excpetion('Duplicated thread name: '+threadName)
+                threadNames.append(threadName)
+                for currDevice in threadDevices:
+                    if not isinstance(currDevice, RfxDevices.MARTE2_COMPONENT):
+                        raise Exception('Only MARTE2 devices can be declared in e thread list for supervospr '+self.getPath())
+                    try:
+                        devicePort = currDevice.getNode('PORT').data()
+                    except:
+                        devicePort = -1
+                    deviceNid = currDevice.getNid()
+                    if deviceNid in deviceInfo:
+                        raise Exception('Duplicated MARTE2 device definition: '+ currDevice.getPath())
+                    supervInfo = {
+                        'ThreadName': threadName,
+                        'SupervisorNid': supervisorNode.getNid(),
+                        'SupervisorIp': supervisorIp,
+                        'DevicePort': devicePort
+                    } 
+                    deviceInfo[deviceNid] = supervInfo
+
+        threadMap['DeviceInfo'] = deviceInfo
+            
+        for threadIdx in range(MARTE2_SUPERVFSOR.MAX_THREADS):
+            threadName = self.getNode('STATE_%d_THREAD_%d_NAME').data()
+            threadDevices = supervisorNode.getGamNodes(stateIdx, threadIdx)
+            if len(threadDevices) == 0:
+                continue
+            try:
+                timebaseDef = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+            except:
+                raise Exception('Missing Thread timebase for thread '+threadName+ ' in supervisor '+self.getPath())
+            if isinstance(timebaseDef, MDSplus.Range):
+                threadInfo[threadName] = {
+                    'SyncThreadName': None,
+                    'SyncThreadSupervisor': None,
+                    'SyncDiv': None,
+                }
+            elif isinstance(timebaseDef, MDSplus.TreeNode):
+                if(timebaseDef.getNid() == threadDevices[0].getNid()): #Thread synchronized by SyncInput
+                    if timebaseDef.getNode('MODE').data() != MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+                        raise Exception('Only SynchronizedInput devices can synchronize a thread in supervisor '+self.getPath())
+                    threadInfo[threadName] = {
+                        'SyncThreadName': None,
+                        'SyncThreadSupervisor': None,
+                        'SyncDiv': None,
+                    }
+                else:
+                    supervisorNode = timebasebaseDef.getParent().getParent().getParent()
+                    if not isinstance(supervisorNode, RfxDevices.MARTE2_SUPERVISOR):
+                        throw Exception('Wrong timebase definition for thread '+threadName+' supervisor '+sef.getPath())
+                    try:
+                        syncThreadName = timebaseDef.getParent().getNode('NAME').data()
+                    except:
+                        raise Exception('Missing Thread name in supervisor '+supervisorNode.getPath())
+                    syncThreadSupervisor = supervisorNode.getNid()
+                    try:
+                        syncDiv = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DIV', (stateIdx+1, threadIdx+1)).getData()
+                    except:
+                        raise Exception('Missing timebase div for thread '+ threadName+'  in supervisor '+supervisorNode.getPath())
+                    threadInfo[threadName] = {
+                        'SyncThreadName': syncThreadName,
+                        'SyncThreadSupervisor': syncThreadSupervisor,
+                        'SyncDiv': syncDiv,
+                    }
+            
+        threadMap['ThreadInfo'] = threadInfo
+        return threadMap
+
+    #return the type of the synchronizing time
+    def getSynchonizationTimeTypePeriod(self, timebaseDefNode):
+        try:
+            timebaseMode = timebaseDefNode.getParent().getNode('TIMEBASE_MOD').data()
+        except:
+            raise Exception('Missing Timebase Mode for supervisor '+self.getPath())
+        if timebaseMode == 'INTERNAL':
+            try:
+                frequency = timebaseDefNode.getParent().getNode('TIMEBASE_DEF').data()
+            except:
+                raise Exception('Missing frequency spec for supervisor '+self.getPath())
+            return  'uint32', 1./frequency
+        if timebaseMode == 'EXTERNAL':
+            gamNodes = self.getThreadGamNodes(timebaseDefNode.getParent())
+            if len(gamNodes) == 0:
+                raise Exception('Cannot get synchronizing device in external synchronization '+self.getPath())
+            if gamNodes[0].getNode('MODE') !=  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+               raise Exception('Cannot get synchronizing device in external synchronization '+self.getPath())
+            try:
+                retType =  gamNodes[0].getNode('OUTPUTS.TIME:TYPE').data()
+            except:
+                raise Exception('Cannot get time type in external synchronization '+self.getPath())
+            try:
+                period =  gamNodes[0].getNode('TIMEBASE').getDescAt(2).data()
+            except:
+                raise Exception('Cannot get period external synchronization '+self.getPath())
+            return retType, period
+
+        if timebaseMode == 'EXTERNAL':
+            try :
+                timebaseRef = timebaseDefNode.getData()
+            except:
+                raise Exception('Cannot get referenced timebase in derived synchronization '+self.getPath())
+            syncSupervisor = timebaseRef.getParent().getParent().getParent()
+            if not isinstance(syncSupervisor, RfxDevices.MARTE2_SUPERVISOR):
+                raise Exception('Wrongly referenced timebase in derived synchronization '+self.getPath())
+
+            return syncSupervisor.getSynchonizationTimeTypePeriod(timebaseRef)
+        
+        raise Exception('Invalid timebase mode '+ timebaseMode+ ' for 'self.getPath())
+
+
+    #return the list of GAMs and DataSurces required to handle sychronization for the specified thread
+    #returns a Dictionary with fields 'TimerDDB', 'TimerType', 'TimerPeriod', 'DataSources', 'Gams' 
+    def getSynchronizationInfo(self, stateIdx, threadIdx):
+        retInfo = {}
+        retDataSources = []
+        retGams = []
+        try:
+            timebaseMode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+        except:
+            raise Exception('Missing Timebase Mode for supervisor '+self.getPath())
+        try:
+            threadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+        except:
+            raise Exception('Missing thread name for for supervisor '+self.getPath())
+
+        if timebaseMode == 'INTERNAL':
+            try:
+                frequency = self.getNode('TIMEBASE_DEF').data()
+            except:
+                raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '.self.getPath)
+            retDataSources.append( {
+                'Name': threadName+'_'+str(self.getNid())+'_Timer',
+                'Class': 'LinuxTimer',
+                'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
+            })
+            retDataSources.append( {
+                'Name': threadName+'_'+str(self.getNid())+'_TimerDDB',
+                'Class': 'GAMDataSource'
+            })
+            retGams.append( {
+                'Name': threadName+'_'+str(self.getNid())+'_TimerIOGAM'
+                'Inputs': [{
+                    'Name': 'Counter',
+                    'Type': 'uint32',
+                    'DataSource': threadName+'_Timer'
+                },
+                {
+                    'Name': 'Time',
+                    'Type': 'uint32',
+                    'DataSource': threadName+'_Timer'
+                    'Frequency': frequency
+                }],
+                'Outputs': [{
+                    'Name': 'Counter',
+                    'Type': 'uint32',
+                    'DataSource': threadName+'_TimerDDB'
+                },
+                {
+                    'Name': 'Time',
+                    'Type': 'uint32',
+                    'DataSource': threadName+'_TimerDDB'
+                }]
+            })
+            retInfo['TimerDDB'] =  threadName+'_TimerDDB'
+            retInfo['TimerType'] = 'uint32'
+            retInfo['TimerPeriod'] = 1./frequency
+            retInfo['DataSources'] = retDataSources
+            retInfo['Gams'] = retGams
+            return retInfo
+        if timebaseMode == 'EXTERNAL':
+            syncDevices = self.getGamNodes(stateIdx, threadIdx)[0]
+            if len(syncDevices) == 0:
+                raise Exception('Cannot retrieve the synchronizing device for thread '+threadName+' supervisor '+self.getPath()) 
+            syncDevice = syncDevices[0]
+            gamMode = syncDevice.getPath('MODE').data()    
+            if gamMode != MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+                raise Exception('Only Synchronized Input can synchronize thread '+threadName+' supervisor '+self.getPath()) 
+            #Check time definition
+            try:
+                timerType = syncDevice.getNode('OUTPUTS.TIME:TYPE').data()
+            except:
+                raise Exception('Cannot retrieve time type for thread '+threadName+' supervisor '+self.getPath())
+            try:
+                timebase = syncDevice.getNode('TIMEBASE').getData()
+            except:
+                raise Exception('Cannot retrieve timebase for thread '+threadName+' supervisor '+self.getPath())
+            if not isinstance(timebase, MDSplus.Range):
+                raise Exception('Timebase must be a range descriptor for thread '+threadName+' supervisor '+self.getPath())
+            try:
+                timerPeriod = timebase.getDescAt(2).data()
+            except:
+                raise Exception('Cannot retrieve period for thread '+threadName+' supervisor '+self.getPath())
+
+            retInfo['TimerDDB'] =  syncDevice.getMarteDeviceName(syncDevice)+'_Output_DDB'
+            retInfo['TimerType'] = timerType
+            retInfo['TimerPeriod'] = timerPeriod 
+            retInfo['DataSources'] = []
+            retInfo['Gams'] = []
+            return retInfo
+
+        if timebaseMode == 'DERIVED':
+            try:
+                refTimebaseNode =  self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1))
+                refTimebaseDef = refTimebaseNode.getData()
+            except:
+                raise Exception('Cannot retrieve thread timebase for thread '+threadName+' supervisor '+self.getPath())
+            if not isinstance(refTimebaseDef, MDSplus.TreeNode):
+                raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
+            if not isinstance(refTimebaseDef.getParent().getParent().getParent(), RfxDevices.MARTE2_SUPERVISOR):
+                raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
+            refSupervisor = refTimebaseDef.getParent().getParent().getParent()
+            try:
+                syncDiv = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DIV', (stateIdx+1, threadIdx+1))
+            except:
+                raise Exception('Invalid timebase div for thread '+threadName+' supervisor '+self.getPath())
+
+            try:
+                refThreadName = refTimebaseDef.getParent().getNode('NAME').data()
+            except:
+                raise Exception('Cannot retrieve the name of the synchronizing thread r thread '+threadName+' supervisor '+self.getPath())
+            timerType, timerPeriod = self.getSynchonizationTimeTypePeriod(timebaseDefNode)
+            if refSupervisor.getNid() == self.getNid(): #Thread synchronized by another thread of the same supervisor
+                retDataSources.append({
+                    'Name': threadName+'_TimerDDB',
+                    'Class': 'GAMDataSource'
+                })
+                retGams.append({
+                    'Name': threadName+'_TimerGAM',
+                    'Class': 'PickSampleGAM',
+                    'Inputs': [{
+                        'Name': 'Time',
+                        'Type': timerType,
+                        'DataSource': refThreadName+'_TimerSync'
+                        'Samples': syncDiv
+                    }] 
+                    'Outputs': [{
+                        'Name': 'Time',
+                        'Type': timerType
+                        'DataSource':  threadName+'_TimerDDB'
+                     }] 
+                })
+                retInfo['TimerBBD'] = threadName+'_TimerDDB'
+                retInfo['TimerType'] = timerType
+                retInfo['TimerPeriod'] = timerPeriod / syncDiv
+                retInfo['DataSources'] = retDataSources
+                retInfo['Gams'] = retGams
+                retrun retInfo
+            else: #Synchronized on a thread from another supervisor
+                try: 
+                    port = timebaseDefNode.getParent().getNode('TIME_PORT').data()
+                except:
+                    raise Exception('Cannot get port number for derived timebase in '+self.getPath())
+                
+                retDataSources.append({
+                    'Name': threadName + '_SYNC_IN',
+                    'Class': 'RTNIn',
+                    'Id' : refTimebaseNode.getNid(),
+                    'Port': port,
+                    'IsSync': 'yes'
+                    'Signals':[{
+                        'Name': 'Time',
+                        'Type': timerType
+                    }]
+                })
+                retDataSources.append({
+                    'Name': threadName+'_TimerDDB',
+                    'Class': 'GAMDataSource'
+                })
+                retGams.append({
+                    'Name': threadName+'_TimerIOGAM',
+                    'Class': 'PickSampleGAM',
+                    'Inputs': [{
+                        'Name': 'Time',
+                        'Type': timerType,
+                        'DataSource': threadName+'_SYNC_IN'
+                        'Samples': syncDiv
+                    }] 
+                    'Outputs': [{
+                        'Name': 'Time',
+                        'Type': timerType
+                        'DataSource':  threadName+'_TimerDDB'
+                     }] 
+                })
+                retInfo['TimerBBD'] = threadName+'_TimerDDB'
+                retInfo['TimerType'] = timerType
+                retInfo['TimerPeriod'] = timerPeriod / syncDiv
+                retInfo['DataSources'] = retDataSources
+                retInfo['Gams'] = retGams
+                return retInfo
+        raise Exception('Invalid timebase mode for '+self.getpath())
+
+        #check if this timebase def node is referenced by the timebaseRefNode of another thread of another supervisor
+    def getReferencingSupervisorsInfo(self, timebaseDefNode, stateIdx):
+        retIps = []
+        retPorts = []
+        extSupervisors = self.getSupervisorNodes()
+        for extSupervisor in extSupervisors:
+            try:
+                supervisorIp = extSupervisor.getNode('IP_ADDRESS').data()
+            except:
+                raise Exception('Missing IP Address for superisor '+ extSupervisor.gatPath())
+            for threadIdx in range(MAX_THREADS):
+                if len(extSupervisor.getGamNodes(stateIdx, threadIdx)) > 0:
+                    try:
+                        extTimebaseMode = extSupervisor.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+                    except:
+                        raise Exception('Invalid timebase mode for supervisor '+ extSupervisor.getPath())
+                    if extTimebaseMode == 'DERIVED':
+                        try:
+                            extTimebaseRef =  extSupervisor.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+                        except:
+                            raise Exception('Missing external reference for drived timebase mode in '+ extSupervisor.getPath())
+                        if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
+                            try:
+                                threadPort = extSupervisor.getNode('STATE_%d_THREAD_%d_TIME_PORT', (stateIdx+1, threadIdx+1)).data()
+                            except:
+                                raise Exception('Missing port for drived timebase mode in '+ extSupervisor.getPath())
+                            retIps.append(supervisorIp)
+                            retPorts.append(threadPort)
+        return retIps, retPorts
+
+    #Convert the passed lits into a MARTe array
+    def toMarteArray(list):
+        marteArr = '{'
+        for l in list:
+            marteArr += ' '+str(l)+' '
+        marteArr += '}'
+        return marteArr
+
+    #Check if this thread is referenced by another thread of the same supervisor
+    def isReferencedByAnotherThreadSameSupervisor(self, timebaseDefNode, stateIdx):
+        for threadIdx in range(MAX_THREADS):
+            if len(self.getGamNodes(stateIdx, threadIdx)) > 0:
+                try:
+                    extTimebaseMode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+                except:
+                    raise Exception('Invalid timebase mode for supervisor '+ self.getPath())
+                if extTimebaseMode == 'DERIVED':
+                    try:
+                        extTimebaseRef =  self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+                    except:
+                        raise Exception('Missing external reference for drived timebase mode in '+self.getPath())
+                    if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
+                        return True
+        return False
+
+ 
+
+    #return DataSource and Gam Dict lists (possibly empty) to be added after synchornization has ben establisher
+    #before any device of the thread if INTERNAL or DERIVED or after the first SyncInput device for EXTERNAL
+    def getPostSynchronizationInfo(self, stateIdx, threadIdx, timerType, TimerDDB):
+        retGams = []
+        retDataSources = []
+        try:
+            threadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+        except:
+            raise Exception('Missing thread name for for supervisor '+self.getPath())
+        timebaseDefNode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+        if self.isReferencedByAnotherThreadSameSupervisor(timebaseDefNode, stateIdx):
+            retDataSources.append({
+                'Name': threadName+'_TimerSync',
+                'Class': 'RealTimeThreadSynchronization',
+            })
+            retGams.append({
+                'Name': threadName+'TimerSync_IOGAM',
+                'Class': 'IOGAM',
+                'Inputs': [{
+                    'Name': 'Time',
+                    'Type': timerType,
+                    'DataSource': timerDDB
+                }]
+                'Outputs': [{
+                    'Name': 'Time',
+                    'Type': timerType,
+                    'DataSource': threadName+'_TimerSync'
+                }]
+            })
+        ips, ports = self.getReferencingSupervisorsInfo(timebaseDefNode, stateIdx):
+        if len(ips) > 0:
+            retDataSources.append({
+                'Name': threadName+'_RTN_OUT',
+                'Class': 'RTNOut',
+                'Signals':[{
+                    'Name':'Time',
+                    'Type': timerType,
+                    'Ips' : self.toMarteArray(ips)
+                    'Ports': self.toMarteArray(ports) 
+                    'Id': timebaseDefNode.getNid()
+                }]
+            })
+            retGams.append({
+                'Name': threadName+'RTN_OUT_IOGAM',
+                'Class': 'IOGAM',
+                'Inputs': [{
+                    'Name': 'Time',
+                    'Type': timerType,
+                    'DataSource': timerDDB
+                }]
+                'Outputs': [{
+                    'Name': 'Time',
+                    'Type': timerType,
+                    'DataSource': threadName+'RTN_OUT'
+                }]
+            })
+        return retDataSources, retGams
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     def getInfo(self):
         try:
             error = ''
