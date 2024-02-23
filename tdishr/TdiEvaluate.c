@@ -209,7 +209,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     break;
   case CLASS_APD:
     if (list[0]->dtype == DTYPE_DICTIONARY || list[0]->dtype == DTYPE_TUPLE ||
-        list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE  || list[0]->dtype == DTYPE_DSC)
+        list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE)
     {
       status = SsINTERNAL;
     }

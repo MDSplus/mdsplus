@@ -453,12 +453,10 @@ public class Data
 		return data.getStringArray();
 	}
 
-	public int getSize() throws MdsException
+	public int getSize()
 	{
-		final Data data = executeWithContext("SIZE($1)", this);
-		if (!(data instanceof Int32))
-			throw new MdsException("Cannot get data size");
-		return data.getInt();
+		final Data data = data();
+		return data.getSize();
 	}
 
 	public int getSizeInBytes()
