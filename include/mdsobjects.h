@@ -4504,7 +4504,7 @@ namespace MDSplus
       closeAllTrees();
     }
     void setDefault(char *path);
-    Data *get(const char *expr, Data **args, int nArgs);
+    Data *get(const char *expr, Data **args, int nArgs, bool serialized = true);
     Data *get(const char *expr) { return get(expr, 0, 0); }
     void put(const char *path, char *expr, Data **args, int nArgs);
     PutMany *putMany() { return new PutMany(this); }
