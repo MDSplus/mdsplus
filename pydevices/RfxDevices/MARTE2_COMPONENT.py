@@ -1542,6 +1542,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Inputs': inputs,
             'Outputs': outputs})
 
+        return retDataSources. retGams
 
     def generateMarteConfiguration(self, threadMap, timerDDB, timerType, timerPeriod, typesDict):
         try:

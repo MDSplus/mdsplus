@@ -535,7 +535,7 @@ class MARTE2_SUPERVISOR(Device):
                 supervisorIp = extSupervisor.getNode('IP_ADDRESS').data()
             except:
                 raise Exception('Missing IP Address for superisor '+ extSupervisor.gatPath())
-            for threadIdx in range(MAX_THREADS):
+            for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
                 if len(extSupervisor.getGamNodes(stateIdx, threadIdx)) > 0:
                     try:
                         extTimebaseMode = extSupervisor.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
@@ -565,7 +565,7 @@ class MARTE2_SUPERVISOR(Device):
 
     #Check if this thread is referenced by another thread of the same supervisor
     def isReferencedByAnotherThreadSameSupervisor(self, timebaseDefNode, stateIdx):
-        for threadIdx in range(MAX_THREADS):
+        for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
             if len(self.getGamNodes(stateIdx, threadIdx)) > 0:
                 try:
                     extTimebaseMode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
@@ -639,12 +639,79 @@ class MARTE2_SUPERVISOR(Device):
                 }]
             })
         return retDataSources, retGams
-            
+
+    #return the list of DataSources and GAMs and the types dict corresponding (in a dictionary) to the given thread in the given state        
+    def getThreadInfo(self, threadMap, typesDict, stateIdx, threadIdx):
+        deviceNodes = getGamNodes(stateIdx, threadIdx)
+        if len(deviceNodes) == 0:
+            return [],[]
+        retSyncInfo = self.getSynchronizationInfo(stateIdx, threadIdx)
+        dataSources = retSyncInfo['DataSources']
+        gams = retSyncInfo['Gams']
+        if gams[0].getNode('MODE').data ==  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+            currDataSources, gurrGams = deviceNodes[0].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+                retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
+            dataSources.append(currDataSources)
+            gams.append(currGams)
+            postSyncDataSources, postSyncGams = self.getPostSynchronizationInfo(stateIdx, threadIdx, 
+                retSyncInfo['TimerType'], retSyncInfo['TimerDDB']):
+            dataSources.append(currDataSources)
+            gams.append(currGams)
+            for deviceIdx in range(1, len(deviceNodes)):
+                currDataSources, gurrGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+                    retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
+                dataSources.append(currDataSources)
+                gams.append(currGams)
+        else: #thread not synchronized by synch input device
+            postSyncDataSources, postSyncGams = self.getPostSynchronizationInfo(stateIdx, threadIdx, 
+                retSyncInfo['TimerType'], retSyncInfo['TimerDDB']):
+            dataSources.append(currDataSources)
+            gams.append(currGams)
+            for deviceIdx in range(0, len(deviceNodes)):
+                currDataSources, gurrGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+                    retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
+                dataSources.append(currDataSources)
+                gams.append(currGams)
+
+        return dataSources, gams
+
+    def getStateInfo(self, typesDict, stateIdx):
+        threadMap = self.getThreadMap(stateIdx)
+        dataSources = []
+        gams = []
+        threadGamsDics = {}
+        for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+            try:
+                currThreadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+            except:
+                raise Exception("Missing name ofr thread "+str(threadIdx+1)+'  state: '+str(stateIdx+1))
+
+            currDataSources, currGams = self.getThreadInfo(threadMap, typesDict, stateIdx, threadIdx)
+            if len(currGams) == 0:
+                continue
+            gamNames = []
+            for currGam in gams:
+                gamNames.append(currGam['Name'])
+            gams.append(currGams)
+            dataSources.append(curDataSources)
+
+        return {
+            'DataSources': dataSources,
+            'Gams': gams
+            'ThreadGams': gamNames
+        }
+
+    
 
 
 
 
 
+                retInfo['TimerBBD'] = threadName+'_TimerDDB'
+                retInfo['TimerType'] = timerType
+                retInfo['TimerPeriod'] = timerPeriod / syncDiv
+                retInfo['DataSources'] = retDataSources
+                retInfo['Gams'] = retGams
 
 
 
