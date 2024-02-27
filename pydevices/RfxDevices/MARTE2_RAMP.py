@@ -31,7 +31,7 @@ from MDSplus import Data, TreeNode, TreePath
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('MegavoltGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+@MC.BUILDER('PiecewiseLinearGAM', MC.MARTE2_COMPONENT.MODE_GAM)
 class MARTE2_RAMP(MC.MARTE2_COMPONENT):
     inputs = [
         {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
