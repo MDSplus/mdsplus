@@ -4507,7 +4507,6 @@ namespace MDSplus
     Data *get(const char *expr, Data **args, int nArgs);
     Data *get(const char *expr) { return get(expr, 0, 0); }
     void put(const char *path, char *expr, Data **args, int nArgs);
-    void put(const char *path, Data *data);
     PutMany *putMany() { return new PutMany(this); }
     GetMany *getMany() { return new GetMany(this); }
     // Get TreeNode instance for (a subset of) TreeNode functionality in thin
