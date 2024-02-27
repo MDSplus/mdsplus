@@ -3936,12 +3936,12 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
   else
     strcpy(path, inPath);
 
-  putExpr = malloc(strlen("TreePutDeserialized(") + strlen(expr) + strlen(path) + 5 +
+  putExpr = malloc(strlen("TreePut(") + strlen(expr) + strlen(path) + 5 +
                    nArgs * 2 + 2);
   if (nArgs > 0)
-    sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\',", path, expr);
+    sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
   else
-    sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\'", path, expr);
+    sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
   for (varIdx = 0; varIdx < nArgs; varIdx++)
   {
     if (varIdx < nArgs - 1)

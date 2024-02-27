@@ -1,5 +1,5 @@
 function result = javaFromMatlabStruct(value)
-  if ~isstruct(value)
+  if ~strcmp(class(value), 'struct')
     throw(MException('MDSplus:javaFromMatlabStruct', 'only struct allowed')); 
   end
 
@@ -9,36 +9,16 @@ function result = javaFromMatlabStruct(value)
         for fieldIdx = 1:length(fields)
             fieldName = fields{fieldIdx};
             fieldValue = value.(fieldName);
+            javaFromMatlab(fieldValue);
             result.setItem(MDSplus.String(fieldName), javaFromMatlab(fieldValue));
         end
-    elseif isvector(value)
-        result = MDSplus.List();
+    else
+        result = MDSplus.Apd();
         numItems = length(value);
         for itemIdx = 1:numItems
-            if isrow(value)
-                result.append(javaFromMatlabStruct(value(itemIdx)));
-            else
-                temp = MDSplus.List();
-                temp.append(javaFromMatlabStruct(value(itemIdx)));
-                result.append(temp);
-            end
+           result.setDescAt(itemIdx - 1, javaFromMatlab(value(itemIdx))); 
         end
-    elseif ismatrix(value)
-        result = MDSplus.List();
-        elemSize = size(value);
-        for rowIdx = 1:elemSize(1)
-            result.append(javaFromMatlabStruct(value(rowIdx,:)));
-        end
-    else
-        result = MDSplus.List();
-        elemSize = size(value);
-        n = ndims(value);
-        idx = cell(1,n);
-        idx(:) = {':'};
-        for currDim = 1:elemSize(end)
-            idx{end} = currDim;
-            result.append(javaFromMatlab(value(idx{:})));
-        end
+        
     end
 
 end

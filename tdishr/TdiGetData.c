@@ -224,7 +224,7 @@ static int _get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
   {
     return TdiRECURSIVE;
   }
-  while (pin && (dtype = pin->dtype) == DTYPE_DSC && pin->class != CLASS_APD)  //Added check to avoid navigating into APDs
+  while (pin && (dtype = pin->dtype) == DTYPE_DSC)
   {
     pin = (mdsdsc_r_t *)pin->pointer;
     TDI_GETDATA_REC++;
