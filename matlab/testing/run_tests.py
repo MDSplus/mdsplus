@@ -96,7 +96,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--signal-value',
-    default='"none   "    "25kHz  "    "50kHz  "    "83.3kHz"',
+    default="{'none   '}    {'25kHz  '}    {'50kHz  '}    {'83.3kHz'}",
     help='The value of evaluating the --signal expression, ignoring leading/trailing whitespace'
 )
 
