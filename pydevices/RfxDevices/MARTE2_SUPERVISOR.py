@@ -10,13 +10,13 @@ import os
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-class MARTE2_SUPERVISOR(Device):
+class MARTE2_SUPERVISOR(MDSplus.Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
     parts = [
         {'path': ':NAME', 'type': 'text'}, 
         {'path': ':COMMENT','type': 'text'}, 
-        {'path': ':IP_ADDRESS','type': 'text'}, 
-        {'path': ':NUM_STATES', 'type': 'numeric'},
+        {'path': ':IP_ADDRESS','type': 'text', 'value':'localhost'}, 
+        {'path': ':NUM_STATES', 'type': 'numeric', 'value': 1},
         {'path': ':INTERFACES', 'type': 'numeric'},
         {'path': ':SUPERVISORS', 'type': 'numeric'},
         ]
@@ -29,7 +29,7 @@ class MARTE2_SUPERVISOR(Device):
         parts.append(
             {'path': '.STATE_'+str(stateIdx+1)+':NAME', 'type': 'text'})
         parts.append({'path': '.STATE_'+str(stateIdx+1) +
-                      ':NUM_THREADS', 'type': 'numeric'})
+                      ':NUM_THREADS', 'type': 'numeric', 'value': 1})
         for threadIdx in range(MAX_THREADS):
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1), 'type': 'structure'})
@@ -40,7 +40,7 @@ class MARTE2_SUPERVISOR(Device):
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAMS', 'type': 'numeric'})
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
-                          '.THREAD_'+str(threadIdx+1)+':TIMEBASE_MOD', 'type': 'string', 'value': 'EXTERNAL'})
+                          '.THREAD_'+str(threadIdx+1)+':TIMEBASE_MOD', 'type': 'text', 'value': 'EXTERNAL'})
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':TIMEBASE_DEF', 'type': 'numeric'})
             parts.append({'path': '.STATE_'+str(stateIdx+1) +
@@ -108,7 +108,7 @@ class MARTE2_SUPERVISOR(Device):
 
     def convertGamNodes(self, gams):
         gamNodes = []
-        if isinstance(gams, VECTOR):
+        if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
                 gamNodes.append(currGamNode)
@@ -119,13 +119,14 @@ class MARTE2_SUPERVISOR(Device):
                 else:
                     gam = str(gam1, 'utf_8')
                 currGamNode = t.getNode(gam)
-                gamNids.append(currGamNode)
+                gamNodes.append(currGamNode)
         #Check
         for currGamNode in gamNodes:
             if not isinstance(currGamNode, RfxDevices.MARTE2_COMPONENT):
                 raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode(getPath()))
-            gamMode = currGamNode.getPath('MODE').data()
-            if not (gamMode == MODE_GAM or gamMode == MODE_INPUT or gamMode == MODE_SYNC_INPUT or gamMode == MODE_OUTPUT):
+            gamMode = currGamNode.getNode('MODE').data()
+            if not (gamMode == MARTE2_SUPERVISOR.MODE_GAM or gamMode ==MARTE2_SUPERVISOR. MODE_INPUT 
+                or gamMode == MARTE2_SUPERVISOR.MODE_SYNC_INPUT or gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT):
                 raise Exception('Declared MARTE2 device can only be GAM, Input or Output: '+ currGamNode.getPath())
 
         return gamNodes
@@ -143,7 +144,7 @@ class MARTE2_SUPERVISOR(Device):
         return self.convertGamNodes(gams)
  
     #return the list (TreeNodes) of declared interfaces
-     def getInterfaceNodes(self):
+    def getInterfaceNodes(self):
         t = self.getTree()
         try:
             interfaces = self.getNode('INTERFACES').getData()
@@ -151,7 +152,7 @@ class MARTE2_SUPERVISOR(Device):
             return []
 
         interfaceNodes = []
-        if isinstance(interfaces, VECTOR):
+        if isinstance(interfaces, MDSplus.VECTOR):
             for i in range(interfaces.getNumDescs()):
                 currInterface = interfaces.getDescAt(i)
                 interfaceNodes.append(currInterface)
@@ -168,12 +169,12 @@ class MARTE2_SUPERVISOR(Device):
             if not isinstance(currInterface, RfxDevices.MARTE2_COMPONENT):
                 raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currInterface(getPath()))
             gamMode = currInterface.getPath('MODE').data()
-            if not (gamMode == MODE_INTERFACE):
+            if not (gamMode == MARTE2_SUPERVISOR.MODE_INTERFACE):
                 raise Exception('Declared MARTE2 device can only be Interface: '+ currInterface.getPath())
         return interfaceNodes
 
    #return the list (TreeNodes) of associated MARTE2 supervisor
-     def getSupervisorNodes(self):
+    def getSupervisorNodes(self):
         t = self.getTree()
         try:
             supervisors = self.getNode('SUPERVISOR').getData()
@@ -181,7 +182,7 @@ class MARTE2_SUPERVISOR(Device):
             return []
 
         supervisorNodes = []
-        if isinstance(supervisors, VECTOR):
+        if isinstance(supervisors, MDSplus.VECTOR):
             for i in range(supervisors.getNumDescs()):
                 currSupervisor = supervisors.getDescAt(i)
                 supervisorNodes.append(currSupervisor)
@@ -216,7 +217,7 @@ class MARTE2_SUPERVISOR(Device):
         threadMap = {}
         threadInfo = {}
         deviceInfo = {}
-        supervisors = self.getSupervisors()
+        supervisors = self.getSupervisorNodes()
         supervisors.append(self)
         for supervisorNode in supervisors:
             try: 
@@ -225,16 +226,20 @@ class MARTE2_SUPERVISOR(Device):
                 raise Exception('IP ADDRESS not defined foir supervisor '+ supervisorNode.getPath())
             
             threadNames = []
-            for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+            try:
+                numThreads = supervisorNode.getNode('STATE_'+str(stateIdx+1)+':NUM_THREADS')
+            except:
+                raise Exception("Missing NUM THREADS definition for supervisor "+supervisorNode.getPath()+'  STATE '+str(stateIdx+1))
+            for threadIdx in range(numThreads):
                 threadDevices = supervisorNode.getGamNodes(stateIdx, threadIdx)
                 if len(threadDevices) == 0: #if no components defined for this thread
                     continue
                 try:
-                    threadName = self.getNode('STATE_%d_THREAD_%d_NAME').data()
+                    threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
                 except:
                     raise Exception('Missing NAME for thread '+str(threadIdx)+' in state '+str(stateIdx))
-                if threadName in ThreadNames:
-                    raise Excpetion('Duplicated thread name: '+threadName)
+                if threadName in threadNames:
+                    raise Exception('Duplicated thread name: '+threadName)
                 threadNames.append(threadName)
                 for currDevice in threadDevices:
                     if not isinstance(currDevice, RfxDevices.MARTE2_COMPONENT):
@@ -256,50 +261,57 @@ class MARTE2_SUPERVISOR(Device):
 
         threadMap['DeviceInfo'] = deviceInfo
             
-        for threadIdx in range(MARTE2_SUPERVFSOR.MAX_THREADS):
-            threadName = self.getNode('STATE_%d_THREAD_%d_NAME').data()
+        for threadIdx in range(numThreads):
+            threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx + 1, threadIdx + 1)).data()
             threadDevices = supervisorNode.getGamNodes(stateIdx, threadIdx)
             if len(threadDevices) == 0:
                 continue
             try:
-                timebaseDef = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+                timebaseMode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
             except:
-                raise Exception('Missing Thread timebase for thread '+threadName+ ' in supervisor '+self.getPath())
-            if isinstance(timebaseDef, MDSplus.Range):
+                raise Exception('Missing Thread timebase mode for thread '+threadName+ ' in supervisor '+self.getPath())
+            if timebaseMode == 'INTERNAL':
                 threadInfo[threadName] = {
                     'SyncThreadName': None,
                     'SyncThreadSupervisor': None,
                     'SyncDiv': None,
                 }
-            elif isinstance(timebaseDef, MDSplus.TreeNode):
-                if(timebaseDef.getNid() == threadDevices[0].getNid()): #Thread synchronized by SyncInput
-                    if timebaseDef.getNode('MODE').data() != MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
-                        raise Exception('Only SynchronizedInput devices can synchronize a thread in supervisor '+self.getPath())
+            elif timebaseMode == 'EXTERNAL':
                     threadInfo[threadName] = {
                         'SyncThreadName': None,
                         'SyncThreadSupervisor': None,
                         'SyncDiv': None,
                     }
-                else:
-                    supervisorNode = timebasebaseDef.getParent().getParent().getParent()
-                    if not isinstance(supervisorNode, RfxDevices.MARTE2_SUPERVISOR):
-                        throw Exception('Wrong timebase definition for thread '+threadName+' supervisor '+sef.getPath())
-                    try:
-                        syncThreadName = timebaseDef.getParent().getNode('NAME').data()
-                    except:
-                        raise Exception('Missing Thread name in supervisor '+supervisorNode.getPath())
-                    syncThreadSupervisor = supervisorNode.getNid()
-                    try:
-                        syncDiv = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DIV', (stateIdx+1, threadIdx+1)).getData()
-                    except:
-                        raise Exception('Missing timebase div for thread '+ threadName+'  in supervisor '+supervisorNode.getPath())
-                    threadInfo[threadName] = {
-                        'SyncThreadName': syncThreadName,
-                        'SyncThreadSupervisor': syncThreadSupervisor,
-                        'SyncDiv': syncDiv,
-                    }
-            
+            else: #derived
+                try:
+                    timebaseDef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).getData()
+                except:
+                    raise Exception('Missing Thread timebase for thread '+threadName+ ' in supervisor '+self.getPath())
+                if not isinstance(timebaseDef, MDSplus.TreeNode):
+                    raise Exception('Invalid thread reference for thread '+threadName+ ' in supervisor '+self.getPath())
+                supervisorNode = timebaseDef.getParent().getParent().getParent()
+                if not isinstance(supervisorNode, RfxDevices.MARTE2_SUPERVISOR):
+                    raise Exception('Invalid thread reference for thread '+threadName+' supervisor '+self.getPath()+' : '+timebaseDef.getPath())
+                try:
+                    syncThreadName = timebaseDef.getParent().getNode('NAME').data()
+                except:
+                    raise Exception('Missing Thread name in supervisor '+supervisorNode.getPath())
+                syncThreadSupervisor = supervisorNode.getNid()
+                try:
+                    syncDiv = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DIV' %  (stateIdx+1, threadIdx+1)).getData()
+                except:
+                    raise Exception('Missing timebase div for thread '+ threadName+'  in supervisor '+supervisorNode.getPath())
+                threadInfo[threadName] = {
+                    'SyncThreadName': syncThreadName,
+                    'SyncThreadSupervisor': syncThreadSupervisor,
+                    'SyncDiv': syncDiv,
+                }
+        
         threadMap['ThreadInfo'] = threadInfo
+        print('\n\n\n\n')
+        print(threadMap)
+        print('\n\n\n\n')
+        
         return threadMap
 
     #return the type of the synchronizing time
@@ -341,7 +353,7 @@ class MARTE2_SUPERVISOR(Device):
 
             return syncSupervisor.getSynchonizationTimeTypePeriod(timebaseRef)
         
-        raise Exception('Invalid timebase mode '+ timebaseMode+ ' for 'self.getPath())
+        raise Exception('Invalid timebase mode '+ timebaseMode+ ' for ' + self.getPath())
 
 
     #return the list of GAMs and DataSurces required to handle sychronization for the specified thread
@@ -351,17 +363,17 @@ class MARTE2_SUPERVISOR(Device):
         retDataSources = []
         retGams = []
         try:
-            timebaseMode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+            timebaseMode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
         except:
             raise Exception('Missing Timebase Mode for supervisor '+self.getPath())
         try:
-            threadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+            threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
         except:
             raise Exception('Missing thread name for for supervisor '+self.getPath())
 
         if timebaseMode == 'INTERNAL':
             try:
-                frequency = self.getNode('TIMEBASE_DEF').data()
+                frequency = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).data()
             except:
                 raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '.self.getPath)
             retDataSources.append( {
@@ -374,16 +386,17 @@ class MARTE2_SUPERVISOR(Device):
                 'Class': 'GAMDataSource'
             })
             retGams.append( {
-                'Name': threadName+'_'+str(self.getNid())+'_TimerIOGAM'
+                'Name': threadName+'_'+str(self.getNid())+'_TimerIOGAM',
+                'Class': 'IOGAM',
                 'Inputs': [{
                     'Name': 'Counter',
                     'Type': 'uint32',
-                    'DataSource': threadName+'_Timer'
+                    'DataSource': threadName+'_Timer',
                 },
                 {
                     'Name': 'Time',
                     'Type': 'uint32',
-                    'DataSource': threadName+'_Timer'
+                    'DataSource': threadName+'_Timer',
                     'Frequency': frequency
                 }],
                 'Outputs': [{
@@ -436,7 +449,7 @@ class MARTE2_SUPERVISOR(Device):
 
         if timebaseMode == 'DERIVED':
             try:
-                refTimebaseNode =  self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1))
+                refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
                 refTimebaseDef = refTimebaseNode.getData()
             except:
                 raise Exception('Cannot retrieve thread timebase for thread '+threadName+' supervisor '+self.getPath())
@@ -446,7 +459,7 @@ class MARTE2_SUPERVISOR(Device):
                 raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
             refSupervisor = refTimebaseDef.getParent().getParent().getParent()
             try:
-                syncDiv = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DIV', (stateIdx+1, threadIdx+1))
+                syncDiv = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DIV' % (stateIdx+1, threadIdx+1))
             except:
                 raise Exception('Invalid timebase div for thread '+threadName+' supervisor '+self.getPath())
 
@@ -454,7 +467,7 @@ class MARTE2_SUPERVISOR(Device):
                 refThreadName = refTimebaseDef.getParent().getNode('NAME').data()
             except:
                 raise Exception('Cannot retrieve the name of the synchronizing thread r thread '+threadName+' supervisor '+self.getPath())
-            timerType, timerPeriod = self.getSynchonizationTimeTypePeriod(timebaseDefNode)
+            timerType, timerPeriod = self.getSynchonizationTimeTypePeriod(refTimebaseDef)
             if refSupervisor.getNid() == self.getNid(): #Thread synchronized by another thread of the same supervisor
                 retDataSources.append({
                     'Name': threadName+'_TimerDDB',
@@ -466,12 +479,12 @@ class MARTE2_SUPERVISOR(Device):
                     'Inputs': [{
                         'Name': 'Time',
                         'Type': timerType,
-                        'DataSource': refThreadName+'_TimerSync'
+                        'DataSource': refThreadName+'_TimerSync',
                         'Samples': syncDiv
-                    }] 
+                    }] ,
                     'Outputs': [{
                         'Name': 'Time',
-                        'Type': timerType
+                        'Type': timerType,
                         'DataSource':  threadName+'_TimerDDB'
                      }] 
                 })
@@ -480,10 +493,10 @@ class MARTE2_SUPERVISOR(Device):
                 retInfo['TimerPeriod'] = timerPeriod / syncDiv
                 retInfo['DataSources'] = retDataSources
                 retInfo['Gams'] = retGams
-                retrun retInfo
+                return retInfo
             else: #Synchronized on a thread from another supervisor
                 try: 
-                    port = timebaseDefNode.getParent().getNode('TIME_PORT').data()
+                    port = refTimebaseDef.getParent().getNode('TIME_PORT').data()
                 except:
                     raise Exception('Cannot get port number for derived timebase in '+self.getPath())
                 
@@ -492,7 +505,7 @@ class MARTE2_SUPERVISOR(Device):
                     'Class': 'RTNIn',
                     'Id' : refTimebaseNode.getNid(),
                     'Port': port,
-                    'IsSync': 'yes'
+                    'IsSync': 'yes',
                     'Signals':[{
                         'Name': 'Time',
                         'Type': timerType
@@ -508,12 +521,12 @@ class MARTE2_SUPERVISOR(Device):
                     'Inputs': [{
                         'Name': 'Time',
                         'Type': timerType,
-                        'DataSource': threadName+'_SYNC_IN'
+                        'DataSource': threadName+'_SYNC_IN',
                         'Samples': syncDiv
-                    }] 
+                    }],
                     'Outputs': [{
                         'Name': 'Time',
-                        'Type': timerType
+                        'Type': timerType,
                         'DataSource':  threadName+'_TimerDDB'
                      }] 
                 })
@@ -535,20 +548,25 @@ class MARTE2_SUPERVISOR(Device):
                 supervisorIp = extSupervisor.getNode('IP_ADDRESS').data()
             except:
                 raise Exception('Missing IP Address for superisor '+ extSupervisor.gatPath())
-            for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+            try:
+                numThreads = extSupervisor.getNode('STATE_'+str(stateIdx+1)+':NUM_THREADS')
+            except:
+                raise Exception("Missing NUM THREADS definition for supervisor "+extSupervisor.getPath()+'  STATE '+str(stateIdx+1))
+
+            for threadIdx in range(numThreads):
                 if len(extSupervisor.getGamNodes(stateIdx, threadIdx)) > 0:
                     try:
-                        extTimebaseMode = extSupervisor.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+                        extTimebaseMode = extSupervisor.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
                     except:
                         raise Exception('Invalid timebase mode for supervisor '+ extSupervisor.getPath())
                     if extTimebaseMode == 'DERIVED':
                         try:
-                            extTimebaseRef =  extSupervisor.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+                            extTimebaseRef =  extSupervisor.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).getData()
                         except:
                             raise Exception('Missing external reference for drived timebase mode in '+ extSupervisor.getPath())
                         if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
                             try:
-                                threadPort = extSupervisor.getNode('STATE_%d_THREAD_%d_TIME_PORT', (stateIdx+1, threadIdx+1)).data()
+                                threadPort = extSupervisor.getNode('STATE_%d.THREAD_%d:TIME_PORT' % (stateIdx+1, threadIdx+1)).data()
                             except:
                                 raise Exception('Missing port for drived timebase mode in '+ extSupervisor.getPath())
                             retIps.append(supervisorIp)
@@ -565,15 +583,20 @@ class MARTE2_SUPERVISOR(Device):
 
     #Check if this thread is referenced by another thread of the same supervisor
     def isReferencedByAnotherThreadSameSupervisor(self, timebaseDefNode, stateIdx):
-        for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+        try:
+            numThreads = self.getNode('STATE_'+str(stateIdx+1)+':NUM_THREADS')
+        except:
+            raise Exception("Missing NUM THREADS definition for supervisor "+self.getPath()+'  STATE '+str(stateIdx+1))
+
+        for threadIdx in range(numThreads):
             if len(self.getGamNodes(stateIdx, threadIdx)) > 0:
                 try:
-                    extTimebaseMode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_MOD', (stateIdx+1, threadIdx+1)).data()
+                    extTimebaseMode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
                 except:
                     raise Exception('Invalid timebase mode for supervisor '+ self.getPath())
                 if extTimebaseMode == 'DERIVED':
                     try:
-                        extTimebaseRef =  self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+                        extTimebaseRef =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).getData()
                     except:
                         raise Exception('Missing external reference for drived timebase mode in '+self.getPath())
                     if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
@@ -584,14 +607,14 @@ class MARTE2_SUPERVISOR(Device):
 
     #return DataSource and Gam Dict lists (possibly empty) to be added after synchornization has ben establisher
     #before any device of the thread if INTERNAL or DERIVED or after the first SyncInput device for EXTERNAL
-    def getPostSynchronizationInfo(self, stateIdx, threadIdx, timerType, TimerDDB):
+    def getPostSynchronizationInfo(self, stateIdx, threadIdx, timerType, timerDDB):
         retGams = []
         retDataSources = []
         try:
-            threadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+            threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
         except:
             raise Exception('Missing thread name for for supervisor '+self.getPath())
-        timebaseDefNode = self.getNode('STATE_%d_THREAD_%d_TIMEBASE_DEF', (stateIdx+1, threadIdx+1)).getData()
+        timebaseDefNode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).getData()
         if self.isReferencedByAnotherThreadSameSupervisor(timebaseDefNode, stateIdx):
             retDataSources.append({
                 'Name': threadName+'_TimerSync',
@@ -604,14 +627,14 @@ class MARTE2_SUPERVISOR(Device):
                     'Name': 'Time',
                     'Type': timerType,
                     'DataSource': timerDDB
-                }]
+                }],
                 'Outputs': [{
                     'Name': 'Time',
                     'Type': timerType,
                     'DataSource': threadName+'_TimerSync'
                 }]
             })
-        ips, ports = self.getReferencingSupervisorsInfo(timebaseDefNode, stateIdx):
+        ips, ports = self.getReferencingSupervisorsInfo(timebaseDefNode, stateIdx)
         if len(ips) > 0:
             retDataSources.append({
                 'Name': threadName+'_RTN_OUT',
@@ -619,8 +642,8 @@ class MARTE2_SUPERVISOR(Device):
                 'Signals':[{
                     'Name':'Time',
                     'Type': timerType,
-                    'Ips' : self.toMarteArray(ips)
-                    'Ports': self.toMarteArray(ports) 
+                    'Ips' : self.toMarteArray(ips),
+                    'Ports': self.toMarteArray(ports) ,
                     'Id': timebaseDefNode.getNid()
                 }]
             })
@@ -631,7 +654,7 @@ class MARTE2_SUPERVISOR(Device):
                     'Name': 'Time',
                     'Type': timerType,
                     'DataSource': timerDDB
-                }]
+                }],
                 'Outputs': [{
                     'Name': 'Time',
                     'Type': timerType,
@@ -642,556 +665,447 @@ class MARTE2_SUPERVISOR(Device):
 
     #return the list of DataSources and GAMs and the types dict corresponding (in a dictionary) to the given thread in the given state        
     def getThreadInfo(self, threadMap, typesDict, stateIdx, threadIdx):
-        deviceNodes = getGamNodes(stateIdx, threadIdx)
+        deviceNodes = self.getGamNodes(stateIdx, threadIdx)
         if len(deviceNodes) == 0:
             return [],[]
         retSyncInfo = self.getSynchronizationInfo(stateIdx, threadIdx)
         dataSources = retSyncInfo['DataSources']
         gams = retSyncInfo['Gams']
-        if gams[0].getNode('MODE').data ==  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+        if deviceNodes[0].getNode('MODE').data ==  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
             currDataSources, gurrGams = deviceNodes[0].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
                 retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
-            dataSources.append(currDataSources)
-            gams.append(currGams)
+            dataSources += (currDataSources)
+            gams += currGams
             postSyncDataSources, postSyncGams = self.getPostSynchronizationInfo(stateIdx, threadIdx, 
-                retSyncInfo['TimerType'], retSyncInfo['TimerDDB']):
-            dataSources.append(currDataSources)
-            gams.append(currGams)
+                retSyncInfo['TimerType'], retSyncInfo['TimerDDB'])
+            dataSources += currDataSources
+            gams += currGams
             for deviceIdx in range(1, len(deviceNodes)):
                 currDataSources, gurrGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
                     retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
-                dataSources.append(currDataSources)
-                gams.append(currGams)
+                dataSources += currDataSources
+                gams += currGams
         else: #thread not synchronized by synch input device
             postSyncDataSources, postSyncGams = self.getPostSynchronizationInfo(stateIdx, threadIdx, 
-                retSyncInfo['TimerType'], retSyncInfo['TimerDDB']):
-            dataSources.append(currDataSources)
-            gams.append(currGams)
+                retSyncInfo['TimerType'], retSyncInfo['TimerDDB'])
+            dataSources += postSyncDataSources
+            gams += postSyncGams
             for deviceIdx in range(0, len(deviceNodes)):
-                currDataSources, gurrGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+                currDataSources, currGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
                     retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
-                dataSources.append(currDataSources)
-                gams.append(currGams)
+                dataSources += currDataSources
+                gams += currGams
 
         return dataSources, gams
 
+    #return gams, DataSources and threadGams dict for a given state
     def getStateInfo(self, typesDict, stateIdx):
         threadMap = self.getThreadMap(stateIdx)
         dataSources = []
         gams = []
-        threadGamsDics = {}
-        for threadIdx in range(MARTE2_SUPERVISOR.MAX_THREADS):
+        threadGamsDict = {}
+        try:
+            numThreads = self.getNode('STATE_'+str(stateIdx+1)+':NUM_THREADS')
+        except:
+            raise Exception("Missing NUM THREADS definition for supervisor "+self.getPath()+'  STATE '+str(stateIdx+1))
+        for threadIdx in range(numThreads):
             try:
-                currThreadName = self.getNode('STATE_%d_THREAD_%d_NAME', (stateIdx+1, threadIdx+1)).data()
+                currThreadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
             except:
-                raise Exception("Missing name ofr thread "+str(threadIdx+1)+'  state: '+str(stateIdx+1))
+                raise Exception("Missing name of thread "+str(threadIdx+1)+'  state: '+str(stateIdx+1))
 
+            try:
+                threadCpu = self.getNode('STATE_%d.THREAD_%d:CORE' % (stateIdx+1, threadIdx+1)).data()
+            except:
+                raise Exception("Missing CPU mask of thread "+str(threadIdx+1)+'  state: '+str(stateIdx+1))
             currDataSources, currGams = self.getThreadInfo(threadMap, typesDict, stateIdx, threadIdx)
             if len(currGams) == 0:
                 continue
             gamNames = []
             for currGam in gams:
                 gamNames.append(currGam['Name'])
-            gams.append(currGams)
-            dataSources.append(curDataSources)
+            gams += currGams
+            dataSources += currDataSources
+            threadGamsDict[currThreadName] = {'GamNames':gamNames, 'CpuMask': threadCpu}
 
         return {
             'DataSources': dataSources,
-            'Gams': gams
-            'ThreadGams': gamNames
+            'Gams': gams,
+            'ThreadGamsDict': threadGamsDict
         }
 
-    
-
-
-
-
-
-                retInfo['TimerBBD'] = threadName+'_TimerDDB'
-                retInfo['TimerType'] = timerType
-                retInfo['TimerPeriod'] = timerPeriod / syncDiv
-                retInfo['DataSources'] = retDataSources
-                retInfo['Gams'] = retGams
-
-
-
-
-
-
-
-
-
-
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    def getInfo(self):
+    #return as a dict the underlying MARTe2 configuration. The fields ot the returned dict are:
+    #'DataSources': list of all DataSources
+    #'Gams': list of all GAMs
+    #'TypeDict': Type dictionary
+    #'States': for each declared state a dictionary specifying for each thread of that stets the list of associated GAMs
+    #'Interfaces': list of declared interfaces
+    def getMarte2ConfigInfo(self):
+        typesDict = {}
+        dataSources = []
+        gams = []
+        stateDict = {}
         try:
-            error = ''
-            info = {}
-            t = self.getTree()
-            numStates = self.num_states.data()
-            statesInfo = []
-            retData = []
-            retGams = []
-            threadMap = {}
-            typeDicts = []
+            numStates = self.getNode('NUM_STATES')
+        except:
+            raise Exception("Missing NUM STATES definition for supervisor "+self.getPath())
+        for stateIdx in range(numStates):
+            try:
+                currStateName = self.getNode('STATE_%d:NAME' % (stateIdx + 1)).data()
+            except:
+                raise Exception('Missing name of state '+str(stateIdx+1))
 
-        # first iteration to get threadMap
-            for state in range(numStates):
-                numThreads = getattr(
-                    self, 'state_%d_num_threads' % (state+1)).data()
-                for thread in range(numThreads):
-                    threadName = getattr(
-                        self, 'state_%d_thread_%d_name' % (state+1, thread+1)).data()
-                    try:
-                        gamNodes = self.getGamList(state, thread)
-                    except:
-                        raise Exception(
-                            'Cannot get GAM list for state: ' + str(state + 1) + ', thread: '+str(thread + 1))
-                    for currGamNode in gamNodes:
-                        nid = currGamNode.getNid()
-                        if nid in threadMap:
-                            threadMap[nid] += [threadName]
+            currStateDict = self.getStateInfo(typesDict, stateIdx)
+            dataSources += (currStateDict['DataSources'])
+            gams += (currStateDict['Gams'])
+            stateDict[currStateName] = currStateDict['ThreadGamsDict']
+
+        interfaces = []
+        interfaceNodes = self.getInterfaceNodes()
+        for interfaceNode in interfaceNodes:
+            interfaces += (interfaceNode.generateMarteInterfaceConfiguration())
+
+        return {
+            'TypesDict': typesDict,
+            'DataSources': dataSources,
+            'Gams': gams,
+            'Interfaces': interfaces,
+            'StateDict': stateDict
+        }
+
+    def skipTabs(self, tabCount):
+        tabs = ''
+        for tabIdx in range(tabCount):
+            tabs += '\t'
+        return tabs
+
+    def expandTypes(self, typesDict):
+        typeConf = '''
++Types = {
+    Class = ReferenceContainer
+'''
+        for typeKey in typesDict:
+            typeConf += '\t+' + typeKey + ' = {\n\t\tClass = IntrospectionStructure\n'
+            for typeField in typesDict[typeKey]:
+                typeConf += '\t\t'+typeField['Name']+ ' = {\n'
+                typeConf += '\t\t\tType = '+typeField['Type']+'\n'
+                typeConf += '\t\t\tNumberOfElements = '+typeField['NumberOfElements']+'\n\t\t}'
+            typeConf += '\t}\n'
+        typeConf += '}\n'
+        return typeConf
+
+
+    def expandParameters(self, paramDict, tabCount):
+        paramConf = ''
+        for paramKey in paramDict:
+            if isinstance(paramDict[paramKey], dict):  
+                paramConf += self.skipTabs(tabCount)+paramKey+' = {\n'
+                paramConf += self.expandParameters(paramDict[paramKey], tabCount+1)
+                paramConf += self.skipTabs(tabCount)+'}\n'
+            else:
+                paramConf += self.skipTabs(tabCount)+paramKey+' = '+str(paramDict[paramKey])+'\n'
+        return paramConf
+
+    def expandInterfaces(self, interfaces):
+        interfaceConf = ''
+        for interface in interfaces:
+            interfaceConf += '+'+interface['Name']+' = {\n\tClass = '+interface['Class']+'\n' 
+            interfaceConf += self.expandParameters(interface['Parameters'], 1)
+            interfaceConf += '}\n'
+        return interfaceConf
+
+    def expandGams(self, gams):
+        gamConf = ''
+        for gam in gams:
+            gamConf += '\t\t+'+gam['Name']+' = {\n'
+            gamConf += '\t\t\tClass = '+gam['Class']+'\n'
+            if 'Parameters' in gam:
+                gamConf += self.expandParameters(gam['Parameters'], 3)
+            gamConf += '\t\t\tInputSignals = {\n'
+            for inSig in gam['Inputs']:
+                gamConf += '\t\t\t\t'+inSig['Name']+ ' = {\n'
+                for inSigKey in inSig:
+                    if inSigKey == 'Name':
+                        continue
+                    if inSigKey == 'Parameters':
+                        gamConf += self.expandParameters(inSig['Parameters'], 5)
+                    else:
+                        gamConf += '\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+                gamConf += '\t\t\t\t}\n'
+            gamConf += '\t\t\t}\n'
+            gamConf += '\t\t\tOutputSignals = {\n'
+            for outSig in gam['Outputs']:
+                gamConf += '\t\t\t\t'+outSig['Name']+ ' = {\n'
+                for outSigKey in outSig:
+                    if outSigKey == 'Name':
+                        continue
+                    if outSigKey == 'Parameters':
+                        gamConf += self.expandParameters(outSig['Parameters'], 5)
+                    else:
+                        gamConf += '\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
+                gamConf += '\t\t\t\t}\n'
+            gamConf += '\t\t\t}\n'
+            gamConf += '\t\t}\n'
+        return gamConf
+
+    def expandDataSources(self, dataSources):
+        dsConf = ''
+        for dataSource in dataSources:
+            dsConf += '\t\t+'+dataSource['Name']+' = {\n'
+            dsConf += '\t\t\tClass = '+dataSource['Class']+'\n'
+            if 'Parameters' in dataSource:
+                dsConf += self.expandParameters(dataSource['Parameters'], 3)
+            dsConf += '\t\t\tSignals = {\n'
+            if 'Signals' in dataSource:
+                for inSig in dataSource['Signals']:
+                    dsConf += '\t\t\t\t'+inSig['Name']+ ' = {\n'
+                    for inSigKey in inSig:
+                        if inSigKey == 'Name':
+                            continue
+                        if inSigKey == 'Parameters':
+                            dsConf += self.expandParameters(inSig['Parameters'], 5)
                         else:
-                            threadMap[nid] = [threadName]
+                            dsConf += '\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+                    dsConf += '\t\t\t\t}\n'
+                dsConf += '\t\t\t}\n'
+        dsConf += '\t\t}\n'
+        return dsConf
 
-        # Second iteration, build the remaining
-            for state in range(numStates):
-                stateInfo = {}
-                stateInfo['name'] = getattr(
-                    self, 'state_%d_name' % (state+1)).data()
-                numThreads = getattr(
-                    self, 'state_%d_num_threads' % (state+1)).data()
-                stateThreads = []
-                for thread in range(numThreads):
-                    threadInfo = {}
-                    threadName = getattr(
-                        self, 'state_%d_thread_%d_name' % (state+1, thread+1)).data()
-                    try:
-                        core = getattr(self, 'state_%d_thread_%d_core' %
-                                       (state+1, thread+1)).data()
-                        threadInfo['core'] = core
-                    except:
-                        pass
-                    threadInfo['name'] = threadName
-                    gamNames = []
-                    threadPeriod = 0
-                    gamNids = []
-                    gamNodes = self.getGamList(state, thread)
-                    for currGamNode in gamNodes:
-                        nid = currGamNode.getNid()
-                        if currGamNode.isOn():
-                            try:
-                                gamClass = currGamNode.getData().getDevice()
-                                gamInstance = gamClass(currGamNode)
-                            except:
-                                raise Exception(
-                                    'Cannot instantiate device for node '+currGamNode.getFullPath())
-                            gamList = []
-                            if not (currGamNode.getNid() in gamNids):
-                                # try:
-                                gamInstance.prepareMarteInfo()
-                                currPeriod = gamInstance.getMarteInfo(
-                                    threadMap, retGams, retData, gamList, typeDicts)
-                                # except:
-                                # return 'Cannot get timebase for ' + gam, {},{}
-                                gamNids.append(currGamNode.getNid())
-                              #  if currPeriod > 0 and threadPeriod > 0:
-                                if currPeriod > 0 and threadPeriod > 0 and currPeriod != threadPeriod:
-                                    raise Exception('More than one component driving thread timing for state: '+str(
-                                        state+1)+', thread: '+str(thread+1))
-                                else:
-                                    if currPeriod > 0:
-                                        threadPeriod = currPeriod
-                            else:
-                                dummyGams = []
-                                dummyData = []
-                                gamInstance.getMarteInfo(
-                                    threadMap, dummyGams, dummyData, gamList, typeDicts)
-                            gamNames += gamList
-# TIMINGS
-                    if threadPeriod == 0:
-                        raise Exception(
-                            'No component driving thread timing for state: '+str(state+1)+', thread: '+str(thread+1))
-                    gamList = []
-                    self.getTimingInfo(
-                        state, thread, threadPeriod, retGams, retData, gamList)
-                    gamNames += gamList
-#############################
+    def expandStates(self, statesDict):
+        stateConf = ''
+        for stateKey in statesDict:
+            stateConf += '\t\t+'+stateKey+' = {\n'
+            stateConf += '\t\t\tClass = RealTimeState\n'
+            stateConf += '\t\t\tThreads = {\n'
+            stateConf += '\t\t\t\tClass = ReferenceContainer\n'
+            for threadKey in statesDict[stateKey]:
+                stateConf += '\t\t\t\t+'+threadKey+' = {\n'
+                stateConf += '\t\t\t\t\tClass = RealTimeThread\n'
+                stateConf += '\t\t\t\t\tCPUs = '+str(statesDict[stateKey][threadKey]['CpuMask'])+'\n'
+                stateConf += '\t\t\t\t\tFunctions = {'
+                for gamName in statesDict[stateKey][threadKey]['GamNames']:
+                    stateConf += ' '+gamName+' '
+                stateConf += '}\n'
+                stateConf += '\t\t\t\t}\n'
+            stateConf += '\t\t\t}\n'
+            stateConf += '\t\t}\n'
+        return stateConf
 
-                    threadInfo['gams'] = gamNames
-                    stateThreads.append(threadInfo)
-                stateInfo['threads'] = stateThreads
-                statesInfo.append(stateInfo)
-            info['states'] = statesInfo
+    def generateConfiguration(self):
+        try:
+            appName = self.getNode('NAME').data()
+        except:
+            raise Exception('Missing application name for '+self.getPath())
+        try:
+            firstStateName = self.getNode('STATE_1:NAME').data()
+        except:
+            raise Exception('Missing first state name for '+self.getPath())
+        outConfig = '''
+<TYPE_LIST>
++MDS_EVENTS = {
+    Class = MDSEventManager
+    StackSize = 1048576
+    CPUs = 0x1
+    Name = <APP_NAME>
+}
++WebRoot = {
+    Class = HttpObjectBrowser
+    Root = "."
+    +ObjectBrowse = {
+        Class = HttpObjectBrowser
+        Root = "/"
+    }
+    +ResourcesHtml = {
+        Class = HttpDirectoryResource
+        BaseDir = "/opt/MARTe2/MARTe2/Resources/HTTP/"
+    } 
+}
++WebServer = {
+    Class = HttpService
+    Port = 8085
+    WebRoot = WebRoot
+    Timeout = 0
+    ListenMaxConnections = 255
+    AcceptTimeout = 1000
+    MaxNumberOfThreads = 8
+    MinNumberOfThreads = 1
+}
+<INTERFACE_LIST>    
++StateMachine = {
+    Class = StateMachine
+    +INITIAL = {
+        Class = ReferenceContainer    
+        +START = {
+            Class = StateMachineEvent
+            NextState = "IDLE"
+            NextStateError = "IDLE"
+            Timeout = 0
+            +StartHttpServer = {
+                Class = Message
+                Destination = "WebServer"
+                Function = "Start"
+            }            
+            +ChangeToStateIdleMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                    Class = ConfigurationDatabase
+                    param1 = Idle
+                }
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }
+    }
+    +IDLE = {
+        Class = ReferenceContainer
+        +GOTORUN = {
+            Class = StateMachineEvent
+            NextState = "RUN"
+            NextStateError = "IDLE"
+            Timeout = 0 
+            +ChangeToRunMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                   Class = ConfigurationDatabase
+                    param1 = <FIRST_STATE>
+                }
+            }
+            +StopCurrentStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StopCurrentStateExecution
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }
+    }
+    +RUN = {
+        Class = ReferenceContainer
+        +GOTOIDLE = {
+            Class = StateMachineEvent
+             NextState = "IDLE"
+            NextStateError = "IDLE"
+            Timeout = 0         
+            +ChangeToIdleMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                    Class = ConfigurationDatabase
+                    param1 = Idle
+                }
+            }
+            +StopCurrentStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StopCurrentStateExecution
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }   
+    }
+}   
+$<APP_NAME> = {
+    Class = RealTimeApplication
+    +Functions = {
+        Class = ReferenceContainer
+        +IDLE_MDSPLUS = {
+            Class = IOGAM
+            InputSignals = {
+                Counter = {
+                    DataSource = IDLE_MDSPLUS_TIMER
+                    Type = uint32
+                    NumberOfElements = 1
+                }
+                Time = {
+                    DataSource = IDLE_MDSPLUS_TIMER
+                    Type = uint32
+                    NumberOfElements = 1
+                    Frequency = 10
+                }
+            }
+            OutputSignals = {
+                Counter = {
+                    DataSource = IDLE_MDSPLUS_DDB
+                    Type = uint32
+                }
+                Time = {
+                    DataSource = IDLE_MDSPLUS_DDB
+                    Type = uint32
+                    NumberOfElements = 1
+                }
+            }
+        }
+<GAM_LIST>
+    }
+    +Data = {
+        Class = ReferenceContainer
+        +IDLE_MDSPLUS_TIMER = {
+            Class = LinuxTimer
+            Signals = {
+                Counter = {
+                    Type = uint32
+                }
+                Time = {
+                    Type = uint32
+                }
+            }
+        }
+        +IDLE_MDSPLUS_DDB = {
+            Class = GAMDataSource
+        }
+        +Timings = {
+            Class = TimingDataSource
+        }
+<DATASOURCE_LIST>
+    }
+    +States = {
+        Class = ReferenceContainer
+        +Idle = {
+            Class = RealTimeState
+            +Threads = {
+                Class = ReferenceContainer
+                +Thread1 = {
+                Class = RealTimeThread
+                Functions = {IDLE_MDSPLUS}
+            }
+        }
+<STATE_LIST>
+    }
 
-            info['gams'] = retGams
-            info['data_sources'] = retData
-            info['name'] = self.getNode('name').data()
-            return error, info, threadMap, typeDicts
-        except Exception as inst:
-            print(traceback.format_exc())
-     #       return inst.args[0], None, None
-            return str(inst), None, None, None
-
-
-# Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
-
-    def getTimingInfo(self, state, thread, threadPeriod, retGams, dataSources, gamList):
-        segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
-                         (state+1, thread+1)).data()
-        if(segLen == 0):
-            return
-        stateName = getattr(self, 'state_%d_name' % (state+1)).data()
-        threadName = getattr(self, 'state_%d_thread_%d_name' %
-                             (state+1, thread+1)).data()
-        cpuMask = getattr(self, 'times_state_%d_thread_%d_cpu_mask' %
-                          (state+1, thread+1)).data()
-        timeSignals = []
-        gamNodes = self.getGamList(state, thread)
-        for currGamNid in gamNodes:
-            if currGamNid.isOn():
-                gamName = currGamNid.getNodeName()
-                gamClass = currGamNid.getData().getDevice()
-                gamInstance = gamClass(currGamNid)
-                gamMode = gamInstance.mode.data()
-                if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
-                    timeSignals.append(gamName+'_ReadTime')
-                    timeSignals.append(gamName+'_ExecTime')
-                elif gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT:
-                    timeSignals.append(gamName+'_IOGAM_WriteTime')
-                else:
-                    timeSignals.append(gamName+'_DDBOutIOGAM_ReadTime')
-
-        if len(timeSignals) == 0:
-            return
-        currGam = '+State_%d_Thread_%d_TIMES_IOGAM = {\n' % (state+1, thread+1)
-        currGam += '  Class = IOGAM\n'
-        currGam += '  InputSignals = {\n'
-        currGam += '    '+stateName+'_'+threadName+'_CycleTime = {\n'
-        currGam += '      Alias = '+stateName+'.'+threadName+'_CycleTime\n'
-        currGam += '      DataSource = Timings\n'
-        currGam += '      Type = uint32\n'
-        currGam += '    }\n'
-
-        for timeSignal in timeSignals:
-            currGam += '    '+timeSignal+' = {\n'
-            currGam += '      DataSource = Timings\n'
-            currGam += '      Type = uint32\n'
-            currGam += '    }\n'
-        currGam += '  }\n'
-        currGam += '  OutputSignals = {\n'
-        currGam += '    CycleTime = {\n'
-        currGam += '      DataSource = State_%d_Thread_%d_TIMES_WRITER\n' % (
-            state+1, thread+1)
-        currGam += '      Type = uint32\n'
-        currGam += '  }\n'
-        for timeSignal in timeSignals:
-            currGam += '    '+timeSignal+' = {\n'
-            currGam += '      DataSource = State_%d_Thread_%d_TIMES_WRITER\n' % (
-                state+1, thread+1)
-            currGam += '      Type = uint32\n'
-            currGam += '    }\n'
-        currGam += '  }\n'
-        currGam += '}\n'
-
-        retGams.append(currGam)
-        gamList.append('State_%d_Thread_%d_TIMES_IOGAM' % (state+1, thread+1))
-
-        dataSource = '  +State_%d_Thread_%d_TIMES_WRITER = {\n' % (
-            state+1, thread+1)
-        dataSource += '    Class = MDSWriter\n'
-        dataSource += '    NumberOfBuffers = 20000\n'
-        dataSource += '    CPUMask = ' + str(cpuMask)+'\n'
-        dataSource += '    StackSize = 10000000\n'
-        dataSource += '    TreeName = "'+self.getTree().name+'"\n'
-        dataSource += '    PulseNumber = '+str(self.getTree().shot)+'\n'
-        dataSource += '    StoreOnTrigger = 0\n'
-        dataSource += '    TimeRefresh = 1\n'
-        dataSource += '        EventName = "'+gamName+'UpdatejScope"\n'
-        dataSource += '    Signals = {\n'
-        dataSource += '    CycleTime = {\n'
-        dataSource += '        NodeName = "' + \
-            getattr(self, 'times_state_%d_thread_%d_cycle' %
-                    (state+1, thread+1)).getFullPath()+'"\n'
-        dataSource += '        Period = '+str(threadPeriod) + '\n'
-        dataSource += '        MakeSegmentAfterNWrites = '+str(segLen)+'\n'
-        dataSource += '        AutomaticSegmentation = 0\n'
-        dataSource += '      }\n'
-
-        sigIdx = 1
-        for timeSignal in timeSignals:
-            dataSource += '      '+timeSignal + ' = {\n'
-            dataSource += '        NodeName = "' + \
-                getattr(self, 'times_state_%d_thread_%d_gam' %
-                        (state+1, thread+1)+str(sigIdx)).getFullPath()+'"\n'
-            dataSource += '        Period = '+str(threadPeriod) + '\n'
-            dataSource += '        MakeSegmentAfterNWrites = '+str(segLen)+'\n'
-            dataSource += '        AutomaticSegmentation = 0\n'
-            dataSource += '      }\n'
-            sigIdx = sigIdx + 1
-        dataSource += '    }\n'
-        dataSource += '  }\n'
-        dataSources.append(dataSource)
-
-    def declareTypes(self, typeDicts):
-        if len(typeDicts) == 0:
-            return ''
-        typeDecl = '+Types = {\n'
-        typeDecl += '  Class = ReferenceContainer\n'
-        for typeDict in typeDicts:
-            typeDecl += '  +'+typeDict['name'] + ' = {\n'
-            typeDecl += '    Class = IntrospectionStructure\n'
-            for fieldDict in typeDict['fields']:
-                typeDecl += '    '+fieldDict['name'] + ' = {\n'
-                typeDecl += '      Type = '+fieldDict['type']+'\n'
-                dimensions = fieldDict['dimensions']
-                if dimensions == 0:
-                    numberOfElements = 1
-                    numberOfDimensions = 0
-                else:
-                    numberOfDimensions = len(fieldDict['dimensions'])
-                    numberOfElements = 1
-                    for currDim in fieldDict['dimensions']:
-                        numberOfElements *= currDim
-                typeDecl += '      NumberOfDimensions = ' + \
-                    str(numberOfDimensions)+'\n'
-                typeDecl += '      NumberOfElements = ' + \
-                    str(numberOfElements)+'\n'
-                typeDecl += '    }\n'
-            typeDecl += '  }\n'
-        typeDecl += '}\n'
-        return typeDecl
+    +Scheduler = {
+        Class = GAMScheduler
+        TimingDataSource = Timings
+    }
+}
+'''    
+        config = self.getMarte2ConfigInfo()  
+        outConfig = outConfig.replace('<APP_NAME>', appName)
+        outConfig = outConfig.replace('<TYPE_LIST>', self.expandTypes(config['TypesDict']))
+        outConfig = outConfig.replace('<INTERFACE_LIST>', self.expandInterfaces(config['Interfaces']))
+        outConfig = outConfig.replace('<GAM_LIST>', self.expandGams(config['Gams']))
+        outConfig = outConfig.replace('<DATASOURCE_LIST>', self.expandDataSources(config['DataSources']))
+        outConfig = outConfig.replace('<STATE_LIST>', self.expandStates(config['StateDict']))
+        outConfig = outConfig.replace('<FISRT_STATE>', firstStateName)
+    
+        return outConfig
 
     def buildConfiguration(self):
-        print('START BUILD')
-        error, info, threadMap, typeDicts = self.getInfo()
-        if error != '':
-            return 0
-        confText = self.declareTypes(typeDicts)
-        confText += '+MDS_EVENTS = {\n'
-        confText += '  Class = MDSEventManager\n'
-        confText += '  StackSize = 1048576\n'
-        confText += '  CPUs = 0x1\n'
-        confText += '  Name = '+info['name']+'\n'
-        confText += '}\n'
-        confText += '+WebRoot = {\n'
-        confText += '    Class = HttpObjectBrowser\n'
-        confText += '    Root = "."\n'
-        confText += '    +ObjectBrowse = {\n'
-        confText += '        Class = HttpObjectBrowser\n'
-        confText += '        Root = "/"\n'
-        confText += '    }\n'
-        confText += '    +ResourcesHtml = {\n'
-        confText += '        Class = HttpDirectoryResource\n'
-        confText += '        BaseDir = "/opt/MARTe2/MARTe2/Resources/HTTP/"\n'
-        confText += '    } \n'
-        confText += '}\n'
-        confText += '+WebServer = {\n'
-        confText += '    Class = HttpService\n'
-        confText += '    Port = 8085\n'
-        confText += '    WebRoot = WebRoot\n'
-        confText += '    Timeout = 0\n'
-        confText += '    ListenMaxConnections = 255\n'
-        confText += '    AcceptTimeout = 1000\n'
-        confText += '    MaxNumberOfThreads = 8\n'
-        confText += '    MinNumberOfThreads = 1\n'
-        confText += '}    \n'
+        print(self.generateConfiguration())
 
-        confText += ' +StateMachine = {\n'
-        confText += '    Class = StateMachine\n'
-        confText += '    +INITIAL = {\n'
-        confText += '        Class = ReferenceContainer    \n'
-        confText += '        +START = {\n'
-        confText += '            Class = StateMachineEvent\n'
-        confText += '            NextState = "IDLE"\n'
-        confText += '            NextStateError = "IDLE"\n'
-        confText += '            Timeout = 0\n'
-        confText += '            +StartHttpServer = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = "WebServer"\n'
-        confText += '                Function = "Start"\n'
-        confText += '            }            \n'
-        confText += '            +ChangeToStateIdleMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = PrepareNextState\n'
-        confText += '                +Parameters = {\n'
-        confText += '                    Class = ConfigurationDatabase\n'
-        confText += '                    param1 = Idle\n'
-        confText += '                }\n'
-        confText += '            }\n'
-        confText += '            +StartNextStateExecutionMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = StartNextStateExecution\n'
-        confText += '            }\n'
-        confText += '        }\n'
-        confText += '    }\n'
-        confText += '    +IDLE = {\n'
-        confText += '        Class = ReferenceContainer\n'
-        confText += '        +GOTORUN = {\n'
-        confText += '            Class = StateMachineEvent\n'
-        confText += '            NextState = "RUN"\n'
-        confText += '            NextStateError = "IDLE"\n'
-        confText += '            Timeout = 0 \n'
-        confText += '            +ChangeToRunMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '               Destination = '+info['name']+'\n'
-        confText += '                Function = PrepareNextState\n'
-        confText += '                +Parameters = {\n'
-        confText += '                   Class = ConfigurationDatabase\n'
-        confText += '                    param1 = ' + \
-            info['states'][0]['name']+'\n'
-        confText += '                }\n'
-        confText += '           }\n'
-        confText += '            +StopCurrentStateExecutionMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '               Function = StopCurrentStateExecution\n'
-        confText += '            }\n'
-        confText += '            +StartNextStateExecutionMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = StartNextStateExecution\n'
-        confText += '            }\n'
-        confText += '        }\n'
-        confText += '    }\n'
-        confText += '    +RUN = {\n'
-        confText += '        Class = ReferenceContainer\n'
-        confText += '        +GOTOIDLE = {\n'
-        confText += '           Class = StateMachineEvent\n'
-        confText += '           NextState = "IDLE"\n'
-        confText += '            NextStateError = "IDLE"\n'
-        confText += '            Timeout = 0         \n'
-        confText += '            +ChangeToIdleMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = PrepareNextState\n'
-        confText += '                +Parameters = {\n'
-        confText += '                    Class = ConfigurationDatabase\n'
-        confText += '                    param1 = Idle\n'
-        confText += '                }\n'
-        confText += '           }\n'
-        confText += '            +StopCurrentStateExecutionMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = StopCurrentStateExecution\n'
-        confText += '            }\n'
-        confText += '           +StartNextStateExecutionMsg = {\n'
-        confText += '                Class = Message\n'
-        confText += '                Destination = '+info['name']+'\n'
-        confText += '                Function = StartNextStateExecution\n'
-        confText += '            }\n'
-        confText += '        }   \n'
-        confText += '    }\n'
-        confText += '}   \n'
-
-        confText += '$'+info['name']+' = {\n'
-        confText += ' Class = RealTimeApplication\n'
-        confText += ' +Functions = {\n'
-        confText += '  Class = ReferenceContainer\n'
-        confText += '  +IDLE_MDSPLUS = {\n'
-        confText += '    Class = IOGAM\n'
-        confText += '    InputSignals = {\n'
-        confText += '      Counter = {\n'
-        confText += '        DataSource = IDLE_MDSPLUS_TIMER\n'
-        confText += '        Type = uint32\n'
-        confText += '        NumberOfElements = 1\n'
-        confText += '      }\n'
-        confText += '      Time = {\n'
-        confText += '        DataSource = IDLE_MDSPLUS_TIMER\n'
-        confText += '        Type = uint32\n'
-        confText += '        NumberOfElements = 1\n'
-        confText += '        Frequency = 10\n'
-        confText += '      }\n'
-        confText += '    }\n'
-        confText += '    OutputSignals = {\n'
-        confText += '      Counter = {\n'
-        confText += '        DataSource = IDLE_MDSPLUS_DDB\n'
-        confText += '        Type = uint32\n'
-        confText += '      }\n'
-        confText += '      Time = {\n'
-        confText += '        DataSource = IDLE_MDSPLUS_DDB\n'
-        confText += '        Type = uint32\n'
-        confText += '        NumberOfElements = 1\n'
-        confText += '      }\n'
-        confText += '    }\n'
-        confText += '  }\n'
-
-        for gam in info['gams']:
-            confText += gam
-        confText += ' }\n'
-        confText += ' +Data = {\n'
-        confText += '  Class = ReferenceContainer\n'
-        confText += ' +IDLE_MDSPLUS_TIMER = {\n'
-        confText += '   Class = LinuxTimer\n'
-        confText += '   SleepNature = "Busy"\n'
-        confText += '   Signals = {\n'
-        confText += '     Counter = {\n'
-        confText += '       Type = uint32\n'
-        confText += '     }\n'
-        confText += '     Time = {\n'
-        confText += '       Type = uint32\n'
-        confText += '     }\n'
-        confText += '   }\n'
-        confText += ' }\n'
-        confText += ' +IDLE_MDSPLUS_DDB = {\n'
-        confText += '   Class = GAMDataSource\n'
-        confText += ' }\n'
-        confText += '  +Timings = {\n'
-        confText += '      Class = TimingDataSource\n'
-        confText += '  }\n'
-
-        for dataSource in info['data_sources']:
-            confText += dataSource
-        confText += '  }\n'
-
-        confText += ' +States = {\n'
-        confText += '  Class = ReferenceContainer\n'
-        confText += '  +Idle = {\n'
-        confText += '    Class = RealTimeState\n'
-        confText += '    +Threads = {\n'
-        confText += '      Class = ReferenceContainer\n'
-        confText += '        +Thread1 = {\n'
-        confText += '          Class = RealTimeThread\n'
-        confText += '          Functions = {IDLE_MDSPLUS}\n'
-        confText += '        }\n'
-        confText += '      }\n'
-        confText += '    }\n'
-
-        for state in info['states']:
-            confText += '  +'+state['name'] + ' = {\n'
-            confText += '  Class = RealTimeState\n'
-            confText += '  +Threads = {\n'
-            confText += '    Class = ReferenceContainer\n'
-            for thread in state['threads']:
-                confText += '    +'+thread['name']+' = {\n'
-                confText += '      Class = RealTimeThread\n'
-                if 'core' in thread:
-                    confText += '      CPUs = '+str(thread['core'])+'\n'
-                functionStr = ''
-                for gamName in thread['gams']:
-                    functionStr += gamName + ' '
-                confText += '      Functions = {'+functionStr+'}\n'
-                confText += '     }\n'
-            confText += '   }\n'
-            confText += '  }\n'
-        confText += ' }\n'
-        confText += ' +Scheduler = {\n'
-        confText += '   Class = GAMScheduler\n'
-        confText += '   TimingDataSource = Timings\n'
-        confText += ' }\n'
-        confText += '}\n'
-        print (confText)
-        try:
-          os.system('mv /tmp/'+info['name']+'_marte_configuration.cfg '+'/tmp/'+info['name']+'_marte_configuration_OLD.cfg ')
-        except:
-          pass
-        f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
-        self.marte_config.putData(Uint8Array(bytearray(confText.encode())))
-        f.write(confText)
-        f.close()
-        print('END BUILD')
 
     def startMarteIdle(self):
         self.buildConfiguration()
@@ -1253,22 +1167,22 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         eventString1 = marteName+':StopCurrentStateExecution:XX'
         eventString2 = marteName+':'+'PrepareNextState:IDLE'
         eventString3 = marteName+':StartNextStateExecution:XX'
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
         time.sleep(0.1)
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString2.encode(), dtype=np.uint8))
         time.sleep(0.1)
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
         self.suspendMarte()
         time.sleep(2)
-        Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
-        Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         # KILL MARTe process
         import subprocess
         import os
@@ -1289,58 +1203,3 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 os.kill(int(p), 9)
                 print('MARTe Process PID : %s Killed\n' % (p))
 
-    def check(self):
-        t = self.getTree()
-        numStates = self.num_states.data()
-        gamInstances = []
-
-        for state in range(numStates):
-            numThreads = getattr(
-                self, 'state_%d_num_threads' % (state+1)).data()
-            for thread in range(numThreads):
-                try:
-                    gamNids = self.getGamList(state, thread)
-                    for currGamNid in gamNids:
-                        if currGamNid.isOn():
-                            gamClass = currGamNid.getData().getDevice()
-                            gamInstance = gamClass(currGamNid)
-                            gamInstances.append(gamInstance)
-                except:
-                    return 'Cannot get Device list for tread '+str(thread)+' of state '+str(state)
-        for gamInstance in gamInstances:
-            try:
-
-                gamInstance.prepareMarteInfo()
-            except:
-                return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'
-
-        error, info, threadMap, typeDicts = self.getInfo()
-        if error != '':
-            return error
-        for gamInstance in gamInstances:
-            status = gamInstance.check(threadMap)
-            if status != '':
-                return gamInstance.getPath()+': ' + status
-        return 'Configuration OK'
-
-
-# Check timebases
-        for state in range(numStates):
-            numThreads = getattr(
-                self, 'state_%d_num_threads' % (state+1)).data()
-            for thread in range(numThreads):
-                timebaseGenerator = ''
-                gamNodes = self.getGamList(state, thread)
-                for currGamNid in gamNodes:
-                    if currGamNid.isOn():
-                        gamClass = currGamNid.getData().getDevice()
-                        gamInstance = gamClass(currGamNid)
-                        timebaseMode = gamInstance.checkTimebase(threadMap)
-                        if timebaseMode == MC.MARTE2_COMPONENT.TIMEBASE_GENERATOR:
-                            if timebaseGenerator == '':
-                                timebaseGenerator = gamInstance.name.data()
-                            else:
-                                return 'Multiple timebases in state %d, thread %d' % (state+1, thread+1)+': ' + timebaseGenerator + ', ' + gamInstance.name.data()
-                if timebaseGenerator == '':
-                    return 'No Timebase defined in state %d, thread %d' % (state+1, thread+1)
-        return 'Configuration OK'
