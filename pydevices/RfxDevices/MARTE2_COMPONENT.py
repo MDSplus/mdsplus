@@ -254,6 +254,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     
     # get the name associated with that signal node subtree, including name of nested signals. Valid for bot input and output signals
     def getSignalName(self, sigNode):
+        print('GET SIGNAL NODE ', sigNode.getName())
     #passed sigNode may either refer to a VALUE field or to its parent
         if sigNode.getName() == 'VALUE':
             currSigNode = sigNode.getParent()
@@ -265,7 +266,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             raise Exception('Internal error in getSignal node for '+sigNode.getPath())
 
         try:
-            name = nameNode.getNode('NAME').data()
+            name = nameNode.data()
         except:
             name = currSigNode.getName()
 
@@ -276,6 +277,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
             except:
                 currName = currSigNode.getName()
             name = currName+'_'+name
+        
+        print(name)
+        print()
         return name
     
 
@@ -633,7 +637,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                             currSig['DataSource'] = self.getMarteDeviceName(value)+'_ASYNC_RTN_IN'
             else: #Not a reference to the output of a MARTe2 device
                 if isinstance(value.evaluate(), MDSplus.Signal):
-                    currSig['DataSource'] = self.getMarteDeviceName(self)+'+TreeInDDB'
+                    currSig['DataSource'] = self.getMarteDeviceName(self)+'_TreeInDDB'
                     try:
                         if sigNode.getNode['COL_ORDER'].data() == 'YES':
                             useColumnOrder = 1
@@ -785,7 +789,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 'Type': treeRef['Type'],
                 'UseColumnOrder': treeRef['UseColumnOrder'], 
                 'DataExpr': treeRef['Expression'].decompile(), 
-                'TimeExpr': 'DIM_OF('+treeRef['Expression'].decompile()+')', 
+                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
                 'DataSource': self.getMarteDeviceName(self)+'_TreeInDDB'})
         outGam['Outputs'] = outputs
         return outGam
@@ -1367,7 +1371,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         #Handle real-time input signals readout from pulse file
         if len(treeRefs) > 0:
             retGams.append(self.handleTreeRefs(treeRefs))
-            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeIn_DDB', 'Class': 'GAMDataSource'})
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeInDDB', 'Class': 'GAMDataSource'})
 
         #Handle Packing of input structures defined in separate fields
         if len(inputsToBePacked) > 0:
@@ -1390,6 +1394,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             outputsToBeSent, signalsToBeStored, outputsToBeUnpacked, isFieldCheck = False)
 
         retGams.append(retGam)
+        retDataSources.append({'Name': self.getMarteDeviceName(self)+'_Output_DDB', 'Class': 'GAMDataSource'})
+
 
         #Handle unpacking of output structures
         if len(outputsToBeUnpacked) > 0:
@@ -1559,7 +1565,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         #Handle real-time input signals readout from pulse file
         if len(treeRefs) > 0:
             retGams.append(self.handleTreeRefs(treeRefs))
-            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeIn_DDB', 'Class': 'GAMDataSource'})
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeInDDB', 'Class': 'GAMDataSource'})
 
         retGams.append({
             'Name': self.getMarteDeviceName(self)+'_IOGAM', 
