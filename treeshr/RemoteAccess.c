@@ -981,7 +981,7 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
   int conid = remote_connect(path);
-  if (conid > 0)
+  if (conid >= 0)
   {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
