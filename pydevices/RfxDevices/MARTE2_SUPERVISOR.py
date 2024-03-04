@@ -377,16 +377,16 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             except:
                 raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '.self.getPath)
             retDataSources.append( {
-                'Name': threadName+'_'+str(self.getNid())+'_Timer',
+                'Name': threadName+'_Timer',
                 'Class': 'LinuxTimer',
                 'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
             })
             retDataSources.append( {
-                'Name': threadName+'_'+str(self.getNid())+'_TimerDDB',
+                'Name': threadName+'_TimerDDB',
                 'Class': 'GAMDataSource'
             })
             retGams.append( {
-                'Name': threadName+'_'+str(self.getNid())+'_TimerIOGAM',
+                'Name': threadName+'_TimerIOGAM',
                 'Class': 'IOGAM',
                 'Inputs': [{
                     'Name': 'Counter',
@@ -722,7 +722,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             if len(currGams) == 0:
                 continue
             gamNames = []
-            for currGam in gams:
+            for currGam in currGams:
                 gamNames.append(currGam['Name'])
             gams += currGams
             dataSources += currDataSources
@@ -780,6 +780,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         return tabs
 
     def expandTypes(self, typesDict):
+        if len(typesDict) == 0:
+            return ''
         typeConf = '''
 +Types = {
     Class = ReferenceContainer
@@ -803,7 +805,13 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 paramConf += self.expandParameters(paramDict[paramKey], tabCount+1)
                 paramConf += self.skipTabs(tabCount)+'}\n'
             else:
-                paramConf += self.skipTabs(tabCount)+paramKey+' = '+str(paramDict[paramKey])+'\n'
+                if isinstance(paramDict[paramKey], str):
+                    paramConf += self.skipTabs(tabCount)+paramKey+' = \"'+str(paramDict[paramKey])+'\"\n'
+                else:
+                    currValue = str(paramDict[paramKey])
+                    currValue = currValue.replace('[', '{')
+                    currValue = currValue.replace(']', '}')
+                    paramConf += self.skipTabs(tabCount)+paramKey+' = '+currValue+'\n'
         return paramConf
 
     def expandInterfaces(self, interfaces):
@@ -817,78 +825,79 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     def expandGams(self, gams):
         gamConf = ''
         for gam in gams:
-            gamConf += '\t\t+'+gam['Name']+' = {\n'
-            gamConf += '\t\t\tClass = '+gam['Class']+'\n'
+            gamConf += '\t\t\t+'+gam['Name']+' = {\n'
+            gamConf += '\t\t\t\tClass = '+gam['Class']+'\n'
             if 'Parameters' in gam:
-                gamConf += self.expandParameters(gam['Parameters'], 3)
-            gamConf += '\t\t\tInputSignals = {\n'
+                gamConf += self.expandParameters(gam['Parameters'], 4)
+            gamConf += '\t\t\t\tInputSignals = {\n'
             for inSig in gam['Inputs']:
-                gamConf += '\t\t\t\t'+inSig['Name']+ ' = {\n'
+                gamConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
                 for inSigKey in inSig:
                     if inSigKey == 'Name':
                         continue
                     if inSigKey == 'Parameters':
-                        gamConf += self.expandParameters(inSig['Parameters'], 5)
+                        gamConf += self.expandParameters(inSig['Parameters'], 6)
                     else:
-                        gamConf += '\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
-                gamConf += '\t\t\t\t}\n'
-            gamConf += '\t\t\t}\n'
-            gamConf += '\t\t\tOutputSignals = {\n'
+                        gamConf += '\t\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+                gamConf += '\t\t\t\t\t}\n'
+            gamConf += '\t\t\t\t}\n'
+            gamConf += '\t\t\t\tOutputSignals = {\n'
             for outSig in gam['Outputs']:
-                gamConf += '\t\t\t\t'+outSig['Name']+ ' = {\n'
+                gamConf += '\t\t\t\t\t'+outSig['Name']+ ' = {\n'
                 for outSigKey in outSig:
                     if outSigKey == 'Name':
                         continue
                     if outSigKey == 'Parameters':
-                        gamConf += self.expandParameters(outSig['Parameters'], 5)
+                        gamConf += self.expandParameters(outSig['Parameters'], 6)
                     else:
-                        gamConf += '\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
-                gamConf += '\t\t\t\t}\n'
+                        gamConf += '\t\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
+                gamConf += '\t\t\t\t\t}\n'
             gamConf += '\t\t\t}\n'
-            gamConf += '\t\t}\n'
+            gamConf += '\t\t\t}\n'
         return gamConf
 
     def expandDataSources(self, dataSources):
         dsConf = ''
         for dataSource in dataSources:
-            dsConf += '\t\t+'+dataSource['Name']+' = {\n'
-            dsConf += '\t\t\tClass = '+dataSource['Class']+'\n'
+            dsConf += '\t\t\t+'+dataSource['Name']+' = {\n'
+            dsConf += '\t\t\t\tClass = '+dataSource['Class']+'\n'
             if 'Parameters' in dataSource:
                 dsConf += self.expandParameters(dataSource['Parameters'], 3)
-            dsConf += '\t\t\tSignals = {\n'
-            if 'Signals' in dataSource:
-                for inSig in dataSource['Signals']:
-                    dsConf += '\t\t\t\t'+inSig['Name']+ ' = {\n'
-                    for inSigKey in inSig:
-                        if inSigKey == 'Name':
-                            continue
-                        if inSigKey == 'Parameters':
-                            dsConf += self.expandParameters(inSig['Parameters'], 5)
-                        else:
-                            dsConf += '\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+            if 'Signals' in dataSource and len(dataSource['Signals']) >  0:
+                dsConf += '\t\t\t\tSignals = {\n'
+                if 'Signals' in dataSource:
+                    for inSig in dataSource['Signals']:
+                        dsConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
+                        for inSigKey in inSig:
+                            if inSigKey == 'Name':
+                                continue
+                            if inSigKey == 'Parameters':
+                                dsConf += self.expandParameters(inSig['Parameters'], 5)
+                            else:
+                                dsConf += '\t\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+                        dsConf += '\t\t\t\t\t}\n'
                     dsConf += '\t\t\t\t}\n'
-                dsConf += '\t\t\t}\n'
-        dsConf += '\t\t}\n'
+            dsConf += '\t\t\t}\n'
         return dsConf
 
     def expandStates(self, statesDict):
         stateConf = ''
         for stateKey in statesDict:
-            stateConf += '\t\t+'+stateKey+' = {\n'
-            stateConf += '\t\t\tClass = RealTimeState\n'
-            stateConf += '\t\t\tThreads = {\n'
-            stateConf += '\t\t\t\tClass = ReferenceContainer\n'
+            stateConf += '\t\t\t+'+stateKey+' = {\n'
+            stateConf += '\t\t\t\tClass = RealTimeState\n'
+            stateConf += '\t\t\t\t+Threads = {\n'
+            stateConf += '\t\t\t\t\tClass = ReferenceContainer\n'
             for threadKey in statesDict[stateKey]:
-                stateConf += '\t\t\t\t+'+threadKey+' = {\n'
-                stateConf += '\t\t\t\t\tClass = RealTimeThread\n'
-                stateConf += '\t\t\t\t\tCPUs = '+str(statesDict[stateKey][threadKey]['CpuMask'])+'\n'
-                stateConf += '\t\t\t\t\tFunctions = {'
+                stateConf += '\t\t\t\t\t+'+threadKey+' = {\n'
+                stateConf += '\t\t\t\t\t\tClass = RealTimeThread\n'
+                stateConf += '\t\t\t\t\t\tCPUs = '+str(statesDict[stateKey][threadKey]['CpuMask'])+'\n'
+                stateConf += '\t\t\t\t\t\tFunctions = {'
                 for gamName in statesDict[stateKey][threadKey]['GamNames']:
                     stateConf += ' '+gamName+' '
                 stateConf += '}\n'
-                stateConf += '\t\t\t\t}\n'
+                stateConf += '\t\t\t\t\t}\n'
+            stateConf += '\t\t\t\t}\n'
             stateConf += '\t\t\t}\n'
-            stateConf += '\t\t}\n'
         return stateConf
 
     def generateConfiguration(self):
@@ -908,7 +917,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     CPUs = 0x1
     Name = <APP_NAME>
 }
-+WebRoot = {
+/* +WebRoot = {
     Class = HttpObjectBrowser
     Root = "."
     +ObjectBrowse = {
@@ -929,7 +938,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     AcceptTimeout = 1000
     MaxNumberOfThreads = 8
     MinNumberOfThreads = 1
-}
+} */
 <INTERFACE_LIST>    
 +StateMachine = {
     Class = StateMachine
@@ -1022,67 +1031,68 @@ $<APP_NAME> = {
     Class = RealTimeApplication
     +Functions = {
         Class = ReferenceContainer
-        +IDLE_MDSPLUS = {
-            Class = IOGAM
-            InputSignals = {
-                Counter = {
-                    DataSource = IDLE_MDSPLUS_TIMER
-                    Type = uint32
-                    NumberOfElements = 1
-                }
-                Time = {
-                    DataSource = IDLE_MDSPLUS_TIMER
-                    Type = uint32
-                    NumberOfElements = 1
-                    Frequency = 10
-                }
+      +IDLE_MDSPLUS = {
+        Class = IOGAM
+          InputSignals = {
+            Counter = {
+              DataSource = IDLE_MDSPLUS_TIMER
+              Type = uint32
+              NumberOfElements = 1
             }
-            OutputSignals = {
-                Counter = {
-                    DataSource = IDLE_MDSPLUS_DDB
-                    Type = uint32
-                }
-                Time = {
-                    DataSource = IDLE_MDSPLUS_DDB
-                    Type = uint32
-                    NumberOfElements = 1
-                }
+            Time = {
+              DataSource = IDLE_MDSPLUS_TIMER
+              Type = uint32
+              NumberOfElements = 1
+              Frequency = 10
             }
+          }
+          OutputSignals = {
+            Counter = {
+              DataSource = IDLE_MDSPLUS_DDB
+              Type = uint32
+            }
+            Time = {
+              DataSource = IDLE_MDSPLUS_DDB
+              Type = uint32
+              NumberOfElements = 1
+            }
+          }
         }
 <GAM_LIST>
     }
     +Data = {
-        Class = ReferenceContainer
-        +IDLE_MDSPLUS_TIMER = {
-            Class = LinuxTimer
-            Signals = {
-                Counter = {
-                    Type = uint32
-                }
-                Time = {
-                    Type = uint32
-                }
-            }
+      Class = ReferenceContainer
+      +IDLE_MDSPLUS_TIMER = {
+        Class = LinuxTimer
+        Signals = {
+          Counter = {
+            Type = uint32
+          }
+          Time = {
+            Type = uint32
+          }
         }
-        +IDLE_MDSPLUS_DDB = {
-            Class = GAMDataSource
-        }
-        +Timings = {
-            Class = TimingDataSource
-        }
+      }
+      +IDLE_MDSPLUS_DDB = {
+        Class = GAMDataSource
+      }
+      +Timings = {
+        Class = TimingDataSource
+      }
 <DATASOURCE_LIST>
     }
     +States = {
-        Class = ReferenceContainer
-        +Idle = {
-            Class = RealTimeState
-            +Threads = {
-                Class = ReferenceContainer
-                +Thread1 = {
-                Class = RealTimeThread
-                Functions = {IDLE_MDSPLUS}
-            }
+      Class = ReferenceContainer
+      +Idle = {
+        Class = RealTimeState
+        +Threads = {
+          Class = ReferenceContainer
+          +Thread1 = {
+            Class = RealTimeThread
+            Functions = {IDLE_MDSPLUS}
+          }
         }
+      }
 <STATE_LIST>
     }
 
@@ -1099,12 +1109,17 @@ $<APP_NAME> = {
         outConfig = outConfig.replace('<GAM_LIST>', self.expandGams(config['Gams']))
         outConfig = outConfig.replace('<DATASOURCE_LIST>', self.expandDataSources(config['DataSources']))
         outConfig = outConfig.replace('<STATE_LIST>', self.expandStates(config['StateDict']))
-        outConfig = outConfig.replace('<FISRT_STATE>', firstStateName)
+        outConfig = outConfig.replace('<FIRST_STATE>', firstStateName)
     
         return outConfig
 
     def buildConfiguration(self):
-        print(self.generateConfiguration())
+        config = self.generateConfiguration()
+        print(config)
+        name = self.getNode('NAME').data()
+        f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
+        f.write(config)
+        f.close()
 
 
     def startMarteIdle(self):
@@ -1123,13 +1138,13 @@ $<APP_NAME> = {
     def gotorun(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTORUN'
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
     def gotoidle(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTOIDLE'
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
     def doState(self, state):
@@ -1138,13 +1153,13 @@ $<APP_NAME> = {
         eventString1 = marteName+':StopCurrentStateExecution:XX'
         eventString2 = marteName+':'+'PrepareNextState:'+stateName
         eventString3 = marteName+':StartNextStateExecution:XX'
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
         time.sleep(.1)
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString2.encode(), dtype=np.uint8))
         time.sleep(.1)
-        Event.seteventRaw(marteName, np.frombuffer(
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
 
     def doState1(self):
