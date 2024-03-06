@@ -196,8 +196,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 supervisorNodes.append(currSupervisor)
         #Check
         for currSupervisor in supervisorNodes:
-            if not isinstance(currSupervisor, RfxDevices.MARTE2_SUPERVISOR):
-                raise Exception('Declared node is not a MARTE2_SUPERVISOR: '+ currsupervisor(getPath()))
+            if not isinstance(currSupervisor, MARTE2_SUPERVISOR):
+                raise Exception('Declared node is not a MARTE2_SUPERVISOR: '+ currSupervisor(self.getPath()))
         return supervisorNodes
 
  
@@ -290,7 +290,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 if not isinstance(timebaseDef, MDSplus.TreeNode):
                     raise Exception('Invalid thread reference for thread '+threadName+ ' in supervisor '+self.getPath())
                 supervisorNode = timebaseDef.getParent().getParent().getParent()
-                if not isinstance(supervisorNode, RfxDevices.MARTE2_SUPERVISOR):
+                if not isinstance(supervisorNode, MARTE2_SUPERVISOR):
                     raise Exception('Invalid thread reference for thread '+threadName+' supervisor '+self.getPath()+' : '+timebaseDef.getPath())
                 try:
                     syncThreadName = timebaseDef.getParent().getNode('NAME').data()
@@ -348,7 +348,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             except:
                 raise Exception('Cannot get referenced timebase in derived synchronization '+self.getPath())
             syncSupervisor = timebaseRef.getParent().getParent().getParent()
-            if not isinstance(syncSupervisor, RfxDevices.MARTE2_SUPERVISOR):
+            if not isinstance(syncSupervisor, MARTE2_SUPERVISOR):
                 raise Exception('Wrongly referenced timebase in derived synchronization '+self.getPath())
 
             return syncSupervisor.getSynchonizationTimeTypePeriod(timebaseRef)
@@ -455,11 +455,11 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Cannot retrieve thread timebase for thread '+threadName+' supervisor '+self.getPath())
             if not isinstance(refTimebaseDef, MDSplus.TreeNode):
                 raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
-            if not isinstance(refTimebaseDef.getParent().getParent().getParent(), RfxDevices.MARTE2_SUPERVISOR):
+            if not isinstance(refTimebaseDef.getParent().getParent().getParent(), MARTE2_SUPERVISOR):
                 raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
             refSupervisor = refTimebaseDef.getParent().getParent().getParent()
             try:
-                syncDiv = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DIV' % (stateIdx+1, threadIdx+1))
+                syncDiv = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DIV' % (stateIdx+1, threadIdx+1)).data()
             except:
                 raise Exception('Invalid timebase div for thread '+threadName+' supervisor '+self.getPath())
 
@@ -485,12 +485,13 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     'Outputs': [{
                         'Name': 'Time',
                         'Type': timerType,
-                        'DataSource':  threadName+'_TimerDDB'
+                        'DataSource':  threadName+'_TimerDDB',
+                        'Samples': 1
                      }] 
                 })
-                retInfo['TimerBBD'] = threadName+'_TimerDDB'
+                retInfo['TimerDDB'] = threadName+'_TimerDDB'
                 retInfo['TimerType'] = timerType
-                retInfo['TimerPeriod'] = timerPeriod / syncDiv
+                retInfo['TimerPeriod'] = timerPeriod * syncDiv
                 retInfo['DataSources'] = retDataSources
                 retInfo['Gams'] = retGams
                 return retInfo
@@ -530,7 +531,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         'DataSource':  threadName+'_TimerDDB'
                      }] 
                 })
-                retInfo['TimerBBD'] = threadName+'_TimerDDB'
+                retInfo['TimerDDB'] = threadName+'_TimerDDB'
                 retInfo['TimerType'] = timerType
                 retInfo['TimerPeriod'] = timerPeriod / syncDiv
                 retInfo['DataSources'] = retDataSources
@@ -614,11 +615,11 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
         except:
             raise Exception('Missing thread name for for supervisor '+self.getPath())
-        timebaseDefNode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).getData()
+        timebaseDefNode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
         if self.isReferencedByAnotherThreadSameSupervisor(timebaseDefNode, stateIdx):
             retDataSources.append({
                 'Name': threadName+'_TimerSync',
-                'Class': 'RealTimeThreadSynchronization',
+                'Class': 'RealTimeThreadSynchronisation',
             })
             retGams.append({
                 'Name': threadName+'TimerSync_IOGAM',
@@ -852,7 +853,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     else:
                         gamConf += '\t\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
                 gamConf += '\t\t\t\t\t}\n'
-            gamConf += '\t\t\t}\n'
+            gamConf += '\t\t\t\t}\n'
             gamConf += '\t\t\t}\n'
         return gamConf
 
@@ -862,7 +863,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             dsConf += '\t\t\t+'+dataSource['Name']+' = {\n'
             dsConf += '\t\t\t\tClass = '+dataSource['Class']+'\n'
             if 'Parameters' in dataSource:
-                dsConf += self.expandParameters(dataSource['Parameters'], 3)
+                dsConf += self.expandParameters(dataSource['Parameters'], 4)
             if 'Signals' in dataSource and len(dataSource['Signals']) >  0:
                 dsConf += '\t\t\t\tSignals = {\n'
                 if 'Signals' in dataSource:
