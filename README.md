@@ -63,20 +63,6 @@ You can find the available operating systems that you could specify for the
     # ls <mdsplus-src-dir>/deploy/os/*.opts
 
     
-### Building with nix package manager
-The mdsplus repo is a nix flake, meaning that it specifies a build recipe
-for mdsplus and all of its dependencies.  You can automatically download,
-build, and install mdsplus using the following nix command (after enabling the 
-currently experimental flakes feature):
-
-    nix shell github:mdsplus/mdsplus/<branch or tag name>
-    
-Upon first invocation, the above command will build and install mdsplus into
-the nix store, and then put the user into a subshell in which the mdsplus
-programs are available on the PATH.  The commands will be accessible until
-the subshell is exited.  In subsequent invocations, the user will go directly
-into the subshell without rebuilding or reinstalling.
-
 ---------------------------------------------------------------------------
 Who Uses MDSplus
 This map shows world fusion sites using MDSplus.  
