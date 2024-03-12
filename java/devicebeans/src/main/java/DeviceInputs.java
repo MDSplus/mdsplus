@@ -105,7 +105,7 @@ public class DeviceInputs extends DeviceComponent
                 {
                     String fieldName;
                     try {
-                        fieldName = subtree.getString(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[i] + 6 * fieldIdx +  4));
+                        fieldName = subtree.getString(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[i] + 8 * fieldIdx +  5));
                     }catch(Exception exc)
                     {
                         fieldName = "";
@@ -116,7 +116,7 @@ public class DeviceInputs extends DeviceComponent
                     jp2.add(fieldsTF[i][fieldIdx] = new JTextField(), "Center");
                     jp1.add(jp2);
                 }
-                currInputNid += numInputChildren + 1 + 3 * numParameters[i] + 6 * numFields[i];
+                currInputNid += numInputChildren + 1 + 3 * numParameters[i] + 8 * numFields[i];
                jp.add(jp1);
            }
             scrollP = new JScrollPane(jp);
@@ -156,10 +156,10 @@ public class DeviceInputs extends DeviceComponent
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
-                         fieldsTF[inputIdx][fieldIdx].setText(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 6 * fieldIdx +  5));
+                         fieldsTF[inputIdx][fieldIdx].setText(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 8 * fieldIdx +  4));
                     }catch(Exception exc){fieldsTF[inputIdx][fieldIdx].setText("");}
                }
-               currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
+               currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 8 * numFields[inputIdx]; 
             }
 	}
 
@@ -198,14 +198,14 @@ public class DeviceInputs extends DeviceComponent
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
-                       subtree.putDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 6 * fieldIdx +  5, fieldsTF[inputIdx][fieldIdx].getText());
+                       subtree.putDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 8 * fieldIdx +  4, fieldsTF[inputIdx][fieldIdx].getText());
                     }catch(Exception exc)
                     {
                         JOptionPane.showMessageDialog(null, ""+exc, "Error in subfield of input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                     }
              
                 }
-                currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
+                currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 8 * numFields[inputIdx]; 
             }
        }
 }  

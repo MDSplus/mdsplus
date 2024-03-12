@@ -93,7 +93,7 @@ public class DeviceOutputs extends DeviceComponent
                     numBusItems++;
                 }
                 numParItems += numPars;
-                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 8 * numFields;
+                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
             }
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
@@ -174,15 +174,18 @@ public class DeviceOutputs extends DeviceComponent
                     jp.add(busLabel);
                     for(int fieldIdx = 0; fieldIdx < numFields; fieldIdx++)
                     {
-                        int fieldNid = currOutNid + numChildren +numMembers +1 + 3 * numPars + 8 * fieldIdx;
+                        int fieldNid = currOutNid + numChildren +numMembers +1 + 3 * numPars + 10 * fieldIdx;
                         segLenNids[currItem] = fieldNid + 5;
+                        dimensionNids[currItem] = currOutNid + 4;
                         String fieldName = "";
                         try {
                            fieldName = subtree.getString(subtree.getDataExpr(fieldNid + 1));
                         }catch(Exception exc){}
                         JPanel jp1 = new JPanel();
                         jp1.setBorder(new TitledBorder(outName+'.'+fieldName));
-                        jp1.setLayout(new GridLayout(1,2));
+                       // jp1.setLayout(new GridLayout(1,2));
+                        jp1.add(new JLabel("Dimensions: "));
+                        jp1.add(dimensionsTF[currItem] = new JTextField(4));
                         jp1.add(new JLabel("Segment len.: "));
                         jp1.add(segLensTF[currItem] = new JTextField(10));
                         
@@ -202,9 +205,10 @@ public class DeviceOutputs extends DeviceComponent
                         currItem++;
                     }
                 }
-                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 8 * numFields;
+                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
  
             }
+            numItems = currItem;
             scrollP = new JScrollPane(jp);
             setLayout(new BorderLayout());
             add(scrollP, "Center");
@@ -212,7 +216,7 @@ public class DeviceOutputs extends DeviceComponent
         }
 	protected void displayData(String data, boolean is_on)
 	{
-for(int idx = 0; idx < numItems; idx++)
+             for(int idx = 0; idx < numItems; idx++)
             {
                 try {
                      segLensTF[idx].setText(subtree.getDataExpr(segLenNids[idx]));
@@ -227,13 +231,13 @@ for(int idx = 0; idx < numItems; idx++)
                     dimensionsTF[idx].setText("");
                 }
             }
-            for(int idx = 0; idx < numParItems; idx++)
+            for(int parIdx = 0; parIdx < numParItems; parIdx++)
             {
                 try {
-                     parametersTF[idx].setText(subtree.getDataExpr(parameterNids[idx]));
+                     parametersTF[parIdx].setText(subtree.getDataExpr(parameterNids[parIdx]));
                 }catch(Exception exc)
                 {
-                    parametersTF[idx].setText("");
+                    parametersTF[parIdx].setText("");
                 }
             }
 	}
