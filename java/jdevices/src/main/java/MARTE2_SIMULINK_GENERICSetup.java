@@ -190,9 +190,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
@@ -1021,21 +1018,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase:");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div. (if from another thread):");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(174);
-        jPanel2.add(deviceField2);
-
-        jPanel1.add(jPanel2);
+        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Simulink module: ");
@@ -1046,7 +1029,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Write CPU Mask: ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(101);
+        deviceField4.setOffsetNid(128);
         jPanel3.add(deviceField4);
 
         jButton1.setText("Fill fields");
@@ -1070,13 +1053,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField77.setIdentifier("");
         deviceField77.setLabelString("MDS write trigger:");
         deviceField77.setNumCols(30);
-        deviceField77.setOffsetNid(96);
+        deviceField77.setOffsetNid(123);
         jPanel47.add(deviceField77);
 
         deviceField78.setIdentifier("");
         deviceField78.setLabelString("Post trig. Samples: ");
         deviceField78.setNumCols(6);
-        deviceField78.setOffsetNid(98);
+        deviceField78.setOffsetNid(125);
         jPanel47.add(deviceField78);
 
         jPanel1.add(jPanel47);
@@ -1120,7 +1103,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice7;
     private DeviceChoice deviceChoice8;
     private DeviceChoice deviceChoice9;
-    private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
@@ -1131,7 +1113,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField17;
     private DeviceField deviceField18;
     private DeviceField deviceField19;
-    private DeviceField deviceField2;
     private DeviceField deviceField20;
     private DeviceField deviceField21;
     private DeviceField deviceField22;
@@ -1226,7 +1207,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
