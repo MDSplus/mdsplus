@@ -308,7 +308,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
 
    #return the containing MARTE2 device name. The name is obtained from the full path (except \\experiment::TOP) replacing : and . with _ 
-    def getMarteDeviceName(self, node):
+    def getMarteDeviceName(self, node = None):
+        if node == None:
+            node = self
         currNode = self.getMarteDevice(node)
         devName = currNode.getFullPath()
         return devName[devName.index('::TOP')+6:].replace(':', '_').replace('.', '_')
@@ -669,7 +671,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else: #It is a constant
                     if not isinstance(value.evaluate(), MDSplus.Scalar):
                         raise Exception('Invalid input for '+sigNode.getPath()+': '+value.decompile())
-                    currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'+_ConstInDDB'
+                    currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_ConstInDDB'
                     constRefs.append({
                         'Name':currSig['Name'], 
                         'Value': value.data(), 
@@ -1156,7 +1158,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Returns the dict definition of theIOGAM carrying out synchronized signals
     def handleSynchronoutOutputs(self, syncSignals):
-        print('HANDLE SYNC ',  syncSignals)
         retGam = {}
         retGam['Class'] = 'IOGAM'
         retGam['Name'] = self.getMarteDeviceName(self)+'_Output_Sync_IOGAM'
@@ -1227,7 +1228,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfPostTriggers'] = postTrigSamples
             parameters['NumberOfBuffers'] = postTrigSamples + 10
         else:
-            parameters['NumberOfBuffers'] = 10
+            parameters['NumberOfBuffers'] = 10000
         retDataSource['Parameters'] = parameters
 
         signals = []
@@ -1434,6 +1435,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if len(treeRefs) > 0:
             retGams.append(self.handleTreeRefs(treeRefs))
             retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeInDDB', 'Class': 'GAMDataSource'})
+
+        #Handle constant inputs
+        if len(constRefs) > 0:
+            retGams.append(self.handleConstRefs(constRefs))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_ConstInDDB', 'Class': 'GAMDataSource'})
 
         #Handle Packing of input structures defined in separate fields
         if len(inputsToBePacked) > 0:

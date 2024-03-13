@@ -701,6 +701,13 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 dataSources += currDataSources
                 gams += currGams
 
+        #handle recording of timing information
+        timingDataSource, timingGam = self.getTimingInfo(stateIdx, threadIdx, retSyncInfo['TimerPeriod'])
+        if timingDataSource != None:
+            dataSources.append(timingDataSource)
+            gams.append(timingGam)
+
+
         return dataSources, gams
 
     #call prepareMarteInfo method for all involved MARTE2 devic
@@ -749,6 +756,103 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'Gams': gams,
             'ThreadGamsDict': threadGamsDict
         }
+
+
+    #return GAM and DataSource for handling the recording of execution times for this thread
+    def getTimingInfo(self, stateIdx, threadIdx, threadPeriod):
+        segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
+                         (stateIdx+1, threadIdx+1)).data()
+        if(segLen == 0):
+            return None, None
+        
+        stateName = getattr(self, 'state_%d_name' % (stateIdx+1)).data()
+        threadName = getattr(self, 'state_%d_thread_%d_name' %
+                             (stateIdx+1, threadIdx+1)).data()
+        cpuMask = getattr(self, 'times_state_%d_thread_%d_cpu_mask' %
+                          (stateIdx+1, threadIdx+1)).data()
+        timeSignals = []
+        gamNodes = self.getGamNodes(stateIdx, threadIdx)
+        for gamNode in gamNodes:
+            gamName = gamNode.getMarteDeviceName()
+            gamMode = gamNode.getData('MODE').getDevice()
+            if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
+                timeSignals.append(gamName+'_ReadTime')
+                timeSignals.append(gamName+'_ExecTime')
+            elif gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT:
+                timeSignals.append(gamName+'_IOGAM_WriteTime')
+            else:
+                timeSignals.append(gamName+'_DDBOutIOGAM_ReadTime')
+
+        if len(timeSignals) == 0:
+            return None, None
+        
+        retGam = {}
+        retGam['Name'] = 'State_%d_Thread_%d_TIMES_IOGAM'%(stateIdx+1, threadIdx+1)
+        retGam['Class'] = 'IOGAM'
+        gamInputs = []
+        gamInputs.append({
+            'Name': stateName+'_'+threadName+'_CycleTime',
+            'Alias': stateName+'.'+threadName+'_CycleTime',
+            'DataSource': 'Timings',
+            'Type': 'uint32'
+        })
+        for timeSignal in timeSignals:
+            gamInputs.append({
+                'Name': timeSignal,
+                'DataSource': 'Timings',
+                'Type': 'uint32'
+            })
+        retGam['Inputs'] = gamInputs
+        gamOutputs = []
+        gamOutputs.append({
+            'Name': 'CycleTime',
+            'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
+            'Type': 'uint32'
+        })
+        for timeSignal in timeSignals:
+            gamOutputs.append({
+                'Name': timeSignal,
+                'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
+                'Type': 'uint32'
+            })
+        retGam['Outputs'] = gamOutputs
+
+        retDataSource = {}
+        retDataSource['Name'] = 'State_%d_Thread_%d_TIMES_WRITER' % (stateIdx+1, threadIdx+1)
+        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Parameters'] = {
+            'CPUMask': cpuMask,
+            'NumberOfBuffers' : 20000,
+            'StackSize': 1000000,
+            'TreeName': self.getTree().name,
+            'PulseNumber': self.getTree().shot,
+            'StoreOnTrigger': 0,
+            'TimeRefresh': 5,
+            'EventName': 'UpdateTimes'
+        }
+        retSignals = []
+        retSignals.append({
+            'Name': 'CycleTime',
+            'Parameters': {
+                'NodeName':  getattr(self, 'times_state_%d_thread_%d_cycle' % (stateIdx+1, threadIdx+1)).getFullPath(),
+                'Period': threadPeriod,
+                'MakeSegmentAfterNWrites': segLen,
+                'AutomaticSegmentation' : 0
+            }
+        })
+        sigIdx = 1
+        for timeSignal in timeSignals:
+            retSignals.append({
+                'Name': timeSignal,
+                'NodeName':  getattr(self, 'times_state_%d_thread_%d_gam' % (stateIdx+1, threadIdx+1)+str(sigIdx)).getFullPath(),
+                'Period': threadPeriod,
+                'MakeSegmentAfterNWrites': segLen,
+                'AutomaticSegmentation' : 0
+           })
+
+        retDataSource['Signals'] = retSignals
+        return retDataSource, retGam
+    
 
     #return as a dict the underlying MARTe2 configuration. The fields ot the returned dict are:
     #'DataSources': list of all DataSources
@@ -861,30 +965,32 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             gamConf += '\t\t\t\tClass = '+gam['Class']+'\n'
             if 'Parameters' in gam:
                 gamConf += self.expandParameters(gam['Parameters'], 4)
-            gamConf += '\t\t\t\tInputSignals = {\n'
-            for inSig in gam['Inputs']:
-                gamConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
-                for inSigKey in inSig:
-                    if inSigKey == 'Name':
-                        continue
-                    if inSigKey == 'Parameters':
-                        gamConf += self.expandParameters(inSig['Parameters'], 6)
-                    else:
-                        gamConf += '\t\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
-                gamConf += '\t\t\t\t\t}\n'
-            gamConf += '\t\t\t\t}\n'
-            gamConf += '\t\t\t\tOutputSignals = {\n'
-            for outSig in gam['Outputs']:
-                gamConf += '\t\t\t\t\t'+outSig['Name']+ ' = {\n'
-                for outSigKey in outSig:
-                    if outSigKey == 'Name':
-                        continue
-                    if outSigKey == 'Parameters':
-                        gamConf += self.expandParameters(outSig['Parameters'], 6)
-                    else:
-                        gamConf += '\t\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
-                gamConf += '\t\t\t\t\t}\n'
-            gamConf += '\t\t\t\t}\n'
+            if 'Inputs' in gam:
+                gamConf += '\t\t\t\tInputSignals = {\n'
+                for inSig in gam['Inputs']:
+                    gamConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
+                    for inSigKey in inSig:
+                        if inSigKey == 'Name':
+                            continue
+                        if inSigKey == 'Parameters':
+                            gamConf += self.expandParameters(inSig['Parameters'], 6)
+                        else:
+                            gamConf += '\t\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
+                    gamConf += '\t\t\t\t\t}\n'
+                gamConf += '\t\t\t\t}\n'
+            if 'Outputs' in gam:
+                gamConf += '\t\t\t\tOutputSignals = {\n'
+                for outSig in gam['Outputs']:
+                    gamConf += '\t\t\t\t\t'+outSig['Name']+ ' = {\n'
+                    for outSigKey in outSig:
+                        if outSigKey == 'Name':
+                            continue
+                        if outSigKey == 'Parameters':
+                            gamConf += self.expandParameters(outSig['Parameters'], 6)
+                        else:
+                            gamConf += '\t\t\t\t\t\t'+outSigKey+' = '+str(outSig[outSigKey])+'\n'
+                    gamConf += '\t\t\t\t\t}\n'
+                gamConf += '\t\t\t\t}\n'
             gamConf += '\t\t\t}\n'
         return gamConf
 
