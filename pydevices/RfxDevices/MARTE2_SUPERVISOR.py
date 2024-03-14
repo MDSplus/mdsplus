@@ -168,7 +168,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         for currInterface in interfaceNodes:
             if not isinstance(currInterface, RfxDevices.MARTE2_COMPONENT):
                 raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currInterface(getPath()))
-            gamMode = currInterface.getPath('MODE').data()
+            gamMode = currInterface.getNode('MODE').data()
             if not (gamMode == MARTE2_SUPERVISOR.MODE_INTERFACE):
                 raise Exception('Declared MARTE2 device can only be Interface: '+ currInterface.getPath())
         return interfaceNodes
@@ -884,7 +884,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         interfaces = []
         interfaceNodes = self.getInterfaceNodes()
         for interfaceNode in interfaceNodes:
-            interfaces += (interfaceNode.generateMarteInterfaceConfiguration())
+            interfaces.append(interfaceNode.generateMarteInterfaceConfiguration())
+        print(interfaces)
 
         return {
             'TypesDict': typesDict,
