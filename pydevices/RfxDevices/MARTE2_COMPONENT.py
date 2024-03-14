@@ -254,6 +254,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             childPars = valNode.getChildren()
             if len(childPars) > 0:
                 val = self.getParametersDict(valNode)
+                if val == {}:
+                    continue
             else:
                 try:
                     val = parNode.getNode('value').getData()
@@ -1674,6 +1676,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if numPars > 0:
             retInterface['Parameters'] = self.getParametersDict(self.getNode('PARAMETERS'))
 
+        print('RET INTERAFCE: ', retInterface)
         return retInterface
 
 
