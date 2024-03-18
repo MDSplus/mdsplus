@@ -18,8 +18,10 @@
 ./usr/local/mdsplus/matlab/private/javaConnect.m
 ./usr/local/mdsplus/matlab/private/javaExecute.m
 ./usr/local/mdsplus/matlab/private/javaFromMatlab.m
+./usr/local/mdsplus/matlab/private/javaFromMatlabCell.m
 ./usr/local/mdsplus/matlab/private/javaFromMatlabStruct.m
 ./usr/local/mdsplus/matlab/private/javaToMatlab.m
+./usr/local/mdsplus/matlab/private/javaToMatlabCell.m
 ./usr/local/mdsplus/matlab/private/javaToMatlabStruct.m
 ./usr/local/mdsplus/matlab/private/pythonActivate.m
 ./usr/local/mdsplus/matlab/private/pythonConnect.m
