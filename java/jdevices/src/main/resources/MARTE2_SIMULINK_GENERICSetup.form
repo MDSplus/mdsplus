@@ -21,7 +21,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,-32"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,99,0,0,2,-32"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -1663,31 +1663,9 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="3"/>
+        <Property name="rows" type="int" value="2"/>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel2">
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase:"/>
-                <Property name="numCols" type="int" value="20"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase div. (if from another thread):"/>
-                <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="174"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="jPanel3">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -1705,7 +1683,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="101"/>
+                <Property name="offsetNid" type="int" value="128"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton1">
@@ -1745,7 +1723,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MDS write trigger:"/>
                 <Property name="numCols" type="int" value="30"/>
-                <Property name="offsetNid" type="int" value="96"/>
+                <Property name="offsetNid" type="int" value="123"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField78">
@@ -1753,7 +1731,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Post trig. Samples: "/>
                 <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="98"/>
+                <Property name="offsetNid" type="int" value="125"/>
               </Properties>
             </Component>
           </SubComponents>
