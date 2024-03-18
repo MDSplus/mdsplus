@@ -1011,7 +1011,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                             if inSigKey == 'Name':
                                 continue
                             if inSigKey == 'Parameters':
-                                dsConf += self.expandParameters(inSig['Parameters'], 5)
+                                dsConf += self.expandParameters(inSig['Parameters'], 6)
                             else:
                                 dsConf += '\t\t\t\t\t\t'+inSigKey+' = '+str(inSig[inSigKey])+'\n'
                         dsConf += '\t\t\t\t\t}\n'

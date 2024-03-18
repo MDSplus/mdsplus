@@ -42,8 +42,8 @@ public class DeviceOutputs extends DeviceComponent
 	}
 	private JScrollPane scrollP; 
 	private int numOutputs;
-	private JTextField segLensTF[], parametersTF[], dimensionsTF[];
-        private int segLenNids[], parameterNids[], dimensionNids[];
+	private JTextField segLensTF[], parametersTF[], dimensionsTF[], typesTF[];
+        private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
         private int numOutputChildren = 0;
         private int numItems;
         private int numParItems;
@@ -95,10 +95,13 @@ public class DeviceOutputs extends DeviceComponent
                 numParItems += numPars;
                 currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
             }
+            typesTF = new JTextField[numItems];
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
             parametersTF = new JTextField[numParItems];
 
+               
+            typeNids = new int[numItems];
             dimensionNids = new int[numItems];
             segLenNids = new int[numItems];
             parameterNids = new int[numParItems];
@@ -138,8 +141,11 @@ public class DeviceOutputs extends DeviceComponent
                     jp1.add(new JLabel("Dimensions: "));
                     jp1.add(dimensionsTF[currItem] = new JTextField(4));
                     dimensionNids[currItem] = currOutNid + 4;
+                    jp1.add(new JLabel("Type: "));
+                    jp1.add(typesTF[currItem] = new JTextField(6));
+                    typeNids[currItem] = currOutNid + 2;
                     jp1.add(new JLabel("Segment len.: "));
-                    jp1.add(segLensTF[currItem] = new JTextField(10));
+                    jp1.add(segLensTF[currItem] = new JTextField(4));
                     segLenNids[currItem] = currOutNid + 5;
                     currItem++;
                     for(int parIdx = 0; parIdx < numPars; parIdx++)
@@ -177,6 +183,7 @@ public class DeviceOutputs extends DeviceComponent
                         int fieldNid = currOutNid + numChildren +numMembers +1 + 3 * numPars + 10 * fieldIdx;
                         segLenNids[currItem] = fieldNid + 5;
                         dimensionNids[currItem] = currOutNid + 4;
+                        typeNids[currItem] = currOutNid + 2;
                         String fieldName = "";
                         try {
                            fieldName = subtree.getString(subtree.getDataExpr(fieldNid + 1));
@@ -186,8 +193,10 @@ public class DeviceOutputs extends DeviceComponent
                        // jp1.setLayout(new GridLayout(1,2));
                         jp1.add(new JLabel("Dimensions: "));
                         jp1.add(dimensionsTF[currItem] = new JTextField(4));
+                        jp1.add(new JLabel("Type: "));
+                        jp1.add(typesTF[currItem] = new JTextField(6));
                         jp1.add(new JLabel("Segment len.: "));
-                        jp1.add(segLensTF[currItem] = new JTextField(10));
+                        jp1.add(segLensTF[currItem] = new JTextField(4));
                         
                         try {
                             jp1.setTransferHandler(new FromTransferHandler(subtree.getFullPath(currOutNid)+".FIELDS."+fieldName+":VALUE"));
@@ -230,6 +239,12 @@ public class DeviceOutputs extends DeviceComponent
                 {
                     dimensionsTF[idx].setText("");
                 }
+                try {
+                     typesTF[idx].setText(subtree.getDataExpr(typeNids[idx]).replace("\"", ""));
+                }catch(Exception exc)
+                {
+                    typesTF[idx].setText("");
+                }
             }
             for(int parIdx = 0; parIdx < numParItems; parIdx++)
             {
@@ -254,6 +269,12 @@ public class DeviceOutputs extends DeviceComponent
                 }catch(Exception exc)
                 {
                     System.out.println("Error saving Dimensions");
+                }
+                try {
+                    subtree.putDataExpr(typeNids[idx], "\""+typesTF[idx].getText()+"\"");
+                }catch(Exception exc)
+                {
+                    System.out.println("Error saving Type");
                 }
                 try {
                     subtree.putDataExpr(segLenNids[idx], segLensTF[idx].getText());
