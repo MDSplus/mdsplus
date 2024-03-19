@@ -250,9 +250,9 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 //		arr->getInfo(&clazz, &dtype, &length, &currDims, &dims, &ptr);
 //		nDims = currDims - 1;
 		deleteData(arr);
-	    }catch(MdsException *exc)
+	    }catch(const MdsException &exc)
 	    {
-		std::cout << "Error prevDef reading value for " << name << ": " << exc->what() << "\n";
+		std::cout << "Error prevDef reading value for " << name << ": " << exc.what() << "\n";
 		delete exc;
 	    }
 	}
@@ -263,9 +263,9 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 //		data->getInfo(&clazz, &dtype, &length, &currDims, &dims, &ptr);
 //		nDims = currDims;
 		deleteData(data);
-	    }catch(MdsException *exc)
+	    }catch(const MdsException &exc)
 	    {
-		std::cout << "Error reading value for " << name << ": " << exc->what() << "\n";
+		std::cout << "Error reading value for " << name << ": " << exc.what() << "\n";
 		delete exc;
 	    }
 	}
@@ -290,7 +290,7 @@ std::cout << "mdsPV  Data "<< currNode << "\n";
 //	    delete currNode;
 	    return;
 	}
-	catch(MdsException *exc)
+	catch(const MdsException &exc)
 	{
 	    nDims = 0;
 std::cout << "mdsPV  nDims exc"<< nDims <<"\n";
@@ -306,7 +306,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    hopr = currNode->getDouble();
 	    delete currNode;
 	    hasOpr = true;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 	    std::cout << "Cannot get LOPR or HOPR for " << name << "\n";
 	    hasOpr = false;
@@ -316,7 +316,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    currNode = tree->getNode(":UNITS");
 	    units = currNode->getString();
 	    delete currNode;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 	    std::cout << "Cannot get UNITS for " << name << "\n";
 	    units = NULL;
@@ -330,7 +330,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    lowAlarm = currNode->getDouble();
 	    delete currNode;
 	    hasAlarm = true;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 //	    std::cout << "Cannot get HIGH_ALARM or LOW_ALARM for " << name << "\n";
 	    hasAlarm = false;
@@ -344,7 +344,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    lowWarning = currNode->getDouble();
 	    delete currNode;
 	    hasWarning = true;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 //	    std::cout << "Cannot get HIGH_WARN or LOW_WARN for " << name << "\n";
 	    hasWarning = false;
@@ -358,7 +358,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    lowCtrl = currNode->getDouble();
 	    delete currNode;
 	    hasCtrl = true;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 //	    std::cout << "Cannot get HIGH_CTRL or LOW_CTRL for " << name << "\n";
 	    hasCtrl = false;
@@ -372,7 +372,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    lowGraphic = currNode->getDouble();
 	    delete currNode;
 	    hasGraphic = true;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 //	    std::cout << "Cannot get HIGH_GRAPH or LOW_GRAPH for " << name << "\n";
 	    hasGraphic = false;
@@ -382,7 +382,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    currNode = tree->getNode(":PREC");
 	    precision = currNode->getInt();
 	    delete currNode;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 //	    std::cout << "Cannot get PREC for " << name << "\n";
 	    precision = 0;
@@ -394,7 +394,7 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	    enums = enumData->getStringArray(&numEnums);
 	    deleteData(enumData);
 	    delete currNode;
-	} catch(MdsException *exc)
+	} catch(const MdsException &exc)
 	{
 	    enums = NULL;
 	    numEnums = 0;
@@ -403,9 +403,9 @@ std::cout << "mdsPV  nDims "<< nDims <<"\n";
 	tree->setDefault(prevDef);
 	delete prevDef;
         valid = true;
-   }catch(MdsException *exc)
+   }catch(const MdsException &exc)
     {
-	std::cout << "Error initilizing MDSplus nodes: " << exc->what() << "\n";
+	std::cout << "Error initilizing MDSplus nodes: " << exc.what() << "\n";
 	valid = false;
 	tree->setDefault(prevDef);
 	delete prevDef;
@@ -568,9 +568,9 @@ caStatus mdsPV::updateValue(const gdd & valueIn)
 	}
 	else
 	    valNode->putData(dataIn);
-    }catch(MdsException *exc)
+    }catch(const MdsException &exc)
     {
-	std::cout << "Error writing data: " << exc->what() << "\n";
+	std::cout << "Error writing data: " << exc.what() << "\n";
 	deleteData(dataIn);
 	return S_casApp_undefined;
     } 
@@ -910,7 +910,7 @@ Data *mdsPV::getData()
 	    deleteData(arr);
 	    delete [] dims;
 	    return retData;
-	}catch(MdsException *exc)
+	}catch(const MdsException &exc)
 	{
 	    return NULL;
 	    delete exc;
@@ -920,7 +920,7 @@ Data *mdsPV::getData()
     {
 	try {
 	    return valNode->getData();
-        }catch(MdsException *exc)
+        }catch(const MdsException &exc)
 	{
 	    return NULL;
 	    delete exc;

@@ -1,17 +1,12 @@
 package mds.data.descriptor;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import mds.AllTests;
-import mds.Mds;
-import mds.MdsException;
+import org.junit.*;
+
+import mds.*;
 import mds.data.descriptor_s.Int64;
 import mds.data.descriptor_s.Uint64;
 
+@SuppressWarnings("static-method")
 public final class Descriptor_S_Test
 {
 	private static Mds mds;
@@ -29,12 +24,16 @@ public final class Descriptor_S_Test
 	}
 
 	@Before
-	public final void setUp() throws Exception
-	{/* stub */}
+	public void setUp() throws Exception
+	{
+		// stub
+	}
 
 	@After
-	public final void tearDown() throws Exception
-	{/* stub */}
+	public void tearDown() throws Exception
+	{
+		// stub
+	}
 
 	@Test
 	public final void testComplex() throws MdsException

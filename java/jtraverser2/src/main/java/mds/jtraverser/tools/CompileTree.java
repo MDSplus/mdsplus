@@ -2,22 +2,17 @@ package mds.jtraverser.tools;
 
 import java.util.StringTokenizer;
 import java.util.Vector;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+
+import javax.xml.parsers.*;
+
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
 import mds.MdsException;
 import mds.data.TREE;
 import mds.data.descriptor.Descriptor;
-import mds.data.descriptor_s.NODE;
-import mds.data.descriptor_s.Nid;
-import mds.data.descriptor_s.Path;
+import mds.data.descriptor_s.*;
 import mds.mdsip.MdsIp;
 
 public class CompileTree extends Thread
@@ -116,7 +111,8 @@ public class CompileTree extends Thread
 				}
 				return;
 			}
-			// First handle renamed nodes: they do not need to be created, but to be renamed
+			// First handle renamed nodes: they do not need to be created, but
+			// to be renamed
 			final String originalDevice = node.getAttribute("DEVICE");
 			final String deviceOffsetStr = node.getAttribute("OFFSET_NID");
 			if (originalDevice != null && deviceOffsetStr != null && !originalDevice.equals("")
@@ -199,7 +195,8 @@ public class CompileTree extends Thread
 					nid = this.tree.addConglom(name.trim(), model);
 				}
 				catch (final MdsException exc)
-				{/**/}
+				{
+					/**/}
 			}
 			else if (type.equals("field"))
 				try
@@ -280,7 +277,11 @@ public class CompileTree extends Thread
 				for (int i = 0; i < nodes.getLength(); i++)
 				{
 					final Node currNode = nodes.item(i);
-					if (currNode.getNodeType() == Node.ELEMENT_NODE) // Only element nodes at this
+					if (currNode.getNodeType() == Node.ELEMENT_NODE) // Only
+																		// element
+																		// nodes
+																		// at
+																		// this
 						this.recCompile((Element) currNode);
 				}
 			}
@@ -293,6 +294,7 @@ public class CompileTree extends Thread
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public void run()
 	{
@@ -315,7 +317,9 @@ public class CompileTree extends Thread
 			for (int i = 0; i < nodes.getLength(); i++)
 			{
 				final Node currNode = nodes.item(i);
-				if (currNode.getNodeType() == Node.ELEMENT_NODE) // Only element nodes at this
+				if (currNode.getNodeType() == Node.ELEMENT_NODE) // Only element
+																	// nodes at
+																	// this
 					this.recCompile((Element) currNode);
 			}
 		}

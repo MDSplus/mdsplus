@@ -114,14 +114,16 @@ public abstract class Mds implements AutoCloseable
 	}
 
 	public final static Mds getActiveMds()
-	{ return Mds.active; }
+	{
+		return Mds.active;
+	}
 
 	public final static MdsIp getLocal()
 	{
-		if (shared_tunnel == null)
-			shared_tunnel = new MdsIp();
-		if (shared_tunnel.isReady() == null)
-			return shared_tunnel;
+		if (Mds.shared_tunnel == null)
+			Mds.shared_tunnel = new MdsIp();
+		if (Mds.shared_tunnel.isReady() == null)
+			return Mds.shared_tunnel;
 		return null;
 	}
 
@@ -186,7 +188,19 @@ public abstract class Mds implements AutoCloseable
 
 	@Override
 	public void close()
-	{}
+	{
+		// nothing to do
+	}
+
+	public final String dcl(final CTX ctx, final String dclcmd) throws MdsException
+	{
+		final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, dclcmd);
+		MdsException.handleStatus(res.status);
+		final String err = res.getErrString();
+		if (err != null)
+			throw new Mdsdcl.DclException(err);
+		return res.getOutString();
+	}
 
 	public final int deallocateAll() throws MdsException
 	{
@@ -228,7 +242,9 @@ public abstract class Mds implements AutoCloseable
 	public abstract void execute(final String expr, final Descriptor<?>... args) throws MdsException;
 
 	public MdsApi getAPI()
-	{ return new MdsApi(this); }
+	{
+		return new MdsApi(this);
+	}
 
 	public final byte getByte(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException
 	{
@@ -279,7 +295,8 @@ public abstract class Mds implements AutoCloseable
 		return desc;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings(
+	{ "rawtypes", "resource" })
 	public final <T extends Descriptor> T getDescriptor(final CTX ctx, final Request<T> req) throws MdsException
 	{
 		final Mds mds = Mds.getActiveMds();
@@ -522,10 +539,14 @@ public abstract class Mds implements AutoCloseable
 	}
 
 	public final TCL getTCL()
-	{ return new TCL(this); }
+	{
+		return new TCL(this);
+	}
 
 	public final boolean isLocal()
-	{ return this == Mds.shared_tunnel; }
+	{
+		return this == Mds.shared_tunnel;
+	}
 
 	/**
 	 * returns true if the interface features a low latency This will allow more
@@ -618,16 +639,6 @@ public abstract class Mds implements AutoCloseable
 		if ((eventid = this.addEvent(l, event)) == -1)
 			return;
 		this.mdsSetEvent(event, eventid);
-	}
-
-	public final String dcl(final CTX ctx, final String dclcmd) throws MdsException
-	{
-		final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, dclcmd);
-		MdsException.handleStatus(res.status);
-		final String err = res.getErrString();
-		if (err != null)
-			throw new Mdsdcl.DclException(err);
-		return res.getOutString();
 	}
 
 	public final String tcl(final CTX ctx, final String command) throws MdsException

@@ -79,11 +79,13 @@ using namespace testing;
 //    TreeNode *getDefault();
 //    bool versionsInModelEnabled();
 //    bool versionsInPulseEnabled();
+//    bool alternateCompressionEnabled();
 //    bool isModified();
 //    bool isOpenForEdit();
 //    bool isReadOnly();
 //    void setVersionsInModel(bool enable);
 //    void setVersionsInPulse(bool enable);
+//    void setAlternateCompression(bool enable);
 //    void setViewDate(char *date);
 //    void setTimeContext(Data *start, Data *end, Data *delta);
 //    void createPulse(int shot);
@@ -315,9 +317,9 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { // test write
-    unique_ptr<Tree> tree = new Tree("t_tree", -1, "READONLY");
+    Tree *tree = new Tree("t_tree", -1, "READONLY");
     TEST_EXCEPTION(tree->edit(), MdsException);
-
+    delete tree;
     tree = new Tree("t_tree", -1, "NORMAL");
 
     // reopen in normal mode //
@@ -326,7 +328,7 @@ int main(int argc __attribute__((unused)),
                    MdsException);
 
     // reopen in edit mode //
-    tree->edit();
+    tree->edit(true);
     TEST0(tree->isModified());
     unique_ptr<TreeNode>(tree->addNode("save_me_not", "ANY"));
 
@@ -344,11 +346,13 @@ int main(int argc __attribute__((unused)),
     unique_ptr<TreeNode>(tree->addNode("save_me_not", "ANY"));
     // it does not writes here //
 
+    delete tree;
     // tests that the node has not been written
     tree = new Tree("t_tree", -1, "NORMAL");
     TEST_EXCEPTION(unique_ptr<TreeNode>(tree->getNode("save_me_not")),
                    MdsException);
-  }
+    delete tree;
+   }
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Devices
@@ -358,7 +362,8 @@ int main(int argc __attribute__((unused)),
   // add device
   {
     unique_ptr<Tree> tree = new Tree("t_tree", -1, "EDIT");
-    unique_ptr<TreeNode>(tree->addDevice("device", "DIO2"));
+    TreeNode *newNode = tree->addDevice("device", "DIO2");
+    delete newNode;
     tree->write();
 
     unique_ptr<TreeNode> node = tree->getNode("device");
@@ -422,6 +427,17 @@ int main(int argc __attribute__((unused)),
     tree = new Tree("t_tree", 1, "EDIT");
     unique_ptr<TreeNode> node = tree->addNode("versioned", "NUMERIC");
     tree->setVersionsInPulse(true);
+
+    // alternate compression - default False
+    TEST0(tree->alternateCompressionEnabled());
+
+    // alternate compression - set to True
+    tree->setAlternateCompression(true);
+    TEST1(tree->alternateCompressionEnabled());
+
+    // set alternate compression back to False
+    tree->setAlternateCompression(false);
+
     tree->write();
 
     tree = new Tree("t_tree", 1);
@@ -442,6 +458,9 @@ int main(int argc __attribute__((unused)),
     node->putData(unique_ptr<Int16>(new Int16(555)));
 
     TEST1(node->containsVersions());
+
+    // alternate compression - should be false
+    TEST0(tree->alternateCompressionEnabled());
 
     // TODO: version in model
   }
@@ -496,6 +515,8 @@ int main(int argc __attribute__((unused)),
 
     deleteData(addVal);
     delete tree;
+    
+    TEST1(1 == 1);
   }
 
   END_TESTING;

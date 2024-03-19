@@ -23,131 +23,90 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
 import sys
 import os
-if 'pip-egg-info' in sys.argv:
-    print("When using pip to install MDSplus use 'pip install -e <dir>'")
-    sys.exit(1)
 
-try:
-    mod_dir = os.path.dirname(os.path.abspath(__file__))
-    exec(open(mod_dir+os.sep+'_version.py').read())
-    release = "%d.%d.%d" % version
-except:
-    release = '1.0.0'
-    release_tag = 'Unknown'
-pth_dir = os.path.abspath(__file__)
-pth_dir = os.path.abspath(os.path.dirname(pth_dir)+'/..')
-setupkw = {
-    'name': 'MDSplus',
-    'extra_path': ('mdsplus', pth_dir),
-    'version': release,
-    'description': 'MDSplus Python Objectsi - '+release_tag,
-    'long_description': """
-      This module provides all of the functionality of MDSplus TDI natively in python.
-      All of the MDSplus data types such as signal are represented as python classes.
-      """,
-    'author': 'MDSplus Development Team',
-    'author_email': 'twf@www.mdsplus.org',
-    'url': 'http://www.mdsplus.org/',
-    'license': 'MIT',
-    'classifiers': [
-        'Programming Language :: Python',
-        'Intended Audience :: Science/Research',
-        'Environment :: Console',
-        'Topic :: Scientific/Engineering',
-    ],
-    'keywords': ['physics', 'mdsplus', ],
-}
+import setuptools
+from setuptools import setup
 
 
-def remove():
-    import shutil
-    "Remove installed MDSplus package"
-    oldpath = list(sys.path)
+def setupkw():
+    from runpy import run_path
     try:
-        pypath = os.getenv("PYTHONPATH", "")
-        for p in pypath.split(";"):
-            if len(p) > 0 and p in sys.path:
-                sys.path.remove(p)
-        if "" in sys.path:
-            sys.path.remove("")
-        try:
-            import MDSplus
-        except:
-            print("Error removing MDSplus: package not found")
-            return False
-        _f = MDSplus.__file__.split(os.sep)
-        while len(_f) > 1 and _f[-1] != 'MDSplus':
-            _f = _f[:-1]
-        if len(_f) <= 1 and _f[-2].endswith('.egg'):
-            _f = _f[:-1]
-        if len(_f) == 0:
-            print("Error removing MDSplus: invalid package path\n '%s'" %
-                  (MDSplus.__file__,))
-            return False
-        packagedir = os.sep.join(_f)
-        sys.stdout.write("Removing '%s' ..." % packagedir)
-        try:
-            if os.path.islink(packagedir):
-                os.remove(packagedir)
-            else:
-                shutil.rmtree(packagedir)
-            _f[-1] = "mdsplus-*.egg-info"
-            import glob
-            egginfos = glob.glob(os.sep.join(_f))
-            for egginfo in egginfos:
-                if os.path.isdir(egginfo):
-                    shutil.rmtree(egginfo)
-        except Exception as exc:
-            print(" error: %s" % (exc,))
-            return False
-        else:
-            print(" ok")
-            return True
-    finally:
-        sys.path = oldpath
+        mod_dir = os.path.dirname(os.path.abspath(__file__))
+        ver_data = run_path(os.path.join(mod_dir, "_version.py"))
+        version = ver_data["version"]
+        release = "%d.%d.%d" % version
+        release_tag = ver_data["release_tag"]
+
+    except Exception:
+        release = "0.0.0"
+        release_tag = "Unknown"
+    pth_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return dict(
+        name="MDSplus",
+        extra_path=("mdsplus", pth_dir),
+        version=release,
+        description="MDSplus Python Objects - " + release_tag,
+        long_description=(
+            "This module provides all of the functionality of MDSplus TDI natively in python.\n"
+            "All of the MDSplus data types such as signal are represented as python classes.\n"
+        ),
+        author="MDSplus Development Team",
+        author_email="mdsplusadmin@psfc.mit.edu",
+        url="http://www.mdsplus.org/",
+        license="MIT",
+        classifiers=[
+            "Programming Language :: Python",
+            "Intended Audience :: Science/Research",
+            "Environment :: Console",
+            "Topic :: Scientific/Engineering",
+        ],
+        keywords=[
+            "physics",
+            "mdsplus",
+        ],
+    )
 
 
-if __name__ == '__main__':
-    try:
-        print("use distutils.core")
-        from distutils.core import setup
-        from distutils.cmd import Command
+if setuptools.__version__ < "60.0.0":
+    # assume that setuptools can't directly use pyproject.toml
+    # for the [project] section, so need the old setup.py
 
-        class TestCommand(Command):
-            user_options = []
+    print(sys.argv)
+    if "develop" in sys.argv:
+        # old setuptools can't have both --editable and --user
+        # but it defaults to user anyway!
+        if "--user" in sys.argv:
+            import site
 
-            def initialize_options(self):
-                pass
+            print("Removing --user")
+            argv = sys.argv
+            argv.remove("--user")
+            argv.append("--install-dir")
+            argv.append(site.getusersitepackages())
+            sys.argv = argv
 
-            def finalize_options(self):
-                pass
+    setup(
+        test_suite="tests.test_all",
+        zip_safe=False,
+        packages=["MDSplus",
+                  "MDSplus.wsgi",
+                  "MDSplus.widgets",
+                  "MDSplus.tests"],
+        package_dir={"MDSplus": ".",
+                     "MDSplus.widgets":"widgets",
+                     "MDSplus.wsgi":"wsgi",
+                     "MDSplus.tests":"tests"},
+        package_data={"MDSplus.wsgi":[
+            'html/*',
+            'conf/*',
+            'js/*',
+            '*.tbl']},
+        **setupkw()
+    )
 
-            def run(self):
-                import sys
-                import subprocess
-                raise SystemExit(
-                    subprocess.call([sys.executable,
-                                     '-m',
-                                     'tests.__init__']))
-
-        class RemoveCommand(Command):
-            user_options = []
-
-            def initialize_options(self):
-                pass
-
-            def finalize_options(self):
-                pass
-
-            def run(self):
-                remove()
-        setupkw['cmdclass'] = {'test': TestCommand, 'remove': RemoveCommand}
-    except:
-        from setuptools import setup
-        print("use setuptools")
-        setupkw['include_package_data'] = True
-        setupkw['test_suite'] = 'tests.test_all'
-        setupkw['zip_safe'] = False
-    setup(**setupkw)
+else:
+    # setuptools can use pyproject.toml
+    setup()

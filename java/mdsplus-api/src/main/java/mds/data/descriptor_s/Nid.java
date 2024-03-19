@@ -1,6 +1,7 @@
 package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -72,34 +73,34 @@ public final class Nid extends NODE<Integer>
 
 	@Override
 	public final Integer getAtomic()
-	{ return new Integer(this.p.getInt(0)); }
+	{
+		return new Integer(this.p.getInt(0));
+	}
 
 	@Deprecated
 	public String getFullPath() throws MdsException
-	{ return this.getNciFullPath(); }
+	{
+		return this.getNciFullPath();
+	}
 
 	@Override
 	public Descriptor<?> getLocal_(final FLAG local)
 	{
 		FLAG.set(local, false);
-		try
-		{
-			return this.getDataD().setLocal();
-		}
-		catch (final MdsException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return this.getDataD().setLocal();
 	}
 
 	@Override
 	public final int getNidNumber()
-	{ return this.getAtomic().intValue(); }
+	{
+		return this.getAtomic().intValue();
+	}
 
 	@Deprecated
 	public int getValue()
-	{ return this.getNidNumber(); }
+	{
+		return this.getNidNumber();
+	}
 
 	@Override
 	public final Path toFullPath() throws MdsException

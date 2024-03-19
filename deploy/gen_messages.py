@@ -135,7 +135,8 @@ MDSplusException.statusDict[%(msgnum)d] = %(fac)s%(msgnam)s
 """
 
 inc_head = """
-#pragma once
+#ifndef _{base}_{ext}
+#define _{base}_{ext}
 #include <status.h>
 
 """
@@ -277,6 +278,27 @@ jma_tail = """\t\t\tdefault:
 \t}
 }"""
 
+# The status code is 32 bits, with these three fields:
+#    16 bit facility code in high order bits,
+#    13 bit message number, 
+#     3 bit severity (low order bits).
+#
+# The severity scheme is similar to that used by VAX VMS.
+# Every odd severity is a flavor of success ("status & 0x1" is easy check).
+# Every even severity is a flavor of error.
+#   W = warning = 0   -- bad
+#   S = success = 1   -- OK
+#   E = error = 2     -- bad
+#   I = info = 3      -- OK
+#   F = fatal = 4     -- bad
+#   ? = unused = 5    -- OK
+#   ? = unused = 6    -- bad
+#   ? = internal = 7  -- OK (see usage in mdsshr/mdsshr_messages.xml)
+#
+# SsINTERNAL is merely a synonym for -1; it is not a status code.
+# If the status variable is ever erroneously set to SsINTERNAL, note
+# that the STATUS_OK macro will treat it as success (because the low-order
+# bit is set).  See PR #2617 for details.
 
 import xml.etree.ElementTree as ET
 import sys
@@ -296,7 +318,8 @@ def gen_include(root, filename, faclist, msglistm, f_test):
     print(filename)
     with open("%s/include/%sh" % (sourcedir, filename[0:-3]), 'w') as f_inc:
         add_c_header(f_inc, filename)
-        f_inc.write(inc_head)
+        parts = filename.upper().split('.')
+        f_inc.write(inc_head.format(base=parts[0],ext=parts[1]))
         for f in root.iter('facility'):
             facnam = f.get('name')
             facnum = int(f.get('value'))
@@ -352,6 +375,7 @@ def gen_include(root, filename, faclist, msglistm, f_test):
                 if not facnam in pfaclist:
                     pfaclist.append(facnam)
                 msglist.append(msg)
+        f_inc.write("#endif")
 
 
 # gen_msglist():

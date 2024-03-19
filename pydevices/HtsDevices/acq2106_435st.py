@@ -58,15 +58,15 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     carrier_parts = [
         {
-            'path': ':NODE',
-            'type': 'text',
+            'path': ':NODE', 
+            'type': 'text', 
             'value': '192.168.0.254',
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SITE',
+            'path': ':SITE', 
             'type': 'numeric',
-            'value': 1,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
@@ -75,60 +75,60 @@ class _ACQ2106_435ST(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIGGER',
+            'path': ':TRIGGER', 
             'type': 'numeric',
-            'value': 0.0,
+            'value': 0.0, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIG_MODE',
+            'path': ':TRIG_MODE', 
             'type': 'text',
-            'value': 'master:hard',
+            'value': 'master:hard', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':EXT_CLOCK',
-            'type': 'axis',
+            'path': ':EXT_CLOCK', 
+            'type': 'axis', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':FREQ',
+            'path': ':FREQ', 
             'type': 'numeric',
-            'value': 16000,
+            'value': 16000, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':HW_FILTER',
-            'type': 'numeric',
-            'value': 0,
-            'options': ('no_write_shot',)
-        },
-        {
-            'path': ':DEF_DCIM',
+            'path': ':HW_FILTER', 
             'type': 'numeric',
             'value': 1,
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SEG_LENGTH',
+            'path': ':DEF_DCIM', 
             'type': 'numeric',
-            'value': 8000,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':MAX_SEGMENTS',
+            'path': ':SEG_LENGTH', 
             'type': 'numeric',
-            'value': 1000,
+            'value': 8000, 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS', 
+            'type': 'numeric',
+            'value': 1000, 
             'options': ('no_write_shot',)
         },
         {
             'path': ':SEG_EVENT', 
             'type': 'text',
-            'value': 'STREAM',
+            'value': 'STREAM', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':STATUS_CMDS',
+            'path': ':STATUS_CMDS', 
             'type': 'text', 
             'value': MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']), 
             'options':('no_write_shot',)
@@ -182,24 +182,24 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     data_socket = -1
 
+    NUM_CHANS_PER_SITE = 32
+
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev.copy()
+            # Variables designed to bring a copy of the tree to the MDSWorker thread
+            self.tree = dev.tree.name
+            self.shot = dev.tree.shot
+            self.path = dev.path
 
-            self.chans = []
-            self.decim = []
-            self.nchans     = self.dev.sites*32
+            self.dev = dev
+
+            self.nchans     = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
             self.resampling = self.dev.resampling
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
-
+            
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
@@ -225,8 +225,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
+            tree = MDSplus.Tree(self.tree, self.shot)
+            self.dev = tree.getNode(self.path)
+
             if self.dev.debug:
                 print("MDSWorker running")
+            
+            chans = []
+            decim = []
+            for i in range(self.nchans):
+                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                decim.append(getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -238,8 +247,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 if nacc_str == '0,0,0':
                     nacc_sample = 1
                 else:
-                    nacc_tuple = ast.literal_eval(nacc_str)
-                    nacc_sample = nacc_tuple[0]
+                    nacc_sample = int(nacc_str.split(",")[0])
+
 
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
@@ -251,7 +260,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("The SR is {} and timebase delta t is {}".format(
                     self.dev.freq.data(), dt))
 
-            decimator = lcma(self.decim)
+            decimator = lcma(decim)
 
             if self.seg_length % decimator:
                 self.seg_length = (self.seg_length //
@@ -273,21 +282,25 @@ class _ACQ2106_435ST(MDSplus.Device):
                 except Empty:
                     continue
 
+                if self.dev.trig_time.getDataNoRaise() is None:
+                    self.dev.trig_time.record = self.device_thread.trig_time - \
+                        ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
-                for c in self.chans:
-                    slength   = self.seg_length/self.decim[i]
-                    deltat    = dt * self.decim[i]
+                for c in chans:
+                    slength   = self.seg_length/decim[i]
+                    deltat    = dt * decim[i]
                     #Choice between executing resampling or not:
                     if c.on and self.resampling:
                         resampled = getattr(self.dev, str(c) + ':RESAMPLED')
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
                         c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
                     elif c.on:
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
@@ -297,9 +310,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
-
-            self.dev.trig_time.record = self.device_thread.trig_time - \
-                ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+            
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -400,7 +411,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-    def init(self, resampling=False):
+    def init(self, resampling = False, armed_by_transient = False):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
@@ -465,12 +476,12 @@ class _ACQ2106_435ST(MDSplus.Device):
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
 
-        self.chans = []
-        nchans = uut.nchan()
+        chans = []
+        nchans = self.sites * self.NUM_CHANS_PER_SITE
         for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
+            chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
-        for ic, ch in enumerate(self.chans):
+        for ic, ch in enumerate(chans):
             if ch.on:
                 ch.OFFSET.putData(float(eoff[ic]))
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
@@ -493,15 +504,21 @@ class _ACQ2106_435ST(MDSplus.Device):
             for card in self.slots:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-            self.slots[card].nacc = '1'
+            print("WARNING: Hardware Filter samples must be in the range [1,32]. A value of 0 => Disabled == 1")
+            for card in self.slots:
+                self.slots[card].nacc = '1'
 
         self.running.on = True
-        # If resampling == 1, then resampling is used during streaming:
+        # If resampling is True, then resampling is used during streaming:
         self.resampling = resampling
 
-        thread = self.MDSWorker(self)
-        thread.start()
+        if not armed_by_transient:
+            # Then, the following will be armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
+
     INIT = init
 
     def getSlots(self):
@@ -541,13 +558,12 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(
-            chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
 
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
-    for i in range(cls.sites*32):
+    for i in range(cls.sites * cls.NUM_CHANS_PER_SITE):
         cls.parts += [
             {
                 'path': ':INPUT_%3.3d' % (i+1,),

@@ -1,22 +1,15 @@
 package mds.data.descriptor;
 
 import java.nio.ByteBuffer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import mds.AllTests;
-import mds.Mds;
-import mds.MdsException;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Uint64Array;
+
+import org.junit.*;
+
+import mds.*;
+import mds.data.descriptor_a.*;
 import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.Signal;
 
+@SuppressWarnings("static-method")
 public final class Descriptor_CA_Test
 {
 	private static Mds mds;
@@ -34,12 +27,16 @@ public final class Descriptor_CA_Test
 	}
 
 	@Before
-	public final void setUp() throws Exception
-	{/* stub */}
+	public void setUp() throws Exception
+	{
+		// stub
+	}
 
 	@After
-	public final void tearDown() throws Exception
-	{/* stub */}
+	public void tearDown() throws Exception
+	{
+		// stub
+	}
 
 	@Test
 	public final void testARRAY() throws MdsException
@@ -52,9 +49,10 @@ public final class Descriptor_CA_Test
 				{ 4, 0, 8, 4, 24, 0, 0, 0, 0, 0, 112, 1, -96, 15, 0, 0, 24, 0, 0, 0, -24, 3 }).array()).toString());
 		Assert.assertArrayEquals(new byte[]
 		{ 8, 0, 5, 4, 16, 0, 0, 0, 0, 0, 48, 1, 8, 0, 0, 0, 0, 16, -91, -44, -24, 0, 0, 0 }, test.serializeArray());
-		Assert.assertEquals("ABS([1000000000000QU])", Descriptor_CA_Test.mds.getString(
-				"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(1));_a",
-				Function.ABS(new Uint64Array(1000000000000l)).serializeDsc()));
+		Assert.assertEquals("ABS([1000000000000QU])",
+				Descriptor_CA_Test.mds.getString(
+						"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(1));_a",
+						Function.ABS(new Uint64Array(1000000000000l)).serializeDsc()));
 		Assert.assertEquals("Build_Signal([1D0,2D0,3D0], *, [1Q,2Q,3Q])",
 				new Signal(new Float64Array(1, 2, 3), null, new Int64Array(1, 2, 3)).decompile());
 		Assert.assertEquals("Build_Signal([[[1,2],[3,4]],[[5,6],[7,8]]], *, [1Q,2Q])",

@@ -629,7 +629,7 @@ add_cmd get.trig >> $settingsf
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
         from MDSplus.mdsExceptions import DevIO_STUCK
         from MDSplus.mdsExceptions import DevTRIGGERED_NOT_STORED
-        from MDSplus.mdsExceptions import DevUNKOWN_STATE
+        from MDSplus.mdsExceptions import DevUNKNOWN_STATE
 
         """Wait for board to finish digitizing and storing the data"""
         state = self.getBoardState()
@@ -659,7 +659,7 @@ add_cmd get.trig >> $settingsf
                 raise DevTRIGGERED_NOT_STORED()
         else:
             print("ACQxxx UNKNOWN BOARD state /%s/" % (state,))
-            raise DevUNKOWN_STATE()
+            raise DevUNKNOWN_STATE()
 
     WAITFTP = waitftp
 

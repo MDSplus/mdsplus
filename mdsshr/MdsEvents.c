@@ -22,16 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsplus/mdsconfig.h>
+//#include <mdsplus/mdsconfig.h>
 
-#include <errno.h>
+//#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "../mdstcpip/mdsip_connections.h"
-#include <pthread_port.h>
 #include <mdsshr.h>
 #include <status.h>
 #include <mds_stdarg.h>
@@ -52,6 +51,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef EVENT_THREAD_STACK_SIZE_MIN
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
 #endif
+
+struct MdsipEventInfo {
+  char eventnam[512];
+  void (*astadr)();
+  void *astprm;
+  int *eventid;
+};
+
+
+
 
 static int receive_ids[256];        /* Connection to receive external events  */
 static int send_ids[256];           /* Connection to send external events  */
@@ -122,6 +131,14 @@ static int RegisterRead_(const int conid)
   return RegisterRead(conid);
 }
 #endif
+
+static int searchOpenServer(char *server __attribute__((unused)))
+/* Avoid doing MdsConnect on a server already connected before
+ * for now, allow socket duplications
+ */
+{
+  return -1;
+}
 
 /// concat on ' ', cast to uppercase and return new strlen
 static inline int fixup_eventname(char *in)
@@ -199,9 +216,9 @@ static void ReconnectToServer(int idx, int recv)
     return;
   DisconnectFromMds_(ids[idx]);
   ids[idx] = ConnectToMds_(servers[idx]);
-  if (ids[idx] <= 0)
+  if (ids[idx] == INVALID_CONNECTION_ID)
   {
-    printf("\nError connecting to %s", servers[idx]);
+    printf("\nError connecting to %s\n", servers[idx]);
     perror("ConnectToMds_");
     sockets[idx] = 0;
   }
@@ -250,14 +267,14 @@ static int createThread(pthread_t *thread, void *(*rtn)(void *), void *par)
   return status;
 }
 
-static void startRemoteAstHandler()
+static void startRemoteAstHandler(struct MdsipEventInfo *eventInfo)
 {
   if (pipe(fds) != 0)
   {
     fprintf(stderr, "Error creating pipes for AstHandler\n");
     return;
   }
-  external_thread_created = createThread(&external_thread, handleRemoteAst, 0);
+  external_thread_created = createThread(&external_thread, handleRemoteAst, eventInfo);
 }
 
 /* eventid stuff: when using multiple event servers, the code has to deal with
@@ -330,7 +347,7 @@ static void handleRemoteEvent(int conid);
 
 static void KillHandler() {}
 
-static void *handleRemoteAst(void *arg __attribute__((unused)))
+static void *handleRemoteAst(void *arg))
 {
   Poll(handleRemoteEvent);
   return NULL;
@@ -366,20 +383,64 @@ static void KillHandler()
   external_thread_created = 0;
 }
 
-static void *handleRemoteAst(void *arg __attribute__((unused)))
+static void *handleRemoteAst(void *arg )
 {
   INIT_STATUS;
   char buf[16];
-  int i;
+  int idx, i;
   Message *m;
   int selectstat;
   fd_set readfds;
+  int receive_thread_ids[256];
+  int receive_thread_sockets[256];
+  struct MdsipEventInfo *eventInfo = arg;
+  int curr_eventid;
+
+  if(!arg) return NULL;
+  getServerDefinition("mds_event_server", receive_servers, &num_receive_servers);
+  newRemoteId(eventInfo->eventid);
+  for (idx = 0; idx < num_receive_servers; idx++)
+  {  
+    receive_thread_ids[idx] = searchOpenServer(receive_servers[idx]);
+    if(receive_thread_ids[idx] < 0)
+    {
+      receive_thread_ids[idx] = ConnectToMds_(receive_servers[idx]);
+    }
+    if ( receive_thread_ids[idx]  == INVALID_CONNECTION_ID)
+    {
+      printf("\nError connecting to %s\n", receive_servers[idx]);
+      perror("ConnectToMds_");
+      receive_thread_sockets[idx] = 0;
+    }
+    else
+    {
+      receive_thread_sockets[idx] = 0;
+      GetConnectionInfo_(receive_thread_ids[idx], 0, &receive_thread_sockets[idx], 0);
+    }
+    if (receive_thread_ids[idx] >= 0)
+    {
+      status = MdsEventAst_(receive_thread_ids[idx], eventInfo->eventnam, eventInfo->astadr, eventInfo->astprm,
+                              &curr_eventid);
+      if (STATUS_OK)
+        setRemoteId(*eventInfo->eventid, idx, curr_eventid);
+      else
+      {
+        printf("\nError issuing Event Ast remote %s", receive_servers[idx]);
+        return NULL;
+      }
+    }
+  }
   while (1)
   {
     FD_ZERO(&readfds);
+
     for (i = 0; i < num_receive_servers; i++)
-      if (receive_sockets[i])
-        FD_SET(receive_sockets[i], &readfds);
+    {
+      if (receive_thread_sockets[i] >= 0)
+      {
+         FD_SET(receive_thread_sockets[i], &readfds);
+      }
+    }
     FD_SET(fds[0], &readfds);
     selectstat = select(FD_SETSIZE, &readfds, 0, 0, 0);
     if (selectstat == -1)
@@ -394,9 +455,10 @@ static void *handleRemoteAst(void *arg __attribute__((unused)))
     }
     for (i = 0; i < num_receive_servers; i++)
     {
-      if (receive_ids[i] > 0 && FD_ISSET(receive_sockets[i], &readfds))
+
+      if (receive_thread_ids[i] > 0 && FD_ISSET(receive_thread_sockets[i], &readfds))
       {
-        m = GetMdsMsg_(receive_ids[i], &status);
+        m = GetMdsMsg_(receive_thread_ids[i], &status);
         if (STATUS_OK &&
             m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
         {
@@ -409,26 +471,21 @@ static void *handleRemoteAst(void *arg __attribute__((unused)))
         {
           fprintf(stderr,
                   "Error reading from event server, events may be disabled\n");
-          receive_sockets[i] = 0;
+          receive_thread_sockets[i] = 0;
         }
       }
     }
   }
+  free(eventInfo);
   return NULL;
 }
 #pragma GCC diagnostic pop
 
 #endif // GLOBUS
 
-static int searchOpenServer(char *server __attribute__((unused)))
-/* Avoid doing MdsConnect on a server already connected before
- * for now, allow socket duplications
- */
-{
-  return 0;
-}
 
 static pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
+
 static void initializeRemote(int receive_events)
 {
   static int receive_initialized;
@@ -468,14 +525,14 @@ static void initializeRemote(int receive_events)
         if (receive_events)
         {
           receive_ids[i] = searchOpenServer(servers[i]);
-          if (receive_ids[i] <= 0)
+          if (receive_ids[i] < 0)
             receive_ids[i] = ConnectToMds_(servers[i]);
-          if (receive_ids[i] <= 0)
+          if (receive_ids[i] == INVALID_CONNECTION_ID)
           {
-            printf("\nError connecting to %s", servers[i]);
+            printf("\nError connecting to %s\n", servers[i]);
             perror("ConnectToMds_");
             receive_ids[i] = 0;
-          }
+         }
           else
           {
 #ifdef GLOBUS
@@ -488,11 +545,11 @@ static void initializeRemote(int receive_events)
         else
         {
           send_ids[i] = searchOpenServer(servers[i]);
-          if (send_ids[i] <= 0)
+          if (send_ids[i] < 0)
             send_ids[i] = ConnectToMds_(servers[i]);
-          if (send_ids[i] <= 0)
+          if (send_ids[i]  == INVALID_CONNECTION_ID)
           {
-            printf("\nError connecting to %s", servers[i]);
+            printf("\nError connecting to %s\n", servers[i]);
             perror("ConnectToMds_");
             send_ids[i] = 0;
           }
@@ -503,7 +560,6 @@ static void initializeRemote(int receive_events)
           }
         }
       }
-      startRemoteAstHandler();
     }
     else
       printf("%s\n", MdsGetMsg(status));
@@ -514,36 +570,22 @@ static void initializeRemote(int receive_events)
 static int eventAstRemote(char const *eventnam, void (*astadr)(), void *astprm,
                           int *eventid)
 {
-  int status = 1, i;
-  int curr_eventid;
+  int status = 1;
   if (STATUS_OK)
   {
     /* if external_thread running, it must be killed before sending messages
-       * over socket */
+       * over socket */   
     if (external_thread_created)
+    {
       KillHandler();
-    newRemoteId(eventid);
-    for (i = 0; i < num_receive_servers; i++)
-    {
-      if (receive_ids[i] <= 0)
-        ReconnectToServer(i, 1);
-      if (receive_ids[i] > 0)
-      {
-        status = MdsEventAst_(receive_ids[i], eventnam, astadr, astprm,
-                              &curr_eventid);
-#ifdef GLOBUS
-        if (STATUS_OK)
-          RegisterRead_(receive_ids[i]);
-#endif
-        setRemoteId(*eventid, i, curr_eventid);
-      }
     }
-    /* now external thread must be created in any case */
-    if (STATUS_OK)
-    {
-      startRemoteAstHandler();
-      external_count++;
-    }
+    struct MdsipEventInfo *evInfo = (struct MdsipEventInfo *)malloc(sizeof(struct MdsipEventInfo));
+    strcpy(evInfo->eventnam, eventnam);
+    evInfo->astadr = astadr;
+    evInfo->astprm = astprm;
+    evInfo->eventid = eventid;
+    startRemoteAstHandler(evInfo);
+    external_count++;
   }
   if (STATUS_NOT_OK)
     printf("%s\n", MdsGetMsg(status));
@@ -841,11 +883,17 @@ static int canEventRemote(const int eventid)
   {
     KillHandler();
     for (i = 0; i < num_receive_servers; i++)
-    {
+    {     
+      if (receive_ids[i] < 0)
+        receive_ids[i] = ConnectToMds_(receive_servers[i]);
+      if(receive_ids[i]  == INVALID_CONNECTION_ID)
+      {
+        printf("\nError connecting to %s\n", receive_servers[i]);
+        perror("ConnectToMds_");
+      }
       if (receive_ids[i] > 0)
         status = MdsEventCan_(receive_ids[i], getRemoteId(eventid, i));
     }
-    startRemoteAstHandler();
   }
   return status;
 }
@@ -854,8 +902,6 @@ int RemoteMDSEventCan(const int eventid)
 {
   if (eventid < 0)
     return 0;
-
-  initializeRemote(1);
   return canEventRemote(eventid);
 }
 

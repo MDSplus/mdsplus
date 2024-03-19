@@ -213,6 +213,7 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetSignalName(
                     SignalStruct, signalIdx)
                 retrievedName = retrievedName.decode("utf-8")
+                retrievedName = retrievedName.replace(' ','_')  #remove blacks
                 #print('SIGNAL NAME: ' + retrievedName);
                # retrievedName = removeAngular(retrievedName)
 
@@ -357,7 +358,7 @@ def BUILDER(cls):
                                 print('type '+str(fieldEnumType))
                                 raise Exception('Unsupported Enum datatype.')
                         else:
-                            print('type '+str(fieldEnumType))
+                            print('type '+str(fieldSLIdType))
                             raise Exception('Unsupported datatype.')
                 # field dimensions
                        # dimensions are retrieved
@@ -433,7 +434,6 @@ def BUILDER(cls):
                     ParameterStruct, paramIdx)
                 retrievedName = retrievedName.decode("utf-8")
                 #print('retrievedname: ', retrievedName)
-
                 # type is retrieved
                 retrievedTypeIdx = WrapperLib.WCAPI_GetModelParameterDataTypeIdx(
                     ParameterStruct, paramIdx)
@@ -533,7 +533,7 @@ def BUILDER(cls):
                     if currDimension[0] == 1 and currDimension[1] == 1:  # scalar
                         dimension = 0
                         mdsplusValue = paramPointer[0]
-                    elif currDimension[0] == 1:  # vector
+                    elif currDimension[0] == 1 or currDimension[1] == 1:  # vector
                         dimension = currDimension[0]*currDimension[1]
                         valueList = []
                         for idx in range(dimension):
@@ -553,9 +553,9 @@ def BUILDER(cls):
 
                     if currDimension[0] != 1 or currDimension[1] != 1:
                         if retrievedSLIdType == 0:
-                            mdsplusValue = MDSplus.Float32Array(valueList)
-                        elif retrievedSLIdType == 1:
                             mdsplusValue = MDSplus.Float64Array(valueList)
+                        elif retrievedSLIdType == 1:
+                            mdsplusValue = MDSplus.Float32Array(valueList)
                         elif retrievedSLIdType == 2:
                             mdsplusValue = MDSplus.Int8Array(valueList)
                         elif retrievedSLIdType == 3:

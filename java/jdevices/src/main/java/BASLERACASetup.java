@@ -95,7 +95,7 @@ public class BASLERACASetup extends DeviceSetup
 		jPanel8.setMinimumSize(new java.awt.Dimension(690, 40));
 		jPanel8.setPreferredSize(new java.awt.Dimension(690, 40));
 		deviceField16.setIdentifier("");
-		deviceField16.setLabelString("Name (IP): ");
+		deviceField16.setLabelString("Name (IP/SN): ");
 		deviceField16.setNumCols(20);
 		deviceField16.setOffsetNid(1);
 		deviceField16.setTextOnly(true);

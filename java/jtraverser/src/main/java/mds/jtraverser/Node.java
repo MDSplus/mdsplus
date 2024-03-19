@@ -429,7 +429,7 @@ public class Node
 		ICONS.put("ACTION", ICON_LOADER("action"));
 		ICONS.put("DEVICE", ICON_LOADER("device"));
 		ICONS.put("DISPATCH", ICON_LOADER("dispatch"));
-		ICONS.put("ANY", ICON_NUMERIC);
+		ICONS.put("ANY", ICON_LOADER("any"));
 		ICONS.put("NUMERIC", ICON_NUMERIC);
 		ICONS.put("TASK", ICON_LOADER("task"));
 		ICONS.put("TEXT", ICON_LOADER("text"));
@@ -563,7 +563,8 @@ public class Node
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error getting default", exc);
+			//jTraverser.stderr("Error getting default", exc);
+			//exc.printStackTrace();
 			return false;
 		}
 		try

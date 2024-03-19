@@ -890,7 +890,12 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
           ((size_t)info_ptr->header->externals * 4u + 511u) / 512u;
       strcat(nfilenam, "#");
       ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-#define GOTO_ERROR_CLOSE do{MDS_IO_CLOSE(ntreefd);goto error_exit;}while(0)
+#define GOTO_ERROR_CLOSE   \
+  do                       \
+  {                        \
+    MDS_IO_CLOSE(ntreefd); \
+    goto error_exit;       \
+  } while (0)
       if (ntreefd != -1)
       {
         status = MDSplusERROR;

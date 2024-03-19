@@ -28,6 +28,7 @@ This is a helper module.
 Its purpose is to supply tools that are used to generate version specific code.
 Goal is to generate code that work on both python2x and python3x.
 """
+from types import GeneratorType as generator  # analysis:ignore
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
 from numpy import string_ as npbytes
@@ -36,6 +37,7 @@ from numpy import version as npver
 from sys import version_info as pyver
 import os
 ispy3 = pyver > (3,)
+ispy38 = pyver >= (3,8)
 ispy2 = pyver < (3,)
 iswin = os.sys.platform.startswith('win')
 isdarwin = os.sys.platform.startswith('darwin')
@@ -71,31 +73,32 @@ def load_library(name):
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
     try:
         if iswin:
-            return C.CDLL(name)
+            if ispy38:
+                return C.CDLL(name, winmode=C.RTLD_GLOBAL)
+            else:
+                return C.CDLL(name)
         if isdarwin:
             return C.CDLL('lib%s.dylib' % name)
         return C.CDLL('lib%s.so' % name)
-    except:
+    except Exception:
         pass
     print("Issues loading %s, trying find_library" % name)
     from ctypes.util import find_library
     try:
         libnam = find_library(name)
-    except:
+    except Exception:
         raise ImportError("Could not find library: %s" % (name,))
     if libnam is None:
         raise ImportError("Could not find library: %s" % (name,))
     try:
         return C.CDLL(libnam)
-    except:
+    except Exception:
         pass
     try:
         return C.CDLL(os.path.basename(libnam))
-    except:
+    except Exception:
         raise ImportError('Could not load library: %s' % (name,))
 
-
-from types import GeneratorType as generator  # analysis:ignore
 
 # substitute missing builtins
 if has_long:
@@ -135,7 +138,7 @@ else:
         def get_attrs(obj):
             try:
                 return obj.__dict__.keys()
-            except:
+            except Exception:
                 return []
         attrs = set()
         attrs.update(get_attrs(cls))
@@ -166,7 +169,7 @@ else:
 def _decode(string):
     try:
         return string.decode('utf-8', 'backslashreplace')
-    except:
+    except Exception:
         return string.decode('CP1252', 'backslashreplace')
 
 

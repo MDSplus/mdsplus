@@ -27,7 +27,7 @@
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -52,7 +52,7 @@ class Apd(_dat.TreeRefX, _arr.Array):
     @property
     def _descriptor(self):
         descs = self.descs
-        d = _dsc.Descriptor_apd()
+        d = _dsc.DescriptorAPD()
         d.scale = 0
         d.digits = 0
         d.aflags = 0
@@ -79,17 +79,14 @@ class Apd(_dat.TreeRefX, _arr.Array):
 
     @classmethod
     def fromDescriptor(cls, d):
-        num = d.arsize//d.length
-        dptrs = _C.cast(d.pointer, _C.POINTER(_C.c_void_p*num)).contents
-        descs = [_dsc.pointerToObject(dptr, d.tree) for dptr in dptrs]
-        return cls(descs)._setTree(d.tree)
+        return cls([dptr.value for dptr in d.descriptors])._setTree(d.tree)
 
     def __init__(self, value=None, dtype=0):
         """Initializes a Apd instance
         """
+        self.dtype_id = Apd.dtype_id
         if value is self:
             return
-        self.dtype_id = dtype
         self._descs = []
         if value is not None:
             if isinstance(value, _ver.listlike):
@@ -133,6 +130,7 @@ class Dictionary(dict, Apd):
     dtype_id = 216
 
     def __init__(self, value=None):
+        self.dtype_id = Dictionary.dtype_id
         if value is self:
             return
         if value is not None:
@@ -209,6 +207,7 @@ class List(list, Apd):
     dtype_id = 214
 
     def __init__(self, value=None):
+        self.dtype_id = List.dtype_id
         if value is self:
             return
         if value is not None:
@@ -231,9 +230,6 @@ class List(list, Apd):
 
 
 descriptor = _mimport('descriptor')
-descriptor.dtypeToClass[Apd.dtype_id] = Apd
-descriptor.dtypeToClass[List.dtype_id] = List
-descriptor.dtypeToClass[Dictionary.dtype_id] = Dictionary
 descriptor.dtypeToArrayClass[Apd.dtype_id] = Apd
 descriptor.dtypeToArrayClass[List.dtype_id] = List
 descriptor.dtypeToArrayClass[Dictionary.dtype_id] = Dictionary

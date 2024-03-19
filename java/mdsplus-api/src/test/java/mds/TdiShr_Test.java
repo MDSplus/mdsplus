@@ -1,17 +1,14 @@
 package mds;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
 import mds.data.OPC;
 import mds.data.descriptor_a.Int32Array;
 import mds.data.descriptor_r.function.BINARY.Add;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.StringDsc;
 
+@SuppressWarnings("static-method")
 public class TdiShr_Test
 {
 	private static TdiShr tdishr;
@@ -32,11 +29,15 @@ public class TdiShr_Test
 
 	@Before
 	public void setUp() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@After
 	public void tearDown() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@Test
 	public final void testTdiCompile() throws MdsException

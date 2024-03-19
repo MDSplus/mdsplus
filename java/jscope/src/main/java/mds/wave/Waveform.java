@@ -1305,7 +1305,7 @@ public class Waveform extends JComponent implements SignalListener
 	protected void NotifyZoom(double start_xs, double end_xs, double start_ys, double end_ys, int timestamp)
 	{}
 
-	synchronized public void paint(Graphics g, Dimension d, int print_mode)
+	public void paint(Graphics g, Dimension d, int print_mode)
 	{
 		execute_print = (print_mode != NO_PRINT);
 		final Insets i = this.getInsets();

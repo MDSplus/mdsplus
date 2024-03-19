@@ -120,6 +120,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int nidx;
   unsigned int old_record_length = 0;
   static int saved_uic = 0;
+  static int saved_uic32 = 0;
   int shot_open;
   EXTENDED_ATTRIBUTES attributes;
   int extended = 0;
@@ -127,8 +128,15 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int compress_utility = utility_update == 2;
 #ifndef _WIN32
   if (!saved_uic)
-    saved_uic = (getgid() << 16) | getuid();
-#endif
+  {
+    saved_uic = getuid();
+    saved_uic32 = (saved_uic & 0xFFFF0000) != 0;
+    if (!saved_uic32)
+    {
+      saved_uic = (getgid() << 16) | (saved_uic);
+    }
+  }
+ #endif
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   if (dblist->open_readonly)
@@ -181,13 +189,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         TREETHREADSTATIC_INIT;
         local_nci.flags = TREE_TEMPNCI.flags;
         bitassign(0, local_nci.flags, NciM_VERSIONS);
+        bitassign((TREE_TEMPNCI.flags2 & NciM_32BIT_UID_NCI), local_nci.flags2, NciM_32BIT_UID_NCI);
         local_nci.owner_identifier = TREE_TEMPNCI.owner_identifier;
         local_nci.time_inserted = TREE_TEMPNCI.time_inserted;
       }
       else
       {
-        bitassign(dblist->setup_info, local_nci.flags,
-                  NciM_SETUP_INFORMATION);
+        bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
+        bitassign(saved_uic32, local_nci.flags2, NciM_32BIT_UID_NCI);
         local_nci.owner_identifier = saved_uic;
         /* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
         local_nci.time_inserted = TreeTimeInserted();
@@ -236,8 +245,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           status = MdsSerializeDscOutZ(
               descriptor_ptr, info_ptr->data_file->data, tree_fixup_nid,
               dbid_tree, FixupPath, 0,
-              (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
-                  !(nci->flags & NciM_DO_NOT_COMPRESS),
+              ((compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
+                  !(nci->flags & NciM_DO_NOT_COMPRESS)) ? local_nci.compression_method : -1,
               &compressible, &nci->length,
               &nci->DATA_INFO.DATA_LOCATION.record_length, &nci->dtype,
               &nci->class,

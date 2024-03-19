@@ -56,6 +56,7 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <ncidef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <strroutines.h>
 #include <treeshr.h>
@@ -65,151 +66,174 @@ extern char *MaskReplace();
 
 extern char *TreePath();
 
-static char *GetFileName(char *experiment, char **ctx)
+static char * PathToFileName(const char * experiment, char * path)
 {
-  char *ans = 0;
-  static char pathname[1024];
-  static char *path;
-  char *semi = 0;
-  char *part;
-  if (*ctx == NULL)
+  static char filename[1024];
+  char * tmp = MaskReplace(path, experiment, 0);
+  strcpy(filename, tmp);
+  free(tmp);
+  
+  // (slwalsh, jas, fsantoro) NOTE: We have no idea if this is even used anymore, possibly remove?
+  if (filename[strlen(filename) - 1] == '+')
   {
-    if (path != NULL)
-      free(path);
-    path = TreePath(experiment, NULL);
-    part = path;
+    size_t i;
+    for (i = strlen(filename); (i > 0) && (filename[i - 1] != TREE_PATH_DELIM[0]); i--)
+      ;
+    if (i > 0)
+      filename[i] = 0;
   }
-  else if (*ctx == pathname)
-    return NULL;
   else
-    part = *ctx;
-  if (part != NULL)
   {
-    char *delim = TREE_PATH_DELIM;
-    char *tmp;
-    if ((semi = strchr(part, ';')) != 0)
-      *semi = '\0';
-    strncpy(pathname, part, 500);
-    if (semi == 0)
-      *ctx = pathname;
-    else
-      *ctx = part + strlen(part) + 1;
-    tmp = MaskReplace(pathname, experiment, 0);
-    strcpy(pathname, tmp);
-    free(tmp);
-    if (pathname[strlen(pathname) - 1] == '+')
-    {
-      size_t i;
-      for (i = strlen(pathname); (i > 0) && (pathname[i - 1] != delim[0]); i--)
-        ;
-      if (i > 0)
-        pathname[i] = 0;
-    }
-    else
-    {
-      if (pathname[strlen(pathname) - 1] != delim[0])
-        strcat(pathname, TREE_PATH_DELIM);
-    }
-    strcat(pathname, "shotid.sys");
-    ans = pathname;
+    if (filename[strlen(filename) - 1] != TREE_PATH_DELIM[0])
+      strcat(filename, TREE_PATH_DELIM);
   }
-  return ans;
+  strcat(filename, "shotid.sys");
+  
+  return filename;
 }
 
-static int CreateShotIdFile(char *experiment)
+int ReadShotId(char * filename, int * shot)
 {
-  int fd = -1;
-  char *ctx = 0;
-  char *filename;
-  while ((fd == -1) && (filename = GetFileName(experiment, &ctx)))
-    fd = MDS_IO_OPEN(filename, O_RDWR | O_CREAT | O_TRUNC, 0664);
-  return fd;
+  int status = TreeFAILURE;
+
+  int fd = MDS_IO_OPEN(filename, O_RDONLY, 0);
+  if (fd != -1) {
+    status = MDS_IO_READ(fd, shot, sizeof(*shot)) == sizeof(*shot);
+    MDS_IO_CLOSE(fd);
+  #ifdef WORDS_BIGENDIAN
+    if (STATUS_OK)
+    {
+      int lshot = shot;
+      int i;
+      char *optr = (char *)shot;
+      char *iptr = (char *)lshot;
+      for (i = 0; i < 4; i++)
+        optr[i] = iptr[3 - i];
+    }
+  #endif
+  }
+  
+  return status;
 }
 
-static int OpenShotIdFile(char *experiment, int mode)
+int WriteShotId(char * filename, int shot, int mode)
 {
-  int fd = -1;
-  char *ctx = 0;
-  char *filename;
-  int found = 0;
-  while ((filename = GetFileName(experiment, &ctx)) &&
-         !(found = (MDS_IO_EXISTS(filename))))
-    ;
-  if (found)
-    fd = MDS_IO_OPEN(filename, mode, 0);
-  else if (mode == O_WRONLY)
-    fd = CreateShotIdFile(experiment);
-  return fd;
+  int status = TreeFAILURE;
+
+  int fd = MDS_IO_OPEN(filename, mode, 0664);
+  if (fd != -1) {
+    int lshot = shot;
+  #ifdef WORDS_BIGENDIAN
+    int i;
+    char *optr = (char *)&lshot;
+    char *iptr = (char *)&shot;
+    for (i = 0; i < 4; i++)
+      optr[i] = iptr[3 - i];
+  #endif
+    status = MDS_IO_WRITE(fd, &lshot, sizeof(shot)) == sizeof(shot);
+    MDS_IO_CLOSE(fd);
+  }
+  
+  return status;
 }
 
 int TreeGetCurrentShotId(char const *experiment)
 {
   int shot = 0;
   int status = TreeFAILURE;
-  char exp[16] = {0};
-  char *path = TreePath(experiment, exp);
+  char experiment_lower[16] = {0};
   size_t slen;
-  if (path && ((slen = strlen(path)) > 2) && (path[slen - 1] == ':') &&
-      (path[slen - 2] == ':'))
-  {
-    path[slen - 2] = 0;
-    status = TreeGetCurrentShotIdRemote(exp, path, &shot);
-  }
-  else
-  {
-    int fd = OpenShotIdFile(exp, O_RDONLY);
-    if (fd != -1)
+  char * pathlist = TreePath(experiment, experiment_lower);
+  char * filename;
+  char * saveptr = NULL;
+  char * path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
+  while (path) {
+    slen = strlen(path);
+    bool thick = (slen > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':');
+    if (thick)
     {
-      status = MDS_IO_READ(fd, &shot, sizeof(shot)) == sizeof(shot);
-      MDS_IO_CLOSE(fd);
-#ifdef WORDS_BIGENDIAN
-      if (STATUS_OK)
-      {
-        int lshot = shot;
-        int i;
-        char *optr = (char *)&shot;
-        char *iptr = (char *)&lshot;
-        for (i = 0; i < 4; i++)
-          optr[i] = iptr[3 - i];
-      }
-#endif
+      path[slen - 2] = 0;
+      status = TreeGetCurrentShotIdRemote(experiment_lower, path, &shot);
     }
+    else
+    {
+      filename = PathToFileName(experiment_lower, path);
+      
+      if (MDS_IO_EXISTS(filename)) {
+        status = ReadShotId(filename, &shot);
+      }
+    }
+    
+    if (STATUS_OK) {
+      break;
+    }
+    
+    path = strtok_r(NULL, TREE_PATH_LIST_DELIM, &saveptr);
   }
-  if (path)
-    free(path);
+  free(pathlist);
   return STATUS_OK ? shot : 0;
 }
 
 int TreeSetCurrentShotId(char const *experiment, int shot)
 {
   int status = TreeFAILURE;
-  char exp[16] = {0};
-  char *path = TreePath(experiment, exp);
+  char experiment_lower[16] = {0};
   size_t slen;
-  if (path && ((slen = strlen(path)) > 2) && (path[slen - 1] == ':') &&
-      (path[slen - 2] == ':'))
-  {
-    path[slen - 2] = 0;
-    status = TreeSetCurrentShotIdRemote(exp, path, shot);
-  }
-  else
-  {
-    int fd = OpenShotIdFile(exp, O_WRONLY);
-    if (fd != -1)
+  char * pathlist = TreePath(experiment, experiment_lower);
+  char * filename;
+  char * saveptr = NULL;
+  char * path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
+  while (path) {
+    slen = strlen(path);
+    bool thick = (slen > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':');
+    if (thick)
     {
-      int lshot = shot;
-#ifdef WORDS_BIGENDIAN
-      int i;
-      char *optr = (char *)&lshot;
-      char *iptr = (char *)&shot;
-      for (i = 0; i < 4; i++)
-        optr[i] = iptr[3 - i];
-#endif
-      status = MDS_IO_WRITE(fd, &lshot, sizeof(shot)) == sizeof(shot);
-      MDS_IO_CLOSE(fd);
+      path[slen - 2] = 0;
+      status = TreeSetCurrentShotIdRemote(experiment_lower, path, shot);
     }
+    else
+    {
+      filename = PathToFileName(experiment_lower, path);
+      
+      if (MDS_IO_EXISTS(filename)) {
+        status = WriteShotId(filename, shot, O_WRONLY);
+      }
+    }
+    
+    if (STATUS_OK) {
+      break;
+    }
+    
+    path = strtok_r(NULL, TREE_PATH_LIST_DELIM, &saveptr);
   }
-  if (path)
-    free(path);
+  free(pathlist);
+  
+  // (slwalsh) NOTE: This will potentially create a shotid.sys on a remote host even if 
+  // there is one further down the path, recommend only putting thick client at the end
+  // of tree paths.
+  if (STATUS_NOT_OK) {
+    pathlist = TreePath(experiment, experiment_lower);
+    saveptr = NULL;
+    path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
+    while (path) {
+      status = TreeFAILURE;
+      
+      slen = strlen(path);
+      bool thick = (slen > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':');
+      if (!thick) {
+        filename = PathToFileName(experiment_lower, path);
+
+        status = WriteShotId(filename, shot, O_RDWR | O_CREAT | O_TRUNC);
+      }
+      
+      if (STATUS_OK) {
+        break;
+      }
+
+      path = strtok_r(NULL, TREE_PATH_LIST_DELIM, &saveptr);
+    }
+    free(pathlist);
+  }
+
   return status;
 }

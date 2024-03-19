@@ -31,6 +31,7 @@ FUN	PUBLIC PHASE_TABLE() {
  'PULSE_ON',                   '30',
  'POST',                       '30',
  'PON',                        '30',
+ 'PULSE',                      '30',
  'TRIGGER',                    '30',
  'BULK_DATA_ACQUISITION',      '40',
  'STORE',                      '40',

@@ -177,6 +177,10 @@ OPTIONS
        before performing the build. If a docker image is not already
        present on the system it will automatically pulled from dockerhub
        even without the --dockerpull option.
+    
+    --dockernetwork
+       If specified, a docker network with this name will be created,
+       used for the docker container, and then removed.
 
     --keys=dir
        Specifies a directory containing signing keys and certificates
@@ -208,6 +212,9 @@ OPTIONS
 
     --disable-java
        Do not compile java programs (passes --disable-java to configure)
+
+    --disable-labview
+       Do not compile LabVIEW programs (passes --without-labview to configure)
 
     --docker-srcdir=dir
        Specify the directory to use inside the docker containers used to build
@@ -314,6 +321,9 @@ parsecmd() {
 		eval "RELEASE_VERSION=${i#*=}"
 		PUBLISH=yes
 		;;
+	    --version=*)
+		eval "RELEASE_VERSION=${i#*=}"
+		;;
 	    --platform=*)
 		eval "PLATFORM=${i#*=}"
 		;;
@@ -353,6 +363,9 @@ parsecmd() {
 	    --dockerfile=*)
 		eval "DOCKERFILE=${i#*=}"
 		;;
+	    --dockernetwork=*)
+		eval "DOCKERNETWORK=${i#*=}"
+		;;
 	    --keys=*)
 		eval "KEYS=${i#*=}"
 		;;
@@ -386,6 +399,9 @@ parsecmd() {
 	    --disable-java)
 		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
+	    --disable-labview)
+		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --without-labview"
+		;;
 	    --docker-srcdir=*)
 		eval "DOCKER_SRCDIR=${i#*=}"
 		;;
@@ -417,7 +433,7 @@ fi
 #
 if [ -r "${SRCDIR}/deploy/os/${OS}.opts" ]
 then
-    os_opts=$(cat ${SRCDIR}/deploy/os/${OS}.opts)
+    os_opts=$(grep -v "#" ${SRCDIR}/deploy/os/${OS}.opts)
 fi
 #
 # See if this build was triggered by a trigger job and use
@@ -638,6 +654,7 @@ OS=${OS} \
   PUBLISHDIR=${PUBLISHDIR} \
   DOCKERIMAGE=${DOCKERIMAGE} \
   DOCKERFILE=${DOCKERFILE} \
+  DOCKERNETWORK=${DOCKERNETWORK} \
   KEYS=${KEYS} \
   DISTNAME=${DISTNAME} \
   UPDATEPKG=${UPDATEPKG} \

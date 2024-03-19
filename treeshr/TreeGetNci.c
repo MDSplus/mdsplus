@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
+#include <_ncidef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strroutines.h>
@@ -42,6 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
+
+DEFINE_COMPRESSION_METHODS
 
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
@@ -276,7 +279,22 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       set_retlen(sizeof(nci.owner_identifier));
-      *(unsigned int *)itm->pointer = nci.owner_identifier;
+      unsigned int owner = nci.owner_identifier;
+      if (!(nci.flags2 & NciM_32BIT_UID_NCI))
+      {
+        owner &= 0xFFFF;
+      }
+      *(unsigned int *)itm->pointer = owner;
+      break;
+    case NciCOMPRESSION_METHOD:
+      break_on_no_node;
+      read_nci;
+      set_retlen(sizeof(nci.compression_method));
+      if (dblist->tree_info->header->alternate_compression) {
+        *(unsigned char *)itm->pointer = nci.compression_method;
+      } else {
+        *(unsigned char *)itm->pointer = 0;
+      } 
       break;
     case NciCLASS:
       break_on_no_node;
@@ -676,6 +694,20 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       lstr = MdsUsageString(node->usage);
       string = strdup(lstr);
+      break;
+    }
+
+    case NciCOMPRESSION_METHOD_STR:
+    {
+      break_on_no_node;
+      read_nci;
+      if (! dblist->tree_info->header->alternate_compression) {
+        nci.compression_method = 0;
+      }
+      if (nci.compression_method >= NUM_COMPRESSION_METHODS) {
+        nci.compression_method = 0;
+      }
+      string = strdup(compression_methods[nci.compression_method].name);
       break;
     }
 

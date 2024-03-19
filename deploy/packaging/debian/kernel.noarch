@@ -31,6 +31,8 @@
 ./usr/local/mdsplus/pixmaps/mdstcl.png
 ./usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg
 ./usr/local/mdsplus/pixmaps/tdi.png
+./usr/local/mdsplus/rpm/mdsip.socket
+./usr/local/mdsplus/rpm/mdsip@.service
 ./usr/local/mdsplus/rpm/mdsipd.xinetd
 ./usr/local/mdsplus/rpm/mdsipsd.xinetd
 ./usr/local/mdsplus/rpm/post_install_script
@@ -153,6 +155,7 @@
 ./usr/local/mdsplus/tdi/python/addfun.py
 ./usr/local/mdsplus/tdi/python/ctime.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
+./usr/local/mdsplus/tdi/python/influxSignal.py
 ./usr/local/mdsplus/tdi/python/intersect1d.py
 ./usr/local/mdsplus/tdi/python/pyfun.py
 ./usr/local/mdsplus/tdi/python/setdiff1d.py
@@ -224,7 +227,6 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeFlushReset.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeGetCurrentShot.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeGetRecord.fun
-./usr/local/mdsplus/tdi/treeshr/TreeHook.example
 ./usr/local/mdsplus/tdi/treeshr/TreeOpen.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenEdit.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenNew.fun
@@ -235,6 +237,7 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDbiItm.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetDefault.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetNciItm.fun
+./usr/local/mdsplus/tdi/treeshr/TreeShrHook.py.example
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOff.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeTurnOn.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeWrite.fun

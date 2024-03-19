@@ -1273,7 +1273,6 @@ int TreeReopenNci(struct tree_info *info)
         status = _TreeOpenNciW(info, 0);
       MDS_IO_CLOSE(reopen_put);
     }
-
   }
   UNLOCKINFO(info);
   return status;

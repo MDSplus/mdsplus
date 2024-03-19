@@ -1050,9 +1050,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
 
       if (STATUS_OK)
       {
-        if ((status = TreePutRecord(
-                 nid, (struct descriptor *)arglist[argidx - 2], 0)) &
-            1)
+        if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2], 0)) & 1)
         {
           TreeWait();
         }
@@ -1191,10 +1189,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
 
       if (STATUS_OK)
       {
-        if ((status =
-                 TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2]),
-             0) &
-            1)
+        if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2], 0)) & 1)
         {
           TreeWait();
         }

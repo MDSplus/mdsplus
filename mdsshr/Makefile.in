@@ -24,6 +24,7 @@ libShared = $(addsuffix @SHARETYPE@, $(addprefix @MAKESHLIBDIR@@LIBPRE@, $(lib_L
 libs = $(libStatic) $(libShared) $(IMPLIB)
 
 SOURCES = \
+        gzipcompress.c \
         librtl.c \
         mdsmsg.c \
         MDSprintf.c \

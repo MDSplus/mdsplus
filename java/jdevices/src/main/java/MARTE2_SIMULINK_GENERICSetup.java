@@ -165,6 +165,30 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel46 = new javax.swing.JPanel();
         deviceField67 = new DeviceField();
         deviceField68 = new DeviceField();
+        jPanel48 = new javax.swing.JPanel();
+        deviceField79 = new DeviceField();
+        deviceField80 = new DeviceField();
+        jPanel49 = new javax.swing.JPanel();
+        deviceField81 = new DeviceField();
+        deviceField82 = new DeviceField();
+        jPanel50 = new javax.swing.JPanel();
+        deviceField83 = new DeviceField();
+        deviceField84 = new DeviceField();
+        jPanel51 = new javax.swing.JPanel();
+        deviceField85 = new DeviceField();
+        deviceField86 = new DeviceField();
+        jPanel52 = new javax.swing.JPanel();
+        deviceField87 = new DeviceField();
+        deviceField88 = new DeviceField();
+        jPanel53 = new javax.swing.JPanel();
+        deviceField89 = new DeviceField();
+        deviceField90 = new DeviceField();
+        jPanel54 = new javax.swing.JPanel();
+        deviceField91 = new DeviceField();
+        deviceField92 = new DeviceField();
+        jPanel55 = new javax.swing.JPanel();
+        deviceField93 = new DeviceField();
+        deviceField94 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
@@ -174,8 +198,11 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4 = new DeviceField();
         jButton1 = new javax.swing.JButton();
         deviceChoice17 = new DeviceChoice();
+        jPanel47 = new javax.swing.JPanel();
+        deviceField77 = new DeviceField();
+        deviceField78 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Simulink Generic device");
         setDeviceType("MARTE2_SIMULINK_GENERIC");
         setHeight(400);
@@ -189,21 +216,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Name: ");
-        deviceField5.setOffsetNid(44);
+        deviceField5.setOffsetNid(71);
         deviceField5.setTextOnly(true);
         jPanel6.add(deviceField5);
 
         deviceChoice1.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Type: ");
-        deviceChoice1.setOffsetNid(40);
+        deviceChoice1.setOffsetNid(67);
         deviceChoice1.setUpdateIdentifier("");
         jPanel6.add(deviceChoice1);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(41);
+        deviceField6.setOffsetNid(68);
         jPanel6.add(deviceField6);
 
         jPanel5.add(jPanel6);
@@ -211,7 +238,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Value: ");
         deviceField7.setNumCols(40);
-        deviceField7.setOffsetNid(43);
+        deviceField7.setOffsetNid(70);
         jPanel7.add(deviceField7);
 
         jPanel5.add(jPanel7);
@@ -223,21 +250,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Name: ");
-        deviceField8.setOffsetNid(51);
+        deviceField8.setOffsetNid(78);
         deviceField8.setTextOnly(true);
         jPanel9.add(deviceField8);
 
         deviceChoice2.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type: ");
-        deviceChoice2.setOffsetNid(47);
+        deviceChoice2.setOffsetNid(74);
         deviceChoice2.setUpdateIdentifier("");
         jPanel9.add(deviceChoice2);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(48);
+        deviceField9.setOffsetNid(75);
         jPanel9.add(deviceField9);
 
         jPanel8.add(jPanel9);
@@ -245,7 +272,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Value: ");
         deviceField10.setNumCols(40);
-        deviceField10.setOffsetNid(50);
+        deviceField10.setOffsetNid(77);
         jPanel10.add(deviceField10);
 
         jPanel8.add(jPanel10);
@@ -257,21 +284,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Name: ");
-        deviceField11.setOffsetNid(58);
+        deviceField11.setOffsetNid(85);
         deviceField11.setTextOnly(true);
         jPanel12.add(deviceField11);
 
         deviceChoice3.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type: ");
-        deviceChoice3.setOffsetNid(54);
+        deviceChoice3.setOffsetNid(81);
         deviceChoice3.setUpdateIdentifier("");
         jPanel12.add(deviceChoice3);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(55);
+        deviceField12.setOffsetNid(82);
         jPanel12.add(deviceField12);
 
         jPanel11.add(jPanel12);
@@ -279,7 +306,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Value: ");
         deviceField13.setNumCols(40);
-        deviceField13.setOffsetNid(57);
+        deviceField13.setOffsetNid(84);
         jPanel13.add(deviceField13);
 
         jPanel11.add(jPanel13);
@@ -291,21 +318,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Name: ");
-        deviceField14.setOffsetNid(65);
+        deviceField14.setOffsetNid(92);
         deviceField14.setTextOnly(true);
         jPanel15.add(deviceField14);
 
         deviceChoice4.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type: ");
-        deviceChoice4.setOffsetNid(61);
+        deviceChoice4.setOffsetNid(88);
         deviceChoice4.setUpdateIdentifier("");
         jPanel15.add(deviceChoice4);
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField15.setNumCols(4);
-        deviceField15.setOffsetNid(62);
+        deviceField15.setOffsetNid(89);
         jPanel15.add(deviceField15);
 
         jPanel14.add(jPanel15);
@@ -313,7 +340,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Value: ");
         deviceField16.setNumCols(40);
-        deviceField16.setOffsetNid(64);
+        deviceField16.setOffsetNid(91);
         jPanel16.add(deviceField16);
 
         jPanel14.add(jPanel16);
@@ -325,21 +352,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Name: ");
-        deviceField17.setOffsetNid(72);
+        deviceField17.setOffsetNid(99);
         deviceField17.setTextOnly(true);
         jPanel18.add(deviceField17);
 
         deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
-        deviceChoice5.setOffsetNid(68);
+        deviceChoice5.setOffsetNid(95);
         deviceChoice5.setUpdateIdentifier("");
         jPanel18.add(deviceChoice5);
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField18.setNumCols(4);
-        deviceField18.setOffsetNid(69);
+        deviceField18.setOffsetNid(96);
         jPanel18.add(deviceField18);
 
         jPanel17.add(jPanel18);
@@ -347,7 +374,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("Value: ");
         deviceField19.setNumCols(40);
-        deviceField19.setOffsetNid(71);
+        deviceField19.setOffsetNid(98);
         jPanel19.add(deviceField19);
 
         jPanel17.add(jPanel19);
@@ -359,21 +386,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Name: ");
-        deviceField20.setOffsetNid(79);
+        deviceField20.setOffsetNid(106);
         deviceField20.setTextOnly(true);
         jPanel21.add(deviceField20);
 
         deviceChoice6.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type: ");
-        deviceChoice6.setOffsetNid(75);
+        deviceChoice6.setOffsetNid(102);
         deviceChoice6.setUpdateIdentifier("");
         jPanel21.add(deviceChoice6);
 
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField21.setNumCols(4);
-        deviceField21.setOffsetNid(76);
+        deviceField21.setOffsetNid(103);
         jPanel21.add(deviceField21);
 
         jPanel20.add(jPanel21);
@@ -381,7 +408,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("Value: ");
         deviceField22.setNumCols(40);
-        deviceField22.setOffsetNid(78);
+        deviceField22.setOffsetNid(105);
         jPanel22.add(deviceField22);
 
         jPanel20.add(jPanel22);
@@ -393,21 +420,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField23.setIdentifier("");
         deviceField23.setLabelString("Name: ");
-        deviceField23.setOffsetNid(86);
+        deviceField23.setOffsetNid(113);
         deviceField23.setTextOnly(true);
         jPanel24.add(deviceField23);
 
         deviceChoice7.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type: ");
-        deviceChoice7.setOffsetNid(82);
+        deviceChoice7.setOffsetNid(109);
         deviceChoice7.setUpdateIdentifier("");
         jPanel24.add(deviceChoice7);
 
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField24.setNumCols(4);
-        deviceField24.setOffsetNid(83);
+        deviceField24.setOffsetNid(110);
         jPanel24.add(deviceField24);
 
         jPanel23.add(jPanel24);
@@ -415,7 +442,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField25.setIdentifier("");
         deviceField25.setLabelString("Value: ");
         deviceField25.setNumCols(40);
-        deviceField25.setOffsetNid(85);
+        deviceField25.setOffsetNid(112);
         jPanel25.add(deviceField25);
 
         jPanel23.add(jPanel25);
@@ -427,21 +454,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField26.setIdentifier("");
         deviceField26.setLabelString("Name: ");
-        deviceField26.setOffsetNid(93);
+        deviceField26.setOffsetNid(120);
         deviceField26.setTextOnly(true);
         jPanel27.add(deviceField26);
 
         deviceChoice8.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type: ");
-        deviceChoice8.setOffsetNid(89);
+        deviceChoice8.setOffsetNid(116);
         deviceChoice8.setUpdateIdentifier("");
         jPanel27.add(deviceChoice8);
 
         deviceField27.setIdentifier("");
         deviceField27.setLabelString("Dimension (0 for scalar, array otherwise):");
         deviceField27.setNumCols(4);
-        deviceField27.setOffsetNid(90);
+        deviceField27.setOffsetNid(117);
         jPanel27.add(deviceField27);
 
         jPanel26.add(jPanel27);
@@ -449,7 +476,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField28.setIdentifier("");
         deviceField28.setLabelString("Value: ");
         deviceField28.setNumCols(40);
-        deviceField28.setOffsetNid(92);
+        deviceField28.setOffsetNid(119);
         jPanel28.add(deviceField28);
 
         jPanel26.add(jPanel28);
@@ -466,32 +493,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField29.setIdentifier("");
         deviceField29.setLabelString("Name:");
-        deviceField29.setOffsetNid(103);
+        deviceField29.setOffsetNid(130);
         deviceField29.setTextOnly(true);
         jPanel30.add(deviceField29);
 
         deviceChoice9.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Type:");
-        deviceChoice9.setOffsetNid(104);
+        deviceChoice9.setOffsetNid(131);
         deviceChoice9.setUpdateIdentifier("");
         jPanel30.add(deviceChoice9);
 
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField30.setNumCols(8);
-        deviceField30.setOffsetNid(106);
+        deviceField30.setOffsetNid(133);
         jPanel30.add(deviceField30);
 
         deviceField31.setIdentifier("");
         deviceField31.setLabelString("Seg. Len (0 to disable):");
         deviceField31.setNumCols(14);
-        deviceField31.setOffsetNid(107);
+        deviceField31.setOffsetNid(134);
         jPanel30.add(deviceField31);
 
         deviceField69.setIdentifier("");
         deviceField69.setLabelString("Stream: ");
-        deviceField69.setOffsetNid(108);
+        deviceField69.setOffsetNid(135);
         deviceField69.setTextOnly(true);
         jPanel30.add(deviceField69);
 
@@ -501,32 +528,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Name:");
-        deviceField32.setOffsetNid(112);
+        deviceField32.setOffsetNid(139);
         deviceField32.setTextOnly(true);
         jPanel31.add(deviceField32);
 
         deviceChoice10.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Type:");
-        deviceChoice10.setOffsetNid(113);
+        deviceChoice10.setOffsetNid(140);
         deviceChoice10.setUpdateIdentifier("");
         jPanel31.add(deviceChoice10);
 
         deviceField33.setIdentifier("");
         deviceField33.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField33.setNumCols(8);
-        deviceField33.setOffsetNid(115);
+        deviceField33.setOffsetNid(142);
         jPanel31.add(deviceField33);
 
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Seg. Len (0 to disable):");
         deviceField34.setNumCols(14);
-        deviceField34.setOffsetNid(116);
+        deviceField34.setOffsetNid(143);
         jPanel31.add(deviceField34);
 
         deviceField70.setIdentifier("");
         deviceField70.setLabelString("Stream: ");
-        deviceField70.setOffsetNid(117);
+        deviceField70.setOffsetNid(144);
         deviceField70.setTextOnly(true);
         jPanel31.add(deviceField70);
 
@@ -536,32 +563,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Name:");
-        deviceField35.setOffsetNid(121);
+        deviceField35.setOffsetNid(148);
         deviceField35.setTextOnly(true);
         jPanel32.add(deviceField35);
 
         deviceChoice11.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Type:");
-        deviceChoice11.setOffsetNid(122);
+        deviceChoice11.setOffsetNid(149);
         deviceChoice11.setUpdateIdentifier("");
         jPanel32.add(deviceChoice11);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField36.setNumCols(8);
-        deviceField36.setOffsetNid(124);
+        deviceField36.setOffsetNid(151);
         jPanel32.add(deviceField36);
 
         deviceField37.setIdentifier("");
         deviceField37.setLabelString("Seg. Len (0 to disable):");
         deviceField37.setNumCols(14);
-        deviceField37.setOffsetNid(125);
+        deviceField37.setOffsetNid(152);
         jPanel32.add(deviceField37);
 
         deviceField71.setIdentifier("");
         deviceField71.setLabelString("Stream: ");
-        deviceField71.setOffsetNid(126);
+        deviceField71.setOffsetNid(153);
         deviceField71.setTextOnly(true);
         jPanel32.add(deviceField71);
 
@@ -571,32 +598,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField38.setIdentifier("");
         deviceField38.setLabelString("Name:");
-        deviceField38.setOffsetNid(130);
+        deviceField38.setOffsetNid(157);
         deviceField38.setTextOnly(true);
         jPanel33.add(deviceField38);
 
         deviceChoice12.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Type:");
-        deviceChoice12.setOffsetNid(131);
+        deviceChoice12.setOffsetNid(158);
         deviceChoice12.setUpdateIdentifier("");
         jPanel33.add(deviceChoice12);
 
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField39.setNumCols(8);
-        deviceField39.setOffsetNid(133);
+        deviceField39.setOffsetNid(160);
         jPanel33.add(deviceField39);
 
         deviceField40.setIdentifier("");
         deviceField40.setLabelString("Seg. Len (0 to disable):");
         deviceField40.setNumCols(14);
-        deviceField40.setOffsetNid(134);
+        deviceField40.setOffsetNid(161);
         jPanel33.add(deviceField40);
 
         deviceField72.setIdentifier("");
         deviceField72.setLabelString("Stream: ");
-        deviceField72.setOffsetNid(135);
+        deviceField72.setOffsetNid(162);
         deviceField72.setTextOnly(true);
         jPanel33.add(deviceField72);
 
@@ -606,32 +633,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("Name:");
-        deviceField41.setOffsetNid(139);
+        deviceField41.setOffsetNid(166);
         deviceField41.setTextOnly(true);
         jPanel34.add(deviceField41);
 
         deviceChoice13.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Type:");
-        deviceChoice13.setOffsetNid(140);
+        deviceChoice13.setOffsetNid(167);
         deviceChoice13.setUpdateIdentifier("");
         jPanel34.add(deviceChoice13);
 
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField42.setNumCols(8);
-        deviceField42.setOffsetNid(142);
+        deviceField42.setOffsetNid(169);
         jPanel34.add(deviceField42);
 
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Seg. Len (0 to disable):");
         deviceField43.setNumCols(14);
-        deviceField43.setOffsetNid(143);
+        deviceField43.setOffsetNid(170);
         jPanel34.add(deviceField43);
 
         deviceField73.setIdentifier("");
         deviceField73.setLabelString("Stream: ");
-        deviceField73.setOffsetNid(144);
+        deviceField73.setOffsetNid(171);
         deviceField73.setTextOnly(true);
         jPanel34.add(deviceField73);
 
@@ -641,32 +668,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField44.setIdentifier("");
         deviceField44.setLabelString("Name:");
-        deviceField44.setOffsetNid(148);
+        deviceField44.setOffsetNid(175);
         deviceField44.setTextOnly(true);
         jPanel35.add(deviceField44);
 
         deviceChoice14.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Type:");
-        deviceChoice14.setOffsetNid(149);
+        deviceChoice14.setOffsetNid(176);
         deviceChoice14.setUpdateIdentifier("");
         jPanel35.add(deviceChoice14);
 
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField45.setNumCols(8);
-        deviceField45.setOffsetNid(151);
+        deviceField45.setOffsetNid(178);
         jPanel35.add(deviceField45);
 
         deviceField46.setIdentifier("");
         deviceField46.setLabelString("Seg. Len (0 to disable):");
         deviceField46.setNumCols(14);
-        deviceField46.setOffsetNid(152);
+        deviceField46.setOffsetNid(179);
         jPanel35.add(deviceField46);
 
         deviceField74.setIdentifier("");
         deviceField74.setLabelString("Stream: ");
-        deviceField74.setOffsetNid(153);
+        deviceField74.setOffsetNid(180);
         deviceField74.setTextOnly(true);
         jPanel35.add(deviceField74);
 
@@ -676,32 +703,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Name:");
-        deviceField47.setOffsetNid(157);
+        deviceField47.setOffsetNid(184);
         deviceField47.setTextOnly(true);
         jPanel36.add(deviceField47);
 
         deviceChoice15.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Type:");
-        deviceChoice15.setOffsetNid(158);
+        deviceChoice15.setOffsetNid(185);
         deviceChoice15.setUpdateIdentifier("");
         jPanel36.add(deviceChoice15);
 
         deviceField48.setIdentifier("");
         deviceField48.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField48.setNumCols(8);
-        deviceField48.setOffsetNid(160);
+        deviceField48.setOffsetNid(187);
         jPanel36.add(deviceField48);
 
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Seg. Len (0 to disable):");
         deviceField49.setNumCols(14);
-        deviceField49.setOffsetNid(161);
+        deviceField49.setOffsetNid(188);
         jPanel36.add(deviceField49);
 
         deviceField75.setIdentifier("");
         deviceField75.setLabelString("Stream: ");
-        deviceField75.setOffsetNid(162);
+        deviceField75.setOffsetNid(189);
         deviceField75.setTextOnly(true);
         jPanel36.add(deviceField75);
 
@@ -711,32 +738,32 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField50.setIdentifier("");
         deviceField50.setLabelString("Name:");
-        deviceField50.setOffsetNid(166);
+        deviceField50.setOffsetNid(193);
         deviceField50.setTextOnly(true);
         jPanel37.add(deviceField50);
 
         deviceChoice16.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Type:");
-        deviceChoice16.setOffsetNid(167);
+        deviceChoice16.setOffsetNid(194);
         deviceChoice16.setUpdateIdentifier("");
         jPanel37.add(deviceChoice16);
 
         deviceField51.setIdentifier("");
         deviceField51.setLabelString("Dimension (0 for scalar, -1 to disable)");
         deviceField51.setNumCols(8);
-        deviceField51.setOffsetNid(169);
+        deviceField51.setOffsetNid(196);
         jPanel37.add(deviceField51);
 
         deviceField52.setIdentifier("");
         deviceField52.setLabelString("Seg. Len (0 to disable):");
         deviceField52.setNumCols(14);
-        deviceField52.setOffsetNid(170);
+        deviceField52.setOffsetNid(197);
         jPanel37.add(deviceField52);
 
         deviceField76.setIdentifier("");
         deviceField76.setLabelString("Stream: ");
-        deviceField76.setOffsetNid(171);
+        deviceField76.setOffsetNid(198);
         deviceField76.setTextOnly(true);
         jPanel37.add(deviceField76);
 
@@ -746,19 +773,19 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Outputs", jScrollPane2);
 
-        jPanel38.setLayout(new java.awt.GridLayout(8, 1));
+        jPanel38.setLayout(new java.awt.GridLayout(16, 1));
 
         jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 1"));
 
         deviceField53.setIdentifier("");
         deviceField53.setLabelString("Name:");
-        deviceField53.setOffsetNid(15);
+        deviceField53.setOffsetNid(18);
         deviceField53.setTextOnly(true);
         jPanel39.add(deviceField53);
 
         deviceField54.setIdentifier("");
         deviceField54.setLabelString("Value: ");
-        deviceField54.setOffsetNid(16);
+        deviceField54.setOffsetNid(19);
         jPanel39.add(deviceField54);
 
         jPanel38.add(jPanel39);
@@ -767,13 +794,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField55.setIdentifier("");
         deviceField55.setLabelString("Name:");
-        deviceField55.setOffsetNid(18);
+        deviceField55.setOffsetNid(21);
         deviceField55.setTextOnly(true);
         jPanel40.add(deviceField55);
 
         deviceField56.setIdentifier("");
         deviceField56.setLabelString("Value: ");
-        deviceField56.setOffsetNid(19);
+        deviceField56.setOffsetNid(22);
         jPanel40.add(deviceField56);
 
         jPanel38.add(jPanel40);
@@ -782,13 +809,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField57.setIdentifier("");
         deviceField57.setLabelString("Name:");
-        deviceField57.setOffsetNid(21);
+        deviceField57.setOffsetNid(24);
         deviceField57.setTextOnly(true);
         jPanel41.add(deviceField57);
 
         deviceField58.setIdentifier("");
         deviceField58.setLabelString("Value: ");
-        deviceField58.setOffsetNid(22);
+        deviceField58.setOffsetNid(25);
         jPanel41.add(deviceField58);
 
         jPanel38.add(jPanel41);
@@ -797,13 +824,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField59.setIdentifier("");
         deviceField59.setLabelString("Name:");
-        deviceField59.setOffsetNid(24);
+        deviceField59.setOffsetNid(27);
         deviceField59.setTextOnly(true);
         jPanel42.add(deviceField59);
 
         deviceField60.setIdentifier("");
         deviceField60.setLabelString("Value: ");
-        deviceField60.setOffsetNid(25);
+        deviceField60.setOffsetNid(28);
         jPanel42.add(deviceField60);
 
         jPanel38.add(jPanel42);
@@ -812,13 +839,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField61.setIdentifier("");
         deviceField61.setLabelString("Name:");
-        deviceField61.setOffsetNid(27);
+        deviceField61.setOffsetNid(30);
         deviceField61.setTextOnly(true);
         jPanel43.add(deviceField61);
 
         deviceField62.setIdentifier("");
         deviceField62.setLabelString("Value: ");
-        deviceField62.setOffsetNid(28);
+        deviceField62.setOffsetNid(31);
         jPanel43.add(deviceField62);
 
         jPanel38.add(jPanel43);
@@ -827,13 +854,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField63.setIdentifier("");
         deviceField63.setLabelString("Name:");
-        deviceField63.setOffsetNid(30);
+        deviceField63.setOffsetNid(33);
         deviceField63.setTextOnly(true);
         jPanel44.add(deviceField63);
 
         deviceField64.setIdentifier("");
         deviceField64.setLabelString("Value: ");
-        deviceField64.setOffsetNid(31);
+        deviceField64.setOffsetNid(34);
         jPanel44.add(deviceField64);
 
         jPanel38.add(jPanel44);
@@ -842,13 +869,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField65.setIdentifier("");
         deviceField65.setLabelString("Name:");
-        deviceField65.setOffsetNid(33);
+        deviceField65.setOffsetNid(36);
         deviceField65.setTextOnly(true);
         jPanel45.add(deviceField65);
 
         deviceField66.setIdentifier("");
         deviceField66.setLabelString("Value: ");
-        deviceField66.setOffsetNid(34);
+        deviceField66.setOffsetNid(37);
         jPanel45.add(deviceField66);
 
         jPanel38.add(jPanel45);
@@ -857,16 +884,136 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         deviceField67.setIdentifier("");
         deviceField67.setLabelString("Name:");
-        deviceField67.setOffsetNid(36);
+        deviceField67.setOffsetNid(39);
         deviceField67.setTextOnly(true);
         jPanel46.add(deviceField67);
 
         deviceField68.setIdentifier("");
         deviceField68.setLabelString("Value: ");
-        deviceField68.setOffsetNid(37);
+        deviceField68.setOffsetNid(40);
         jPanel46.add(deviceField68);
 
         jPanel38.add(jPanel46);
+
+        jPanel48.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 9"));
+
+        deviceField79.setIdentifier("");
+        deviceField79.setLabelString("Name:");
+        deviceField79.setOffsetNid(42);
+        deviceField79.setTextOnly(true);
+        jPanel48.add(deviceField79);
+
+        deviceField80.setIdentifier("");
+        deviceField80.setLabelString("Value: ");
+        deviceField80.setOffsetNid(43);
+        jPanel48.add(deviceField80);
+
+        jPanel38.add(jPanel48);
+
+        jPanel49.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 10"));
+
+        deviceField81.setIdentifier("");
+        deviceField81.setLabelString("Name:");
+        deviceField81.setOffsetNid(45);
+        deviceField81.setTextOnly(true);
+        jPanel49.add(deviceField81);
+
+        deviceField82.setIdentifier("");
+        deviceField82.setLabelString("Value: ");
+        deviceField82.setOffsetNid(46);
+        jPanel49.add(deviceField82);
+
+        jPanel38.add(jPanel49);
+
+        jPanel50.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 11"));
+
+        deviceField83.setIdentifier("");
+        deviceField83.setLabelString("Name:");
+        deviceField83.setOffsetNid(48);
+        deviceField83.setTextOnly(true);
+        jPanel50.add(deviceField83);
+
+        deviceField84.setIdentifier("");
+        deviceField84.setLabelString("Value: ");
+        deviceField84.setOffsetNid(49);
+        jPanel50.add(deviceField84);
+
+        jPanel38.add(jPanel50);
+
+        jPanel51.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 12"));
+
+        deviceField85.setIdentifier("");
+        deviceField85.setLabelString("Name:");
+        deviceField85.setOffsetNid(51);
+        deviceField85.setTextOnly(true);
+        jPanel51.add(deviceField85);
+
+        deviceField86.setIdentifier("");
+        deviceField86.setLabelString("Value: ");
+        deviceField86.setOffsetNid(52);
+        jPanel51.add(deviceField86);
+
+        jPanel38.add(jPanel51);
+
+        jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 13"));
+
+        deviceField87.setIdentifier("");
+        deviceField87.setLabelString("Name:");
+        deviceField87.setOffsetNid(54);
+        deviceField87.setTextOnly(true);
+        jPanel52.add(deviceField87);
+
+        deviceField88.setIdentifier("");
+        deviceField88.setLabelString("Value: ");
+        deviceField88.setOffsetNid(55);
+        jPanel52.add(deviceField88);
+
+        jPanel38.add(jPanel52);
+
+        jPanel53.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 14"));
+
+        deviceField89.setIdentifier("");
+        deviceField89.setLabelString("Name:");
+        deviceField89.setOffsetNid(57);
+        deviceField89.setTextOnly(true);
+        jPanel53.add(deviceField89);
+
+        deviceField90.setIdentifier("");
+        deviceField90.setLabelString("Value: ");
+        deviceField90.setOffsetNid(58);
+        jPanel53.add(deviceField90);
+
+        jPanel38.add(jPanel53);
+
+        jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 15"));
+
+        deviceField91.setIdentifier("");
+        deviceField91.setLabelString("Name:");
+        deviceField91.setOffsetNid(60);
+        deviceField91.setTextOnly(true);
+        jPanel54.add(deviceField91);
+
+        deviceField92.setIdentifier("");
+        deviceField92.setLabelString("Value: ");
+        deviceField92.setOffsetNid(61);
+        jPanel54.add(deviceField92);
+
+        jPanel38.add(jPanel54);
+
+        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("Parameter 16"));
+
+        deviceField93.setIdentifier("");
+        deviceField93.setLabelString("Name:");
+        deviceField93.setOffsetNid(63);
+        deviceField93.setTextOnly(true);
+        jPanel55.add(deviceField93);
+
+        deviceField94.setIdentifier("");
+        deviceField94.setLabelString("Value: ");
+        deviceField94.setOffsetNid(64);
+        jPanel55.add(deviceField94);
+
+        jPanel38.add(jPanel55);
 
         jScrollPane3.setViewportView(jPanel38);
 
@@ -874,7 +1021,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Timebase:");
@@ -885,7 +1032,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Timebase div. (if from another thread):");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(166);
+        deviceField2.setOffsetNid(174);
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
@@ -919,6 +1066,20 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel3.add(deviceChoice17);
 
         jPanel1.add(jPanel3);
+
+        deviceField77.setIdentifier("");
+        deviceField77.setLabelString("MDS write trigger:");
+        deviceField77.setNumCols(30);
+        deviceField77.setOffsetNid(96);
+        jPanel47.add(deviceField77);
+
+        deviceField78.setIdentifier("");
+        deviceField78.setLabelString("Post trig. Samples: ");
+        deviceField78.setNumCols(6);
+        deviceField78.setOffsetNid(98);
+        jPanel47.add(deviceField78);
+
+        jPanel1.add(jPanel47);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
@@ -1033,8 +1194,26 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField74;
     private DeviceField deviceField75;
     private DeviceField deviceField76;
+    private DeviceField deviceField77;
+    private DeviceField deviceField78;
+    private DeviceField deviceField79;
     private DeviceField deviceField8;
+    private DeviceField deviceField80;
+    private DeviceField deviceField81;
+    private DeviceField deviceField82;
+    private DeviceField deviceField83;
+    private DeviceField deviceField84;
+    private DeviceField deviceField85;
+    private DeviceField deviceField86;
+    private DeviceField deviceField87;
+    private DeviceField deviceField88;
+    private DeviceField deviceField89;
     private DeviceField deviceField9;
+    private DeviceField deviceField90;
+    private DeviceField deviceField91;
+    private DeviceField deviceField92;
+    private DeviceField deviceField93;
+    private DeviceField deviceField94;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -1077,7 +1256,16 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel44;
     private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
+    private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel50;
+    private javax.swing.JPanel jPanel51;
+    private javax.swing.JPanel jPanel52;
+    private javax.swing.JPanel jPanel53;
+    private javax.swing.JPanel jPanel54;
+    private javax.swing.JPanel jPanel55;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;

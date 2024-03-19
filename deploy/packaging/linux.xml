@@ -138,7 +138,6 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
     <include file="/usr/local/mdsplus/lib/libMit*"/>
     <include file="/usr/local/mdsplus/lib/libMIT*"/>
     <include file="/usr/local/mdsplus/lib/libdc1394_support*"/>
-    <include file="/usr/local/mdsplus/lib/libdc1394_support*.so"/>
     <include file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
     <include file="/usr/local/mdsplus/uid/A*"/>
     <include file="/usr/local/mdsplus/uid/B*"/>
@@ -165,6 +164,7 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
     <requires package="idl_bin"/>
     <include dir="/usr/local/mdsplus/idl"/>
     <exclude dir="/usr/local/mdsplus/idl/camac"/>
+    <exclude dir="/usr/local/mdsplus/idl/testing"/>
   </package>
 
   <package name="idl_bin" arch="bin" summary="ITT IDL Binary Extensions" description="IDL Intereactive Data Language libraries">
@@ -385,7 +385,6 @@ fi
 
   <package name="kernel" arch="noarch" summary="MDSplus core system" description="MDSplus core system">
     <requires package="kernel_bin"/>
-    <requires package="xinetd" external=""/>
     <include dironly="/usr/local/mdsplus/idl"/>
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
     <include dir="/usr/local/mdsplus/etc"/>
@@ -431,12 +430,26 @@ then
   mkdir -p /usr/share/applications/mdsplus
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
 fi
-if [ ! -r /etc/xinetd.d/mdsip ]
+if [ -d /etc/xinetd.d ]
 then
-  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
-  if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
+  if [ ! -r /etc/xinetd.d/mdsip ]
   then
-    echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
+    cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+    if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
+    then
+      echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
+    fi
+  fi
+fi
+if [ -d /etc/systemd/system/ ]
+then
+  if [ ! -r /etc/systemd/system/mdsip.socket ]
+  then
+    cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip.socket /etc/systemd/system/mdsip.socket
+  fi
+  if [ ! -r /etc/systemd/system/mdsip@.service ]
+  then
+    cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip@.service /etc/systemd/system/mdsip@.service
   fi
 fi
     </post>
@@ -775,6 +788,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
   <package name="matlab" arch="noarch" summary="Mathworks MATLAB extensions" description="Mathworks MATLAB extensions">
     <requires package="java"/>
     <include dir="/usr/local/mdsplus/matlab"/>
+    <exclude dir="/usr/local/mdsplus/matlab/testing"/>    
   </package>
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
@@ -825,42 +839,42 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  <external_packages dist="Ubuntu22">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu20">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="DebianBullseye">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu18">
-   <numpy package="python-numpy"/>
+   <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline7"/>
+ </external_packages>
+
+ <external_packages dist="el9">
+   <numpy package="python3-numpy"/>
+   <java/>
+   <readline/>
  </external_packages>
 
  <external_packages dist="el8">
    <numpy package="python3-numpy"/>
    <java/>
-   <xinetd/>
    <readline/>
  </external_packages>
 
  <external_packages dist="el7">
    <python-numpy package="numpy"/>
    <java/>
-   <xinetd/>
    <readline/>
  </external_packages>
 
@@ -868,7 +882,6 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  <external_packages platform="redhat">
    <numpy/>
    <java/>
-   <xinetd/>
    <readline/>
  </external_packages>
 
@@ -881,7 +894,6 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  <external_packages platform="debian">
    <numpy package="python-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
  </external_packages>
 
 </deploy>

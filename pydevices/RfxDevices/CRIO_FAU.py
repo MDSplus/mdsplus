@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64
+from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Tree
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_uint, c_short, c_byte, c_double, c_uint64
 import os
@@ -101,44 +101,57 @@ class CRIO_FAU(Device):
             self.tsmpFreq = tsmpFreq
             self.treePtr = treePtr
             self.stopReq = False
-            self.stopFlag = c_byte(0);
+            ##self.stopFlag = c_byte(0);
+            
 
         def run(self):
+
+            self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device = self.device.copy()
 
             bufSize = self.device.buf_size.data()
 
             trigSource = self.device.trig_source.data() 
             print ('AsynchStore trigget time', trigSource)
 
-         
+                      
             chanNid = []
             for mod in range(1,9):
                for chan in range(0,8):
                    chanNid.append(getattr(self.device, 'module_%d_channel_%d_data'%(mod,chan)).getNid())
-
+            
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
 
-            self.stopFlag.value = 0;        
-            ##self.saveList = c_void_p(0) ##
-            ##CRIO_FAU.niInterfaceLib.FAUstartSave(byref(self.saveList)) ##
 
 
+            ##self.stopFlag.value = 0;
+            self.stopFlag = c_void_p(0)
+            CRIO_FAU.niInterfaceLib.getStopAcqFlag(byref(self.stopFlag))
+        
+            self.saveList = c_void_p(0) ##
+            CRIO_FAU.niInterfaceLib.FAUstartSave(byref(self.saveList)) ##
+
+            """
             while not self.stopReq:
-               currElem = CRIO_FAU.niInterfaceLib.fauSaveAcqData(self.device.session, c_double(1./self.tsmpFreq), c_double(trigSource), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c, byref(self.stopFlag) );
-               ##status = CRIO_FAU.niInterfaceLib.fauQueuedAcqData(self.device.session, byref(self.saveList),  c_double(1./self.tsmpFreq), c_double(trigSource), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c, byref(self.stopFlag) );
+               print ('AsynchStore LOOP')
+               ##currElem = CRIO_FAU.niInterfaceLib.fauSaveAcqData(self.device.session, c_double(1./self.tsmpFreq), c_double(trigSource), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c, byref(self.stopFlag) );
+            """     
+            status = CRIO_FAU.niInterfaceLib.fauQueuedAcqData(self.device.session, (self.saveList),  c_double(1./self.tsmpFreq), c_double(trigSource), c_int(bufSize),  self.device.NUM_DIO, self.treePtr, chanNid_c, (self.stopFlag) );
+            
+               #if self.stopFlag.value == 1:
+               #  self.stopReq = True            
 
-               if self.stopFlag:
-                 self.stopReq = True
-                
-            print ('AsynchStore stop')
+            print ('AsynchStore stop LOOP')
+            CRIO_FAU.niInterfaceLib.FAUstopSave(self.saveList) ##
+            CRIO_FAU.niInterfaceLib.freeStopAcqFlag(self.stopFlag)
 
-            return
 
         def stop(self):
             print ('AsynchStore stop Request')
-            #self.stopReq = True
-            self.stopFlag.value = 1
-            ##CRIO_FAU.niInterfaceLib.FAUstopSave(byref(self.saveList)) ##
+            self.stopReq = True
+            CRIO_FAU.niInterfaceLib.setStopAcqFlag(self.stopFlag)
+            #self.stopFlag.value = 1
+
       
 #############End Inner class AsynchStore
 
@@ -206,13 +219,13 @@ class CRIO_FAU(Device):
 
 
         bit=0
-        pteEnaMask      = long(0)
-        pteSlowFastMask = long(0)
+        pteEnaMask      = int(0)
+        pteSlowFastMask = int(0)
         for mod in range(0,8):
            for ch in range(0,8):
                pteModeCode = self.TPEModeDict[getattr(self, 'module_%d_channel_%d_pte_mode'%(mod+1,ch)).data()]
-               pteEnaMask      = pteEnaMask      | ((pteModeCode & long(1) == 1) << bit)
-               pteSlowFastMask = pteSlowFastMask | ((pteModeCode & long(2) == 2) << bit)
+               pteEnaMask      = pteEnaMask      | ((pteModeCode & int(1) == 1) << bit)
+               pteSlowFastMask = pteSlowFastMask | ((pteModeCode & int(2) == 2) << bit)
                bit = bit + 1
  
         print ('pteSlowFastMask ', pteSlowFastMask)
@@ -229,7 +242,7 @@ class CRIO_FAU(Device):
 
         acqState = c_short();
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
-        print ("Acquisition State ", acqState.value)
+        print ("Init Acquisition State ", acqState.value)
 
         return 1
 
@@ -255,13 +268,13 @@ class CRIO_FAU(Device):
  
 
         treePtr = c_void_p(0)
-        CRIO_FAU.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        CRIO_FAU.niInterfaceLib.openTree(c_char_p(self.getTree().name.encode('utf-8')), c_int(self.getTree().shot), byref(treePtr))
  
         self.worker = self.AsynchStore()        
         self.worker.daemon = True 
         self.worker.stopReq = False
 
-        self.worker.configure(self, tsmpFreq, treePtr)
+        self.worker.configure(self.copy(), tsmpFreq, treePtr)
 
         """ 
         trigMode = self.trig_mode.data()
@@ -277,7 +290,7 @@ class CRIO_FAU(Device):
          
         acqState = c_short();
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
-        print ("Acquisition State ", acqState.value)
+        print ("Start Store Acquisition State ", acqState.value)
 
         self.saveWorker()
         self.worker.start()
@@ -302,11 +315,9 @@ class CRIO_FAU(Device):
                   Data.execute('DevLogErr($1,$2)', self.getNid(), 'FAU start acquisition device error.')
                   raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        sleep(1)
-
         acqState = c_short();
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
-        print ("Acquisition State ", acqState.value)
+        print ("Trig Acquisition State ", acqState.value)
 
         return 1
 

@@ -42,6 +42,7 @@ class Tests(_common.Tests):
     TESTS = {
         'data', 'scalars', 'arrays', 'vms',
         'tdi', 'decompile', 'casts', 'tdipy',
+        'deserialize',
     }
 
     def _doThreeTest(self, tdiexpr, pyexpr, ans, **kwargs):
@@ -436,6 +437,11 @@ class Tests(_common.Tests):
         self.assertEqual(str(m.Float64(1.2E-3)), '.0012D0')
         self.assertEqual(str(m.Signal(m.ZERO(100000, 0.).evaluate(
         ), None, 0.)), "Build_Signal(Set_Range(100000,0D0 /*** etc. ***/), *, 0D0)")
+
+    def deserialize(self):
+        d = m.Dictionary((1, m.EmptyData))
+        s = d.serialize()
+        self.assertEqual(m.EmptyData, s.deserialize()[1])
 
     def casts(self):
         for WITH in (m.WithError, m.Parameter, m.WithUnits):

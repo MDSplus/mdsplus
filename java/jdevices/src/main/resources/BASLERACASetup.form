@@ -66,7 +66,7 @@
             <Component class="DeviceField" name="deviceField16">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Name (IP): "/>
+                <Property name="labelString" type="java.lang.String" value="Name (IP/SN): "/>
                 <Property name="numCols" type="int" value="20"/>
                 <Property name="offsetNid" type="int" value="1"/>
                 <Property name="textOnly" type="boolean" value="true"/>

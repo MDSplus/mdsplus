@@ -221,7 +221,7 @@ tests-env:
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
-camshr: mdsdcl
+camshr: mdsdcl mdstcpip
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
@@ -234,7 +234,7 @@ java/jdispatcher: java/mdsobjects
 java/jtraverser: java/mdsobjects java/jscope
 java/jtraverser2: java/mdsplus-api
 math: mdsshr
-mdsdcl: mdsshr
+mdsdcl: mdsshr treeshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr

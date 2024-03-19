@@ -22,16 +22,19 @@ private:
   SaveItem *nxt;
   MDSplus::Data *triggerTime;
   MDSplus::TreeNode *dataNode;
+  MDSplus::TreeNode *trigRecvNode;
   MDSplus::TreeNode *resampledNode;
   double *startTimes, *endTimes;
   double freq;
   int blocksInSegment;
-
+  char *trigReceived;
+  
 public:
-  SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
-           MDSplus::Data *triggerTime, void *treePtr,
-           double *startTimes, double *endTimes, double freq, int blocksInSegment,
-           MDSplus::TreeNode *resampledNode = NULL);
+  
+  SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode, MDSplus::TreeNode *trigRecvNode, 
+                   MDSplus::Data *triggerTime, void *treePtr, 
+                  double *startTimes, double *endTimes, double freq, int blocksInSegment, char *trigReceived,
+                  MDSplus::TreeNode *resampledNode = NULL);
 
   void setNext(SaveItem *itm) { nxt = itm; }
   SaveItem *getNext() { return nxt; }
@@ -68,9 +71,9 @@ private:
 public:
   SaveList();
 
-  void addItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
-               MDSplus::Data *triggerTime, void *treePtr,
-               double *startTimes, double *endTimes, double freq, int blocksInSegment,
+  void addItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode, MDSplus::TreeNode *trigRecvNode, 
+               MDSplus::Data *triggerTime, void *treePtr, 
+               double *startTimes, double *endTimes, double freq, int blocksInSegment, char *trigReceived, 
                MDSplus::TreeNode *resampledNode = NULL);
 
   void executeItems();

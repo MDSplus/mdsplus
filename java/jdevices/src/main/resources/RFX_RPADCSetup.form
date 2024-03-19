@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="RedPitaya ADC"/>
     <Property name="deviceType" type="java.lang.String" value="RFX_RPADC"/>
     <Property name="height" type="int" value="300"/>
@@ -42,7 +42,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="7"/>
+        <Property name="rows" type="int" value="8"/>
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -140,11 +140,12 @@
             <Component class="DeviceChoice" name="deviceChoice4">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="4">
+                  <StringArray count="5">
                     <StringItem index="0" value="INTERNAL"/>
                     <StringItem index="1" value="TRIG_EXTERNAL"/>
                     <StringItem index="2" value="EXTERNAL"/>
-                    <StringItem index="3" value="HIGHWAY"/>
+                    <StringItem index="3" value="TRIG_SYNC"/>
+                    <StringItem index="4" value="SYNC"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -217,6 +218,36 @@
                 <Property name="labelString" type="java.lang.String" value="Timing Highway event code: "/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="23"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel9">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField12">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Dead Time(s):"/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="34"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField13">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Offset A (raw):"/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="21"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField14">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Offset B (raw): "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="22"/>
               </Properties>
             </Component>
           </SubComponents>

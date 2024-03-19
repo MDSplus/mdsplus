@@ -1,0 +1,13 @@
+[Unit]
+Description=MDSplus Socket for Per-Connection Servers
+
+[Socket]
+Accept=yes
+KeepAlive=true
+NoDelay=true
+# If we don't force IPv4, the addresses come in from 0.0.0.0 and the host mapping breaks
+# Service names don't work here, so we have to use 8000 instead of mdsip
+ListenStream=0.0.0.0:8000
+
+[Install]
+WantedBy=sockets.target

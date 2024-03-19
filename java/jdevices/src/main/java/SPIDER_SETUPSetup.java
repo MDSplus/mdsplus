@@ -33,6 +33,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         deviceButtons1 = new DeviceButtons();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -185,12 +186,90 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave11 = new DeviceWave();
         jPanel23 = new javax.swing.JPanel();
         deviceWave12 = new DeviceWave();
+        jPanel24 = new javax.swing.JPanel();
+        jPanel34 = new javax.swing.JPanel();
+        jPanel57 = new javax.swing.JPanel();
+        jPanel84 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jPanel85 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jPanel58 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jPanel69 = new javax.swing.JPanel();
+        deviceField21 = new DeviceField();
+        deviceField22 = new DeviceField();
+        deviceField41 = new DeviceField();
+        deviceField44 = new DeviceField();
+        jPanel70 = new javax.swing.JPanel();
+        deviceField45 = new DeviceField();
+        deviceField46 = new DeviceField();
+        deviceField47 = new DeviceField();
+        deviceField48 = new DeviceField();
+        jPanel71 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel72 = new javax.swing.JPanel();
+        deviceField49 = new DeviceField();
+        deviceField50 = new DeviceField();
+        jLabel14 = new javax.swing.JLabel();
+        deviceField51 = new DeviceField();
+        deviceField52 = new DeviceField();
+        jPanel73 = new javax.swing.JPanel();
+        deviceField53 = new DeviceField();
+        deviceField54 = new DeviceField();
+        jLabel15 = new javax.swing.JLabel();
+        deviceField55 = new DeviceField();
+        deviceField56 = new DeviceField();
+        jPanel74 = new javax.swing.JPanel();
+        jPanel82 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel83 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        jPanel75 = new javax.swing.JPanel();
+        deviceField57 = new DeviceField();
+        deviceField58 = new DeviceField();
+        jLabel18 = new javax.swing.JLabel();
+        deviceField59 = new DeviceField();
+        deviceField60 = new DeviceField();
+        jPanel76 = new javax.swing.JPanel();
+        deviceField61 = new DeviceField();
+        deviceField62 = new DeviceField();
+        jLabel24 = new javax.swing.JLabel();
+        deviceField63 = new DeviceField();
+        deviceField64 = new DeviceField();
+        jPanel77 = new javax.swing.JPanel();
+        deviceField65 = new DeviceField();
+        deviceField66 = new DeviceField();
+        jLabel20 = new javax.swing.JLabel();
+        deviceField67 = new DeviceField();
+        deviceField68 = new DeviceField();
+        jPanel78 = new javax.swing.JPanel();
+        deviceField69 = new DeviceField();
+        deviceField70 = new DeviceField();
+        jLabel21 = new javax.swing.JLabel();
+        deviceField71 = new DeviceField();
+        deviceField72 = new DeviceField();
+        jPanel79 = new javax.swing.JPanel();
+        jPanel80 = new javax.swing.JPanel();
+        deviceField73 = new DeviceField();
+        deviceField74 = new DeviceField();
+        jLabel22 = new javax.swing.JLabel();
+        deviceField75 = new DeviceField();
+        deviceField76 = new DeviceField();
+        jPanel81 = new javax.swing.JPanel();
+        deviceField77 = new DeviceField();
+        deviceField78 = new DeviceField();
+        jLabel23 = new javax.swing.JLabel();
+        deviceField79 = new DeviceField();
+        deviceField80 = new DeviceField();
 
         setDeviceProvider("soserver.nbtf:9000");
         setDeviceTitle("SPIDER Experiment Setup");
         setDeviceType("SPIDER_SETUP");
         setHeight(650);
-        setWidth(1200);
+        setWidth(1000);
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
@@ -249,6 +328,11 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField13.setLabelString("Start Time: ");
         deviceField13.setNumCols(30);
         deviceField13.setOffsetNid(122);
+        deviceField13.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                deviceField13FocusLost(evt);
+            }
+        });
         jPanel29.add(deviceField13);
 
         deviceField17.setIdentifier("");
@@ -930,12 +1014,340 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("GVS", jPanel18);
 
+        jPanel24.setLayout(new java.awt.BorderLayout());
+
+        jPanel34.setLayout(new java.awt.GridLayout(15, 0, 0, -5));
+
+        jPanel57.setLayout(new java.awt.GridLayout(1, 0, 0, 2));
+
+        jPanel84.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 20));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setText("AGPS");
+        jPanel84.add(jLabel3);
+
+        jPanel57.add(jPanel84);
+
+        jPanel85.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 20));
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel4.setText("GVS");
+        jPanel85.add(jLabel4);
+
+        jPanel57.add(jPanel85);
+
+        jPanel34.add(jPanel57);
+
+        java.awt.GridBagLayout jPanel58Layout = new java.awt.GridBagLayout();
+        jPanel58Layout.columnWeights = new double[] {0.4, 0.2, 0.3, 0.2};
+        jPanel58.setLayout(jPanel58Layout);
+
+        jLabel6.setText("Session Limits");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel58.add(jLabel6, gridBagConstraints);
+
+        jLabel9.setText(" Nominal Limit");
+        jPanel58.add(jLabel9, new java.awt.GridBagConstraints());
+
+        jLabel8.setText("Session Limits");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel58.add(jLabel8, gridBagConstraints);
+
+        jLabel10.setText(" Nominal Limit");
+        jPanel58.add(jLabel10, new java.awt.GridBagConstraints());
+
+        jPanel34.add(jPanel58);
+
+        java.awt.GridBagLayout jPanel69Layout = new java.awt.GridBagLayout();
+        jPanel69Layout.columnWeights = new double[] {0.4, 0.2, 0.4, 0.2};
+        jPanel69.setLayout(jPanel69Layout);
+
+        deviceField21.setEditable(false);
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Output Voltage [kV] (Plasma)");
+        deviceField21.setOffsetNid(330);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel69.add(deviceField21, gridBagConstraints);
+
+        deviceField22.setEditable(false);
+        deviceField22.setIdentifier("");
+        deviceField22.setOffsetNid(352);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel69.add(deviceField22, gridBagConstraints);
+
+        deviceField41.setEditable(false);
+        deviceField41.setLabelString("Preset Pressure (min) [BarG]");
+        deviceField41.setOffsetNid(331);
+        jPanel69.add(deviceField41, new java.awt.GridBagConstraints());
+
+        deviceField44.setEditable(false);
+        deviceField44.setOffsetNid(353);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel69.add(deviceField44, gridBagConstraints);
+
+        jPanel34.add(jPanel69);
+
+        java.awt.GridBagLayout jPanel70Layout = new java.awt.GridBagLayout();
+        jPanel70Layout.columnWeights = new double[] {0.4, 0.2, 0.4, 0.2};
+        jPanel70.setLayout(jPanel70Layout);
+
+        deviceField45.setEditable(false);
+        deviceField45.setIdentifier("");
+        deviceField45.setLabelString("Output Voltage [kV] (Vacuum)");
+        deviceField45.setOffsetNid(346);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel70.add(deviceField45, gridBagConstraints);
+
+        deviceField46.setEditable(false);
+        deviceField46.setIdentifier("");
+        deviceField46.setOffsetNid(368);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel70.add(deviceField46, gridBagConstraints);
+
+        deviceField47.setEditable(false);
+        deviceField47.setLabelString("Preset Pressure (max) [BarG]");
+        deviceField47.setOffsetNid(332);
+        jPanel70.add(deviceField47, new java.awt.GridBagConstraints());
+
+        deviceField48.setEditable(false);
+        deviceField48.setIdentifier("");
+        deviceField48.setOffsetNid(354);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel70.add(deviceField48, gridBagConstraints);
+
+        jPanel34.add(jPanel70);
+
+        jPanel71.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 15));
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel13.setText("---------------------------- ISEPS ---------------------------");
+        jPanel71.add(jLabel13);
+
+        jPanel34.add(jPanel71);
+
+        deviceField49.setEditable(false);
+        deviceField49.setLabelString("ISEG Output Voltage [V]     ");
+        deviceField49.setOffsetNid(333);
+        jPanel72.add(deviceField49);
+
+        deviceField50.setEditable(false);
+        deviceField50.setOffsetNid(355);
+        jPanel72.add(deviceField50);
+
+        jLabel14.setText("              ");
+        jPanel72.add(jLabel14);
+
+        deviceField51.setEditable(false);
+        deviceField51.setLabelString("ISSS Output Current [A]");
+        deviceField51.setOffsetNid(335);
+        jPanel72.add(deviceField51);
+
+        deviceField52.setEditable(false);
+        deviceField52.setOffsetNid(357);
+        jPanel72.add(deviceField52);
+
+        jPanel34.add(jPanel72);
+
+        deviceField53.setEditable(false);
+        deviceField53.setLabelString("ISRF-TE Output Voltage [V]");
+        deviceField53.setOffsetNid(334);
+        jPanel73.add(deviceField53);
+
+        deviceField54.setEditable(false);
+        deviceField54.setOffsetNid(356);
+        jPanel73.add(deviceField54);
+
+        jLabel15.setText("               ");
+        jPanel73.add(jLabel15);
+
+        deviceField55.setEditable(false);
+        deviceField55.setLabelString("ISPG Output Current [A]");
+        deviceField55.setOffsetNid(336);
+        jPanel73.add(deviceField55);
+
+        deviceField56.setEditable(false);
+        deviceField56.setOffsetNid(358);
+        jPanel73.add(deviceField56);
+
+        jPanel34.add(jPanel73);
+
+        jPanel74.setLayout(new java.awt.GridLayout(1, 0, 0, 2));
+
+        jPanel82.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 20));
+
+        jLabel7.setText(" Vacuum");
+        jPanel82.add(jLabel7);
+
+        jPanel74.add(jPanel82);
+
+        jPanel83.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 20));
+
+        jLabel17.setText(" With Plasma");
+        jPanel83.add(jLabel17);
+
+        jPanel74.add(jPanel83);
+
+        jPanel34.add(jPanel74);
+
+        deviceField57.setEditable(false);
+        deviceField57.setIdentifier("");
+        deviceField57.setLabelString("ISRF1 - Output Power [kV] ");
+        deviceField57.setOffsetNid(347);
+        jPanel75.add(deviceField57);
+
+        deviceField58.setEditable(false);
+        deviceField58.setOffsetNid(369);
+        jPanel75.add(deviceField58);
+
+        jLabel18.setText("               ");
+        jPanel75.add(jLabel18);
+
+        deviceField59.setEditable(false);
+        deviceField59.setLabelString("ISRF1 - Output Power [kV] ");
+        deviceField59.setOffsetNid(337);
+        jPanel75.add(deviceField59);
+
+        deviceField60.setEditable(false);
+        deviceField60.setOffsetNid(359);
+        jPanel75.add(deviceField60);
+
+        jPanel34.add(jPanel75);
+
+        deviceField61.setEditable(false);
+        deviceField61.setLabelString("ISRF2 - Output Power [kV] ");
+        deviceField61.setOffsetNid(348);
+        jPanel76.add(deviceField61);
+
+        deviceField62.setEditable(false);
+        deviceField62.setOffsetNid(370);
+        jPanel76.add(deviceField62);
+
+        jLabel24.setText("               ");
+        jPanel76.add(jLabel24);
+
+        deviceField63.setEditable(false);
+        deviceField63.setLabelString("ISRF2 - Output Power [kV] ");
+        deviceField63.setOffsetNid(338);
+        jPanel76.add(deviceField63);
+
+        deviceField64.setEditable(false);
+        deviceField64.setOffsetNid(360);
+        jPanel76.add(deviceField64);
+
+        jPanel34.add(jPanel76);
+
+        deviceField65.setEditable(false);
+        deviceField65.setLabelString("ISRF3 - Output Power [kV] ");
+        deviceField65.setOffsetNid(349);
+        jPanel77.add(deviceField65);
+
+        deviceField66.setEditable(false);
+        deviceField66.setOffsetNid(371);
+        jPanel77.add(deviceField66);
+
+        jLabel20.setText("              ");
+        jPanel77.add(jLabel20);
+
+        deviceField67.setEditable(false);
+        deviceField67.setLabelString("ISRF3 - Output Power [kV] ");
+        deviceField67.setOffsetNid(339);
+        jPanel77.add(deviceField67);
+
+        deviceField68.setEditable(false);
+        deviceField68.setOffsetNid(361);
+        jPanel77.add(deviceField68);
+
+        jPanel34.add(jPanel77);
+
+        deviceField69.setEditable(false);
+        deviceField69.setLabelString("ISRF4 - Output Power [kV] ");
+        deviceField69.setOffsetNid(350);
+        jPanel78.add(deviceField69);
+
+        deviceField70.setEditable(false);
+        deviceField70.setOffsetNid(372);
+        jPanel78.add(deviceField70);
+
+        jLabel21.setText("              ");
+        jPanel78.add(jLabel21);
+
+        deviceField71.setEditable(false);
+        deviceField71.setLabelString("ISRF4 - Output Power [kV] ");
+        deviceField71.setOffsetNid(340);
+        jPanel78.add(deviceField71);
+
+        deviceField72.setEditable(false);
+        deviceField72.setOffsetNid(362);
+        jPanel78.add(deviceField72);
+
+        jPanel34.add(jPanel78);
+        jPanel34.add(jPanel79);
+
+        deviceField73.setEditable(false);
+        deviceField73.setLabelString("ISBI - Output Voltage [V] ");
+        deviceField73.setOffsetNid(341);
+        jPanel80.add(deviceField73);
+
+        deviceField74.setEditable(false);
+        deviceField74.setOffsetNid(363);
+        jPanel80.add(deviceField74);
+
+        jLabel22.setText("                ");
+        jPanel80.add(jLabel22);
+
+        deviceField75.setEditable(false);
+        deviceField75.setLabelString("ISBI - Output Current [A]");
+        deviceField75.setOffsetNid(343);
+        jPanel80.add(deviceField75);
+
+        deviceField76.setEditable(false);
+        deviceField76.setOffsetNid(365);
+        jPanel80.add(deviceField76);
+
+        jPanel34.add(jPanel80);
+
+        deviceField77.setEditable(false);
+        deviceField77.setLabelString("ISBP - Output Voltage [V]");
+        deviceField77.setOffsetNid(342);
+        jPanel81.add(deviceField77);
+
+        deviceField78.setEditable(false);
+        deviceField78.setOffsetNid(364);
+        jPanel81.add(deviceField78);
+
+        jLabel23.setText("         '       ");
+        jPanel81.add(jLabel23);
+
+        deviceField79.setEditable(false);
+        deviceField79.setLabelString("ISBP - Output Current [A]");
+        deviceField79.setOffsetNid(344);
+        jPanel81.add(deviceField79);
+
+        deviceField80.setEditable(false);
+        deviceField80.setIdentifier("");
+        deviceField80.setOffsetNid(366);
+        jPanel81.add(deviceField80);
+
+        jPanel34.add(jPanel81);
+
+        jPanel24.add(jPanel34, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Safety Parameters - Annex B", jPanel24);
+
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void deviceField17PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_deviceField17PropertyChange
         // TODO add your handling code here:
-        //updateWaves();
     }//GEN-LAST:event_deviceField17PropertyChange
 
     
@@ -943,24 +1355,24 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     {
         float maxX = 0, minX = 0;
         try {
-            //MDSplus.Data data = (MDSplus.Data)this.deviceField13.getData();
+            //Data data = this.deviceField13.getData();
             //minX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
             minX = subtree.getFloat(this.deviceField13.getData());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(SPIDER_SETUPSetup.this,
                 "The value on the file Start Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.",
-                "Incorret Start Time Reference wave limits ", JOptionPane.WARNING_MESSAGE);
+                "Incorret Start Time Reference wave limits", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
-            //MDSplus.Data data = (MDSplus.Data)this.deviceField17.getFullData();
+            //Data data = this.deviceField17.getData();
             //maxX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
-            maxX = subtree.getFloat(this.deviceField17.getData()); 
+            maxX = subtree.getFloat(this.deviceField17.getData());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(SPIDER_SETUPSetup.this,
-                "The value on the file Stop Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.\n"+ex,
-                "Incorret Start Time Reference wave limits ", JOptionPane.WARNING_MESSAGE);
+                "The value on the file Stop Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.",
+                "Incorret Start Time Reference wave limits", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
@@ -987,7 +1399,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave11.updateXLimit(minX, maxX);
         deviceWave12.updateXLimit(minX, maxX);
         deviceWave13.updateXLimit(minX, maxX);
-        deviceWave14.updateXLimit(minX, maxX);
+        deviceWave14.updateXLimit(minX, maxX);        
         //deviceWave21.updateXLimit(minX, maxX); Reconnect Wave x limit fixed from 0 to 1
         deviceWave22.updateXLimit(minX, maxX);
         deviceWave23.updateXLimit(minX, maxX);
@@ -1001,21 +1413,26 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     
     private void deviceField17FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_deviceField17FocusLost
         // TODO add your handling code here:
-        //System.out.println("deviceField17FocusLost");
-        //updateWaves();
+        System.out.println("FOCUS Lost deviceField17");
+        updateWaves();
     }//GEN-LAST:event_deviceField17FocusLost
 
     private void jTabbedPane1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTabbedPane1FocusLost
         // TODO add your handling code here:
-        //System.out.println("jTabbedPane1FocusLost");
-        //updateWaves();
+        updateWaves();
     }//GEN-LAST:event_jTabbedPane1FocusLost
 
-    private void jPanel29FocusLost(java.awt.event.FocusEvent evt) {                                   
-        System.out.println("jPanel29FocusLost");
-        updateWaves();
+    private void deviceField13FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_deviceField13FocusLost
         // TODO add your handling code here:
-    }     
+        System.out.println("FOCUS Lost deviceField13");
+        updateWaves();    
+    }//GEN-LAST:event_deviceField13FocusLost
+
+    private void jPanel29FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jPanel29FocusLost
+        // TODO add your handling code here:
+        System.out.println("FOCUS Lost jPanel29");
+        updateWaves();    
+    }//GEN-LAST:event_jPanel29FocusLost
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1044,6 +1461,8 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
+    private DeviceField deviceField21;
+    private DeviceField deviceField22;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
     private DeviceField deviceField25;
@@ -1064,12 +1483,50 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField39;
     private DeviceField deviceField4;
     private DeviceField deviceField40;
+    private DeviceField deviceField41;
     private DeviceField deviceField42;
     private DeviceField deviceField43;
+    private DeviceField deviceField44;
+    private DeviceField deviceField45;
+    private DeviceField deviceField46;
+    private DeviceField deviceField47;
+    private DeviceField deviceField48;
+    private DeviceField deviceField49;
     private DeviceField deviceField5;
+    private DeviceField deviceField50;
+    private DeviceField deviceField51;
+    private DeviceField deviceField52;
+    private DeviceField deviceField53;
+    private DeviceField deviceField54;
+    private DeviceField deviceField55;
+    private DeviceField deviceField56;
+    private DeviceField deviceField57;
+    private DeviceField deviceField58;
+    private DeviceField deviceField59;
     private DeviceField deviceField6;
+    private DeviceField deviceField60;
+    private DeviceField deviceField61;
+    private DeviceField deviceField62;
+    private DeviceField deviceField63;
+    private DeviceField deviceField64;
+    private DeviceField deviceField65;
+    private DeviceField deviceField66;
+    private DeviceField deviceField67;
+    private DeviceField deviceField68;
+    private DeviceField deviceField69;
     private DeviceField deviceField7;
+    private DeviceField deviceField70;
+    private DeviceField deviceField71;
+    private DeviceField deviceField72;
+    private DeviceField deviceField73;
+    private DeviceField deviceField74;
+    private DeviceField deviceField75;
+    private DeviceField deviceField76;
+    private DeviceField deviceField77;
+    private DeviceField deviceField78;
+    private DeviceField deviceField79;
     private DeviceField deviceField8;
+    private DeviceField deviceField80;
     private DeviceField deviceField9;
     private DeviceWave deviceWave1;
     private DeviceWave deviceWave10;
@@ -1095,7 +1552,24 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave8;
     private DeviceWave deviceWave9;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -1112,6 +1586,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
@@ -1122,6 +1597,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
@@ -1146,6 +1622,8 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel54;
     private javax.swing.JPanel jPanel55;
     private javax.swing.JPanel jPanel56;
+    private javax.swing.JPanel jPanel57;
+    private javax.swing.JPanel jPanel58;
     private javax.swing.JPanel jPanel59;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel60;
@@ -1157,8 +1635,25 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel66;
     private javax.swing.JPanel jPanel67;
     private javax.swing.JPanel jPanel68;
+    private javax.swing.JPanel jPanel69;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel70;
+    private javax.swing.JPanel jPanel71;
+    private javax.swing.JPanel jPanel72;
+    private javax.swing.JPanel jPanel73;
+    private javax.swing.JPanel jPanel74;
+    private javax.swing.JPanel jPanel75;
+    private javax.swing.JPanel jPanel76;
+    private javax.swing.JPanel jPanel77;
+    private javax.swing.JPanel jPanel78;
+    private javax.swing.JPanel jPanel79;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel80;
+    private javax.swing.JPanel jPanel81;
+    private javax.swing.JPanel jPanel82;
+    private javax.swing.JPanel jPanel83;
+    private javax.swing.JPanel jPanel84;
+    private javax.swing.JPanel jPanel85;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane10;

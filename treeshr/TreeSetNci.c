@@ -232,6 +232,10 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
       status = TreeSUCCESS;
       break;
     }
+    case NciCOMPRESSION_METHOD:
+      putnci = 1;
+      nci.compression_method = *(unsigned char *)itm_ptr->pointer;
+      break;
     default:
       status = TreeILLEGAL_ITEM;
       break;

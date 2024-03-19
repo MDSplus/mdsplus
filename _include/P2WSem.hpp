@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _P2WSEM_HPP
+#define _P2WSEM_HPP
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -70,3 +72,4 @@ public:
   }
 };
 static_assert(sizeof(sem_t) == sizeof(P2WSem), "Size is not correct");
+#endif // ifndef _P2WSEM_HPP

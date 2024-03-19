@@ -26,6 +26,7 @@
 ./usr/local/mdsplus/idl/cw_wvedit.pro
 ./usr/local/mdsplus/idl/dsql.pro
 ./usr/local/mdsplus/idl/evaluate.pro
+./usr/local/mdsplus/idl/mds_keyword_set.pro
 ./usr/local/mdsplus/idl/mdscheckarg.pro
 ./usr/local/mdsplus/idl/mdsclose.pro
 ./usr/local/mdsplus/idl/mdsconnect.pro

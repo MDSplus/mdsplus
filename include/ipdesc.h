@@ -43,7 +43,7 @@ extern "C"
 #define INVALID_CONNECTION_ID -1
   extern int ConnectToMds(char *host);
   extern int SendArg(int s, unsigned char i, char dtype, unsigned char nargs,
-                     short len, char ndims, int *dims, char *ptr);
+                     unsigned short len, char ndims, int *dims, char *ptr);
   extern int GetAnswerInfo(int s, char *dtype, short *len, char *ndims, int *dims,
                            int *nbytes, void **dptr);
   extern int DisconnectFromMds(int conid);

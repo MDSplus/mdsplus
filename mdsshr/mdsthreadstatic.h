@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MDSTHREADSTATIC_H
+#define _MDSTHREADSTATIC_H
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <pthread_port.h>
@@ -59,3 +60,4 @@ typedef struct
 #define MDS_FIS_ERROR MDSTHREADSTATIC_VAR->librtl_fis_error
 
 extern DEFINE_GETTHREADSTATIC(MDSTHREADSTATIC_TYPE, MdsGetThreadStatic);
+#endif // ifndef _MDSTHREADSTATIC_H
