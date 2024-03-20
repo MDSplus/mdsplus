@@ -249,7 +249,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def getParametersDict(self, parRoot):   
         pars = {}
         for parNode in parRoot.getChildren():
-            name = parNode.getNode('name').data()
+            try:
+                name = parNode.getNode('name').data()
+            except:
+                continue #Skip parameter if missing name
             valNode = parNode.getNode('value')
             childPars = valNode.getChildren()
             if len(childPars) > 0:
@@ -1639,11 +1642,19 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         for currSignal in signals:
             currSignal.pop('DataSource')
+            try:
+                currSignal.pop('Alias')
+            except:
+                pass
         retDataSource['Signals'] = signals
         retDataSources.append(retDataSource)
 
         for currOutput in outputs:
             currOutput['DataSource'] = self.getMarteDeviceName(self)
+            try:
+                currOutput.pop('Alias')
+            except:
+                pass
 
         #Handle reception of input signals from devices belonging to a different supervisor
         if len(syncInputsToBeReceived) > 0:
