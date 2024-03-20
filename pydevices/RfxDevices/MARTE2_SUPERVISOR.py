@@ -885,7 +885,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         interfaceNodes = self.getInterfaceNodes()
         for interfaceNode in interfaceNodes:
             interfaces.append(interfaceNode.generateMarteInterfaceConfiguration())
-        print(interfaces)
 
         return {
             'TypesDict': typesDict,
