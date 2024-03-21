@@ -1,43 +1,14 @@
 package mds.data.descriptor_r.function;
 
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
-import mds.data.DATA;
-import mds.data.DTYPE;
-import mds.data.OPC;
+import mds.data.*;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_A;
-import mds.data.descriptor_a.Complex32Array;
-import mds.data.descriptor_a.Complex64Array;
-import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int128Array;
-import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Int8Array;
-import mds.data.descriptor_a.Uint128Array;
-import mds.data.descriptor_a.Uint16Array;
-import mds.data.descriptor_a.Uint32Array;
-import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_a.Uint8Array;
+import mds.data.descriptor_a.*;
 import mds.data.descriptor_r.Function;
-import mds.data.descriptor_s.Complex32;
-import mds.data.descriptor_s.Complex64;
-import mds.data.descriptor_s.Float32;
-import mds.data.descriptor_s.Float64;
-import mds.data.descriptor_s.Int128;
-import mds.data.descriptor_s.Int16;
-import mds.data.descriptor_s.Int32;
-import mds.data.descriptor_s.Int64;
-import mds.data.descriptor_s.Int8;
-import mds.data.descriptor_s.Missing;
-import mds.data.descriptor_s.StringDsc;
-import mds.data.descriptor_s.Uint128;
-import mds.data.descriptor_s.Uint16;
-import mds.data.descriptor_s.Uint32;
-import mds.data.descriptor_s.Uint64;
-import mds.data.descriptor_s.Uint8;
+import mds.data.descriptor_s.*;
 
 public class BINARY extends Function
 {
@@ -437,7 +408,8 @@ public class BINARY extends Function
 			new op_rec(" - ", OPC.OpcSubtract, (byte) 24, (byte) -1), // 27
 			new op_rec(" * ", OPC.OpcMultiply, (byte) 20, (byte) -1), // 28
 			new op_rec(" / ", OPC.OpcDivide, (byte) 20, (byte) -1), // 29
-			new op_rec(" ^ ", OPC.OpcPower, (byte) 16, (byte) 1), // 30 : a ** b == a ^ b
+			new op_rec(" ^ ", OPC.OpcPower, (byte) 16, (byte) 1), // 30 : a ** b
+																	// == a ^ b
 	};
 
 	public static final boolean coversOpCode(final OPC opcode)
@@ -717,6 +689,8 @@ public class BINARY extends Function
 		}
 	}
 
+	@SuppressWarnings(
+	{ "static-method", "unused" })
 	protected Descriptor<?> method(final DATA<?>[] args) throws MdsException
 	{
 		return null;

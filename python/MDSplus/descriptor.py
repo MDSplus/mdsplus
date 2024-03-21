@@ -24,14 +24,15 @@
 #
 
 
+import ctypes as _C
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
-
-import ctypes as _C
 
 _ver = _mimport('version')
 _exc = _mimport('mdsExceptions')
@@ -115,7 +116,7 @@ class Descriptor(object):
 
     def __init__(self, obj_in=None, _dict_={}):
         if self.__class__ is Descriptor:
-            return Exception("cannot instanciate Descriptor")
+            raise _exc.MdsException("cannot instanciate Descriptor")
         for k, v in _dict_.items():
             if k not in ['ptr', 'ptr_']:
                 self.__dict__[k] = v
@@ -132,15 +133,25 @@ class Descriptor(object):
         self.ptr = _C.pointer(self._structure)
         self.ptr_ = _C.cast(self.ptr, Descriptor.PTR)
 
-    def __getattr__(self, name):
-        if name != '_structure' and name in dict(self._structure._fields_):
-            return self._structure.__getattribute__(name)
-        return super(Descriptor, self).__getattr__(name)
+    @property
+    def length(self): return self._structure.length
+    @length.setter
+    def length(self, value): self._structure.length = value
 
-    def __setattr__(self, name, value):
-        if name != '_structure' and name in dict(self._structure._fields_):
-            return self._structure.__setattr__(name, value)
-        return super(Descriptor, self).__setattr__(name, value)
+    @property
+    def dclass(self): return self._structure.dclass
+    @dclass.setter
+    def dclass(self, value): self._structure.dclass = value
+
+    @property
+    def dtype(self): return self._structure.dtype
+    @dtype.setter
+    def dtype(self, value): self._structure.dtype = value
+
+    @property
+    def pointer(self): return self._structure.pointer
+    @pointer.setter
+    def pointer(self, value): self._structure.pointer = value
 
     @property
     def addressof(self):
@@ -155,13 +166,13 @@ class DescriptorNULL(Descriptor):
     dclass = length = dtype = addressof = pointer = 0
     ref = ptr_ = ptr = Descriptor.null
 
-    def __init__(self): pass
+    def __init__(self): """NULL"""
 
 
 DescriptorNULL = DescriptorNULL()
 
 
-class Descriptor_s(Descriptor):
+class DescriptorS(Descriptor):
     dclass_id = 1
 
     @property
@@ -170,33 +181,43 @@ class Descriptor_s(Descriptor):
             return dtypeToClass[self.dtype].fromDescriptor(self)._setTree(self.tree)
 
 
-class Descriptor_d(Descriptor_s):
+class DescriptorD(DescriptorS):
     dclass_id = 2
 
     def __del__(self):
         _MdsShr.MdsFree1Dx(self.ptr, 0)
 
 
-class Descriptor_xs(Descriptor_s):
+class DescriptorXS(DescriptorS):
     dclass_id = 193
 
     class _structure_class(_C.Structure):
-        _fields_ = Descriptor_s._structure_class._fields_ + [
+        _fields_ = DescriptorS._structure_class._fields_ + [
             ("l_length", _C.c_uint32)]
 
     def _new_structure(self, l_length=0, **kwarg):
-        super(Descriptor_xs, self)._new_structure(**kwarg)
+        super(DescriptorXS, self)._new_structure(**kwarg)
         self._structure.l_length = l_length
     PTR = _C.POINTER(_structure_class)
     null = _C.cast(0, PTR)
 
     @property
-    def value(self):
+    def descriptor(self):
         if self.l_length and self.pointer:
-            return Descriptor(self.pointer, self.__dict__)._setTree(self.tree).value
+            return Descriptor(self.pointer, self.__dict__)._setTree(self.tree)
+        return DescriptorNULL
+
+    @property
+    def value(self):
+        return self.descriptor.value
+
+    @property
+    def l_length(self): return self._structure.l_length
+    @l_length.setter
+    def l_length(self, value): self._structure.l_length = value
 
 
-class Descriptor_xd(Descriptor_xs):
+class DescriptorXD(DescriptorXS):
     dclass_id = 192
     dtype_dsc = 24
 
@@ -204,21 +225,31 @@ class Descriptor_xd(Descriptor_xs):
         _MdsShr.MdsFree1Dx(self.ptr, 0)
 
 
-class Descriptor_r(Descriptor_s):
+class DescriptorR(DescriptorS):
     dclass_id = 194
 
     class _structure_class(_C.Structure):
         _pack_ = _C.sizeof(_C.c_void_p)
-        _fields_ = Descriptor_s._structure_class._fields_ + [
+        _fields_ = DescriptorS._structure_class._fields_ + [
             ("ndesc", _C.c_ubyte),
             ("dscptrs", Descriptor.PTR*256)]
     PTR = _C.POINTER(_structure_class)
     null = _C.cast(0, PTR)
 
+    @property
+    def ndesc(self): return self._structure.ndesc
+    @ndesc.setter
+    def ndesc(self, value): self._structure.ndesc = value
+
+    @property
+    def dscptrs(self): return self._structure.dscptrs
+    @dscptrs.setter
+    def dscptrs(self, value): self._structure.dscptrs = value
+
 # HINT: arrays
 
 
-class Descriptor_a(Descriptor):
+class DescriptorA(Descriptor):
     dclass_id = 4
 
     class _structure_class(_C.Structure):
@@ -234,7 +265,7 @@ class Descriptor_a(Descriptor):
             ("coeff_and_bounds", _C.c_int32 * 24)]
 
     def _new_structure(self, arsize=0, **kwarg):
-        super(Descriptor_a, self)._new_structure(**kwarg)
+        super(DescriptorA, self)._new_structure(**kwarg)
         self._structure.arsize = arsize
         self._structure.aflags = 48
     PTR = _C.POINTER(_structure_class)
@@ -300,37 +331,82 @@ class Descriptor_a(Descriptor):
         else:
             self.aflags &= ~128
 
+    @property
+    def scale(self): return self._structure.scale
+    @scale.setter
+    def scale(self, value): self._structure.scale = value
 
-class Descriptor_ca(Descriptor_a):
+    @property
+    def digits(self): return self._structure.digits
+    @digits.setter
+    def digits(self, value): self._structure.digits = value
+
+    @property
+    def aflags(self): return self._structure.aflags
+    @aflags.setter
+    def aflags(self, value): self._structure.aflags = value
+
+    @property
+    def dimct(self): return self._structure.dimct
+    @dimct.setter
+    def dimct(self, value): self._structure.dimct = value
+
+    @property
+    def arsize(self): return self._structure.arsize
+    @arsize.setter
+    def arsize(self, value): self._structure.arsize = value
+
+    @property
+    def a0(self): return self._structure.a0
+    @a0.setter
+    def a0(self, value): self._structure.a0 = value
+
+    @property
+    def coeff_and_bounds(self): return self._structure.coeff_and_bounds
+    @coeff_and_bounds.setter
+    def coeff_and_bounds(self, value): self._structure.coeff_and_bounds = value
+
+    @property
+    def size(self):
+        return self._structure.arsize // self._structure.length
+
+
+class DescriptorCA(DescriptorA):
     dclass_id = 195
 
     @property
     def value(self):
-        xd = Descriptor_xd()
+        xd = DescriptorXD()
         _exc.checkStatus(_MdsShr.MdsDecompress(self.ptr, xd.ptr))
         return xd._setTree(self.tree).value
 
 
-class Descriptor_apd(Descriptor_a):
+class DescriptorAPD(DescriptorA):
     dclass_id = 196
 
+    @property
+    def descriptors(self):
+        tree = self.tree
+        dptrs = _C.cast(self.pointer, _C.POINTER(_C.c_void_p*self.size)).contents
+        return [Descriptor(dptr)._setTree(tree) for dptr in dptrs]
 
-dclassToClass = {Descriptor_s.dclass_id: Descriptor_s,
-                 Descriptor_d.dclass_id: Descriptor_d,
-                 Descriptor_xs.dclass_id: Descriptor_xs,
-                 Descriptor_xd.dclass_id: Descriptor_xd,
-                 Descriptor_r.dclass_id: Descriptor_r,
-                 Descriptor_a.dclass_id: Descriptor_a,
-                 Descriptor_ca.dclass_id: Descriptor_ca,
-                 Descriptor_apd.dclass_id: Descriptor_apd}
+
+dclassToClass = {DescriptorS.dclass_id: DescriptorS,
+                 DescriptorD.dclass_id: DescriptorD,
+                 DescriptorXS.dclass_id: DescriptorXS,
+                 DescriptorXD.dclass_id: DescriptorXD,
+                 DescriptorR.dclass_id: DescriptorR,
+                 DescriptorA.dclass_id: DescriptorA,
+                 DescriptorCA.dclass_id: DescriptorCA,
+                 DescriptorAPD.dclass_id: DescriptorAPD}
 
 dtypeToClass = {}
 
 
-def addDtypeToClass(Class):      dtypeToClass[Class.dtype_id] = Class
+def _add_dtype_to_class(cls):      dtypeToClass[cls.dtype_id] = cls
 
 
 dtypeToArrayClass = {}
 
 
-def addDtypeToArrayClass(Class): dtypeToArrayClass[Class.dtype_id] = Class
+def _add_dtype_to_array_class(cls): dtypeToArrayClass[cls.dtype_id] = cls

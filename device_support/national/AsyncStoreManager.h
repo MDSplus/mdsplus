@@ -12,13 +12,16 @@
 #include <unordered_map>
 #include <vector>
 
+
 using namespace MDSplus;
 using namespace std;
+
 
 class SaveItem
 {
 
 private:
+  bool isUpdate;
   void *buffer;
   char dataType;
   int bufSize;
@@ -44,6 +47,10 @@ private:
   int gain;
   int numCoeffs;
   float *coeffs;
+  Data *startPtr;
+  Data *endPtr;
+  Data *dimPtr;
+  Data * dimResPtr;
 
   vector<string> split(const char *str, char c = ' ')
   {
@@ -80,9 +87,9 @@ private:
               (tokens[1].substr(8)).data());
       Event::setevent(event);
     }
-    catch (MdsException *exc)
+    catch (const MdsException &exc)
     {
-      printf("Send Event Error: %s\n", exc->what());
+      printf("Send Event Error: %s\n", exc.what());
     }
   }
 
@@ -93,6 +100,9 @@ public:
            char *streamName, float streamGain, float streamOffset,
            double period, float gain, float *coeffs, int numCoeffs,
            int resampledNid);
+
+  SaveItem(int dataNid, void *treePtr, MDSplus::Data *startPtr, 
+           MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr,  int resampledNid);
 
   void setNext(SaveItem *itm) { nxt = itm; }
   SaveItem *getNext() { return nxt; }
@@ -136,6 +146,9 @@ public:
                char *streamName, float streamGain, float streamOffset,
                double period, float gain, float *coeffs, int numCoeffs,
                int resampledNid = -1);
+
+  void addItem(int dataNid, void *treePtr, MDSplus::Data *startPtr, 
+              MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr, int resampledNid);
 
   void executeItems();
   void start();

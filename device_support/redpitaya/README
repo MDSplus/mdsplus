@@ -13,7 +13,7 @@ acquisition is started until method stop_store is called. The dimension of the s
 --TRIGGER_SINGLE: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW - Digital input DIO1_P or 
 SW - method do_trigger), the number of samples specified in fields "Pre Samples" and "Post Samples" is acquired. 
 NOTE: the dimension of the used segments is computed internally,  and it will be 10000 if (PreSamples+PostSamples) is a multiple of 10000
-else 1000 if (PreSamples+PostSamples) is a multiple of 1000 else (PreSamples+PostSamples)
+else 1000 if (PreSamples+PostSamples) is a multiple of 1000 else (PreSamples+PostSamples). At most 8000 pre samples can be defined
 
 --TRIGGER_STREAMING: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW - Digital input DIO1_P or 
 SW - method do_trigger), the number of samples specified in fields "Pre Samples" and "Post Samples" is acquired and then the module 
@@ -21,26 +21,40 @@ is ready to accept a new trigger until method stop_store is called. The segment 
 adjusted to be a multiple of (PreSamples+PostSamples)
 
 --EVENT_SINGLE
---EVENT_STREAMING: like TRIGGER_SINGLE and TRIGGER_STREAMING but in this case, after receiving a trigger signal, actuual data acquisition is 
+--EVENT_STREAMING: like TRIGGER_SINGLE and TRIGGER_STREAMING but in this case, after receiving a trigger signal, actual data acquisition is 
 	 triggered by the input signal. The following fields specify how the trigger is derived:          
 	 - Event Chan.: channel to consider for trigger generation (A or B)
 	 - Event Mode: Generation if above (UPPER) or below (LOWER) the specified threshond
 	 - Event Level: threshold (raw data) for trigger generation
 	 - Event Samples: number of samples that must satisfy the specified confition in order to generate trigger
+   The trigger derived from inpput signal is also available at pin DIO1_N
 	 
-Clock can be internal or external and is specified by field Clock Mode that can be:
+Clock can be internal, external or internal 1MHz, synchronized with system clock and is specified by field Clock Mode that can be:
 --INTERNAL: clock is derived from the internal 125MHz clock, decimated as specified in field "Decimation"
 --EXTERNAL: clock is derived from Digital input DIO3_P, decimated as specified in field "Decimation"
 --TRIG_EXTERNAL: meaningful for mode TRIGGER_STREAMING or EVENT_STREAMING and useful when using a sampling speed higher that the external clock
      in this case the external clock is used  to measure event time, and internal clock (decimated as specified in field "Decimation") is used 
      for sampling.
---HIGHWAY: takinh 1 MHz clock from the INCAA DIO4 timing highway. The highway is provided on the clock input
+--SYNC: 1MHz clock is internally generated and kept in step with the system clock (see below). This clock is used for data sampling, decoimanted as 
+     specified in  field "Decimation" and for trigger timestamping.
+--TRIGGER_SYNC: same as TRIG_EXTERNAL except for the fact that the clock uzsed to timestamp triggers is taken from the internal, synchronized 1MHz clock 
 
 When EXTERNAL or TRIG_EXTERNAL clock mode specified, field Ext. Clock specifies the clock source (must be a range data type)
 When INTERNAL or TRIG_EXTERNAL clock mode specified, the 125MHz internal clock is divided by the value specified in field "Decimation"
-When HIGHAY, the event code in Setup Event COde: field is recognized as trigger
+When SYNC or TRIGGER_SYNC the absolute time of the (first) trigger is saved in field ABS_TRIGGER, as a usec counter since 1-JAN-1970.
 
 Field trigger time specifies the time of the initial trigger (valid for all modes) and is used to build signal timebases. 
+
+When in mode EVENT_SINGLE or EVENT_STREAMING (i.e. whe trigger is derived from input signal level) field "Dead Time" specifies the time during which, after
+serving one trigger, the firmware is not sensible to further triggers. The default valie is 1 ms, and this feature is useful to avoid overrunning the 
+module when the input signal is contantly above the trigger threashold. 
+
+
+The FPGA firmware includes also the generation of an internal 1 MHz clock. Can be maintained in step with the system clock by running the daemon program 
+sync_clock. This program periodically check the FPGA register keeping the time based on this clock and compares it with the system clock. When the two times
+differ, the (average) frequency of the 1MHz clock is slightly adjusted in order to align the FPGA time and system time. This feature is useful in particular 
+when the system clock is NTP synchronized, allowing the meaningful comparison of signals acquired in different devices with the precision that can be achieved
+in NTP (~100ms). Normally the clock is stabilized by sync_clock in 2-3 minutes.  The generated 1MHz clock is available at pin DIO5_P.
 
 
 				    *************INSTALLATION***************
@@ -48,7 +62,7 @@ Field trigger time specifies the time of the initial trigger (valid for all mode
 1) Firmware upload. The bitstream is in file rfx_nioadc_dma_0. It must be copied on the redpitaya board and EVERY TIME the board is powered
 it must be installed with the comand:  
     
-    cat rfx_nioadc_dma_0.1.bit /dev/xdevcfg
+    cat rfx_stream_0.1.bit /dev/xdevcfg
     
 2) Device tree installation. Performed only once with the following commands, followed by a system reboot
 
@@ -57,9 +71,13 @@ it must be installed with the comand:
       
 3) Driver installation, performed every time the device is powered or rebooted, via the following command:
 
-    insmod rpadc_fifo_auto.ko 
+    insmod rfx_stream.ko 
 
     
 The python device implementation relies on a compiled program (redpitaya.cpp) in $MDSPLUS_DIR/device_support/redpitaya (containing also the
-other files). Installation is done with commands make and make install.
+other files). Installation is done with commands make and make install.  The resulting libredpitaya.so shared library is used by RFX_RPADC python 
+module for the Redpitaya device. Makefile produces also syn_clock program to be launched in order to synchronize the 1 MHz clock. 
+
+
+
     

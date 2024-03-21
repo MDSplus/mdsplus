@@ -1,4 +1,6 @@
 #include "cRioFAUfunction.h"
+//#include <time.h>
+#include <thread>
 
 using namespace MDSplus;
 
@@ -50,25 +52,26 @@ public:
   void save()
   {
 
-#include <time.h>
-
-    struct timespec before, after;
-    long elapsed_nsecs;
+    //struct timespec before, after;
+    //long elapsed_nsecs;
 
     /* handle connection */
+
+
+    Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
 
     try
     {
 
-      clock_gettime(CLOCK_REALTIME, &before);
+      //clock_gettime(CLOCK_REALTIME, &before);
 
       for (int j = 0; j < nDio; j++)
       {
         TreeNode *currNode =
-            new TreeNode(((int *)dataNids)[j], (Tree *)treePtr);
+        new TreeNode(((int *)dataNids)[j], (Tree *)tree);
         timeArrData = new Float64Array(&time[j * currSize], currSizeA[j]);
         start = new Float64(time[j * currSize]);
-        end = new Float64(time[(currSizeA[j] - 1) + j * currSize]);
+        end   = new Float64(time[(currSizeA[j] - 1) + j * currSize]);
 
         dataArrData = new Uint8Array(&data[j * currSize], currSizeA[j]);
         currNode->makeSegment(start, end, timeArrData, dataArrData);
@@ -86,9 +89,10 @@ public:
       free(time);
       free(data);
 
+      /*      
       clock_gettime(CLOCK_REALTIME, &after);
 
-      /*
+
       elapsed_nsecs = (after.tv_sec - before.tv_sec) * 1000000000 +
                       (after.tv_nsec - before.tv_nsec);
 
@@ -96,9 +100,9 @@ public:
       currSize);
       */
     }
-    catch (MdsException *exc)
+    catch (const MdsException &exc)
     {
-      printf("Class FAUSaveItem: Error saving data  %s\n", exc->what());
+      printf("Class FAUSaveItem: Error saving data  %s\n", exc.what());
     }
   }
 };
@@ -108,22 +112,31 @@ extern "C" void *FAUhandleSave(void *listPtr);
 class FAUSaveList
 {
 public:
-  pthread_cond_t FAUitemAvailable;
   pthread_t thread;
   bool threadCreated;
   FAUSaveItem *saveHead, *saveTail;
   bool stopReq;
   pthread_mutex_t mutex;
+  pthread_cond_t FAUitemAvailable;
 
 public:
   FAUSaveList()
   {
     int status = pthread_mutex_init(&mutex, NULL);
+    printf("pthread_mutex_init status %d\n", status);
+
     status = pthread_cond_init(&FAUitemAvailable, NULL);
+    printf("pthread_cond_init status %d %p\n", status, &FAUitemAvailable);
+
     saveHead = saveTail = NULL;
     stopReq = false;
     threadCreated = false;
   }
+  ~FAUSaveList()
+  {
+    printf("Destructor\n");
+  }
+
   void addItem(uint8_t *value, double *time, double trigTime, int *currSizeA,
                int currSize, size_t nDio, int *dataNids, Tree *treePtr)
   {
@@ -145,29 +158,30 @@ public:
   void executeItems()
   {
     int __count = 0;
-    // printf("Start executeItems\n");
+    printf("Start executeItems\n");
+
     while (true)
     {
-      // printf("Get mutex  executeItems\n");
+      //printf("Get mutex  executeItems\n");
       pthread_mutex_lock(&mutex);
       if (stopReq && saveHead == NULL)
       {
-        // printf("Stop executeItems\n");
+        printf("Stop executeItems\n");
         pthread_mutex_unlock(&mutex);
         pthread_exit(NULL);
       }
 
       while (saveHead == NULL)
       {
-        // printf("Wait  executeItems %p\n", &FAUitemAvailable);
+        //printf("Wait  executeItems %p %p\n", this_id, &FAUitemAvailable);
         pthread_cond_wait(&FAUitemAvailable, &mutex);
         if (stopReq && saveHead == NULL)
         {
-          // printf("Stop executeItems\n");
+          printf("Stop executeItems\n");
           pthread_mutex_unlock(&mutex);
           pthread_exit(NULL);
         }
-        // printf("Exit Wait  executeItems\n");
+        printf("Exit Wait executeItems\n");
       }
       FAUSaveItem *currItem = saveHead;
       saveHead = saveHead->getNext();
@@ -195,12 +209,14 @@ public:
 
   void start()
   {
+    printf("START SAVE THREAD\n");
     pthread_create(&thread, NULL, FAUhandleSave, (void *)this);
     threadCreated = true;
   }
+
   void stop()
   {
-    printf("START SAVE THREAD TERMINATED\n");
+    printf("STOP SAVE THREAD %p %p\n");
     printf("Pendig Items %d\n", getItemPending());
     stopReq = true;
     pthread_cond_signal(&FAUitemAvailable);
@@ -209,7 +225,7 @@ public:
       printf("Join thread\n");
       pthread_join(thread, NULL);
     }
-    printf("EXIT SAVE THREAD TERMINATED\n");
+    printf("EXIT SAVE THREAD\n");
   }
 };
 
@@ -464,7 +480,7 @@ NiFpga_Status pauseFauAcquisition(NiFpga_Session session)
 
 int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
                      double trigTime, size_t maxSamp, size_t nDio,
-                     void *treePtr, void *dataNidPtr, uint8_t *stopFlag)
+                     void *treePtr, void *dataNidPtr, int *stopFlag)
 {
 
   NiFpga_Status status = NiFpga_Status_Success;
@@ -484,24 +500,24 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
     maxSamp = MIN_SEGMENT;
 
   data = (uint8_t *)calloc(maxSamp * nDio, sizeof(uint8_t));
-  time = (double *)calloc(maxSamp, sizeof(double));
+  time = (double *) calloc(maxSamp, sizeof(double));
 
-  while ((!*(uint8_t *)stopFlag) == 1)
+
+  while ((!*(int *)stopFlag) == 1)
   {
-    currSize = readFauFifoData(session, data, time, tickPeriod, &maxSamp, nDio,
-                               stopFlag);
 
+    currSize = readFauFifoData(session, data, time, tickPeriod, &maxSamp, nDio, stopFlag);
+
+    printf("curr size %d nDio %d maxSamp %d \n", currSize, nDio, maxSamp);
     if (currSize > 0)
     {
-      printf("\rFau Acq %c", simb[__count++ % 5]);
-      fflush(stdout);
-
-      // printf("curr size %d nDio %d maxSamp %d \n", currSize, nDio, maxSamp);
+      //printf("\rFau Acq %c", simb[__count++ % 5]);
+      //fflush(stdout);
 
       uint8_t b;
       uint8_t *dataQ = (uint8_t *)calloc(currSize * nDio, sizeof(uint8_t));
-      double *timeQ = (double *)calloc(currSize * nDio, sizeof(double));
-      int *currSizeA = (int *)calloc(nDio, sizeof(int));
+      double  *timeQ = (double *) calloc(currSize * nDio, sizeof(double));
+      int *currSizeA = (int *)    calloc(nDio, sizeof(int));
 
       for (int i = 0; i < currSize; i++)
       {
@@ -509,8 +525,7 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
         {
 
           b = data[i + j * maxSamp];
-          if (i == 0 || i == (currSize - 1) ||
-              (i >= 1 && data[(i - 1) + j * maxSamp] != b))
+          if (i == 0 || i == (currSize - 1) || (i >= 1 && data[(i - 1) + j * maxSamp] != b))
           {
             dataQ[currSizeA[j] + j * currSize] = b;
             timeQ[currSizeA[j] + j * currSize] = time[i] + trigTime;
@@ -518,24 +533,21 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
           }
         }
       }
-
-      ((FAUSaveList *)fauList)
-          ->addItem(dataQ, timeQ, trigTime, currSizeA, currSize, nDio, dataNids,
-                    (Tree *)treePtr);
+      ((FAUSaveList *)fauList)->addItem(dataQ, timeQ, trigTime, currSizeA, currSize, nDio, dataNids, (Tree *)treePtr);
     }
   }
 
   free(data);
   free(time);
 
-  printf("EXIT from fauQueuedAcqData %d \n", (!*(int *)stopFlag));
+  printf("EXIT from fauQueuedAcqData %d \n", (*(int *)stopFlag));
 
   return 0;
 }
 
 int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
                    size_t maxSamp, size_t nDio, void *treePtr, void *dataNidPtr,
-                   uint8_t *stopFlag)
+                   int *stopFlag)
 {
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
@@ -546,10 +558,9 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
   int *dataNids = (int *)dataNidPtr;
 
   data = (uint8_t *)calloc(maxSamp * nDio, sizeof(uint8_t));
-  time = (double *)calloc(maxSamp, sizeof(double));
+  time = (double *) calloc(maxSamp, sizeof(double));
 
-  currSize = readFauFifoData(session, data, time, tickPeriod, &maxSamp, nDio,
-                             stopFlag);
+  currSize = readFauFifoData(session, data, time, tickPeriod, &maxSamp, nDio, stopFlag);
 
   timeDio = (double *)calloc(currSize * nDio, sizeof(double));
   currSizeA = (int *)calloc(nDio, sizeof(int));
@@ -559,8 +570,7 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
     for (int j = 0; j < nDio; j++)
     {
       b = data[i + j * maxSamp];
-      if (i == 0 || i == (currSize - 1) ||
-          (i >= 1 && data[(i - 1) + j * maxSamp] != b))
+      if (i == 0 || i == (currSize - 1) || (i >= 1 && data[(i - 1) + j * maxSamp] != b))
       {
         data[currSizeA[j] + j * maxSamp] = b;
         timeDio[currSizeA[j] + j * currSize] = time[i] + trigTime;
@@ -587,9 +597,9 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
       {
         currNode[i] = new TreeNode(dataNids[i], (Tree *)treePtr);
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        printf("Error collecting data nodes %s\n", exc->what());
+        printf("Error collecting data nodes %s\n", exc.what());
       }
     }
 
@@ -600,7 +610,7 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
       end = new Float64(timeDio[(currSizeA[j] - 1) + j * currSize]);
 
       dataArrData = new Uint8Array(&data[j * maxSamp], currSizeA[j]);
-      // currNode[j]->beginSegment(start, end, timeArrData, dataArrData);
+   // currNode[j]->beginSegment(start, end, timeArrData, dataArrData);
       currNode[j]->makeSegment(start, end, timeArrData, dataArrData);
 
       delete dataArrData;
@@ -623,7 +633,7 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
 
 int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
                     double tickPeriod, size_t *maxSampPtr, size_t nDio,
-                    uint8_t *stopFlag)
+                    int *stopFlag)
 {
   NiFpga_Status status = NiFpga_Status_Success;
   size_t currSize = 0;
@@ -650,25 +660,25 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
   noDataCount = 0;
   // while( currSize < maxSamp && count < MAX_COUNT && !( count > MAX_COUNT/2 &&
   // currSize > MIN_SEGMENT ) )
-  while (currSize < maxSamp && count < MAX_COUNT && currSize < MIN_SEGMENT &&
-         *(int *)stopFlag == 0)
+  while (currSize < maxSamp && count < MAX_COUNT && currSize < MIN_SEGMENT && *(int *)stopFlag == 0)
   {
 
     count++;
-    /*
-            if( __count % 10000 == 0 )
+/*    
+            if( __count % 1 == 0 )
             {
                  printf("+");
                  fflush(stdout);
             }
             __count++;
-    */
-    // Read elements in the queue
+*/    
+    // Read number of elements in the queue
     NiFpga_MergeStatus(
         &status,
         NiFpga_ReadFifoU64(
             session, NiFpga_FAU_cRIO_FPGA_TargetToHostFifoU64_AcquisitionFIFOR,
             &dummy, 0, 0, &nElem));
+
 
     if (NiFpga_IsError(status))
     {

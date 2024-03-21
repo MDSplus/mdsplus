@@ -140,7 +140,7 @@ getnci(.subtree:a12,"parent_relationship")
 getnci(.subtree:a12,"get_flags")
 128LU
 getnci(.subtree:a12,"owner_id")
-4194368LU
+64LU
 getnci(.subtree:a12,"status")
 0LU
 getnci(.subtree:a12,"brother")

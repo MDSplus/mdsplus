@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _DCL_H
+#define _DCL_H
 
 #include <mdsdescrip.h>
 extern int mdsdclAddCommands(const char *name_in, char **error);
@@ -20,3 +21,4 @@ extern int mdsdcl_do_command_extra_args(char const *command, char **prompt,
                                         char *(*getline)(), void *getlineinfo);
 extern int cli_get_value(void *ctx, const char *name, char **value);
 extern int cli_present(void *ctx, const char *name);
+#endif

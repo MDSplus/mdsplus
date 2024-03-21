@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     nodeMeta = tree->getNode((char *)"\\CAMERATEST::TOP:POINTGREY:FRAMES_METAD");
     dataNid = node->getNid(); //Node id to save the acquired frames
   }
-  catch (MDSplus::MdsException *exc)
+  catch (const MDSplus::MdsException &exc)
   {
-    std::cout << "ERROR reading data" << exc->what() << "\n";
+    std::cout << "ERROR reading data" << exc.what() << "\n";
   }
 
   printf("frame node path: %s\n", node->getPath());
@@ -107,9 +107,9 @@ int main(int argc, char **argv)
     framePtr = (frameData)->getShortArray(dataDims);
     framePtrMeta = (frameDataMeta)->getByteArray(dataDimsMeta);
   }
-  catch (MdsException *exc)
+  catch (const MDSplus::MdsException &exc)
   {
-    std::cout << "ERROR reading data" << exc->what() << "\n";
+    std::cout << "ERROR reading data" << exc.what() << "\n";
   }
 
   PTGREY *PtgreyCam;

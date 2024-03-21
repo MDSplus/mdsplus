@@ -1,9 +1,11 @@
 
-from MDSplus import Device, Event, VECTOR
+from MDSplus import Device, Event, VECTOR, Uint8Array
 import subprocess
 import numpy as np
 import time
 import traceback
+import os
+
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
@@ -55,15 +57,17 @@ class MARTE2_SUPERVISOR(Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM7', 'type': 'signal'})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
+    parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
+
 
     parts.append({'path': ':INIT', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',50,None),Method(None,'init',head))",
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':START_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',51,None),Method(None,'start_store',head))",
+    parts.append({'path': ':GOTORUN', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',20,None),Method(None,'gotorun',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':STOP_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PPC',50,None),Method(None,'stop_store',head))",
+    parts.append({'path': ':STOP', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stopMarte',head))",
                   'options': ('no_write_shot',)})
 
     MODE_GAM = 1
@@ -163,7 +167,8 @@ class MARTE2_SUPERVISOR(Device):
                                 # except:
                                 # return 'Cannot get timebase for ' + gam, {},{}
                                 gamNids.append(currGamNode.getNid())
-                                if currPeriod > 0 and threadPeriod > 0:
+                              #  if currPeriod > 0 and threadPeriod > 0:
+                                if currPeriod > 0 and threadPeriod > 0 and currPeriod != threadPeriod:
                                     raise Exception('More than one component driving thread timing for state: '+str(
                                         state+1)+', thread: '+str(thread+1))
                                 else:
@@ -202,6 +207,7 @@ class MARTE2_SUPERVISOR(Device):
 
 
 # Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
+
     def getTimingInfo(self, state, thread, threadPeriod, retGams, dataSources, gamList):
         segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
                          (state+1, thread+1)).data()
@@ -362,11 +368,11 @@ class MARTE2_SUPERVISOR(Device):
         confText += '    MaxNumberOfThreads = 8\n'
         confText += '    MinNumberOfThreads = 1\n'
         confText += '}    \n'
-    
+
         confText += ' +StateMachine = {\n'
         confText += '    Class = StateMachine\n'
         confText += '    +INITIAL = {\n'
-        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        Class = ReferenceContainer    \n'
         confText += '        +START = {\n'
         confText += '            Class = StateMachineEvent\n'
         confText += '            NextState = "IDLE"\n'
@@ -376,12 +382,10 @@ class MARTE2_SUPERVISOR(Device):
         confText += '                Class = Message\n'
         confText += '                Destination = "WebServer"\n'
         confText += '                Function = "Start"\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }            \n'
         confText += '            +ChangeToStateIdleMsg = {\n'
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                    Class = ConfigurationDatabase\n'
@@ -392,7 +396,6 @@ class MARTE2_SUPERVISOR(Device):
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
         confText += '                Function = StartNextStateExecution\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }\n'
         confText += '        }\n'
         confText += '    }\n'
@@ -406,24 +409,22 @@ class MARTE2_SUPERVISOR(Device):
         confText += '            +ChangeToRunMsg = {\n'
         confText += '                Class = Message\n'
         confText += '               Destination = '+info['name']+'\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                   Class = ConfigurationDatabase\n'
-        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                    param1 = ' + \
+            info['states'][0]['name']+'\n'
         confText += '                }\n'
         confText += '           }\n'
         confText += '            +StopCurrentStateExecutionMsg = {\n'
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
         confText += '               Function = StopCurrentStateExecution\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }\n'
         confText += '            +StartNextStateExecutionMsg = {\n'
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
         confText += '                Function = StartNextStateExecution\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }\n'
         confText += '        }\n'
         confText += '    }\n'
@@ -437,7 +438,6 @@ class MARTE2_SUPERVISOR(Device):
         confText += '            +ChangeToIdleMsg = {\n'
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                    Class = ConfigurationDatabase\n'
@@ -448,13 +448,11 @@ class MARTE2_SUPERVISOR(Device):
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
         confText += '                Function = StopCurrentStateExecution\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }\n'
         confText += '           +StartNextStateExecutionMsg = {\n'
         confText += '                Class = Message\n'
         confText += '                Destination = '+info['name']+'\n'
         confText += '                Function = StartNextStateExecution\n'
-        confText += '                Mode = ExpectsReply\n'
         confText += '            }\n'
         confText += '        }   \n'
         confText += '    }\n'
@@ -499,7 +497,7 @@ class MARTE2_SUPERVISOR(Device):
         confText += '  Class = ReferenceContainer\n'
         confText += ' +IDLE_MDSPLUS_TIMER = {\n'
         confText += '   Class = LinuxTimer\n'
-        confText += '   SleepNature = "Default"\n'
+        confText += '   SleepNature = "Busy"\n'
         confText += '   Signals = {\n'
         confText += '     Counter = {\n'
         confText += '       Type = uint32\n'
@@ -557,40 +555,40 @@ class MARTE2_SUPERVISOR(Device):
         confText += ' }\n'
         confText += '}\n'
         print (confText)
-        f = open(info['name']+'_marte_configuration.cfg', 'w')
+        try:
+          os.system('mv /tmp/'+info['name']+'_marte_configuration.cfg '+'/tmp/'+info['name']+'_marte_configuration_OLD.cfg ')
+        except:
+          pass
+        f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
+        self.marte_config.putData(Uint8Array(bytearray(confText.encode())))
         f.write(confText)
         f.close()
         print('END BUILD')
-        return 1
 
     def startMarteIdle(self):
         self.buildConfiguration()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        return 1
 
     def startMarte(self):
         self.buildConfiguration()
         stateName = self.state_1_name.data()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
-        time.sleep(2)
+        time.sleep(4)
         self.gotorun()
-        return 1
 
     def gotorun(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTORUN'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
 
     def gotoidle(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTOIDLE'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
-
-
+            eventString1.encode(), dtype=np.uint8))
 
     def doState(self, state):
         marteName = self.getNode('name').data()
@@ -599,29 +597,28 @@ class MARTE2_SUPERVISOR(Device):
         eventString2 = marteName+':'+'PrepareNextState:'+stateName
         eventString3 = marteName+':StartNextStateExecution:XX'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString2, dtype=np.uint8))
+            eventString2.encode(), dtype=np.uint8))
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString3, dtype=np.uint8))
-        return 1
+            eventString3.encode(), dtype=np.uint8))
 
     def doState1(self):
-        return self.doState(1)
+        self.doState(1)
 
     def doState2(self):
-        return self.doState(2)
+        self.doState(2)
 
     def doState3(self):
-        return self.doState(2)
+        self.doState(3)
 
     def doState4(self):
-        return self.doState(2)
+        self.doState(4)
 
     def doState5(self):
-        return self.doState(2)
+        self.doState(5)
 
     def suspendMarte(self):
         marteName = self.getNode('name').data()
@@ -629,14 +626,13 @@ class MARTE2_SUPERVISOR(Device):
         eventString2 = marteName+':'+'PrepareNextState:IDLE'
         eventString3 = marteName+':StartNextStateExecution:XX'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString2, dtype=np.uint8))
+            eventString2.encode(), dtype=np.uint8))
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString3, dtype=np.uint8))
-        return 1
+            eventString3.encode(), dtype=np.uint8))
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
@@ -645,7 +641,25 @@ class MARTE2_SUPERVISOR(Device):
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        # KILL MARTe process
+        import subprocess
+        import os
+
+        command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
+        os.system(command)
         return 1
+
+        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
+            marteName)
+        pid, error = subprocess.Popen("{cmd}".format(
+            cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if len(pid) == 0:
+            if len(error) != 0:
+                print('INFO : %s' % (error))
+        else:
+            for p in pid.split():
+                os.kill(int(p), 9)
+                print('MARTe Process PID : %s Killed\n' % (p))
 
     def check(self):
         t = self.getTree()

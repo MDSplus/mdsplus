@@ -20,11 +20,13 @@ public class ACQ1001 extends Device
 {
 	public static void main(final String... args) throws MdsException
 	{
-		final Mds mds = new MdsIp();
-		try (final TREE tree = new TREE(mds, "test", 1, TREE.NEW))
+		try (final Mds mds = new MdsIp())
 		{
-			final Nid dev = tree.getTop().addConglom("DEVICE", "ACQ2106_ACQ480x4");
-			new ACQ1001(null, dev, true, ACQ480.class).showDialog();
+			try (final TREE tree = new TREE(mds, "test", 1, TREE.NEW))
+			{
+				final Nid dev = tree.getTop().addConglom("DEVICE", "ACQ2106_ACQ480x4");
+				new ACQ1001(null, dev, true, ACQ480.class).showDialog();
+			}
 		}
 	}
 

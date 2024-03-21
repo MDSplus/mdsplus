@@ -42,7 +42,7 @@ written by
 #include <cstring>
 #include <cerrno>
 #include <unistd.h>
-#ifdef OSX
+#ifdef __APPLE__
 #include <mach/mach_time.h>
 #endif
 #else
@@ -115,7 +115,7 @@ void CTimer::rdtsc(uint64_t &x) {
   // SetThreadAffinityMask(hCurThread, dwOldMask);
   if (!ret)
     x = getTime() * s_ullCPUFrequency;
-#elif defined(OSX)
+#elif defined(__APPLE__)
   x = mach_absolute_time();
 #else
   // use system call to read time clock for other archs
@@ -142,7 +142,7 @@ uint64_t CTimer::readCPUFrequency() {
   int64_t ccf;
   if (QueryPerformanceFrequency((LARGE_INTEGER *)&ccf))
     frequency = ccf / 1000000;
-#elif defined(OSX)
+#elif defined(__APPLE__)
   mach_timebase_info_data_t info;
   mach_timebase_info(&info);
   frequency = info.denom * 1000ULL / info.numer;

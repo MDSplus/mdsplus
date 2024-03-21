@@ -40,7 +40,7 @@ int main()
   {
     throw_exception_msg();
   }
-  catch (mds::MdsException e)
+  catch (const mds::MdsException &e)
   {
     TEST1(std::string(e.what()) == "test message");
   }
@@ -49,7 +49,7 @@ int main()
   {
     throw_exception_status();
   }
-  catch (mds::MdsException e)
+  catch (const mds::MdsException &e)
   {
     TEST1(std::string(e.what()) == std::string(MdsGetMsg(5552368)));
   }

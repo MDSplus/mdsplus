@@ -30,6 +30,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string>
 
+
+#ifdef _WIN32
+#define GET_THREAD_ID GetCurrentThreadId()
+#define THREAD_ID DWORD
+#else
+#define GET_THREAD_ID pthread_self()
+#define THREAD_ID pthread_t
+#endif
+
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -48,7 +58,7 @@ using namespace std;
 extern "C" void *getManyObj(char *serializedIn);
 extern "C" void *putManyObj(char *serializedIn);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args,
-                                         void *tree);
+                                         void *tree, void *ctx, int *retStatus);
 extern "C" int SendArg(int sock, unsigned char idx, char dtype,
                        unsigned char nargs, short length, char ndims, int *dims,
                        char *bytes);
@@ -272,9 +282,10 @@ void *putManyObj(char *serializedIn)
     try
     {
       AutoPointer<Tree> tree(getActiveTree());
+      int retStatus;
       AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(
           expr.get(), nPutArgs, (argsData.get()) ? argsData->getDscs() : 0,
-          tree.get());
+          tree.get(), nullptr, &retStatus);
       AutoPointer<TreeNode> node = tree->getNode(nodeNameData.get());
       node->putData(compiledData.get());
       AutoData<String> successData(new String("Success"));
@@ -293,28 +304,51 @@ void *putManyObj(char *serializedIn)
 Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr,
-                       int clevel) // mdsipAddr of the form <IP addr>[:<port>]
+                       int clevel)// mdsipAddr of the form <IP addr>[:<port>]
 {
   mdsipAddrStr.assign((const char *)mdsipAddr);
   this->clevel = clevel;
   lockGlobal();
   SetCompressionLevel(clevel);
-  sockId = ConnectToMds(mdsipAddr);
+  int sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0)
+  
+  if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
     throw MdsException(msg);
   }
+  struct ConnectionThreadContextInfo ttci = {GET_THREAD_ID, sockId};
+  threadContextV.push_back(ttci);
 }
 
 Connection::~Connection()
 {
   lockGlobal();
-  DisconnectFromMds(sockId);
+  DisconnectFromMds(getSockId());
   unlockGlobal();
 }
+
+int Connection::getSockId()
+{
+  
+    AutoLock lock(mutex);
+    THREAD_ID thisTid = GET_THREAD_ID;
+    for(size_t i = 0; i < threadContextV.size(); i++)
+    {
+        if(threadContextV[i].tid == thisTid)
+        {
+            return threadContextV[i].sockId;
+        }
+    }
+    //If we arrive here this is the first Connection operation in a new thread and the tree must be opened again
+    int sockId = ConnectToMds((char *)mdsipAddrStr.c_str());
+    struct ConnectionThreadContextInfo ttci = {thisTid, sockId};
+    threadContextV.push_back(ttci);
+    return sockId;
+}
+
 
 void Connection::lockLocal() { mutex.lock(); }
 
@@ -326,15 +360,14 @@ void Connection::unlockGlobal() { globalMutex.unlock(); }
 
 void Connection::openTree(char *tree, int shot)
 {
-  int status = MdsOpen(sockId, tree, shot);
-  //	std::cout << "SOCK ID: " << sockId << std::endl;
+  int status = MdsOpen(getSockId(), tree, shot);
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void Connection::closeAllTrees()
 {
-  int status = MdsClose(sockId);
+  int status = MdsClose(getSockId());
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
@@ -349,6 +382,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   int retDims[MAX_DIMS];
   Data *resData;
 
+  int sockId = getSockId();
+  
   // Check whether arguments are compatible (Scalars or Arrays)
   for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
   {
@@ -360,7 +395,6 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   }
 
   lockLocal();
-  //	lockGlobal();
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
                    std::string(expr).size(), 0, 0, (char *)expr);
   if (STATUS_NOT_OK)
@@ -381,7 +415,6 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
       throw MdsException(status);
     }
   }
-  //	unlockGlobal();
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes,
                            &ptr, &mem);
   unlockLocal();
@@ -439,6 +472,15 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   else
   {
     // nDims > 0
+    if(nDims > 1)
+    {
+        for(int i = 0; i < nDims/2; i++)
+        {
+            int tmp = retDims[i];
+            retDims[i] = retDims[nDims - i - 1];
+             retDims[nDims - i - 1] = tmp;
+        }
+    }
     switch (dtype)
     {
     case DTYPE_CHAR_IP:
@@ -487,6 +529,8 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
   int *dims;
   int status;
   void *ptr, *mem = 0;
+  
+  int sockId = getSockId();
 
   // Check whether arguments are compatible (Scalars or Arrays)
   for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
@@ -550,7 +594,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 
 void Connection::setDefault(char *path)
 {
-  int status = MdsSetDefault(sockId, path);
+  int status = MdsSetDefault(getSockId(), path);
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
@@ -655,17 +699,25 @@ void Connection::startStreaming()
 void Connection::resetConnection()
 {
   lockGlobal();
-  DisconnectFromMds(sockId);
+  DisconnectFromMds(getSockId());
   SetCompressionLevel(clevel);
   char *mdsipAddr = (char *)mdsipAddrStr.c_str();
-  sockId = ConnectToMds(mdsipAddr);
+  int sockId = ConnectToMds(mdsipAddr);
+  if(sockId >= 0)
+  {
+      threadContextV.clear();
+      THREAD_ID thisTid = GET_THREAD_ID;
+      struct ConnectionThreadContextInfo ttci = {thisTid, sockId};
+      threadContextV.push_back(ttci);
+  }
   unlockGlobal();
-  if (sockId <= 0)
+  if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
     throw MdsException(msg.c_str());
   }
+
 }
 
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)

@@ -115,7 +115,7 @@ def handler(req):
                 os.putenv('UDP_EVENTS', 'yes')
         if "EVENT_SERVER" in opts:
             os.putenv("mds_event_server", opts['EVENT_SERVER'])
-    except:
+    except Exception:
         pass
     os.putenv('UDP_EVENTS', 'yes')
     event = req.path_info.rsplit('/')[-1]
@@ -123,27 +123,27 @@ def handler(req):
     timeout = 60
     try:
         timeout = int(args['timeout'][-1])
-    except:
+    except Exception:
         pass
     try:
         event = args['event'][-1]
-    except:
+    except Exception:
         pass
     if 'handler' in args:
-        specialHandler = __import__(args['handler'][-1])
-        if hasattr(specialHandler, 'handler'):
-            specialHandler = specialHandler.handler
+        special_handler = __import__(args['handler'][-1])
+        if hasattr(special_handler, 'handler'):
+            special_handler = special_handler.handler
         else:
-            raise(Exception(str(dir(specialHandler))))
+            raise Exception(str(dir(special_handler)))
     else:
-        specialHandler = None
+        special_handler = None
         e = myevent(event, timeout)
         e.join()
     req.headers_out['Cache-Control'] = 'no-store, no-cache, must-revalidate'
     req.headers_out['Pragma'] = 'no-cache'
     req.content_type = "text/xml"
-    if specialHandler is not None:
-        result = specialHandler(req, e)
+    if special_handler is not None:
+        result = special_handler(req, e)
         if result is not None:
             return result
     if e.exception is None:

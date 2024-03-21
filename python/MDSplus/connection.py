@@ -32,7 +32,7 @@ import ctypes
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -63,6 +63,8 @@ _SendArg.argtypes = [ctypes.c_int32, ctypes.c_ubyte, ctypes.c_ubyte,
 
 
 INVALID_CONNECTION_ID = -1
+
+
 class _Connection:
 
     _conid = INVALID_CONNECTION_ID
@@ -149,12 +151,12 @@ class _Connection:
             elif dtype == 13:
                 dtype = 55
             if ndims.value == 0:
-                d = _dsc.Descriptor_s()
+                d = _dsc.DescriptorS()
                 d.dtype = dtype
                 d.length = length.value
                 d.pointer = ans
                 return d.value
-            val = _dsc.Descriptor_a()
+            val = _dsc.DescriptorA()
             val.dtype = dtype
             val.dclass = 4
             val.length = length.value
@@ -172,7 +174,7 @@ class _Connection:
             return val.value
         except _exc.MDSplusException:
             if ndims.value == 0 and dtype == _sca.String.dtype_id:
-                d = _dsc.Descriptor_s()
+                d = _dsc.DescriptorS()
                 d.dtype = dtype
                 d.length = length.value
                 d.pointer = ans
@@ -272,9 +274,9 @@ class Connection(object):
         """
         _exc.checkStatus(self.get("TreeClose($,$)", arglist=(tree, shot)))
 
-    def getMany(self, value=None):
+    def getMany(self):
         """Return instance of a connection.GetMany class. See the connection.GetMany documentation for further information."""
-        return GetMany(value, self)
+        return GetMany(self)
 
     def openTree(self, tree, shot):
         """Open an MDSplus tree on a remote server

@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <mdsplus/mdsconfig.h>
+#include <mdsplus/mdsplus.h>
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
@@ -39,11 +40,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // # define flock lx_flock
 // # include <linux/fcntl.h>
 // # undef flock
+
 #ifndef F_OFD_SETLK
+#ifdef _MACOSX
+// Open File Descriptor (OFD) locks have existed as a private / undocumented
+// feature in MacOS releases since 2015.  For more details, refer to the
+// comments at the end of Issue #2599 and the earlier PRs #2163 and #2198.
+#define F_OFD_GETLK 92
+#define F_OFD_SETLK 90
+#define F_OFD_SETLKW 91
+#else
+// The usual defines for Linux
 #define F_OFD_GETLK 36
 #define F_OFD_SETLK 37
 #define F_OFD_SETLKW 38
 #endif
+#endif
+
 #endif
 #include <ctype.h>
 #include <errno.h>
@@ -945,7 +958,7 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 {
   int status = TreeFAILURE;
   int conid = remote_connect(path);
-  if (conid > 0)
+  if (conid >= 0)
   {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
@@ -968,7 +981,7 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
   int conid = remote_connect(path);
-  if (conid > 0)
+  if (conid >= 0)
   {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
@@ -1848,7 +1861,7 @@ inline static int io_open_one_remote(char *host, char *filepath,
                                          MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,
                                          0)))
             {
-              status = TreeEDITTING;
+              status = TreeEDITING;
               *fd = -2;
             }
           }
@@ -1979,7 +1992,7 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
             if (IS_NOT_OK(io_lock_local((fdinfo_t){conid, fd, enhanced}, 1, 1,
                                         MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)))
             {
-              status = TreeEDITTING;
+              status = TreeEDITING;
               fd = -2;
             }
           }

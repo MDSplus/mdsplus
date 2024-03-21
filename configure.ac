@@ -332,7 +332,7 @@ else
   MAKEFLAG_J="-j -l 1"
 fi
 
-AS_IF([test "${prefix}" = "NONE"],[AS_VAR_SET([prefix],[${ac_defaut_prefix}])])
+AS_IF([test "${prefix}" = "NONE"],[AS_VAR_SET([prefix],[${ac_default_prefix}])])
 AS_IF([test "${exec_prefix}" = "NONE"],[AS_VAR_SET([exec_prefix],[${prefix}])])
 
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
@@ -1184,7 +1184,8 @@ dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
 dnl add here what goes on tom of mdsconfig.h
 AH_TOP(
-#pragma once
+#ifndef _MDSCONFIG_H
+#define _MDSCONFIG_H
 #ifdef _MSC_VER
 #define __attribute__(...)
 #define EXPORT __declspec(dllexport)
@@ -1226,6 +1227,7 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM(
 #endif // _MSC_VER else
+#endif // ifndef _MDSCONFIG_H
 )
 
 

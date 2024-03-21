@@ -1010,7 +1010,6 @@ class DIO4(Device):
         channelMask = 0
         for c in range(8):
             if getattr(self, 'channel_%d' % (c+1)).isOn():
-                channelMask = channelMask | (1 << c)
                 try:
                     function = getattr(
                         self, 'channel_%d_function' % (c+1)).data()
@@ -1028,33 +1027,39 @@ class DIO4(Device):
                             Data.execute('DevLogErr($1, $2)',
                                          self.nid, 'Invalid trigger mode')
                             raise mdsExceptions.TclFAILED_ESSENTIAL
+
                         if trigMode == 'SOFTWARE':
-                            if swMode == 'REMOTE':
-                                status = Data.execute(
-                                    'MdsConnect("' + ipAddr + '")')
-                                if status > 0:
-                                    status = Data.execute(
-                                        'MdsValue("DIO4HWTrigger(0, $1, $2)", $1, $2)', boardId, channelMask)
-                                    if status == 0:
-                                        Data.execute('MdsDisconnect()')
-                                        Data.execute(
-                                            'DevLogErr', self.nid, 'Cannot execute remote trigger')
-                                        raise mdsExceptions.TclFAILED_ESSENTIAL
-                                else:
-                                    Data.execute(
-                                        'DevLogErr', self.nid, 'Cannot connect to remote CPCI system')
-                                    raise mdsExceptions.TclFAILED_ESSENTIAL
-                            else:
-                                status = Data.execute(
-                                    "DIO4HWTrigger(0, $1, $2)", boardId, channelMask)
-                                if status == 0:
-                                    Data.execute(
-                                        'DevLogErr($1, $2)', self.nid, 'Cannot execute trigger')
-                                    raise mdsExceptions.TclFAILED_ESSENTIAL
+                            channelMask = channelMask | (1 << c)
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid,
                                      'Error setting trigger mode')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        if channelMask != 0:
+            if swMode == 'REMOTE':
+                status = Data.execute(
+                    'MdsConnect("' + ipAddr + '")')
+                if status > 0:
+                    status = Data.execute(
+                        'MdsValue("DIO4HWTrigger(0, $1, $2)", $1, $2)', boardId, channelMask)
+                    if status == 0:
+                        Data.execute('MdsDisconnect()')
+                        Data.execute(
+                            'DevLogErr', self.nid, 'Cannot execute remote trigger')
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
+                else:
+                    Data.execute(
+                        'DevLogErr', self.nid, 'Cannot connect to remote CPCI system')
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
+            else:
+                status = Data.execute(
+                    "DIO4HWTrigger(0, $1, $2)", boardId, channelMask)
+                if status == 0:
+                    Data.execute(
+                        'DevLogErr($1, $2)', self.nid, 'Cannot execute trigger')
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
+
 # SW EVENT
         huge = Data.execute('HUGE(0)')
         if getattr(self, 'out_ev_sw').isOn():

@@ -1,11 +1,42 @@
 public fun spiderClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, in _value)
 {
+
+
+   _segSmp = ( end_of(_clock) - begin_of(_clock) )/slope_of(_clock);
+
+   if( size( _segSmp )  <=  1 )
+   {
+       _dt = slope_of(_clock);
+
+       _end = end_of(_clock);
+       /*if( _end == * )*/ 
+           _end = _endIdx * _dt + _tAtIdx0;
+     
+       _begin = begin_of(_clock);
+       /*if( _begin == * )*/
+           _begin = _startIdx * _dt + _tAtIdx0;
+
+       _clock =  make_range( _begin, _end, _dt);
+
+       if( size( _segSmp ) == 1 )
+       {
+           if( _value == 'start_time' )
+               return ( _begin );
+           if( _value == 'end_time' )
+               return ( _end );
+           if( _value == 'dim' )
+               return ( _clock );
+       }
+   }
+
    /* TO BE cheked */
    /* If all samples of the clock time base must be savede the _tAtIdx0 must be 0*/
    /* ATTENTION: if some sample on the firt segment are skipped the function does not works properly */
    _tAtIdx0 = 0;
 
+   /*
    _segSmp = ( end_of(_clock) - begin_of(_clock) )/slope_of(_clock);
+   */
 
    _prevStSeg = 0;
    _prevEndSeg = 0;

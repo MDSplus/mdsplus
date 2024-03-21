@@ -376,8 +376,8 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	private static final JWindow splashScreen = new JWindow();
 	static
 	{ // handle case jScope vs.jscope
-		String profile = System.getProperty("user.home") + File.separator + "jscope";
-		final String upper = System.getProperty("user.home") + File.separator + "jscope";
+		String profile = System.getProperty("user.home") + File.separator + "jScope";
+		final String upper = System.getProperty("user.home") + File.separator + "jScope";
 		if (!new File(profile).exists() && new File(upper).exists())
 			profile = upper;
 		JSCOPE_PROFILE = profile;

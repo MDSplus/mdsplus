@@ -180,6 +180,18 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
         break;
       }
 
+    case DbiALTERNATE_COMPRESSION:
+      CheckOpen(db);
+      {
+        int value = db->tree_info->header->alternate_compression;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &value, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+        break;
+      }
+
     default:
       status = TreeILLEGAL_ITEM;
     }

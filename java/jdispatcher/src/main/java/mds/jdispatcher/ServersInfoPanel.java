@@ -156,6 +156,9 @@ public class ServersInfoPanel extends JPanel
 	private javax.swing.JButton startAllServer;
 	private javax.swing.JMenuItem startServer;
 	private javax.swing.JMenuItem stopServer;
+	private javax.swing.JMenuItem showtermServer;
+	private javax.swing.JMenuItem showlogServer;
+
 	private javax.swing.JButton update;
 	// End of variables declaration
 
@@ -185,6 +188,7 @@ public class ServersInfoPanel extends JPanel
 		jPanel2 = new JPanel();
 		jScrollPane1 = new JScrollPane();
 		jTable1 = new JTable();
+
 		startServer = new JMenuItem("Start");
 		startServer.addActionListener(new java.awt.event.ActionListener()
 		{
@@ -200,6 +204,7 @@ public class ServersInfoPanel extends JPanel
 			}
 		});
 		serverActionPopup.add(startServer);
+
 		stopServer = new JMenuItem("Stop");
 		stopServer.addActionListener(new java.awt.event.ActionListener()
 		{
@@ -215,6 +220,57 @@ public class ServersInfoPanel extends JPanel
 			}
 		});
 		serverActionPopup.add(stopServer);
+
+                showtermServer = new JMenuItem("Show terminal");
+		showtermServer.addActionListener(new java.awt.event.ActionListener()
+		{
+			@Override
+			public void actionPerformed(final java.awt.event.ActionEvent evt)
+			{
+				final TableModel tm = jTable1.getModel();
+                                String msg ="";
+				for (final int i : jTable1.getSelectedRows())
+				{
+					final String s = (String) tm.getValueAt(i, 2);
+                                        try {
+					    serversInfo.get(s).showtermServer();
+					    Thread.sleep(3000);
+                                        } catch (final Exception exc) { 
+                                             msg = msg +"\n"+ exc;
+                                        }                                            
+				}
+                                if ( msg.length() > 0 )
+                                	JOptionPane.showMessageDialog(ServersInfoPanel.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
+
+			}
+		});
+		serverActionPopup.add(showtermServer);
+
+                showlogServer = new JMenuItem("Show log");
+		showlogServer.addActionListener(new java.awt.event.ActionListener()
+		{
+			@Override
+			public void actionPerformed(final java.awt.event.ActionEvent evt)
+			{
+				final TableModel tm = jTable1.getModel();
+                                String msg ="";
+				for (final int i : jTable1.getSelectedRows())
+				{
+					final String s = (String) tm.getValueAt(i, 2);
+                                        try {
+					  serversInfo.get(s).showlogServer();
+                                        } catch (final Exception exc) { 
+                                             msg = msg +"\n"+ exc;
+                                        }                                            
+				}
+                                if ( msg.length() > 0 )
+                                	JOptionPane.showMessageDialog(ServersInfoPanel.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
+
+			}
+		});
+		serverActionPopup.add(showlogServer);
+
+
 		update.setText("Servers State Update");
 		update.addActionListener(new java.awt.event.ActionListener()
 		{

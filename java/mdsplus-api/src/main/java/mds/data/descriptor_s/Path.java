@@ -2,6 +2,7 @@ package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -53,20 +54,14 @@ public final class Path extends NODE<String>
 	public Descriptor<?> getLocal_(final FLAG local)
 	{
 		FLAG.set(local, false);
-		try
-		{
-			return this.getDataD().setLocal();
-		}
-		catch (final MdsException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return this.getDataD().setLocal();
 	}
 
 	@Override
 	public final int getNidNumber() throws MdsException
-	{ return this.tree.getNci(this, "NID_NUMBER").toInt(); }
+	{
+		return this.tree.getNci(this, "NID_NUMBER").toInt();
+	}
 
 	@Override
 	public final Path toFullPath() throws MdsException

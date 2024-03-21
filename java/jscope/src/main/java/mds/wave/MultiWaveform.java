@@ -859,7 +859,7 @@ public class MultiWaveform extends Waveform
 	}
 
 	@Override
-	synchronized public void paint(Graphics g, Dimension d, int print_mode)
+	public void paint(Graphics g, Dimension d, int print_mode)
 	{
 		bottom_size = right_size = 0;
 		if (fixed_legend && show_legend || (print_mode & PRINT_LEGEND) == PRINT_LEGEND)

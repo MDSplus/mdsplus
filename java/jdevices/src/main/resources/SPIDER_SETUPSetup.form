@@ -2,7 +2,7 @@
 
 <Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="schmivl.nbtf"/>
+    <Property name="deviceProvider" type="java.lang.String" value="soserver.nbtf:9000"/>
     <Property name="deviceTitle" type="java.lang.String" value="SPIDER Experiment Setup"/>
     <Property name="deviceType" type="java.lang.String" value="SPIDER_SETUP"/>
     <Property name="height" type="int" value="650"/>
@@ -21,12 +21,20 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,77,0,0,3,-109"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,77,0,0,3,84"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
   <SubComponents>
     <Component class="DeviceButtons" name="deviceButtons1">
+      <Properties>
+        <Property name="checkExpressions" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="checkMessages" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
           <BorderConstraints direction="Last"/>
@@ -34,6 +42,9 @@
       </Constraints>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+      <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTabbedPane1FocusLost"/>
+      </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
           <BorderConstraints direction="Center"/>
@@ -131,6 +142,9 @@
                       </Border>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jPanel29FocusLost"/>
+                  </Events>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                   <SubComponents>
@@ -141,6 +155,9 @@
                         <Property name="numCols" type="int" value="30"/>
                         <Property name="offsetNid" type="int" value="122"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="deviceField13FocusLost"/>
+                      </Events>
                     </Component>
                     <Component class="DeviceField" name="deviceField17">
                       <Properties>
@@ -149,6 +166,10 @@
                         <Property name="numCols" type="int" value="30"/>
                         <Property name="offsetNid" type="int" value="123"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="deviceField17FocusLost"/>
+                        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="deviceField17PropertyChange"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -260,48 +281,7 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="RF Modulation"/>
-                          </Border>
-                        </Property>
-                      </Properties>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                      <SubComponents>
-                        <Component class="DeviceChoice" name="deviceChoice2">
-                          <Properties>
-                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="2">
-                                <StringItem index="0" value="DISABLED"/>
-                                <StringItem index="1" value="ENABLED"/>
-                              </StringArray>
-                            </Property>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="State:"/>
-                            <Property name="offsetNid" type="int" value="127"/>
-                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField3">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="Frequency:"/>
-                            <Property name="offsetNid" type="int" value="128"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField6">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="Duty Cycle:"/>
-                            <Property name="offsetNid" type="int" value="129"/>
-                          </Properties>
-                        </Component>
-                      </SubComponents>
-                    </Container>
-                    <Container class="javax.swing.JPanel" name="jPanel34">
-                      <Properties>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Filament"/>
+                            <TitledBorder title="RF"/>
                           </Border>
                         </Property>
                       </Properties>
@@ -311,42 +291,94 @@
                         <Property name="rows" type="int" value="2"/>
                       </Layout>
                       <SubComponents>
-                        <Container class="javax.swing.JPanel" name="jPanel24">
+                        <Container class="javax.swing.JPanel" name="jPanel53">
 
                           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                           <SubComponents>
-                            <Component class="DeviceChoice" name="deviceChoice3">
+                            <Component class="DeviceChoice" name="deviceChoice2">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                                   <StringArray count="2">
-                                    <StringItem index="0" value="ON"/>
-                                    <StringItem index="1" value="OFF"/>
+                                    <StringItem index="0" value="DISABLED"/>
+                                    <StringItem index="1" value="ENABLED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="State:"/>
-                                <Property name="offsetNid" type="int" value="130"/>
+                                <Property name="labelString" type="java.lang.String" value="RF Modulation State:"/>
+                                <Property name="offsetNid" type="int" value="127"/>
                                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
                               </Properties>
                             </Component>
-                            <Component class="DeviceField" name="deviceField21">
+                            <Component class="DeviceField" name="deviceField3">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Start Time:"/>
-                                <Property name="numCols" type="int" value="20"/>
-                                <Property name="offsetNid" type="int" value="131"/>
+                                <Property name="labelString" type="java.lang.String" value="Mod. Frequency:"/>
+                                <Property name="offsetNid" type="int" value="128"/>
                               </Properties>
                             </Component>
-                            <Component class="DeviceField" name="deviceField22">
+                            <Component class="DeviceField" name="deviceField6">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Stop Time:"/>
-                                <Property name="numCols" type="int" value="20"/>
-                                <Property name="offsetNid" type="int" value="132"/>
+                                <Property name="labelString" type="java.lang.String" value="Mod. Duty Cycle:"/>
+                                <Property name="offsetNid" type="int" value="129"/>
                               </Properties>
                             </Component>
                           </SubComponents>
                         </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel54">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField29">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value="isrf_te_v"/>
+                                <Property name="labelString" type="java.lang.String" value="ISRF TE V:"/>
+                                <Property name="offsetNid" type="int" value="323"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice10">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="None"/>
+                                    <StringItem index="1" value="Frequency"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="RF Control Mode:"/>
+                                <Property name="offsetNid" type="int" value="324"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel52">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Core Snubber"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField42">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="CS1 Ref. I:"/>
+                            <Property name="offsetNid" type="int" value="326"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField43">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="CS2 Ref. I:"/>
+                            <Property name="offsetNid" type="int" value="327"/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -733,6 +765,33 @@
                             </Container>
                           </SubComponents>
                         </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel56">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Filament Bias [V] ">
+                                <Property name="tabTitle" type="java.lang.String" value="Filament Bias [V] "/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave14">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="269"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
                         <Container class="javax.swing.JTabbedPane" name="jTabbedPane7">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -757,7 +816,7 @@
                               <SubComponents>
                                 <Container class="DeviceWave" name="deviceWave4">
                                   <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="identifier" type="java.lang.String" value="rf1_power"/>
                                     <Property name="offsetNid" type="int" value="39"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -851,7 +910,7 @@
                               <SubComponents>
                                 <Container class="DeviceWave" name="deviceWave8">
                                   <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="identifier" type="java.lang.String" value="rf2_power"/>
                                     <Property name="offsetNid" type="int" value="57"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -945,7 +1004,7 @@
                               <SubComponents>
                                 <Container class="DeviceWave" name="deviceWave24">
                                   <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="identifier" type="java.lang.String" value="rf3_power"/>
                                     <Property name="offsetNid" type="int" value="227"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -1039,7 +1098,7 @@
                               <SubComponents>
                                 <Container class="DeviceWave" name="deviceWave27">
                                   <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="identifier" type="java.lang.String" value="rf4_power"/>
                                     <Property name="offsetNid" type="int" value="248"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -1641,7 +1700,9 @@
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel43">
 
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="horizontalGap" type="int" value="0"/>
+                      </Layout>
                       <SubComponents>
                         <Container class="javax.swing.JPanel" name="jPanel42">
 
@@ -1649,30 +1710,80 @@
                             <Property name="alignment" type="int" value="0"/>
                           </Layout>
                           <SubComponents>
+                            <Component class="DeviceField" name="deviceField40">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Pre Set Press. [barG]:"/>
+                                <Property name="numCols" type="int" value="5"/>
+                                <Property name="offsetNid" type="int" value="320"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel55">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="GVS Configuration"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
                             <Component class="DeviceField" name="deviceField26">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="VC3001 Turns:"/>
-                                <Property name="numCols" type="int" value="15"/>
+                                <Property name="numCols" type="int" value="5"/>
                                 <Property name="offsetNid" type="int" value="209"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="jLabel1">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="/25                         "/>
+                                <Property name="text" type="java.lang.String" value="/25      "/>
                               </Properties>
                             </Component>
                             <Component class="DeviceField" name="deviceField27">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="VC3002 Turns: "/>
-                                <Property name="numCols" type="int" value="15"/>
+                                <Property name="numCols" type="int" value="5"/>
                                 <Property name="offsetNid" type="int" value="210"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="jLabel2">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="/25"/>
+                                <Property name="text" type="java.lang.String" value="/25   "/>
+                                <Property name="toolTipText" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice11">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="3000"/>
+                                    <StringItem index="1" value="3090"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Tank"/>
+                                <Property name="offsetNid" type="int" value="321"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice12">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="H2"/>
+                                    <StringItem index="1" value="D2"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Gas Type:"/>
+                                <Property name="offsetNid" type="int" value="322"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1773,6 +1884,1166 @@
                         </Container>
                       </SubComponents>
                     </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel24">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Safety Parameters - Annex B">
+                <Property name="tabTitle" type="java.lang.String" value="Safety Parameters - Annex B"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel34">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="15"/>
+                <Property name="verticalGap" type="int" value="-5"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel57">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="1"/>
+                    <Property name="verticalGap" type="int" value="2"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel84">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="verticalGap" type="int" value="20"/>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel3">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Tahoma" size="14" style="0"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="AGPS"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel85">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="verticalGap" type="int" value="20"/>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel4">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Tahoma" size="14" style="0"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="GVS"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel58">
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel6">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Session Limits"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel9">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value=" Nominal Limit"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel8">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Session Limits"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel10">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value=" Nominal Limit"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                  </SubComponents>
+                  <LayoutCode>
+                    <CodeStatement>
+                      <CodeExpression id="8_jPanel58Layout">
+                        <CodeVariable name="jPanel58Layout" type="4096" declaredType="java.awt.GridBagLayout"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagLayout" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="8_jPanel58Layout"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="8_jPanel58Layout"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="columnWeights" class="java.awt.GridBagLayout"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="9">
+                          <ExpressionOrigin>
+                            <Value type="[D" editor="org.netbeans.modules.form.layoutsupport.delegates.GridBagLayoutSupport$DoubleArrayPropertyEditor">
+                              <PropertyValue value="[0.4, 0.2, 0.3, 0.2]"/>
+                            </Value>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="10_jPanel58">
+                        <CodeVariable name="jPanel58" type="8194" declaredType="javax.swing.JPanel"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="ComponentRef">
+                            <ComponentRef name="jPanel58"/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="8_jPanel58Layout"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="11_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints" type="20480" declaredType="java.awt.GridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="11_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="11_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="12">
+                          <ExpressionOrigin>
+                            <Value type="int" value="13"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="10_jPanel58"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="13_jLabel6">
+                          <CodeVariable name="jLabel6" type="8194" declaredType="javax.swing.JLabel"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="jLabel6"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="11_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="10_jPanel58"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="14_jLabel9">
+                          <CodeVariable name="jLabel9" type="8194" declaredType="javax.swing.JLabel"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="jLabel9"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="15">
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="CodeConstructor">
+                              <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="16_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="16_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="16_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="17">
+                          <ExpressionOrigin>
+                            <Value type="int" value="13"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="10_jPanel58"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="18_jLabel8">
+                          <CodeVariable name="jLabel8" type="8194" declaredType="javax.swing.JLabel"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="jLabel8"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="16_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="10_jPanel58"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="19_jLabel10">
+                          <CodeVariable name="jLabel10" type="8194" declaredType="javax.swing.JLabel"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="jLabel10"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="20">
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="CodeConstructor">
+                              <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                  </LayoutCode>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel69">
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField21">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Output Voltage [kV] (Plasma)"/>
+                        <Property name="offsetNid" type="int" value="330"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField22">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="offsetNid" type="int" value="352"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField41">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="Preset Pressure (min) [BarG]"/>
+                        <Property name="offsetNid" type="int" value="331"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField44">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="353"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="-1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                  </SubComponents>
+                  <LayoutCode>
+                    <CodeStatement>
+                      <CodeExpression id="21_jPanel69Layout">
+                        <CodeVariable name="jPanel69Layout" type="4096" declaredType="java.awt.GridBagLayout"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagLayout" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="21_jPanel69Layout"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="21_jPanel69Layout"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="columnWeights" class="java.awt.GridBagLayout"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="22">
+                          <ExpressionOrigin>
+                            <Value type="[D" editor="org.netbeans.modules.form.layoutsupport.delegates.GridBagLayoutSupport$DoubleArrayPropertyEditor">
+                              <PropertyValue value="[0.4, 0.2, 0.4, 0.2]"/>
+                            </Value>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="23_jPanel69">
+                        <CodeVariable name="jPanel69" type="8194" declaredType="javax.swing.JPanel"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="ComponentRef">
+                            <ComponentRef name="jPanel69"/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="21_jPanel69Layout"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="24_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="24_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="24_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="25">
+                          <ExpressionOrigin>
+                            <Value type="int" value="13"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="23_jPanel69"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="26_deviceField21">
+                          <CodeVariable name="deviceField21" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField21"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="24_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="27_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="27_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="27_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="28">
+                          <ExpressionOrigin>
+                            <Value type="int" value="17"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="23_jPanel69"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="29_deviceField22">
+                          <CodeVariable name="deviceField22" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField22"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="27_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="23_jPanel69"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="30_deviceField41">
+                          <CodeVariable name="deviceField41" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField41"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="31">
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="CodeConstructor">
+                              <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="32_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="32_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="32_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="gridwidth" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="33">
+                          <ExpressionOrigin>
+                            <Value type="int" value="-1"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="32_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="34">
+                          <ExpressionOrigin>
+                            <Value type="int" value="17"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="23_jPanel69"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="35_deviceField44">
+                          <CodeVariable name="deviceField44" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField44"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="32_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                  </LayoutCode>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel70">
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField45">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Output Voltage [kV] (Vacuum)"/>
+                        <Property name="offsetNid" type="int" value="346"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField46">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="offsetNid" type="int" value="368"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField47">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="Preset Pressure (max) [BarG]"/>
+                        <Property name="offsetNid" type="int" value="332"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField48">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="offsetNid" type="int" value="354"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                          <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                  </SubComponents>
+                  <LayoutCode>
+                    <CodeStatement>
+                      <CodeExpression id="36_jPanel70Layout">
+                        <CodeVariable name="jPanel70Layout" type="4096" declaredType="java.awt.GridBagLayout"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagLayout" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="36_jPanel70Layout"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="36_jPanel70Layout"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="columnWeights" class="java.awt.GridBagLayout"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="37">
+                          <ExpressionOrigin>
+                            <Value type="[D" editor="org.netbeans.modules.form.layoutsupport.delegates.GridBagLayoutSupport$DoubleArrayPropertyEditor">
+                              <PropertyValue value="[0.4, 0.2, 0.4, 0.2]"/>
+                            </Value>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="38_jPanel70">
+                        <CodeVariable name="jPanel70" type="8194" declaredType="javax.swing.JPanel"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="ComponentRef">
+                            <ComponentRef name="jPanel70"/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="36_jPanel70Layout"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="39_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="39_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="39_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="40">
+                          <ExpressionOrigin>
+                            <Value type="int" value="13"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="38_jPanel70"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="41_deviceField45">
+                          <CodeVariable name="deviceField45" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField45"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="39_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="42_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="42_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="42_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="43">
+                          <ExpressionOrigin>
+                            <Value type="int" value="17"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="38_jPanel70"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="44_deviceField46">
+                          <CodeVariable name="deviceField46" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField46"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="42_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="38_jPanel70"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="45_deviceField47">
+                          <CodeVariable name="deviceField47" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField47"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="46">
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="CodeConstructor">
+                              <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="47_gridBagConstraints">
+                        <CodeVariable name="gridBagConstraints"/>
+                        <ExpressionOrigin>
+                          <ExpressionProvider type="CodeConstructor">
+                            <CodeConstructor class="java.awt.GridBagConstraints" parameterTypes=""/>
+                          </ExpressionProvider>
+                        </ExpressionOrigin>
+                      </CodeExpression>
+                      <StatementProvider type="CodeExpression">
+                        <CodeExpression id="47_gridBagConstraints"/>
+                      </StatementProvider>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="47_gridBagConstraints"/>
+                      <StatementProvider type="CodeField">
+                        <CodeField name="anchor" class="java.awt.GridBagConstraints"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="48">
+                          <ExpressionOrigin>
+                            <Value type="int" value="17"/>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                      </Parameters>
+                    </CodeStatement>
+                    <CodeStatement>
+                      <CodeExpression id="38_jPanel70"/>
+                      <StatementProvider type="CodeMethod">
+                        <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component, java.lang.Object"/>
+                      </StatementProvider>
+                      <Parameters>
+                        <CodeExpression id="49_deviceField48">
+                          <CodeVariable name="deviceField48" type="8194" declaredType="DeviceField"/>
+                          <ExpressionOrigin>
+                            <ExpressionProvider type="ComponentRef">
+                              <ComponentRef name="deviceField48"/>
+                            </ExpressionProvider>
+                          </ExpressionOrigin>
+                        </CodeExpression>
+                        <CodeExpression id="47_gridBagConstraints"/>
+                      </Parameters>
+                    </CodeStatement>
+                  </LayoutCode>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel71">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="15"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel13">
+                      <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Tahoma" size="14" style="0"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="---------------------------- ISEPS ---------------------------"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel72">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField49">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISEG Output Voltage [V]     "/>
+                        <Property name="offsetNid" type="int" value="333"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField50">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="355"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel14">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="              "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField51">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISSS Output Current [A]"/>
+                        <Property name="offsetNid" type="int" value="335"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField52">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="357"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel73">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField53">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF-TE Output Voltage [V]"/>
+                        <Property name="offsetNid" type="int" value="334"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField54">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="356"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel15">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="               "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField55">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISPG Output Current [A]"/>
+                        <Property name="offsetNid" type="int" value="336"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField56">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="358"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel74">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="1"/>
+                    <Property name="verticalGap" type="int" value="2"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel82">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="verticalGap" type="int" value="20"/>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel7">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value=" Vacuum"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel83">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="verticalGap" type="int" value="20"/>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel17">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value=" With Plasma"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel75">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField57">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF1 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="347"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField58">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="369"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel18">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="               "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField59">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF1 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="337"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField60">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="359"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel76">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField61">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF2 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="348"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField62">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="370"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel24">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="               "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField63">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF2 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="338"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField64">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="360"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel77">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField65">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF3 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="349"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField66">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="371"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel20">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="              "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField67">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF3 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="339"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField68">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="361"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel78">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField69">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF4 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="350"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField70">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="372"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel21">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="              "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField71">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISRF4 - Output Power [kV] "/>
+                        <Property name="offsetNid" type="int" value="340"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField72">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="362"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel79">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel80">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField73">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISBI - Output Voltage [V] "/>
+                        <Property name="offsetNid" type="int" value="341"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField74">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="363"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel22">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="                "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField75">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISBI - Output Current [A]"/>
+                        <Property name="offsetNid" type="int" value="343"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField76">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="365"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel81">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField77">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISBP - Output Voltage [V]"/>
+                        <Property name="offsetNid" type="int" value="342"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField78">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="offsetNid" type="int" value="364"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel23">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="         &apos;       "/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField79">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="labelString" type="java.lang.String" value="ISBP - Output Current [A]"/>
+                        <Property name="offsetNid" type="int" value="344"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField80">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="offsetNid" type="int" value="366"/>
+                      </Properties>
+                    </Component>
                   </SubComponents>
                 </Container>
               </SubComponents>

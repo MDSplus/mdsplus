@@ -27,12 +27,13 @@
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
 import numpy as _N
 import ctypes as _C
+import sys
 
 _dat = _mimport('mdsdata')
 _arr = _mimport('mdsarray')
@@ -121,7 +122,7 @@ class Scalar(_dat.Data):
 
     @property
     def _descriptor(self):
-        d = _dsc.Descriptor_s()
+        d = _dsc.DescriptorS()
         d.length = self._value.nbytes
         d.dtype = self.dtype_id
         array = _N.array(self._value)
@@ -245,7 +246,7 @@ class Float32(Scalar):
     _ntype = _N.float32
 
 
-_dsc.addDtypeToClass(Float32)
+_dsc._add_dtype_to_class(Float32)
 
 
 class Float64(Scalar):
@@ -255,7 +256,7 @@ class Float64(Scalar):
     _ntype = _N.float64
 
 
-_dsc.addDtypeToClass(Float64)
+_dsc._add_dtype_to_class(Float64)
 
 
 class Complex64(Scalar):
@@ -265,7 +266,7 @@ class Complex64(Scalar):
     _ntype = _N.complex64
 
 
-_dsc.addDtypeToClass(Complex64)
+_dsc._add_dtype_to_class(Complex64)
 
 
 class Complex128(Scalar):
@@ -275,7 +276,7 @@ class Complex128(Scalar):
     _ntype = _N.complex128
 
 
-_dsc.addDtypeToClass(Complex128)
+_dsc._add_dtype_to_class(Complex128)
 
 
 class Uint8(Scalar):
@@ -285,7 +286,7 @@ class Uint8(Scalar):
     _ntype = _N.uint8
 
 
-_dsc.addDtypeToClass(Uint8)
+_dsc._add_dtype_to_class(Uint8)
 
 
 class Uint16(Scalar):
@@ -295,7 +296,7 @@ class Uint16(Scalar):
     _ntype = _N.uint16
 
 
-_dsc.addDtypeToClass(Uint16)
+_dsc._add_dtype_to_class(Uint16)
 
 
 class Uint32(Scalar):
@@ -305,7 +306,7 @@ class Uint32(Scalar):
     _ntype = _N.uint32
 
 
-_dsc.addDtypeToClass(Uint32)
+_dsc._add_dtype_to_class(Uint32)
 
 
 class Uint64(Scalar):
@@ -337,7 +338,7 @@ class Uint64(Scalar):
     time = property(_getTime)
 
 
-_dsc.addDtypeToClass(Uint64)
+_dsc._add_dtype_to_class(Uint64)
 
 
 class Int8(Uint8):
@@ -347,7 +348,7 @@ class Int8(Uint8):
     _ntype = _N.int8
 
 
-_dsc.addDtypeToClass(Int8)
+_dsc._add_dtype_to_class(Int8)
 
 
 class Int16(Uint16):
@@ -357,7 +358,7 @@ class Int16(Uint16):
     _ntype = _N.int16
 
 
-_dsc.addDtypeToClass(Int16)
+_dsc._add_dtype_to_class(Int16)
 
 
 class Int32(Uint32):
@@ -367,7 +368,7 @@ class Int32(Uint32):
     _ntype = _N.int32
 
 
-_dsc.addDtypeToClass(Int32)
+_dsc._add_dtype_to_class(Int32)
 
 
 class Int64(Uint64):
@@ -377,7 +378,7 @@ class Int64(Uint64):
     _ntype = _N.int64
 
 
-_dsc.addDtypeToClass(Int64)
+_dsc._add_dtype_to_class(Int64)
 
 
 class FloatF(Float32):
@@ -385,7 +386,7 @@ class FloatF(Float32):
     dtype_id = 10
 
 
-_dsc.addDtypeToClass(FloatF)
+_dsc._add_dtype_to_class(FloatF)
 
 
 class FloatD(Float64):
@@ -393,7 +394,7 @@ class FloatD(Float64):
     dtype_id = 11
 
 
-_dsc.addDtypeToClass(FloatD)
+_dsc._add_dtype_to_class(FloatD)
 
 
 class ComplexF(Complex64):
@@ -401,7 +402,7 @@ class ComplexF(Complex64):
     dtype_id = 12
 
 
-_dsc.addDtypeToClass(ComplexF)
+_dsc._add_dtype_to_class(ComplexF)
 
 
 class ComplexD(Complex128):
@@ -409,7 +410,7 @@ class ComplexD(Complex128):
     dtype_id = 13
 
 
-_dsc.addDtypeToClass(ComplexD)
+_dsc._add_dtype_to_class(ComplexD)
 
 
 class String(Scalar):
@@ -419,12 +420,12 @@ class String(Scalar):
 
     def __init__(self, value):
         super(String, self).__init__(value)
-        if not isinstance(self._value, _N.str):
+        if not isinstance(self._value, str):
             self._value = _ver.npstr(_ver.tostr(self._value))
 
     @property
     def _descriptor(self):
-        d = _dsc.Descriptor_s()
+        d = _dsc.DescriptorS()
         d.length = len(self)
         d.dtype = self.dtype_id
         d.pointer = _C.cast(_C.c_char_p(_ver.tobytes(str(self))), _C.c_void_p)
@@ -434,7 +435,10 @@ class String(Scalar):
     def fromDescriptor(cls, d):
         if d.length == 0:
             return cls('')
-        return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tostring())
+        if sys.version_info.major == 2: # needed for rhel7 and ubuntu14
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tostring())
+        else:
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tobytes())
 
     def __radd__(self, y):
         """radd: x.__radd__(y) <==> y+x
@@ -461,7 +465,7 @@ class String(Scalar):
         return repr(_ver.tostr(self._value))
 
 
-_dsc.addDtypeToClass(String)
+_dsc._add_dtype_to_class(String)
 
 
 class Uint128(Scalar):
@@ -472,7 +476,7 @@ class Uint128(Scalar):
         raise TypeError("Uint128 is not yet supported")
 
 
-_dsc.addDtypeToClass(Uint128)
+_dsc._add_dtype_to_class(Uint128)
 
 
 class Int128(Uint128):
@@ -483,7 +487,7 @@ class Int128(Uint128):
         raise TypeError("Int128 is not yet supported")
 
 
-_dsc.addDtypeToClass(Int128)
+_dsc._add_dtype_to_class(Int128)
 
 
 class FloatG(Float64):
@@ -491,7 +495,7 @@ class FloatG(Float64):
     dtype_id = 27
 
 
-_dsc.addDtypeToClass(FloatG)
+_dsc._add_dtype_to_class(FloatG)
 
 
 class ComplexG(Complex128):
@@ -499,7 +503,7 @@ class ComplexG(Complex128):
     dtype_id = 29
 
 
-_dsc.addDtypeToClass(ComplexG)
+_dsc._add_dtype_to_class(ComplexG)
 
 
 class Pointer(Scalar):
@@ -525,7 +529,7 @@ class Pointer(Scalar):
         return cls(value.value, is64)
 
 
-_dsc.addDtypeToClass(Pointer)
+_dsc._add_dtype_to_class(Pointer)
 
 
 class Ident(_dat.TreeRef, _dat.Data):
@@ -548,7 +552,7 @@ class Ident(_dat.TreeRef, _dat.Data):
 
     @property
     def _descriptor(self):
-        d = _dsc.Descriptor_s()
+        d = _dsc.DescriptorS()
         d.dtype = self.dtype_id
         d.length = len(self.name)
         d.pointer = _C.cast(_C.c_char_p(_ver.tobytes(self.name)), _C.c_void_p)
@@ -559,6 +563,6 @@ class Ident(_dat.TreeRef, _dat.Data):
         return cls(_ver.tostr(_C.cast(d.pointer, _C.POINTER(_C.c_char*d.length)).contents.value))
 
 
-_dsc.addDtypeToClass(Ident)
+_dsc._add_dtype_to_class(Ident)
 
 _cmp = _mimport('compound')

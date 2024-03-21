@@ -178,7 +178,7 @@ class ACQFMC(acqsuper.ACQSUPER):
 
     def _zclk(self, mbclk_min, mbclk_max, freq):
         if freq > mbclk_max:
-            raise MDSplus.mdsExceptions.DevFREQ_TO_HIGH()
+            raise MDSplus.mdsExceptions.DevFREQ_TOO_HIGH()
 
         clkdiv = int(math.ceil(mbclk_min/freq))
         mbclk = int(freq * clkdiv)

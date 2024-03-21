@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _TREETHREADSTATIC_H
+#define _TREETHREADSTATIC_H
+
 #include "../mdsshr/mdsthreadstatic.h"
 #include "treeshrp.h"
 
@@ -42,3 +44,4 @@ extern DEFINE_GETTHREADSTATIC(TREETHREADSTATIC_TYPE, TreeGetThreadStatic);
 
 extern void **TreeCtx();
 extern EXPORT int TreeUsePrivateCtx(int onoff);
+#endif // ifndef _TREETHREADSTATIC_H

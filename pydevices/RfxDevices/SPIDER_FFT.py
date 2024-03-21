@@ -101,6 +101,7 @@ class SPIDER_FFT(Device):
             outCount = 0
             outSegCount = 0
             for segIdx in range(nSegments):
+                print('Doing Segment '+str(segIdx) +' of ' + str(nSegments))
                 segData = inNode.getSegment(segIdx).data()
                 segData = segData * inRange*inGain/8192. + inOffset
                 numBursts = int(round(len(segData)/burstSize))
@@ -112,7 +113,7 @@ class SPIDER_FFT(Device):
                     outAmplSegs.append([])
                     outPhaseSegs.append([])
                 for burstIdx in range(numBursts):
-                    fftData = np.fft.fft(segData[burstIdx*burstSize:(burstIdx+1)*burstSize])
+                    fftData = np.fft.fft(segData[int(burstIdx*burstSize):int((burstIdx+1)*burstSize)])
                     fftAmp = np.abs(fftData)
                     fftAmp = fftAmp[:len(fftAmp)/2]  #keep only significant part
                     fftPhs = np.angle(fftData)
@@ -125,11 +126,11 @@ class SPIDER_FFT(Device):
                             if currMax > maxIdx:
                                 origOffset = origOffset + 1  #keep trak of the shift that may occur removing the index
                         maxIdxs.append(maxIdx)
-                        outFreqSegs[hIdx].append(acqFreq * np.float(maxIdx + origOffset) / burstSize)
+                        outFreqSegs[hIdx].append(acqFreq * float(maxIdx + origOffset) / burstSize)
                         outAmplSegs[hIdx].append(fftAmp[maxIdx])
                         outPhaseSegs[hIdx].append(fftPhs[maxIdx])
-                        np.delete(fftAmp, maxIdx)
-                        np.delete(fftPhs, maxIdx)
+                        fftAmp = np.delete(fftAmp, maxIdx)
+                        fftPhs = np.delete(fftPhs, maxIdx)
                     outCount = outCount + 1
                     if outCount > SPIDER_FFT.OUT_SEGMENT_SIZE:
                       startTime = Float64(trigTime + outSegCount * SPIDER_FFT.OUT_SEGMENT_SIZE / trigFreq)

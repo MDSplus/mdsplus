@@ -97,7 +97,7 @@ def build():
     root = common.get_root()
     bin_packages = list()
     noarch_packages = list()
-    for package in root.getiterator('package'):
+    for package in root.iter('package'):
         attr = package.attrib
         if attr["arch"] == "noarch":
             noarch_packages.append(package)
@@ -105,7 +105,7 @@ def build():
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
                       "bits": 64, "arch_t": ".x86_64"}]
-    if info['dist'] != 'el8':
+    if info['dist'] != 'el8' and info['dist'] != 'el9':
         architectures.append(
             {"target": "i686-linux", "bits": 32, "arch_t": ".i686"})
 
@@ -123,17 +123,17 @@ def build():
             info['description'] = package.attrib['description']
             out, specfilename = tempfile.mkstemp()
             common.writeb(out, rpmspec % info)
-            for require in package.getiterator("requires"):
+            for require in package.iter("requires"):
                 doRequire(info, out, root, require)
             common.writeb(out, pckspec % info)
-            for inc in package.getiterator('include'):
+            for inc in package.iter('include'):
                 for inctype in inc.attrib:
                     include = fixFilename(info, inc.attrib[inctype])
                     if inctype == "dironly":
                         common.writeb(out, "%%dir %s\n" % include)
                     else:
                         common.writeb(out, "%s\n" % include)
-            for exc in package.getiterator('exclude'):
+            for exc in package.iter('exclude'):
                 for exctype in exc.attrib:
                     exclude = fixFilename(info, exc.attrib[exctype])
                     common.writeb(out, "%%exclude %s\n" % exclude)
@@ -179,18 +179,18 @@ def build():
         info['description'] = package.attrib['description']
         out, specfilename = tempfile.mkstemp()
         common.writeb(out, rpmspec % info)
-        for require in package.getiterator("requires"):
+        for require in package.iter("requires"):
             doRequire(info, out, root, require)
         common.writeb(out, "Buildarch: noarch\n")
         common.writeb(out, pckspec % info)
-        for inc in package.getiterator('include'):
+        for inc in package.iter('include'):
             for inctype in inc.attrib:
                 include = fixFilename(info, inc.attrib[inctype])
                 if inctype == "dironly":
                     common.writeb(out, "%%dir %s\n" % include)
                 else:
                     common.writeb(out, "%s\n" % include)
-        for exc in package.getiterator('exclude'):
+        for exc in package.iter('exclude'):
             for exctype in exc.attrib:
                 exclude = fixFilename(info, exc.attrib[exctype])
                 common.writeb(out, "%%exclude %s\n" % exclude)

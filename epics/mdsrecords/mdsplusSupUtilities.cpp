@@ -207,7 +207,7 @@ static int getConnectionId(char *ipAddr, char *exp, int shot)
                        // required
         connectionTable[i].connection->openTree(exp, shot);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Cannot establish mdsip connection: %s\n", exc.what());
       connectionTable[i].connection = 0;
@@ -258,7 +258,7 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path,
       else
         node = 0;
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Cannot Open tree or find node: %s\n", exc.what());
       strncpy(errMsg, exc.what(), 40);
@@ -431,7 +431,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples,
         node->putRow(data, (int64_t *)&epicsTime);
         deleteData(data);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         strncpy(errMsg, exc.what(), 40);
         return 0;
@@ -453,7 +453,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples,
         deleteData(data);
         deleteData(timeData);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         if (debug)
           printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
@@ -525,7 +525,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples,
         deleteData(times);
         deleteData(end);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         strncpy(errMsg, exc.what(), 40);
         return 0;
@@ -556,7 +556,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples,
         deleteData(args[4]);
         deleteData(end);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         if (debug)
           printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
@@ -844,7 +844,7 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers,
     for (i = 0; i < nBuffers; i++)
       deleteData(args[i]);
   }
-  catch (MdsException &exc)
+  catch (const MdsException &exc)
   {
     printf("ERROR WRITING REMOTE TREE: %s\n", exc.what());
     strncpy(errMsg, exc.what(), 40);
@@ -923,7 +923,7 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
       // printf("Returned Data: %s\n", (resData)?resData->decompile():"");
       // if(resData) deleteData(resData);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("ERROR EXECUTING ACTION: %s\n", exc.what());
       strncpy(errMsg, exc.what(), 40);
@@ -939,7 +939,7 @@ int doMdsAction(char *path, int nodeId, char *errMsg)
       if (resData)
         deleteData(resData);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("ERROR EXECUTING REMOTE ACTION: %s\n", exc.what());
       strncpy(errMsg, exc.what(), 40);

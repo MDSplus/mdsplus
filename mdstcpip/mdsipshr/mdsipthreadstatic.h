@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MDSIPTHREADSTATIC_H
+#define _MDSIPTHREADSTATIC_H
 #include "../mdsshr/mdsthreadstatic.h"
 #include "../mdsip_connections.h"
 
@@ -16,3 +17,4 @@ typedef struct
 #define MDSIP_CONNECTIONS MDSIPTHREADSTATIC_VAR->connections
 
 extern DEFINE_GETTHREADSTATIC(MDSIPTHREADSTATIC_TYPE, MdsIpGetThreadStatic);
+#endif // ifndef _MDSIPTHREADSTATIC_H

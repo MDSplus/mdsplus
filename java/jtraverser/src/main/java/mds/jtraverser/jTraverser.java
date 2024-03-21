@@ -44,7 +44,7 @@ public class jTraverser extends JFrame implements ActionListener
 
 	JMenu file_m, edit_m, data_m, customize_m;
 	JMenuItem open, close, quit;
-	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b, add_window_b,
+	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_any_b, add_task_b, add_text_b, add_window_b,
 			add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b, rename_node_b,
 			turn_on_b, turn_off_b, display_data_b, display_nci_b, display_tags_b, modify_data_b, set_default_b,
 			setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
@@ -53,6 +53,10 @@ public class jTraverser extends JFrame implements ActionListener
 	DisplayNci display_nci;
 	DisplayTags display_tags;
 	ModifyData modify_data;
+
+	String expName;
+	int expShot;
+	boolean expEdit, expReadonly;
 
 	public jTraverser(String exp_name, String shot_name, String access)
 	{
@@ -91,6 +95,8 @@ public class jTraverser extends JFrame implements ActionListener
 		add_numeric_b.addActionListener(this);
 		jm.add(add_signal_b = new JMenuItem("Signal"));
 		add_signal_b.addActionListener(this);
+		jm.add(add_any_b = new JMenuItem("Any"));
+		add_any_b.addActionListener(this);
 		jm.add(add_task_b = new JMenuItem("Task"));
 		add_task_b.addActionListener(this);
 		jm.add(add_text_b = new JMenuItem("Text"));
@@ -146,8 +152,20 @@ public class jTraverser extends JFrame implements ActionListener
 		curr_menu.add(jm);
 		tree = new Tree(this);
 		if (exp_name != null)
-			tree.open(exp_name.toUpperCase(), (shot_name == null) ? -1 : Integer.parseInt(shot_name), edit, readonly,
-					false);
+		{
+		    this.expName = exp_name;
+		    this.expShot = (shot_name == null) ? -1 : Integer.parseInt(shot_name);
+		    this.expEdit = expEdit;
+		    this.expReadonly = readonly;
+		    SwingUtilities.invokeLater(new Runnable()
+		    {
+			public void run()
+			{
+				jTraverser.this.tree.open(jTraverser.this.expName.toUpperCase(), jTraverser.this.expShot, 
+					jTraverser.this.expEdit, jTraverser.this.expReadonly, false);
+			}
+		   });
+		}
 		getContentPane().add(tree);
 		getContentPane().add(status, BorderLayout.PAGE_END);
 		addWindowListener(new WindowAdapter()
@@ -184,6 +202,8 @@ public class jTraverser extends JFrame implements ActionListener
 			tree.addNode("NUMERIC");
 		if (source == add_signal_b)
 			tree.addNode("SIGNAL");
+		if (source == add_any_b)
+			tree.addNode("ANY");
 		if (source == add_task_b)
 			tree.addNode("TASK");
 		if (source == add_text_b)

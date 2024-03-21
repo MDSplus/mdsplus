@@ -101,7 +101,7 @@ namespace MDSplus
       f();
       fillErrorCluster(errorCode, src, errorMessage, error);
     }
-    catch (MdsException const &e)
+    catch (const MdsException &e)
     {
       errorCode = bogusError;
       errorMessage = e.what();
@@ -1448,7 +1448,8 @@ namespace MDSplus
 
         treePtrIn = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtrIn));
 
-        dataPtrOut = execute(const_cast<char *>(exprIn), treePtrIn);
+      
+        dataPtrOut = treePtrIn->tdiExecute(const_cast<char *>(exprIn));
 
         *lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
       }
@@ -6510,7 +6511,7 @@ namespace MDSplus
       {
         MDSplus::Tree *tree = new Tree("CACCA", -1);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         std::cout << exc.what() << std::endl;
       }
@@ -6756,7 +6757,7 @@ namespace MDSplus
         Data *arrD = new Float32Array(floatArr, 10);
         n->makeSegment(start, end, dim, (Array *)arrD);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         std::cout << "ERRORE: " << exc.what() << std::endl;
       }

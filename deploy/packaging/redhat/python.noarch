@@ -16,6 +16,7 @@
 ./usr/local/mdsplus/python/MDSplus/modpython.py
 ./usr/local/mdsplus/python/MDSplus/scope.py
 ./usr/local/mdsplus/python/MDSplus/setup.py
+./usr/local/mdsplus/python/MDSplus/pyproject.toml
 ./usr/local/mdsplus/python/MDSplus/tests
 ./usr/local/mdsplus/python/MDSplus/tests/__init__.py
 ./usr/local/mdsplus/python/MDSplus/tests/_common.py

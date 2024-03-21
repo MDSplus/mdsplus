@@ -13,4 +13,4 @@ exec env \
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
 DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
-java -Xss5M -Djava.library.path=$MDSPLUS_DIR/${lib} -jar $MDSPLUS_DIR/java/classes/jTraverser.jar "$@"
+java -Xss5M -Dsun.java2d.xrender=false -Djava.library.path=$MDSPLUS_DIR/${lib} -jar $MDSPLUS_DIR/java/classes/jTraverser.jar "$@"

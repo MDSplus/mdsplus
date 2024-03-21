@@ -54,6 +54,7 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
         {'name': 'Verbosity', 'type': 'int32', 'value': 2},
         {'name': 'Library', 'type': 'string'},
         {'name': 'SymbolPrefix', 'type': 'string'},
+        {'name': 'SkipInvalidTunableParams', 'type': 'int32', 'value': 0},
         {'name': 'Parameter1', 'type': 'int32'},
         {'name': 'Parameter2', 'type': 'int32'},
         {'name': 'Parameter3', 'type': 'int32'},
@@ -61,7 +62,15 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
         {'name': 'Parameter5', 'type': 'int32'},
         {'name': 'Parameter6', 'type': 'int32'},
         {'name': 'Parameter7', 'type': 'int32'},
-        {'name': 'SkipInvalidTunableParams', 'type': 'int32', 'value': 0},
+        {'name': 'Parameter8', 'type': 'int32'},
+        {'name': 'Parameter9', 'type': 'int32'},
+        {'name': 'Parameter10', 'type': 'int32'},
+        {'name': 'Parameter11', 'type': 'int32'},
+        {'name': 'Parameter12', 'type': 'int32'},
+        {'name': 'Parameter13', 'type': 'int32'},
+        {'name': 'Parameter14', 'type': 'int32'},
+        {'name': 'Parameter15', 'type': 'int32'},
+        {'name': 'Parameter16', 'type': 'int32'},
 
     ]
     parts = []

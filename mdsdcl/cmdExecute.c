@@ -1619,15 +1619,9 @@ EXPORT int cli_get_value(void *ctx, const char *name, char **value)
         ((cmd->parameters[i]->label) &&
          (strcasecmp(name, cmd->parameters[i]->label) == 0)))
     {
-      if (cmd->parameters[i]->value_idx >= cmd->parameters[i]->value_count)
+      if (cmd->parameters[i]->value_idx < cmd->parameters[i]->value_count)
       {
-        ans = MdsdclABSENT;
-        cmd->parameters[i]->value_idx = 0;
-      }
-      else
-      {
-        *value =
-            strdup(cmd->parameters[i]->values[cmd->parameters[i]->value_idx++]);
+        *value = strdup(cmd->parameters[i]->values[cmd->parameters[i]->value_idx++]);
         ans = MdsdclPRESENT;
       }
     }
@@ -1636,15 +1630,9 @@ EXPORT int cli_get_value(void *ctx, const char *name, char **value)
   {
     if (strcasecmp(name, cmd->qualifiers[i]->name) == 0)
     {
-      if (cmd->qualifiers[i]->value_idx >= cmd->qualifiers[i]->value_count)
+      if (cmd->qualifiers[i]->value_idx < cmd->qualifiers[i]->value_count)
       {
-        ans = MdsdclABSENT;
-        cmd->qualifiers[i]->value_idx = 0;
-      }
-      else
-      {
-        *value =
-            strdup(cmd->qualifiers[i]->values[cmd->qualifiers[i]->value_idx++]);
+        *value = strdup(cmd->qualifiers[i]->values[cmd->qualifiers[i]->value_idx++]);
         ans = MdsdclPRESENT;
       }
     }

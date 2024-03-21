@@ -93,9 +93,9 @@ printf("TAG1: %s\n", pvName);
 	    delete [] tags[i];
 	}
 	delete [] tags;
-    }catch(MdsException *exc)
+    }catch(const MdsException &exc)
     {
-	std::cout << "Error reading tags: "<< exc->what() << "\n";
+	std::cout << "Error reading tags: "<< exc.what() << "\n";
     }
 }
 
@@ -137,10 +137,10 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 		    deleteData(pvNameData);
 		    delete parentNode;
 		    delete valNode;
-		}catch(MdsException *exc)
+		}catch(const MdsException &exc)
 		{
 	
-		    std::cout << "Inconsistent node set found: " << fullPath << " " << exc->what() << "\n";
+		    std::cout << "Inconsistent node set found: " << fullPath << " " << exc.what() << "\n";
 		    //std::cout << "Inconsistent node set found: " << fullPath << " " <<  "\n";
 		}
 		delete [] fullPath;
@@ -148,9 +148,9 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 	    delete [] currName;
 	}
 	delete stringNodes;
-     }catch(MdsException *exc)
+     }catch(const MdsException &exc)
     {
-	std::cout << "Error Scanning tree: "<< exc->what() << "\n";
+	std::cout << "Error Scanning tree: "<< exc.what() << "\n";
     }
  }
 

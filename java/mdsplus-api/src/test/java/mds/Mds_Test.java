@@ -1,15 +1,12 @@
 package mds;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Int16Array;
 import mds.data.descriptor_s.StringDsc;
 
+@SuppressWarnings("static-method")
 public class Mds_Test
 {
 	private static Mds mds;
@@ -28,11 +25,15 @@ public class Mds_Test
 
 	@Before
 	public void setUp() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@After
 	public void tearDown() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@Test
 	public void test_getDescriptor() throws MdsException

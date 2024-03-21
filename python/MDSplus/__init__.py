@@ -42,7 +42,7 @@ def _mimport(name, level=1):
         if not __package__:
             return __import__(name, globals())
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -67,11 +67,11 @@ class libs:
     TdiShr = _ver.load_library('TdiShr')
     try:
         Mdsdcl = _ver.load_library('Mdsdcl')
-    except:
+    except Exception:
         Mdsdcl = None
     try:
         MdsIpShr = _ver.load_library('MdsIpShr')
-    except:
+    except Exception:
         MdsIpShr = None
 
 
@@ -89,7 +89,7 @@ try:
 Version: %s
 Release Date: %s
 """ % (__doc__, __version__, _version.release_date)
-except:
+except Exception:
     if version_check and 'PYTHONPATH' in os.environ:
         sys.stderr.write(
             "PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
@@ -100,7 +100,7 @@ if version_check:
         try:
             libs.MdsShr.MdsRelease.restype = ctypes.c_char_p
             verchk = _ver.tostr(libs.MdsShr.MdsRelease())
-        except:
+        except Exception:
             verchk = "unknown"
         if verchk != __version__ or verchk == "unknown":
             sys.stderr.write('''Warning:
@@ -113,7 +113,7 @@ if version_check:
 del version_check
 
 
-def load_package(gbls={}, version_check=False):
+def load_package(gbls, version_check=False):
     def loadmod_full(name, gbls):
         mod = _mimport(name)
         for key in mod.__dict__:
@@ -146,7 +146,7 @@ if __name__ == __package__:
                 else 'python%d.%d') % sys.version_info[0:2]
         try:
             lib = ctypes.util.find_library(name)
-        except:
+        except Exception:
             lib = None
         if lib is None:
             lib = os.getenv("PyLib", None)
@@ -159,7 +159,7 @@ if __name__ == __package__:
     load_package(globals(), True)
     try:
         _mimport("magic")  # load ipython magic
-    except:
+    except Exception:
         pass
     del load_package
 del _ver

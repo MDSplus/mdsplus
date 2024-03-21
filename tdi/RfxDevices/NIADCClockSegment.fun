@@ -1,12 +1,16 @@
-public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, in _value)
+public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, in _value, optional in _period)
 {
+    _fact = 1;
+    if(present( _period ))
+    {
+   	_fact = slope_of(_clock) / _period;
+    }
 
-
-   _segSmp = ( end_of(_clock) - begin_of(_clock) )/slope_of(_clock);
+   _segSmp = ( end_of(_clock) - begin_of(_clock) )/slope_of(_clock) * _fact;
 
    if( size( _segSmp )  <=  1 )
    {
-       _dt = slope_of(_clock);
+       _dt = slope_of(_clock) * _fact;
 
        _end = end_of(_clock);
        if( _end == * )
@@ -52,7 +56,7 @@ public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, i
    }
 
 
-   _tStart = begin_of(_clock)[ _beginSegIdx ]  + ( _startIdx - _prevStSeg ) * slope_of(_clock) + _tAtIdx0 ;
+   _tStart = begin_of(_clock)[ _beginSegIdx ]  + ( _startIdx - _prevStSeg ) * slope_of(_clock) * _fact + _tAtIdx0 ;
    if( _value == 'start_time' )
    {
         /*write(*, _clock[_startIdx] );*/
@@ -82,7 +86,7 @@ public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, i
        _prevEndSeg = 0;
    }
 
-   _tEnd = begin_of(_clock)[ _endSegIdx ]  + ( _endIdx - _prevEndSeg ) * slope_of(_clock) + _tAtIdx0;
+   _tEnd = begin_of(_clock)[ _endSegIdx ]  + ( _endIdx - _prevEndSeg ) * slope_of(_clock) * _fact + _tAtIdx0;
    if( _value == 'end_time' )
    {
         /*write(*, _clock[_endIdx] );*/
@@ -94,13 +98,13 @@ public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, i
 
        if( _endSegIdx == _beginSegIdx )
        {
-            return( make_range( _tStart + _tAtIdx0, _tEnd + _tAtIdx0, slope_of(_clock) ) );
+            return( make_range( _tStart + _tAtIdx0, _tEnd + _tAtIdx0, slope_of(_clock) * _fact ) );
        } else {
             /*write(*, _tStart, _tEnd, [ _beginSegIdx+1 : _endSegIdx-1 ]);*/
 
             _begin = [_tStart, begin_of(_clock)[ _beginSegIdx+1 : _endSegIdx ]];
             _end   = [ end_of(_clock)[ _beginSegIdx : _endSegIdx - 1 ], _tEnd ];    
-            return( make_range( _begin + _tAtIdx0, _end + _tAtIdx0, slope_of(_clock) ) );
+            return( make_range( _begin + _tAtIdx0, _end + _tAtIdx0, slope_of(_clock)*_fact ) );
        }
    }
 }

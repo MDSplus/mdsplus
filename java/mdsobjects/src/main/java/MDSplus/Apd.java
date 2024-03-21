@@ -65,7 +65,10 @@ public class Apd extends Data
 	{
 		return descs[idx];
 	}
-
+        public int[] getShape() 
+        {
+            return new int[]{descs.length};
+        }
 	protected void resizeDescs(int newDim)
 	{
 		if (descs == null)
@@ -92,5 +95,28 @@ public class Apd extends Data
 	{
 		resizeDescs(idx + 1);
 		descs[idx] = dsc;
+                nDescs = idx+1;
 	}
+        
+        
+        public static void main(java.lang.String args[])
+        {
+            try {
+                MDSplus.Tree t = new MDSplus.Tree("test", -1);
+                MDSplus.Apd apd = new MDSplus.Apd();
+                MDSplus.Apd apd1 = new MDSplus.Apd();
+                apd.setDescAt(0, new MDSplus.Int32(123));
+                apd.setDescAt(2, new MDSplus.Float32(321));
+                MDSplus.TreeNode n = t.getNode("numeric");
+                apd1.setDescAt(0, new MDSplus.String("CICCIOBELLO"));
+                apd.setDescAt(3, apd1);
+                n.putData(apd);
+                System.out.println("Written: "+apd);
+                MDSplus.Apd apd3 = (MDSplus.Apd)n.getData();
+                System.out.println("Read: "+apd3);
+            }catch(Exception exc) 
+            {
+                System.out.println(exc);
+            }
+        }
 }

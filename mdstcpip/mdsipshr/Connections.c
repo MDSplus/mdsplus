@@ -471,7 +471,7 @@ int AddConnection(Connection *c)
   do
   {
     id++; // find next free id
-  } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
+  } while ((id == INVALID_CONNECTION_ID) || _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
   c->id = id;
   pthread_mutex_unlock(&lock);
   c->state |= CON_INLIST;
@@ -513,6 +513,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     *usr = NULL;
   Connection *c = newConnection(protocol);
   INIT_STATUS_ERROR;
+  int auth_status = status;
   if (c)
   {
     Message *msg;
@@ -535,9 +536,9 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     }
     c->rm_user = user;
     user_p = user ? user : "?";
-    status = authorize_client(c, user_p);
+    auth_status = authorize_client(c, user_p);
     // SET COMPRESSION //
-    if (STATUS_OK)
+    if (IS_OK(auth_status))
     {
       const int max_version = get_max_version();
       c->compression_level = msg->h.status & 0xf;
@@ -558,7 +559,11 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // reply to client //
     status = SendMdsMsgC(c, msg, 0);
     free(msg);
-    if (STATUS_OK)
+    // SsINTERNAL has low order bit set so is erroneously treated as OK.
+    if (status == SsINTERNAL) {
+      status = MDSplusERROR;
+    } 
+    if (STATUS_OK && IS_OK(auth_status))
     {
       if (usr)
         *usr = strdup(user_p);

@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="NOT_TRIGGERED" value="4108" severity="Error"
 	    text="device was not triggered,  check wires and triggering device"
 	    />
-    <status name="FREQ_TO_HIGH" value="4109" severity="Error"
+    <status name="FREQ_TOO_HIGH" value="4109" severity="Error"
 	    text="the frequency is set to high for the requested number of channels"
 	    />
     <status name="INVALID_NOC" value="4110" severity="Error"
@@ -127,7 +127,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="IO_STUCK" value ="4130" severity="Error"
            text="I/O to Device is stuck. Check network connection and board status."
            />
-    <status name="UNKOWN_STATE" value ="4131" severity="Error"
+    <status name="UNKNOWN_STATE" value ="4131" severity="Error"
           text="Device returned unrecognized state string"
           />
     <status name="WRONG_TREE" value="4132" severity="Error"
@@ -466,7 +466,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      <status name="BAD_PTS" value="5051" severity="Error"
 	    text="Invalid pts code, must be 0 .. 7"
 	    facnam="L8212$_" facabb="L8212"/>
-     <status name="FREQ_TO_HIGH" value="5052" severity="Error"
+     <status name="FREQ_TOO_HIGH" value="5052" severity="Error"
 	    text="Frequency to high for selected number of channels"
 	    facnam="L8212$_" facabb="L8212"/>
      <status name="INVALID_NOC" value="5053" severity="Error"
@@ -545,7 +545,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	    text="Module did not acquire any samples"
 	    facnam="Dt196b$_" facabb="Dt196b"/>
     <status name="CANNOT_LOAD_SETTINGS" value="5300" severity="Error"
-          text="Error loading settings from XML"
+          text="Error loading settings from XML or JSON"
           />
     <status name="CANNOT_GET_BOARD_STATE" value="5301" severity="Error"
           text="Cannot retrieve state of daq board"

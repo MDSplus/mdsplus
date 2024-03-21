@@ -1,3 +1,5 @@
+![Build Status](https://jenkins.mdsplus.org/buildStatus/icon?job=MDSplus%2Falpha)
+
 ## We want to know who you are
 The MDSplus developers want to know who you are. If you or your site is using MDSplus please fill the following survey. We promise not to share your contact information. Do not assume that other's from your institution have also filled this out, we will combine the results. 
 

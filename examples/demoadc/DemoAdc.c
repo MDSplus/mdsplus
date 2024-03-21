@@ -49,6 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <math.h>
 #include <stdio.h>
+#include <time.h>
 #define PI 3.14159265358
 static int totSamples = 65536;
 static double frequency;
@@ -91,6 +92,7 @@ int initialize(char *name, int clockFreq, int postTriggerSamples)
 int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
 {
   int i;
+  printf("ACQUIRE\n");
   //      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
   if (!confOk)
     return -1;
@@ -103,3 +105,34 @@ int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
   }
   return 0;
 }
+
+static long currSamples;
+static double currPeriod;
+static double trigger;
+int initializeStream(char *name, float clockFreq, float trigTime)
+{
+    printf("INITIALIZE STREAM: %s, %f, %f\n", name, clockFreq, trigTime);
+    currPeriod = 1./clockFreq;
+    trigger = trigTime;
+    currSamples = 0;
+    return 0;
+}
+
+int acquireChunk(char *name, short *chunk, int numSamples)
+{
+    int i;
+    double currTime;
+    struct timespec waitTime;
+    waitTime.tv_sec = 0;
+    waitTime.tv_nsec = 500000000;
+    for(i = 0; i < numSamples; i++)
+    {
+          currTime = trigger + currSamples * currPeriod;
+          chunk[i] = (short)(sin(2 * PI * currTime) * 32767);
+          currSamples++;
+    }
+    nanosleep(&waitTime, NULL);
+
+    return 0;
+}
+
