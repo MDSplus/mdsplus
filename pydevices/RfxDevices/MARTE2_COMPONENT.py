@@ -82,7 +82,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     parts.append({'path': prefix + '.PAR_' +
                                   str(idx)+':VALUE', 'type': 'numeric'})
             idx = idx+1
- 
     @classmethod
     def buildOutputs(cls, parts):
         parts.append({'path': '.OUTPUTS', 'type': 'structure'})
@@ -1259,19 +1258,23 @@ class MARTE2_COMPONENT(MDSplus.Device):
         signals = []
         if trigger != None:
             signals.append({'Name': 'Trigger', 'Type': 'uint8'})
+        try:
+            numSamples = signalsToBeStored[0].getNode('SAMPLES')
+        except:
+            numSamples = 1
         signals.append({
             'Name': 'Time', 
             'Type': self.timerType, 
             'NodeName': self.getNode('OUTPUTS:OUT_TIME').getFullPath(),
             'AutomaticSegmentation': 0,
             'TimeSignal': 1,
-            'Period': self.timerPeriod,
+            'Period': str(self.timerPeriod / numSamples).replace('D', 'E'),
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data()
             })
         for sigNode in signalsToBeStored:
             sigDef = {}
             sigDef['Name'] = self.getSignalName(sigNode)
-            sigDef['Period'] = self.timerPeriod
+            sigDef['Period'] = str(self.timerPeriod / numSamples).replace('D', 'E')
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
@@ -1313,14 +1316,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 sigDef['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-            sigDef['NumberOfDimensions'] = numDims
-            sigDef['NumberOfElements'] = numEls
+#            sigDef['NumberOfDimensions'] = numDims
+#            sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()
             except:
                 samples = 1
-            if samples > 1:
-                sigDef['Samples'] = samples
+#            if samples > 1:
+#                sigDef['Samples'] = samples
             inputs.append(sigDef)
         retGam['Inputs'] = inputs
 
@@ -1330,7 +1333,12 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 'Name':'Trigger',
                 'Type':'uint8', 
                  'DataSource':self.getMarteDeviceName(self)+'_TreeOut'})
-        outputs.append({'Name': 'Time', 'Type': self.timerType, 'DataSource': self.getMarteDeviceName(self)+'_TreeOut'})
+        outputs.append({
+            'Name': 'Time', 
+            'Type': self.timerType, 
+            'DataSource': self.getMarteDeviceName(self)+'_TreeOut',
+            'Samples': samples
+            })
         for sigNode in signalsToBeStored:
             sigDef = {}
             sigDef['Name'] = self.getSignalName(sigNode)
@@ -1559,6 +1567,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         for currSignal in signals:
             currSignal.pop('DataSource')
+
         retDataSource['Signals'] = signals
         retDataSources.append(retDataSource)
 
@@ -1568,6 +1577,24 @@ class MARTE2_COMPONENT(MDSplus.Device):
         for currInput in inputs:
             currInput['DataSource'] = self.getMarteDeviceName(self)
         retGam['Inputs'] = self.removeParametersFromList(inputs)
+        for currOutput in outputs:
+            try:
+                numSamples = currOutput['Samples']
+            except:
+                numSamples = 1
+            try:
+                numElements = currOutput['NumberOfElements']
+            except:
+                numElements = 1            
+            try:
+                currOutput.pop('Samples')
+            except:
+                pass
+            currOutput['NumberOfElements'] = numSamples * numElements
+
+
+
+
         retGam['Outputs'] = self.removeParametersFromList(outputs)
         retGams.append(retGam)
 
@@ -1709,7 +1736,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if numPars > 0:
             retInterface['Parameters'] = self.getParametersDict(self.getNode('PARAMETERS'))
 
-        print('RET INTERAFCE: ', retInterface)
         return retInterface
 
 
