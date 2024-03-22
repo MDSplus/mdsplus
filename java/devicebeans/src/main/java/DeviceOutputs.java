@@ -43,6 +43,7 @@ public class DeviceOutputs extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int numOutputs;
 	private JTextField segLensTF[], parametersTF[], dimensionsTF[], typesTF[];
+        private boolean parametersIsText[];
         private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
         private int numOutputChildren = 0;
         private int numItems;
@@ -99,7 +100,7 @@ public class DeviceOutputs extends DeviceComponent
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
             parametersTF = new JTextField[numParItems];
-
+            parametersIsText = new boolean[numParItems];
                
             typeNids = new int[numItems];
             dimensionNids = new int[numItems];
@@ -157,6 +158,13 @@ public class DeviceOutputs extends DeviceComponent
                         }catch(Exception exc){parName = "";}
                         jp1.add(new JLabel(parName+":"));
                         jp1.add(parametersTF[numParItems] = new JTextField(10));
+                        try {
+                            parametersIsText[numParItems] = subtree.getUsage(currOutNid + 11 + 3 * parIdx).equals("TEXT");
+                        }catch(Exception exc)
+                        {
+                            System.out.println("Internal error: cannot state whether parameter is text");
+                            parametersIsText[numParItems] = false;
+                        } 
                         parameterNids[numParItems++] = currOutNid + 11 + 3 * parIdx;
                     }
                     jp.add(jp1);
@@ -249,7 +257,16 @@ public class DeviceOutputs extends DeviceComponent
             for(int parIdx = 0; parIdx < numParItems; parIdx++)
             {
                 try {
-                     parametersTF[parIdx].setText(subtree.getDataExpr(parameterNids[parIdx]));
+                    String parValue = subtree.getDataExpr(parameterNids[parIdx]);
+                    if(parametersIsText[parIdx])
+                    {
+                        parametersTF[parIdx].setText(parValue.substring(1, parValue.length() - 1));
+                    }
+                    else
+                    {
+                        parametersTF[parIdx].setText(parValue);
+                    }
+
                 }catch(Exception exc)
                 {
                     parametersTF[parIdx].setText("");
@@ -286,7 +303,15 @@ public class DeviceOutputs extends DeviceComponent
            for(int idx = 0; idx < numParItems; idx++)
            {
                 try {
-                    subtree.putDataExpr(parameterNids[idx], parametersTF[idx].getText());
+                    if(parametersIsText[idx])
+                    {
+                        subtree.putDataExpr(parameterNids[idx], "\'"+parametersTF[idx].getText()+"\'");
+                    }
+                    else
+                    {
+                        subtree.putDataExpr(parameterNids[idx], parametersTF[idx].getText());
+                    }
+                        
                 }catch(Exception exc)
                 { 
                     System.out.println("Error saving Parameter");

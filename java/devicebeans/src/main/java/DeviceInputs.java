@@ -14,6 +14,7 @@ public class DeviceInputs extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int numInputs;
 	private JTextField valuesTF[], typesTF[], dimensionsTF[], fieldsTF[][], parametersTF[][];
+        private boolean parametersIsText[][];
 	private JLabel labels[];
         int numParameters[], numFields[];
 	public DeviceInputs()
@@ -40,6 +41,7 @@ public class DeviceInputs extends DeviceComponent
             numParameters = new int[numInputs];
             numFields = new int[numInputs];
             parametersTF = new JTextField[numInputs][];
+            parametersIsText = new boolean[numInputs][]; 
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numInputs, 1));
             int currInputNid = currNid + 1;
@@ -73,6 +75,7 @@ public class DeviceInputs extends DeviceComponent
                 }
                 fieldsTF[i] = new JTextField[numFields[i]];
                 parametersTF[i] = new JTextField[numParameters[i]];
+                parametersIsText[i] = new boolean[numParameters[i]];
                 String inputName;
                 try {
                     inputName = subtree.getString(subtree.getDataExpr(currInputNid + 5));
@@ -104,6 +107,12 @@ public class DeviceInputs extends DeviceComponent
                     }
                     jp2.add(new JLabel(parName+":"));
                     jp2.add(parametersTF[i][parIdx] = new JTextField(10));
+                    try {
+                        parametersIsText[i][parIdx] = subtree.getUsage(currInputNid + 8 + 1 + 3 * parIdx).equals("TEXT");
+                    }catch(Exception exc)
+                    {
+                        System.out.println("OHI CANNOT TAKE USAGE");
+                    }
                 }
                 jp1.add(jp2);
                 for (int fieldIdx = 0; fieldIdx < numFields[i]; fieldIdx++)
@@ -144,7 +153,7 @@ public class DeviceInputs extends DeviceComponent
                     System.out.println("Error getting number of input children");
                 }
                 try {
-                     valuesTF[inputIdx].setText(subtree.getDataExpr(currInputNid + 4));
+                      valuesTF[inputIdx].setText(subtree.getDataExpr(currInputNid + 4));
                 }catch(Exception exc)
                 {
                     valuesTF[inputIdx].setText("");
@@ -164,7 +173,16 @@ public class DeviceInputs extends DeviceComponent
                 for(int parIdx = 0; parIdx < numParameters[inputIdx]; parIdx++)
                 {
                     try {
-                        parametersTF[inputIdx][parIdx].setText(subtree.getDataExpr(currInputNid + 9 + 3 * parIdx));
+                        String parVal = subtree.getDataExpr(currInputNid + 9 + 3 * parIdx);
+                        if(parametersIsText[inputIdx][parIdx])
+                        {
+                            parametersTF[inputIdx][parIdx].setText(parVal.substring(1, parVal.length() - 1));
+                        }
+                        else
+                        {
+                            parametersTF[inputIdx][parIdx].setText(parVal);
+                        }
+                           
                     }catch(Exception exc)
                     {
                         parametersTF[inputIdx][parIdx].setText("");
@@ -218,8 +236,16 @@ public class DeviceInputs extends DeviceComponent
                 for(int parIdx = 0; parIdx < numParameters[inputIdx]; parIdx++)
                 {
                     try {
-                        subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, parametersTF[inputIdx][parIdx].getText());
-                     }catch(Exception exc)
+                        String parVal = parametersTF[inputIdx][parIdx].getText();
+                        if(parametersIsText[inputIdx][parIdx])
+                        {
+                            subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, "\'"+parVal+"\'");
+                        }
+                        else
+                        {
+                            subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, parVal);
+                        }
+                    }catch(Exception exc)
                     {
                         JOptionPane.showMessageDialog(null, ""+exc, "Error in paremeter field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                     }
