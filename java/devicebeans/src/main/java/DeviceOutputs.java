@@ -13,7 +13,6 @@ import javax.swing.event.ChangeListener;
 
 public class DeviceOutputs extends DeviceComponent
 {
-	
     	class FromTransferHandler extends TransferHandler
 	{
 		String path;
@@ -42,12 +41,24 @@ public class DeviceOutputs extends DeviceComponent
 	}
 	private JScrollPane scrollP; 
 	private int numOutputs;
-	private JTextField segLensTF[], parametersTF[], dimensionsTF[], typesTF[];
+	private JTextField segLensTF[], parametersTF[], dimensionsTF[];
+        private JComboBox typesCB[];
         private boolean parametersIsText[];
         private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
         private int numOutputChildren = 0;
         private int numItems;
         private int numParItems;
+        static final String types[] = {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"};
+        private int stringToIdx(String type)
+        {
+            for(int i = 0; i < types.length; i++)
+            {
+                if(types[i].equals(type))
+                    return i;
+            }
+            return 0;
+        }
+        
 	public DeviceOutputs()
 	{
  	}
@@ -96,7 +107,7 @@ public class DeviceOutputs extends DeviceComponent
                 numParItems += numPars;
                 currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
             }
-            typesTF = new JTextField[numItems];
+            typesCB = new JComboBox[numItems];
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
             parametersTF = new JTextField[numParItems];
@@ -143,7 +154,7 @@ public class DeviceOutputs extends DeviceComponent
                     jp1.add(dimensionsTF[currItem] = new JTextField(4));
                     dimensionNids[currItem] = currOutNid + 4;
                     jp1.add(new JLabel("Type: "));
-                    jp1.add(typesTF[currItem] = new JTextField(6));
+                    jp1.add(typesCB[currItem] = new JComboBox(types));
                     typeNids[currItem] = currOutNid + 2;
                     jp1.add(new JLabel("Segment len.: "));
                     jp1.add(segLensTF[currItem] = new JTextField(4));
@@ -202,7 +213,7 @@ public class DeviceOutputs extends DeviceComponent
                         jp1.add(new JLabel("Dimensions: "));
                         jp1.add(dimensionsTF[currItem] = new JTextField(4));
                         jp1.add(new JLabel("Type: "));
-                        jp1.add(typesTF[currItem] = new JTextField(6));
+                        jp1.add(typesCB[currItem] = new JComboBox(types));
                         jp1.add(new JLabel("Segment len.: "));
                         jp1.add(segLensTF[currItem] = new JTextField(4));
                         
@@ -248,10 +259,10 @@ public class DeviceOutputs extends DeviceComponent
                     dimensionsTF[idx].setText("");
                 }
                 try {
-                     typesTF[idx].setText(subtree.getDataExpr(typeNids[idx]).replace("\"", ""));
+                     typesCB[idx].setSelectedIndex(stringToIdx(subtree.getDataExpr(typeNids[idx]).replace("\"", "")));
                 }catch(Exception exc)
                 {
-                    typesTF[idx].setText("");
+                    typesCB[idx].setSelectedIndex(-1);
                 }
             }
             for(int parIdx = 0; parIdx < numParItems; parIdx++)
@@ -288,7 +299,8 @@ public class DeviceOutputs extends DeviceComponent
                     System.out.println("Error saving Dimensions");
                 }
                 try {
-                    subtree.putDataExpr(typeNids[idx], "\""+typesTF[idx].getText()+"\"");
+                    int typeIdx = typesCB[idx].getSelectedIndex();
+                    subtree.putDataExpr(typeNids[idx], "\""+types[typeIdx]+"\"");
                 }catch(Exception exc)
                 {
                     System.out.println("Error saving Type");
