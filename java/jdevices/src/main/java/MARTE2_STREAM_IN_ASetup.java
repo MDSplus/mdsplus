@@ -39,47 +39,7 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
         deviceField30 = new DeviceField();
         deviceField31 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
-        deviceChoice1 = new DeviceChoice();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField12 = new DeviceField();
-        deviceChoice3 = new DeviceChoice();
-        deviceField13 = new DeviceField();
-        deviceField14 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField15 = new DeviceField();
-        deviceChoice4 = new DeviceChoice();
-        deviceField16 = new DeviceField();
-        deviceField17 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField18 = new DeviceField();
-        deviceChoice5 = new DeviceChoice();
-        deviceField19 = new DeviceField();
-        deviceField20 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        deviceField21 = new DeviceField();
-        deviceChoice6 = new DeviceChoice();
-        deviceField22 = new DeviceField();
-        deviceField23 = new DeviceField();
-        jPanel11 = new javax.swing.JPanel();
-        deviceField24 = new DeviceField();
-        deviceChoice7 = new DeviceChoice();
-        deviceField25 = new DeviceField();
-        deviceField26 = new DeviceField();
-        jPanel12 = new javax.swing.JPanel();
-        deviceField27 = new DeviceField();
-        deviceChoice8 = new DeviceChoice();
-        deviceField28 = new DeviceField();
-        deviceField29 = new DeviceField();
+        deviceOutputs1 = new DeviceOutputs();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("Async Stream In");
@@ -138,233 +98,8 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        jPanel1.setLayout(new java.awt.GridLayout(8, 1));
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Dimensions: ");
-        deviceField6.setNumCols(8);
-        deviceField6.setOffsetNid(28);
-        jPanel5.add(deviceField6);
-
-        deviceChoice1.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Type: ");
-        deviceChoice1.setOffsetNid(26);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice1);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Channel: ");
-        deviceField7.setNumCols(15);
-        deviceField7.setOffsetNid(35);
-        deviceField7.setTextOnly(true);
-        jPanel5.add(deviceField7);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Seg. Len: ");
-        deviceField8.setNumCols(4);
-        deviceField8.setOffsetNid(29);
-        jPanel5.add(deviceField8);
-
-        jPanel1.add(jPanel5);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Dimensions: ");
-        deviceField9.setNumCols(8);
-        deviceField9.setOffsetNid(40);
-        jPanel6.add(deviceField9);
-
-        deviceChoice2.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Type: ");
-        deviceChoice2.setOffsetNid(38);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice2);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Channel: ");
-        deviceField10.setNumCols(15);
-        deviceField10.setOffsetNid(47);
-        deviceField10.setTextOnly(true);
-        jPanel6.add(deviceField10);
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Seg. Len: ");
-        deviceField11.setNumCols(4);
-        deviceField11.setOffsetNid(41);
-        jPanel6.add(deviceField11);
-
-        jPanel1.add(jPanel6);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Dimensions: ");
-        deviceField12.setNumCols(8);
-        deviceField12.setOffsetNid(52);
-        jPanel7.add(deviceField12);
-
-        deviceChoice3.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Type: ");
-        deviceChoice3.setOffsetNid(50);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice3);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Channel: ");
-        deviceField13.setNumCols(15);
-        deviceField13.setOffsetNid(59);
-        deviceField13.setTextOnly(true);
-        jPanel7.add(deviceField13);
-
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Seg. Len: ");
-        deviceField14.setNumCols(4);
-        deviceField14.setOffsetNid(53);
-        jPanel7.add(deviceField14);
-
-        jPanel1.add(jPanel7);
-
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("Dimensions: ");
-        deviceField15.setNumCols(8);
-        deviceField15.setOffsetNid(64);
-        jPanel8.add(deviceField15);
-
-        deviceChoice4.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Type: ");
-        deviceChoice4.setOffsetNid(62);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice4);
-
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Channel: ");
-        deviceField16.setNumCols(15);
-        deviceField16.setOffsetNid(71);
-        deviceField16.setTextOnly(true);
-        jPanel8.add(deviceField16);
-
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Seg. Len: ");
-        deviceField17.setNumCols(4);
-        deviceField17.setOffsetNid(65);
-        jPanel8.add(deviceField17);
-
-        jPanel1.add(jPanel8);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Dimensions: ");
-        deviceField18.setNumCols(8);
-        deviceField18.setOffsetNid(76);
-        jPanel9.add(deviceField18);
-
-        deviceChoice5.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Type: ");
-        deviceChoice5.setOffsetNid(74);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice5);
-
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Channel: ");
-        deviceField19.setNumCols(15);
-        deviceField19.setOffsetNid(83);
-        deviceField19.setTextOnly(true);
-        jPanel9.add(deviceField19);
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Seg. Len: ");
-        deviceField20.setNumCols(4);
-        deviceField20.setOffsetNid(77);
-        jPanel9.add(deviceField20);
-
-        jPanel1.add(jPanel9);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Dimensions: ");
-        deviceField21.setNumCols(8);
-        deviceField21.setOffsetNid(88);
-        jPanel10.add(deviceField21);
-
-        deviceChoice6.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Type: ");
-        deviceChoice6.setOffsetNid(86);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice6);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Channel: ");
-        deviceField22.setNumCols(15);
-        deviceField22.setOffsetNid(95);
-        deviceField22.setTextOnly(true);
-        jPanel10.add(deviceField22);
-
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Seg. Len: ");
-        deviceField23.setNumCols(4);
-        deviceField23.setOffsetNid(89);
-        jPanel10.add(deviceField23);
-
-        jPanel1.add(jPanel10);
-
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("Dimensions: ");
-        deviceField24.setNumCols(8);
-        deviceField24.setOffsetNid(100);
-        jPanel11.add(deviceField24);
-
-        deviceChoice7.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Type: ");
-        deviceChoice7.setOffsetNid(98);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice7);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Channel: ");
-        deviceField25.setNumCols(15);
-        deviceField25.setOffsetNid(107);
-        deviceField25.setTextOnly(true);
-        jPanel11.add(deviceField25);
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("Seg. Len: ");
-        deviceField26.setNumCols(4);
-        deviceField26.setOffsetNid(101);
-        jPanel11.add(deviceField26);
-
-        jPanel1.add(jPanel11);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("Dimensions: ");
-        deviceField27.setNumCols(8);
-        deviceField27.setOffsetNid(112);
-        jPanel12.add(deviceField27);
-
-        deviceChoice8.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Type: ");
-        deviceChoice8.setOffsetNid(110);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice8);
-
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Channel: ");
-        deviceField28.setNumCols(15);
-        deviceField28.setOffsetNid(119);
-        deviceField28.setTextOnly(true);
-        jPanel12.add(deviceField28);
-
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Seg. Len: ");
-        deviceField29.setNumCols(4);
-        deviceField29.setOffsetNid(113);
-        jPanel12.add(deviceField29);
-
-        jPanel1.add(jPanel12);
-
-        jScrollPane1.setViewportView(jPanel1);
+        deviceOutputs1.setOffsetNid(17);
+        jScrollPane1.setViewportView(deviceOutputs1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -372,58 +107,18 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice2;
-    private DeviceChoice deviceChoice3;
-    private DeviceChoice deviceChoice4;
-    private DeviceChoice deviceChoice5;
-    private DeviceChoice deviceChoice6;
-    private DeviceChoice deviceChoice7;
-    private DeviceChoice deviceChoice8;
     private DeviceField deviceField1;
-    private DeviceField deviceField10;
-    private DeviceField deviceField11;
-    private DeviceField deviceField12;
-    private DeviceField deviceField13;
-    private DeviceField deviceField14;
-    private DeviceField deviceField15;
-    private DeviceField deviceField16;
-    private DeviceField deviceField17;
-    private DeviceField deviceField18;
-    private DeviceField deviceField19;
     private DeviceField deviceField2;
-    private DeviceField deviceField20;
-    private DeviceField deviceField21;
-    private DeviceField deviceField22;
-    private DeviceField deviceField23;
-    private DeviceField deviceField24;
-    private DeviceField deviceField25;
-    private DeviceField deviceField26;
-    private DeviceField deviceField27;
-    private DeviceField deviceField28;
-    private DeviceField deviceField29;
     private DeviceField deviceField3;
     private DeviceField deviceField30;
     private DeviceField deviceField31;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
-    private DeviceField deviceField6;
-    private DeviceField deviceField7;
-    private DeviceField deviceField8;
-    private DeviceField deviceField9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
+    private DeviceOutputs deviceOutputs1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
