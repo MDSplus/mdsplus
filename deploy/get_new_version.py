@@ -19,27 +19,40 @@ last_release = git('describe --tags --abbrev=0')
 last_release_commit = git(f'rev-list -n 1 {last_release}')
 commit_log = git(f'log {last_release_commit}..HEAD --no-merges --decorate=short --pretty=format:%s')
 
+# Commits that start with 'Revert' have the same effect as their original counterparts
+
 version_bump = 'SAME'
 for commit in commit_log.splitlines():
     commit = commit.lower()
 
-    if commit.startswith('feature') or commit.startswith('revert "feature'):
+    # Commits that start with 'Release' will use the exact version that commit is tagged with
+    if commit.startswith('release'):
+        version_bump = 'SAME'
+        break
+
+    # Commits that start with 'Feature' will increment the minor version (0.x.0)
+    elif commit.startswith('feature') or commit.startswith('revert "feature'):
         version_bump = 'MINOR'
 
+    # Commits that start with 'Fix' will increment the patch version (0.0.x)
     elif commit.startswith('fix') or commit.startswith('revert "fix'):
         if version_bump != 'MINOR':
             version_bump = 'PATCH'
     
+    # Commits that start with 'Tests' will not change the version
     elif commit.startswith('tests') or commit.startswith('revert "tests'):
         pass
 
+    # Commits that start with 'Build' will not change the version
     elif commit.startswith('build') or commit.startswith('revert "build'):
         pass
 
+    # Commits that start with 'Docs' will not change the version
     elif commit.startswith('docs') or commit.startswith('revert "docs'):
         pass
 
-    else: # Treat all unprefixed commits as 'Fix:'
+    # Commits without one of these prefixes will increment the patch version (0.0.x)
+    else: 
         if version_bump != 'MINOR':
             version_bump = 'PATCH'
 
