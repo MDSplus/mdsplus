@@ -96,17 +96,51 @@ public class Connection
 	{
 		if (!checkArgs(args))
 			throw new MdsException(
-					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.get()");
-		return get(sockId, expr, args);
+					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
+                java.lang.String expandedExpr;
+                if(expr.equals("$"))
+                {
+                    expandedExpr = "serializeout(`("+expr+"))";
+                }
+                else
+                {
+                    expandedExpr = "serializeout(`(data(("+expr+"))))";
+                }
+                Data serData = get(sockId, expandedExpr, args);
+                return Data.deserialize(serData.getByteArray());
+
 	}
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-		return get(expr, new Data[0]);
+                java.lang.String expandedExpr = "serializeout(`(data(("+expr+"))))";
+                Data serData = get(sockId, expandedExpr, new Data[0]);
+                if(serData instanceof Array)
+                    return Data.deserialize(serData.getByteArray());
+                else //error code
+                    return serData;
 	}
 
-	public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
+	public void put(java.lang.String path, java.lang.String expr, Data inArgs[]) throws MdsException
 	{
+        Data args[] = new Data[inArgs.length];
+		//Check if any passed argument is Apd
+		boolean serialized = false;
+		for(int i = 0; i < inArgs.length; i++)
+		{
+			if(inArgs[i] instanceof Apd)
+			{
+				serialized = true;
+			}
+		}
+
+		for(int i = 0; i < inArgs.length; i++)
+		{
+			if(serialized)
+				args[i] = new Uint8Array(inArgs[i].serialize());
+			else
+				args[i] = inArgs[i];
+		}
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.put()");
@@ -145,7 +179,19 @@ public class Connection
 	{
 		return new PutManyInConnection();
 	}
-
+       public static void main(java.lang.String args[])
+        {
+            try {
+            
+                MDSplus.Connection c = new MDSplus.Connection("localhost:8001");
+                c.openTree("test", -1);
+                System.out.println(c.get("anyapd"));
+            }catch(Exception exc)
+            {
+                System.out.println(exc);
+            }
+        }
+ 
 	////////// GetMany
 	class GetManyInConnection extends List implements GetMany
 	{
@@ -288,5 +334,7 @@ public class Connection
 				throw new MdsException(retMsg.getString());
 		}
 	}
+        
+        
 
 }

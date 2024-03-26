@@ -21,7 +21,8 @@ switch class(value)
     case 'uint8'
         javaclass = 'MDSplus.Uint8';
     case 'cell'
-        javaclass = 'MDSplus.String';
+        result = javaFromMatlabCell(value);
+        return
     case 'struct'
         result = javaFromMatlabStruct(value);
         return
@@ -31,11 +32,10 @@ switch class(value)
         result = javaObject('MDSplus.String', value);
         return
     otherwise
-        result = value;
-        return
+        throw(MException('MDSplus:javaFromMatlab', 'Unsupported type'))
 end
 sz = size(value);
-if isequal(sz, [1, 1])
+if isscalar(value)
     result = javaObject(javaclass, value);
 else
     result = javaObject(strcat(javaclass, 'Array'), reshape(value, [], 1), sz);
