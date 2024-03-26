@@ -659,7 +659,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                     })
                             currSig['DataSource'] = self.getMarteDeviceName(value)+'_ASYNC_RTN_IN'
             else: #Not a reference to the output of a MARTe2 device
-                if isinstance(value.evaluate(), MDSplus.Signal):
+                try:
+                    currInput = value.evaluate()
+                except:
+                    raise Exception('Missing Input signal for '+self.getPath())
+                if isinstance(currInput, MDSplus.Signal):
                     currSig['DataSource'] = self.getMarteDeviceName(self)+'_TreeInDDB'
                     try:
                         if sigNode.getNode['COL_ORDER'].data() == 'YES':
@@ -1701,6 +1705,13 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if len(treeRefs) > 0:
             retGams.append(self.handleTreeRefs(treeRefs))
             retDataSources.append({'Name': self.getMarteDeviceName(self)+'_TreeInDDB', 'Class': 'GAMDataSource'})
+
+        #Handle constant inputs
+        if len(constRefs) > 0:
+            retGams.append(self.handleConstRefs(constRefs))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_ConstInDDB', 'Class': 'GAMDataSource'})
+
+
 
         retGams.append({
             'Name': self.getMarteDeviceName(self)+'_IOGAM', 
