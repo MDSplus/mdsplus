@@ -592,6 +592,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             if self.isTimebase(value):
                 currSig['DataSource'] = self.timerDDB
                 currSig['Type'] = self.timerType
+                currSig['Alias'] = 'Time'
                 currSig['NumberOfElements'] = 1
                 currSig['NumberOfDimensions'] = 0
                 sigDicts.append(currSig)

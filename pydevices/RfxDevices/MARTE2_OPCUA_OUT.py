@@ -62,7 +62,11 @@ class MARTE2_OPCUA_OUT(MC.MARTE2_COMPONENT):
     parameters = [
         {'name': 'Address', 'type': 'string', 'value': ''},
         {'name': 'Authentication', 'type': 'string', 'value': 'None'},
-        {'name': 'UserPawsswordFile', 'type': 'string', 'value': ''}]
+        {'name': 'UserPawsswordFile', 'type': 'string', 'value': ''},
+        {'name': 'Traverse', 'type': 'int32', 'value': 0},
+        {'name': 'RootNamespaceIndex', 'type': 'int32', 'value': 1},
+        {'name': 'RootIdentifierValue', 'type': 'string', 'value': 'DataBlocksGlobal'},
+        {'name': 'RootIdentifierType', 'type': 'string', 'value': 'STRING'}]
     parts = []
 
     def prepareMarteInfo(self):
