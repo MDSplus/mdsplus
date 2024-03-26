@@ -65,10 +65,12 @@ public class Apd extends Data
 	{
 		return descs[idx];
 	}
+	
         public int[] getShape() 
         {
-            return new int[]{descs.length};
+		return new int[]{nDescs};
         }
+	
 	protected void resizeDescs(int newDim)
 	{
 		if (descs == null)

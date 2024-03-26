@@ -10,6 +10,7 @@ public class List extends Apd
 	public List(Data[] descs)
 	{
 		super(descs, null, null, null, null);
+		dtype = DTYPE_LIST;
 	}
 
 	public List(Data[] descs, Data help, Data units, Data error, Data validation)
