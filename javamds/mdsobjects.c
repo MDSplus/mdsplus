@@ -3909,7 +3909,7 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
  */
 JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
     JNIEnv *env, jobject obj __attribute__((unused)), jint sockId,
-    jstring jPath, jstring jExpr, jobjectArray jArgs)
+    jstring jPath, jstring jExpr, jobjectArray jArgs, jboolean serialized)
 {
   const char *expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   const char *inPath = (*env)->GetStringUTFChars(env, jPath, 0);
@@ -3936,12 +3936,25 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
   else
     strcpy(path, inPath);
 
+  if(serialized)
+  {
+    putExpr = malloc(strlen("TreePutDeserialized(") + strlen(expr) + strlen(path) + 5 +
+                    nArgs * 2 + 2);
+    if (nArgs > 0)
+      sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\',", path, expr);
+    else
+      sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\'", path, expr);
+  }
+  else
+  {
   putExpr = malloc(strlen("TreePut(") + strlen(expr) + strlen(path) + 5 +
                    nArgs * 2 + 2);
   if (nArgs > 0)
     sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
   else
     sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
+
+  }
   for (varIdx = 0; varIdx < nArgs; varIdx++)
   {
     if (varIdx < nArgs - 1)
