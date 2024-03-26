@@ -65,7 +65,10 @@ class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
         {'name': 'Synchronize', 'type': 'string', 'value': 'no'},
         {'name': 'CpuMask', 'type': 'int32', 'value': 255},
         {'name': 'StackSize', 'type': 'int32', 'value': 10000000},
-    ]
+        {'name': 'Traverse', 'type': 'int32', 'value': 0},
+        {'name': 'RootNamespaceIndex', 'type': 'int32', 'value': 1},
+        {'name': 'RootIdentifierValue', 'type': 'string', 'value': 'DataBlocksGlobal'},
+        {'name': 'RootIdentifierType', 'type': 'string'}]
     print(parameters)
     parts = []
 
