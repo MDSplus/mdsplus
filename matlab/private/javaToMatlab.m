@@ -31,11 +31,13 @@ else
             case 'MDSplus.Float32Array'
                 result = reshape(mdsthing.getFloatArray,  shape);
             case 'MDSplus.StringArray'
-                result = reshape(cellstr(string(mdsthing.getStringArray)), shape);
+                result = reshape(string(mdsthing.getStringArray), shape);
             case 'MDSplus.Dictionary'
                 result = javaToMatlabStruct(mdsthing);
-            case 'MDSplus.Apd'
+            case 'MDSplus.List'
                 result = javaToMatlabStruct(mdsthing);
+            case 'MDSplus.Apd'
+                result = javaToMatlabCell(mdsthing);
             otherwise
                 throw(MException('MDSplus:mdsToMatlab', 'class %s not supported by mdsToMatlab function\n', class(mdsthing)));
         end
