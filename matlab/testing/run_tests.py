@@ -352,146 +352,120 @@ def matlab_test(code, expected_output):
     print()
 
 
-##-------------------------------------------------------------------------------
-## Tree open / read / close
-#matlab_test(f'''
-         
-#testid = 'MATLAB-tree-read';
-#mdsconnect('{args.mdsip_server}');
-#mdsopen('{args.tree}', {args.shot});
-#disp(mdsvalue('{args.node1}'));
-#disp(mdsvalue('{args.node2}'));
-#mdsclose();
-#mdsdisconnect();
-
-#''',
-#f'''
-
-#{args.node1_value}
-#{args.node2_value}
-
-#''')
-
-
-##-------------------------------------------------------------------------------
-## https://github.com/MDSplus/mdsplus/issues/2639
-## Issue #2639: mdsvalue works without a socket
-#matlab_test(f'''
-         
-#testid = 'MATLAB-2639-no-socket';
-#DATA = '55';
-#disp(mdsvalue(DATA));
-
-#''',
-#'''
-
-#55
-
-#''')
-
-
-##---------------------------------------------------------------------------
-## Read: various permutations of reading data from a tree
-#matlab_test(f'''
-            
-#testid = 'MATLAB-read-various';
-                    
-#mdsconnect('{args.mdsip_server}');
-#mdsopen('{args.tree}', {args.shot});
-#disp(mdsvalue('{args.text}'));
-#disp(mdsvalue('{args.numeric}'));
-#disp(transpose(mdsvalue('{args.signal}')));
-#disp(mdsvalue('{args.fullpath}'));
-#mdstcl('set def {args.relative_def}');
-#disp(mdsvalue('{args.relative}'));
-#mdstcl('set def {args.reset_def}');
-#disp(mdsvalue('{args.tag}'));
-#disp(mdsvalue('{args.wildcard}'));
-#disp(mdsvalue('{args.getnci}'));
-#disp(mdsvalue('{args.rank}'));
-#disp(mdsvalue('{args.ndims}'));
-#disp(transpose(mdsvalue('{args.dim_of}')));
-#disp(mdsvalue('{args.units_of}'));
-#mdsclose();
-#mdsdisconnect();
-
-#''',
-#f'''
-
-#{args.text_value}
-#{args.numeric_value}
-#{args.signal_value}
-#{args.fullpath_value}
-#{args.relative_value}
-#{args.tag_value}
-#{args.wildcard_value}
-#{args.getnci_value}
-#{args.rank_value}
-#{args.ndims_value}
-#{args.dim_of_value}
-#{args.units_of_value}
-
-#''')
-
-
-##---------------------------------------------------------------------------
-## Write: various permutations of writing data to a tree
-##
-## Note: Uses local tree on the build server (i.e., not using mdsip).
-##       The $default_tree_path must point to the "matlab/testing" directory.
-#matlab_test(f'''
-            
-#testid = 'MATLAB-write-various';
-
-#mdsopen('{args.write_tree}', {args.write_shot});
-#mdsput('A_TEXT', ' "string_a" ');
-#mdsput('B_NUM', '22');
-#mdsput('C_SIGNAL', 'build_signal([10,-10,5,-5,0],[10.2,-10.2,5.4,-5.4,0.0], [0 .. 4])');
-#mdsput('\TOP.SUBTREE_1:D_TEXT', ' "string_d" ');
-#mdsput('SUBTREE_1.E_UNITS', 'build_with_units(55, "volts")');
-#mdstcl('set def SUBTREE_1');
-#mdsput('.-.SUBTREE_2:F_NUM', '66');
-#mdsput('\TAG_G', '77');
-#mdsclose();
-         
-#mdsopen('{args.write_tree}', {args.write_shot});
-#disp(mdsvalue('A_TEXT'));
-#disp(mdsvalue('B_NUM'));
-#disp(transpose(mdsvalue('DATA(C_SIGNAL)')));
-#disp(transpose(mdsvalue('RAW_OF(C_SIGNAL)')));
-#disp(transpose(mdsvalue('DIM_OF(C_SIGNAL)')));
-#disp(mdsvalue('SUBTREE_1:D_TEXT'));
-#disp(mdsvalue('SUBTREE_1.E_UNITS'));
-#disp(mdsvalue('UNITS_OF(SUBTREE_1.E_UNITS)'));
-#disp(mdsvalue('SUBTREE_2:F_NUM'));
-#disp(mdsvalue('SUBTREE_2:G_NUM'));
-#mdsclose();
-
-#''',
-#'''
-
-#string_a
-#22
-#10   -10     5    -5     0
-#10.2000  -10.2000    5.4000   -5.4000         0
-#0   1   2   3   4
-#string_d
-#55
-#volts
-#66
-#77
-
-#''')
-
-
-## --------------------------------- first test for MATLAB APIs
+#-------------------------------------------------------------------------------
+# Tree open / read / close
 matlab_test(f'''
+         
+testid = 'MATLAB-tree-read';
+mdsconnect('{args.mdsip_server}');
+mdsopen('{args.tree}', {args.shot});
+disp(mdsvalue('{args.node1}'));
+disp(mdsvalue('{args.node2}'));
+mdsclose();
+mdsdisconnect();
 
-disp('DEBUG: RUNNING MATLAB SCRIPTS');
+''',
+f'''
 
-addpath('../');
+{args.node1_value}
+{args.node2_value}
 
-run("run_tests.m");
+''')
+
+
+#-------------------------------------------------------------------------------
+# https://github.com/MDSplus/mdsplus/issues/2639
+# Issue #2639: mdsvalue works without a socket
+matlab_test(f'''
+         
+testid = 'MATLAB-2639-no-socket';
+DATA = '55';
+disp(mdsvalue(DATA));
+
+''',
+'''
+
+55
+
+''')
+
+
+#---------------------------------------------------------------------------
+# Read: various permutations of reading data from a tree
+matlab_test(f'''
+            
+testid = 'MATLAB-read-various';
+                    
+mdsconnect('{args.mdsip_server}');
+mdsopen('{args.tree}', {args.shot});
+disp(mdsvalue('{args.text}'));
+disp(mdsvalue('{args.numeric}'));
+disp(transpose(mdsvalue('{args.signal}')));
+disp(mdsvalue('{args.fullpath}'));
+mdstcl('set def {args.relative_def}');
+disp(mdsvalue('{args.relative}'));
+mdstcl('set def {args.reset_def}');
+disp(mdsvalue('{args.tag}'));
+disp(mdsvalue('{args.wildcard}'));
+disp(mdsvalue('{args.getnci}'));
+disp(mdsvalue('{args.rank}'));
+disp(mdsvalue('{args.ndims}'));
+disp(transpose(mdsvalue('{args.dim_of}')));
+disp(mdsvalue('{args.units_of}'));
+mdsclose();
+mdsdisconnect();
+
+''',
+f'''
+
+{args.text_value}
+{args.numeric_value}
+{args.signal_value}
+{args.fullpath_value}
+{args.relative_value}
+{args.tag_value}
+{args.wildcard_value}
+{args.getnci_value}
+{args.rank_value}
+{args.ndims_value}
+{args.dim_of_value}
+{args.units_of_value}
+
+''')
+
+
+#---------------------------------------------------------------------------
+# Write: various permutations of writing data to a tree
+#
+# Note: Uses local tree on the build server (i.e., not using mdsip).
+#       The $default_tree_path must point to the "matlab/testing" directory.
+matlab_test(f'''
+            
+testid = 'MATLAB-write-various';
+
+mdsopen('{args.write_tree}', {args.write_shot});
+mdsput('A_TEXT', ' "string_a" ');
+mdsput('B_NUM', '22');
+mdsput('C_SIGNAL', 'build_signal([10,-10,5,-5,0],[10.2,-10.2,5.4,-5.4,0.0], [0 .. 4])');
+mdsput('\TOP.SUBTREE_1:D_TEXT', ' "string_d" ');
+mdsput('SUBTREE_1.E_UNITS', 'build_with_units(55, "volts")');
+mdstcl('set def SUBTREE_1');
+mdsput('.-.SUBTREE_2:F_NUM', '66');
+mdsput('\TAG_G', '77');
+mdsclose();
+         
+mdsopen('{args.write_tree}', {args.write_shot});
+disp(mdsvalue('A_TEXT'));
+disp(mdsvalue('B_NUM'));
+disp(transpose(mdsvalue('DATA(C_SIGNAL)')));
+disp(transpose(mdsvalue('RAW_OF(C_SIGNAL)')));
+disp(transpose(mdsvalue('DIM_OF(C_SIGNAL)')));
+disp(mdsvalue('SUBTREE_1:D_TEXT'));
+disp(mdsvalue('SUBTREE_1.E_UNITS'));
+disp(mdsvalue('UNITS_OF(SUBTREE_1.E_UNITS)'));
+disp(mdsvalue('SUBTREE_2:F_NUM'));
+disp(mdsvalue('SUBTREE_2:G_NUM'));
+mdsclose();
 
 ''',
 '''
@@ -506,6 +480,23 @@ string_d
 volts
 66
 77
+
+''')
+
+
+## ---------------------------------------------------------------------
+## test type conversion from/to MATLAB
+matlab_test(f'''
+
+addpath('../');
+run("run_tests.m");
+
+''',
+'''
+
+PASSED:     115
+FAILED:       0
+INCOMPLETE:   0
 
 ''')
 
