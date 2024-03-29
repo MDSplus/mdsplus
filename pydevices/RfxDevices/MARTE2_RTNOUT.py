@@ -29,11 +29,21 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('RTNOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_RTNOUT(MC.MARTE2_COMPONENT):
     inputs = [
-        {'name': 'In1', 'type': 'float32', 'dimensions': 0, 'parameters': []},
-        {'name': 'In2', 'type': 'float32', 'dimensions': 0, 'parameters': []},
-        {'name': 'In3', 'type': 'float32', 'dimensions': 0, 'parameters': []},
-        {'name': 'In4', 'type': 'float32', 'dimensions': 0, 'parameters': []}]
-    parameters = [{'name': 'Ip', 'type': 'string', 'value': 'Localhost'},
+        {'name': 'In1', 'type': 'float32', 'dimensions': 0, 'parameters':
+                 [{'name': 'Ip', 'type': 'string', 'value': 'Localhost'},
                   {'name': 'Port', 'type': 'int32', 'value': 8123},
-                  {'name': 'CircuitId', 'type': 'int32', 'value': 1}]
+                  {'name': 'CircuitId', 'type': 'int32', 'value': 1}]},
+        {'name': 'In2', 'type': 'float32', 'dimensions': 0, 'parameters': 
+                 [{'name': 'Ip', 'type': 'string', 'value': 'Localhost'},
+                  {'name': 'Port', 'type': 'int32', 'value': 8123},
+                  {'name': 'CircuitId', 'type': 'int32', 'value': 1}]},
+        {'name': 'In3', 'type': 'float32', 'dimensions': 0, 'parameters': 
+                 [{'name': 'Ip', 'type': 'string', 'value': 'Localhost'},
+                  {'name': 'Port', 'type': 'int32', 'value': 8123},
+                  {'name': 'CircuitId', 'type': 'int32', 'value': 1}]},
+        {'name': 'In4', 'type': 'float32', 'dimensions': 0, 'parameters': 
+                  [{'name': 'Ip', 'type': 'string', 'value': 'Localhost'},
+                  {'name': 'Port', 'type': 'int32', 'value': 8123},
+                  {'name': 'CircuitId', 'type': 'int32', 'value': 1}]}]
+    parameters = []
     parts = []

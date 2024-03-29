@@ -252,10 +252,11 @@
                             <Component class="DeviceChoice" name="deviceChoice1">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -365,10 +366,11 @@
                             <Component class="DeviceChoice" name="deviceChoice2">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -478,10 +480,11 @@
                             <Component class="DeviceChoice" name="deviceChoice3">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -591,10 +594,11 @@
                             <Component class="DeviceChoice" name="deviceChoice4">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -704,10 +708,11 @@
                             <Component class="DeviceChoice" name="deviceChoice5">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -817,10 +822,11 @@
                             <Component class="DeviceChoice" name="deviceChoice6">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -930,10 +936,11 @@
                             <Component class="DeviceChoice" name="deviceChoice7">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1043,10 +1050,11 @@
                             <Component class="DeviceChoice" name="deviceChoice8">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1207,10 +1215,11 @@
                             <Component class="DeviceChoice" name="deviceChoice9">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1320,10 +1329,11 @@
                             <Component class="DeviceChoice" name="deviceChoice17">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1433,10 +1443,11 @@
                             <Component class="DeviceChoice" name="deviceChoice18">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1546,10 +1557,11 @@
                             <Component class="DeviceChoice" name="deviceChoice19">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1659,10 +1671,11 @@
                             <Component class="DeviceChoice" name="deviceChoice20">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1772,10 +1785,11 @@
                             <Component class="DeviceChoice" name="deviceChoice21">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1885,10 +1899,11 @@
                             <Component class="DeviceChoice" name="deviceChoice22">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -1998,10 +2013,11 @@
                             <Component class="DeviceChoice" name="deviceChoice23">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="3">
+                                  <StringArray count="4">
                                     <StringItem index="0" value="INTERNAL"/>
                                     <StringItem index="1" value="EXTERNAL"/>
                                     <StringItem index="2" value="DERIVED"/>
+                                    <StringItem index="3" value="EXT_DERIVED"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>

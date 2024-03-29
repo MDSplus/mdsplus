@@ -177,7 +177,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     def getSupervisorNodes(self):
         t = self.getTree()
         try:
-            supervisors = self.getNode('SUPERVISOR').getData()
+            supervisors = self.getNode('SUPERVISORS').getData()
         except:
             return []
 
@@ -200,7 +200,36 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: '+ currSupervisor(self.getPath()))
         return supervisorNodes
 
- 
+    #Return the target timebase reference dor DERIVED and EXT_DERIVED mode
+    def getExtTimebaseRef(self, timebaseMode, stateIdx, threadIdx): 
+        if timebaseMode == 'DERIVED':
+            try:
+                refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
+                refThreadIdx = refTimebaseNode.data()
+                timebaseDef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
+            except:
+                raise Exception('Invalid derived Thread timebase for thread  in supervisor '+self.getPath())
+            supervisorNode = self
+        elif timebaseMode == 'EXT_DERIVED':
+            supervisors = self.getSupervisorNodes()
+            if supervisors == []:
+               raise Exception('Supervisor list must be defined when timebase mode is EXD_DERIVED') 
+            try:
+                refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
+                refThreadInfo = refTimebaseNode.data()
+                print('REF RTHREAD INFO')
+                print(refThreadInfo)
+                supervisorNode = supervisors[refThreadInfo[0]]
+                refThreadIdx = refThreadInfo[1]
+            except:
+                raise Exception('Invalid timebase definition for EXT_DERIVED mode. It must be an array [<supervisorIdx>,<ThreadId>]')
+        else:
+            raise Exception('Invalid timebase mode  in supervisor '+self.getPath())
+        try:
+            timebaseDef = supervisorNode.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
+        except:
+            raise Exception('Missing Thread timebase for thread in supervisor '+self.getPath())
+        return timebaseDef
 
         #return threadMap dictionary
         # threadMap is a Dictionary with two keys:
@@ -217,9 +246,14 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         threadMap = {}
         threadInfo = {}
         deviceInfo = {}
+        print('GET THERAD MAP')
         supervisors = self.getSupervisorNodes()
+        print('SUPERVISORS')
+        print(supervisors)
         supervisors.append(self)
         for supervisorNode in supervisors:
+            print('CHECK')
+            print(supervisorNode)
             try: 
                 supervisorIp = supervisorNode.getNode('IP_ADDRESS').data()
             except:
@@ -259,6 +293,9 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     } 
                     deviceInfo[deviceNid] = supervInfo
 
+        print('\nDEVICE INFO')
+        print(deviceInfo)
+        print('*****************************')
         threadMap['DeviceInfo'] = deviceInfo
             
         for threadIdx in range(numThreads):
@@ -282,13 +319,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         'SyncThreadSupervisor': None,
                         'SyncDiv': None,
                     }
-            else: #derived
-                try:
-                    refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
-                    refThreadIdx = refTimebaseNode.data()
-                    timebaseDef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
-                except:
-                    raise Exception('Missing Thread timebase for thread '+threadName+ ' in supervisor '+self.getPath())
+            else:
+                timebaseDef = self.getExtTimebaseRef(timebaseMode, stateIdx, threadIdx)
                 if not isinstance(timebaseDef, MDSplus.TreeNode):
                     raise Exception('Invalid thread reference for thread '+threadName+ ' in supervisor '+self.getPath())
                 supervisorNode = timebaseDef.getParent().getParent().getParent()
@@ -446,13 +478,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             retInfo['Gams'] = []
             return retInfo
 
-        if timebaseMode == 'DERIVED':
-            try:
-                refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
-                refThreadIdx = refTimebaseNode.data()
-                refTimebaseDef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
-            except:
-                raise Exception('Cannot retrieve thread timebase for thread '+threadName+' supervisor '+self.getPath())
+        if timebaseMode == 'DERIVED' or timebaseMode == 'EXT_DERIVED':
+            refTimebaseDef = self.getExtTimebaseRef(timebaseMode, stateIdx, threadIdx)
             if not isinstance(refTimebaseDef, MDSplus.TreeNode):
                 raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
             if not isinstance(refTimebaseDef.getParent().getParent().getParent(), MARTE2_SUPERVISOR):
@@ -467,6 +494,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 refThreadName = refTimebaseDef.getParent().getNode('NAME').data()
             except:
                 raise Exception('Cannot retrieve the name of the synchronizing thread r thread '+threadName+' supervisor '+self.getPath())
+            print(refTimebaseDef)
             timerType, timerPeriod = self.getSynchonizationTimeTypePeriod(refTimebaseDef)
             if refSupervisor.getNid() == self.getNid(): #Thread synchronized by another thread of the same supervisor
                 retDataSources.append({
@@ -497,16 +525,18 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 return retInfo
             else: #Synchronized on a thread from another supervisor
                 try: 
-                    port = refTimebaseDef.getParent().getNode('TIME_PORT').data()
+                    port = self.getNode('STATE_%d.THREAD_%d:TIME_PORT' % (stateIdx+1, threadIdx+1)).data()
                 except:
                     raise Exception('Cannot get port number for derived timebase in '+self.getPath())
                 
                 retDataSources.append({
                     'Name': threadName + '_SYNC_IN',
                     'Class': 'RTNIn',
-                    'Id' : refTimebaseNode.getNid(),
-                    'Port': port,
-                    'IsSync': 'yes',
+                    'Parameters': {
+                        'CircuitId' : self.getNid(),
+                        'Port': port,
+                        'IsSynch': 1,
+                    },
                     'Signals':[{
                         'Name': 'Time',
                         'Type': timerType
@@ -543,6 +573,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     def getReferencingSupervisorsInfo(self, timebaseDefNode, stateIdx):
         retIps = []
         retPorts = []
+        retCircuitIds = []
         extSupervisors = self.getSupervisorNodes()
         for extSupervisor in extSupervisors:
             try:
@@ -560,30 +591,31 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         extTimebaseMode = extSupervisor.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
                     except:
                         raise Exception('Invalid timebase mode for supervisor '+ extSupervisor.getPath())
-                    if extTimebaseMode == 'DERIVED':
-                        try:
-                            refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
-                            refThreadIdx = refTimebaseNode.data()
-                            extTimebaseRef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
-                        except:
-                            raise Exception('Missing external reference for drived timebase mode in '+ extSupervisor.getPath())
+                    if extTimebaseMode == 'DERIVED' or extTimebaseMode == 'EXT_DERIVED':
+                        extTimebaseRef = extSupervisor.getExtTimebaseRef(extTimebaseMode, stateIdx, threadIdx)
                         if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
                             try:
                                 threadPort = extSupervisor.getNode('STATE_%d.THREAD_%d:TIME_PORT' % (stateIdx+1, threadIdx+1)).data()
                             except:
-                                raise Exception('Missing port for drived timebase mode in '+ extSupervisor.getPath())
+                                raise Exception('Missing port for derived timebase mode in '+ extSupervisor.getPath())
                             retIps.append(supervisorIp)
                             retPorts.append(threadPort)
-        return retIps, retPorts
+                            retCircuitIds.append(extSupervisor.getNid())
+        return {
+            'Ips': retIps,
+            'Ports': retPorts,
+            'CircuitIds': retCircuitIds
+        }
 
     #Convert the passed lits into a MARTe array
-    def toMarteArray(list):
+    def toMarteArray(self, list):
         marteArr = '{'
         for l in list:
             marteArr += ' '+str(l)+' '
         marteArr += '}'
         return marteArr
 
+ 
     #Check if this thread is referenced by another thread of the same supervisor
     def isReferencedByAnotherThreadSameSupervisor(self, timebaseDefNode, stateIdx):
         try:
@@ -597,13 +629,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     extTimebaseMode = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_MOD' % (stateIdx+1, threadIdx+1)).data()
                 except:
                     raise Exception('Invalid timebase mode for supervisor '+ self.getPath())
-                if extTimebaseMode == 'DERIVED':
-                    try:
-                        refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
-                        refThreadIdx = refTimebaseNode.data()
-                        extTimebaseRef = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, refThreadIdx))
-                    except:
-                        raise Exception('Missing external reference for drived timebase mode in '+self.getPath())
+                if extTimebaseMode == 'DERIVED' or extTimebaseMode == 'EXT_DERIVED':
+                    extTimebaseRef = self.getExtTimebaseRef(extTimebaseMode, stateIdx, threadIdx)
                     if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
                         return True
         return False
@@ -639,17 +666,17 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     'DataSource': threadName+'_TimerSync'
                 }]
             })
-        ips, ports = self.getReferencingSupervisorsInfo(timebaseDefNode, stateIdx)
-        if len(ips) > 0:
+        retInfo = self.getReferencingSupervisorsInfo(timebaseDefNode, stateIdx)
+        if len(retInfo['Ips']) > 0:
             retDataSources.append({
-                'Name': threadName+'_RTN_OUT',
+                'Name': threadName+'RTN_OUT',
                 'Class': 'RTNOut',
                 'Signals':[{
                     'Name':'Time',
                     'Type': timerType,
-                    'Ips' : self.toMarteArray(ips),
-                    'Ports': self.toMarteArray(ports) ,
-                    'Id': timebaseDefNode.getNid()
+                    'Ip' : self.toMarteArray(retInfo['Ips']),
+                    'Port': self.toMarteArray(retInfo['Ports']) ,
+                    'CircuitId': self.toMarteArray(retInfo['CircuitIds'])
                 }]
             })
             retGams.append({

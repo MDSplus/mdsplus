@@ -94,19 +94,19 @@ public class MARTE2_PYTHON_PIDSetup extends DeviceSetup
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Seg. len (0 to disable writing)");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(43);
+        deviceField7.setOffsetNid(44);
         jPanel6.add(deviceField7);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Out CPUs:");
         deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(37);
+        deviceField9.setOffsetNid(38);
         jPanel6.add(deviceField9);
 
         deviceChoice1.setChoiceItems(new String[] {"int16", "int32", "float32", "float64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Output type: ");
-        deviceChoice1.setOffsetNid(40);
+        deviceChoice1.setOffsetNid(41);
         deviceChoice1.setUpdateIdentifier("");
         jPanel6.add(deviceChoice1);
 

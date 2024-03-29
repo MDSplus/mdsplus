@@ -367,6 +367,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         #       'SyncThreadSupervisor': The NID of the MARTE2 supervisor hosting the synchronizing thread or None if not synchronized
         #       'SyncDiv': Frequency division from synchronizing thread or None is not synchronized
   
+
         valueNid = self.getMarteDevice(value).getNid()
         if not valueNid in threadMap['DeviceInfo'].keys():
           raise Exception('Internal error: a device input may refer to the output of a device not considered for this state')
@@ -482,7 +483,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def parseDimension(self, dimensions):
         if np.isscalar(dimensions):
             if dimensions != 0:
-                raise Exception('Scalar value for dimensions can be only 0 '+dimensions)
+                raise Exception('Scalar value for dimensions can be only 0 '+str(dimensions) + '   in  '+self.getPath()) 
             numEls = 1
             numDims = 0
         else:
@@ -647,7 +648,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                         'Samples': subsamplingRatio*samples,
                                                         })
                             else: #Not subsampled
-                                currSig['DataSource'] = self.getMarteDeviceName(value)+'_SYNC_RTN_IN'
+                                currSig['DataSource'] = self.getMarteDeviceName(self)+'_SYNC_RTN_IN'
                         else: #not synchronous
                             asyncInputsToBeReceived.append({'Name':currSig['Name'], 
                                     'DataSource': self.getMarteDeviceName(value)+'_Output_Sync',
@@ -657,7 +658,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                     'Alias' : currSig['Alias'],
                                     'Samples': samples,
                                     })
-                            currSig['DataSource'] = self.getMarteDeviceName(value)+'_ASYNC_RTN_IN'
+                            currSig['DataSource'] = self.getMarteDeviceName(self)+'_ASYNC_RTN_IN'
             else: #Not a reference to the output of a MARTe2 device
                 try:
                     currInput = value.evaluate()
@@ -758,12 +759,16 @@ class MARTE2_COMPONENT(MDSplus.Device):
             raise Exception('Missing Port definition for device '+ self.getPath())
         retData['Class'] = 'RTNIn'
         if isSync:
-            retData['Parameters'] = {'IsSync':'Yes', 'Circuit': self.getNid(), 'Port':port}
+            retData['Parameters'] = {'IsSynch':1, 'CircuitId': self.getNid(), 'Port':port}
         else:
-            retData['Parameters'] = {'IsSync':'No', 'Circuit': self.getNid(), 'Port':port}
+            retData['Parameters'] = {'IsSynch':0, 'CircuitId': self.getNid(), 'Port':port}
         signals = []
         for syncInput in inputs:
-            signals.append(syncInput)
+            currInput = copy.deepcopy(syncInput)
+            currInput['Name'] = currInput['Alias']
+            currInput.pop('Alias')
+            currInput.pop('DataSource')
+            signals.append(currInput)
         retData['Signals'] = signals
         return retData
 
@@ -917,12 +922,13 @@ class MARTE2_COMPONENT(MDSplus.Device):
             if self.isReferencedByAnyThread(outValNode.getNode('VALUE'), threadMap):
                 return True
  
-    #get IP and Port of referenced device
+    #get IP, Port of referenced device and Nid (CircuitId)of target device
     def getReferencedNetInfo(self, outValNode, threadMap):
         outValNid = outValNode.getNid()
         netInfos = {}
         ips = []
         ports = []
+        circuitIds = []
         thisNid = self.getNid()
         marteNids = threadMap['DeviceInfo'].keys()
         for marteNid in marteNids:
@@ -937,12 +943,15 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
                     ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
                     ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
+                    circuitIds.append(marteDevice.getNid())
             if mode != MARTE2_COMPONENT.MODE_OUTPUT and self.isReferenced(outValNode, [marteDevice.getNode('OUTPUTS:TRIGGER')]):
                 if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
                     ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
                     ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
-        netInfos['Ips'] = ips
-        netInfos['Ports'] = ports
+                    circuitIds.append(marteDevice.getNid())
+        netInfos['Ip'] = ips
+        netInfos['Port'] = ports
+        netInfos['CircuitId'] = circuitIds
         return netInfos
 
  
@@ -1030,7 +1039,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         return False
 
         #Convert the passed list into a MARTe array
-    def toMarteArray(list):
+    def toMarteArray(self, list):
         marteArr = '{'
         for l in list:
             marteArr += ' '+str(l)+' '
@@ -1116,11 +1125,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     'DataSource': currDataSource,
                 })
             netInfos = self.getReferencedNetInfo(outValNode, threadMap)
-            if len(netInfos['Ips']) > 0:
+            if len(netInfos['Ip']) > 0:
                 if isFieldCheck:
                     dataSource = self.getMarteDeviceName(sigNode)+'_Expanded_Output_DDB'
                 else:
-                    dataSource = self.getMarteDeviceName(sigNode)+'_Output_DDB',
+                    dataSource = self.getMarteDeviceName(sigNode)+'_Output_DDB'
+                
+                print('DATA SOURCE')
+                print(dataSource)
                 outputsToBeSent.append({
                     'Name': currSig['Name'],
                     'Type': currSig['Type'],
@@ -1128,9 +1140,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     'NumberOfElements': currSig['NumberOfElements'],
                     'Samples': currSig['Samples'],
                     'DataSource': dataSource,
-                    'Ips': self.toMarteArray(netInfos['Ips']),
-                    'Ports': self.toMarteArray(netInfos['Ports']),
-                    'Id': self.getNid()
+                    'Ip': self.toMarteArray(netInfos['Ip']),
+                    'Port': self.toMarteArray(netInfos['Port']),
+                    'CircuitId': self.toMarteArray(netInfos['CircuitId'])
                 }) 
             try:
                 segLen = sigNode.getNode('SEG_LEN').data()
@@ -1150,6 +1162,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currSig['Parameters'] = self.getParametersDict(sigNode.getNode('PARAMETERS'))
             
             sigDicts.append(currSig)
+
+            print('CICCIO')
+            print(outputsToBeSent)
         return sigDicts
     
     #Returns the dict definition of theIOGAM carrying out signal unpacking
@@ -1365,7 +1380,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
 
     #Return the definitions of RTNOut DataSource and IOGAM for handling data sending to other supervisors
-    def handleOuptutsToBeSent(self, outputsToBeSent):
+    def handleOutputsToBeSent(self, outputsToBeSent):
+        print('HANDLE OUTPUTS TO BE SENT')
+        print(outputsToBeSent)
         retDataSource = {}
         retDataSource['Class'] = 'RTNOut'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_RTN_OUT'
@@ -1379,7 +1396,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 'Samples': currOutput['Samples'],
                 'Ip': currOutput['Ip'],
                 'Port': currOutput['Port'],
-                'Id': currOutput['Nid'],
+                'CircuitId': currOutput['CircuitId'],
             })
         retDataSource['Signals'] = signals
 
@@ -1523,7 +1540,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             retGams.append(storeGam)
         #Handle Output network send for signals
         if len(outputsToBeSent) > 0:
-            sendDataSource, sendGam = self.handleOuptutsToBeSent(outputsToBeSent)
+            sendDataSource, sendGam = self.handleOutputsToBeSent(outputsToBeSent)
             retDataSources.append(sendDataSource)
             retGams.append(sendGam)
             
@@ -1622,7 +1639,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             retGams.append(storeGam)
         #Handle Output network send for signals
         if len(outputsToBeSent) > 0:
-            sendDataSource, sendGam = self.handleOuptutsToBeSent(outputsToBeSent)
+            sendDataSource, sendGam = self.handleOutputsToBeSent(outputsToBeSent)
             retDataSources.append(sendDataSource)
             retGams.append(sendGam)
             
