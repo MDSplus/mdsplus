@@ -109,7 +109,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. len (0 to disable writing)"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="43"/>
+                    <Property name="offsetNid" type="int" value="44"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField9">
@@ -117,7 +117,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Out CPUs:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="37"/>
+                    <Property name="offsetNid" type="int" value="38"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice1">
@@ -132,7 +132,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output type: "/>
-                    <Property name="offsetNid" type="int" value="40"/>
+                    <Property name="offsetNid" type="int" value="41"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>

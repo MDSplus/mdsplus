@@ -378,7 +378,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel7.add(jPanel8);
 
-        deviceChoice1.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice1.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Timebase Mode: ");
         deviceChoice1.setOffsetNid(14);
@@ -443,7 +443,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel111.add(jPanel112);
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Timebase Mode: ");
         deviceChoice2.setOffsetNid(22);
@@ -508,7 +508,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel115.add(jPanel116);
 
-        deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Timebase Mode: ");
         deviceChoice3.setOffsetNid(30);
@@ -573,7 +573,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel119.add(jPanel120);
 
-        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Timebase Mode: ");
         deviceChoice4.setOffsetNid(38);
@@ -638,7 +638,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel123.add(jPanel124);
 
-        deviceChoice5.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice5.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Timebase Mode: ");
         deviceChoice5.setOffsetNid(46);
@@ -703,7 +703,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel127.add(jPanel128);
 
-        deviceChoice6.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice6.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Timebase Mode: ");
         deviceChoice6.setOffsetNid(54);
@@ -768,7 +768,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel131.add(jPanel132);
 
-        deviceChoice7.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice7.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Timebase Mode: ");
         deviceChoice7.setOffsetNid(62);
@@ -833,7 +833,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel135.add(jPanel136);
 
-        deviceChoice8.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice8.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Timebase Mode: ");
         deviceChoice8.setOffsetNid(70);
@@ -918,7 +918,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel141.add(jPanel142);
 
-        deviceChoice9.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice9.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Timebase Mode: ");
         deviceChoice9.setOffsetNid(97);
@@ -983,7 +983,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel173.add(jPanel174);
 
-        deviceChoice17.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice17.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Timebase Mode: ");
         deviceChoice17.setOffsetNid(105);
@@ -1048,7 +1048,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel177.add(jPanel178);
 
-        deviceChoice18.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice18.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Timebase Mode: ");
         deviceChoice18.setOffsetNid(113);
@@ -1113,7 +1113,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel181.add(jPanel182);
 
-        deviceChoice19.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice19.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Timebase Mode: ");
         deviceChoice19.setOffsetNid(121);
@@ -1178,7 +1178,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel185.add(jPanel186);
 
-        deviceChoice20.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice20.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Timebase Mode: ");
         deviceChoice20.setOffsetNid(129);
@@ -1243,7 +1243,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel189.add(jPanel190);
 
-        deviceChoice21.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice21.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Timebase Mode: ");
         deviceChoice21.setOffsetNid(137);
@@ -1308,7 +1308,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel193.add(jPanel194);
 
-        deviceChoice22.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice22.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Timebase Mode: ");
         deviceChoice22.setOffsetNid(145);
@@ -1373,7 +1373,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jPanel197.add(jPanel198);
 
-        deviceChoice23.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED"});
+        deviceChoice23.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "DERIVED", "EXT_DERIVED"});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("Timebase Mode: ");
         deviceChoice23.setOffsetNid(153);
