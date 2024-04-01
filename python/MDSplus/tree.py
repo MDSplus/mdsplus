@@ -2305,6 +2305,12 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         return dim.value
 
     def getSegmentLimits(self, idx):
+        """Return the start and end times of a given segment
+        @param idx: The index of the segment to query. Indexes start with 0.
+        @type idx: int
+        @return: A Tuple of (startTime, endTime)
+        @rtype: Tuple(Data, Data)
+        """
         start = _dsc.DescriptorXD()._setTree(self.tree)
         end = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
@@ -2318,14 +2324,20 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         if start is not None or end is not None:
             return (start, end)
 
-    def getSegmentList(self, start, end):
-        start, end = map(_dat.Data, (start, end))
+    def getSegmentList(self, startTime, endTime):
+        """Return a signal composed of the segments from startTime to endTime
+        @param startTime: The start of the time range of segments to return
+        @param endTime: The end of the time range of segments to return
+        @return: Segment dimension
+        @rtype: Signal
+        """
+        startTime, endTime = map(_dat.Data, (startTime, endTime))
         xd = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
-                                           _dat.Data.byref(start),
-                                           _dat.Data.byref(end),
+                                           _dat.Data.byref(startTime),
+                                           _dat.Data.byref(endTime),
                                            xd.ref))
         return xd.value
 
