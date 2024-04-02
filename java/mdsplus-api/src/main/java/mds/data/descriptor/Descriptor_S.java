@@ -43,17 +43,17 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 			return new Int64(b);
 		case O:
 			return new Int128(b);
-		case F:
+		case F: // 1F0
             return (Float32)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Float32(b));
-		case FS:
+		case FS: // 1E0
 			return new Float32(b);
 		case FC:
             return (Complex32)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Complex32(b));
 		case FSC:
 			return new Complex32(b);
-		case D:
-		case G:
-		case H:
+		case D: // 1V0
+		case G: // 1G0
+		case H: // /*bad*/
             return (Float64)Mds.getLocal().getDescriptor("FT_FLOAT($)", new Float64(b));
 		case FT:
 			return new Float64(b);
