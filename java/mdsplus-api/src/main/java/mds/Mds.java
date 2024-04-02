@@ -85,7 +85,7 @@ public abstract class Mds implements AutoCloseable
 	public static final Pattern dollar = Pattern.compile("\\$[0-9]*(?=[^a-zA-Z]|$)");
 	protected static final int MAX_NUM_EVENTS = 256;
 	private static Mds active;
-	private static MdsIp shared_tunnel = null;
+	private static Mds shared_tunnel = null;
 
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
@@ -118,13 +118,13 @@ public abstract class Mds implements AutoCloseable
 		return Mds.active;
 	}
 
-	public final static MdsIp getLocal()
+	public final static Mds getLocal()
 	{
 		if (Mds.shared_tunnel == null)
 			Mds.shared_tunnel = new MdsIp();
 		if (Mds.shared_tunnel.isReady() == null)
 			return Mds.shared_tunnel;
-		return null;
+		return active;
 	}
 
 	protected transient HashSet<TransferEventListener> translisteners = new HashSet<>();
