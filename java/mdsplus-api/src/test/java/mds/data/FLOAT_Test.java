@@ -1,5 +1,6 @@
 package mds.data;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -8,6 +9,7 @@ import org.junit.*;
 import mds.AllTests;
 import mds.Mds;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_a.*;
 import mds.data.descriptor_r.function.CAST;
 import mds.data.descriptor_s.*;
 
@@ -30,11 +32,23 @@ public class FLOAT_Test
 		AllTests.tearDownAfterClass(FLOAT_Test.mds);
 	}
 
-	private void check(byte[] serial, String expr, DTYPE dtype_in, DTYPE dtype_out) throws Exception
+	private void check(byte[] serial, String expr, DTYPE dtype_in, DTYPE dtype_out, boolean is_array) throws Exception
 	{
 		ByteBuffer b = ByteBuffer.wrap(serial).order(ByteOrder.LITTLE_ENDIAN);
-		FLOAT<?> data = (dtype_out == DTYPE.FS) ? new Float32(b) : new Float64(b);
-		CAST cast = (dtype_out == DTYPE.FS) ? new CAST.FS_Float(data) : new CAST.FT_Float(data);
+		Descriptor<?> data;
+		CAST cast;
+		if (is_array)
+			expr = "[" + expr + "]";
+		if (dtype_out == DTYPE.FS)
+		{
+			data = is_array ? new Float32Array(b) : new Float32(b);
+			cast = new CAST.FS_Float(data);
+		}
+		else
+		{
+			data = is_array ? new Float64Array(b) : new Float64(b);
+			cast = new CAST.FT_Float(data);
+		}
 		Assert.assertEquals(data.dtype(), dtype_in);
 		Assert.assertEquals(expr, data.decompile());
 		Descriptor<?> casted = mds.getDescriptor("$", cast);
@@ -44,28 +58,45 @@ public class FLOAT_Test
 		Assert.assertEquals(expected, read.toDouble(), delta);
 	}
 
+	private void check(byte[] raw, String expr, DTYPE dtype_in, DTYPE dtype_out) throws Exception
+	{
+		final byte[] scalar =
+		{ -1, 0, -2, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		final byte[] array =
+		{ -1, 0, -2, 4, 16, 0, 0, 0, 0, 0, 48, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		scalar[0] = (byte) raw.length;
+		scalar[2] = dtype_in.toByte();
+		System.arraycopy(raw, 0, scalar, 8, raw.length);
+		array[0] = array[12] = (byte) raw.length;
+		array[2] = dtype_in.toByte();
+		System.arraycopy(raw, 0, array, 16, raw.length);
+		check(scalar, expr, dtype_in, dtype_out, false);
+		check(array, expr, dtype_in, dtype_out, true);
+	}
+
+
 	@Test
 	public void f_float() throws Exception
 	{
-		final byte[] serial = // SIGNED(serializeout(1.234F0))
-		{ 4, 0, 10, 1, 8, 0, 0, 0, -99, 64, -74, -13 };
-		check(serial, "1.234F0", DTYPE.F, DTYPE.FS);
+		final byte[] raw = // SIGNED(serializeout(1.234F0))
+		{ -99, 64, -74, -13 };
+		check(raw, "1.234F0", DTYPE.F, DTYPE.FS);
 	}
 
 	@Test
 	public void d_float() throws Exception
 	{
-		final byte[] serial = // SIGNED(serializeout(1.234V0))
-		{ 8, 0, 11, 1, 8, 0, 0, 0, -99, 64, -74, -13, -95, 69, -64, -54 };
-		check(serial, "1.234V0", DTYPE.D, DTYPE.FT);
+		final byte[] raw = // SIGNED(serializeout(1.234V0))
+		{ -99, 64, -74, -13, -95, 69, -64, -54 };
+		check(raw, "1.234V0", DTYPE.D, DTYPE.FT);
 	}
 
 	@Test
 	public void g_float() throws Exception
 	{
-		final byte[] serial = // SIGNED(serializeout(1.234D0))
-		{ 8, 0, 27, 1, 8, 0, 0, 0, 19, 64, 118, -66, -76, -56, 88, 57 };
-		check(serial, "1.234G0", DTYPE.G, DTYPE.FT);
+		final byte[] raw = // SIGNED(serializeout(1.234D0))
+		{ 19, 64, 118, -66, -76, -56, 88, 57 };
+		check(raw, "1.234G0", DTYPE.G, DTYPE.FT);
 	}
 
 	@Before
