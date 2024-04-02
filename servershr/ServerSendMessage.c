@@ -393,13 +393,14 @@ static void receiver_thread(void *sockptr)
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   int rep;
+  int num = 0;
   struct timeval readto, timeout = {10, 0};
   for (rep = 0; rep < 10; rep++)
   {
     for (readfds = fdactive, readto = timeout;;
          readfds = fdactive, readto = timeout, rep = 0)
     {
-      int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
+      num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
       if (num < 0)
         break;
       if (num == 0)
