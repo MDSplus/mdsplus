@@ -1131,8 +1131,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else:
                     dataSource = self.getMarteDeviceName(sigNode)+'_Output_DDB'
                 
-                print('DATA SOURCE')
-                print(dataSource)
                 outputsToBeSent.append({
                     'Name': currSig['Name'],
                     'Type': currSig['Type'],
@@ -1162,9 +1160,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currSig['Parameters'] = self.getParametersDict(sigNode.getNode('PARAMETERS'))
             
             sigDicts.append(currSig)
-
-            print('CICCIO')
-            print(outputsToBeSent)
         return sigDicts
     
     #Returns the dict definition of theIOGAM carrying out signal unpacking
@@ -1236,6 +1231,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Return the definitions of MDSWriter DataSource and ConversionGAM GAM for handling the stored outputs
     def handleOutputsStorage(self, signalsToBeStored, threadMap):
+        print('\n\nOUTPUTS TO BE STORED')
+        print(signalsToBeStored)
+        print('\n\n')
         retDataSource = {}
         retDataSource['Class'] = 'MDSWriter'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_TreeOut'
@@ -1292,8 +1290,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data()
             })
         for sigNode in signalsToBeStored:
+            sigName = self.getSignalName(sigNode)
+            if sigName == 'Time':   #Time signal has been already stored
+                continue
             sigDef = {}
-            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Name'] = sigName
             sigDef['Period'] = str(self.timerPeriod / numSamples).replace('D', 'E')
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
@@ -1327,8 +1328,15 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         inputs.append({'Name': 'Time', 'Type': self.timerType, 'DataSource': self.timerDDB})
         for sigNode in signalsToBeStored:
+            try:
+                samples = sigNode.getNode('Samples').data()
+            except:
+                samples = 1
+            sigName = self.getSignalName(sigNode)
+            if sigName == 'Time':
+                continue
             sigDef = {}
-            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Name'] = sigName
             sigDef['Type'] = sigNode.getNode('Type').data()
 
             if sigNode.getParent().getName() == 'FIELDS': #If it is an expanded signal
@@ -1338,11 +1346,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
 #            sigDef['NumberOfDimensions'] = numDims
 #            sigDef['NumberOfElements'] = numEls
-            try:
-                samples = sigNode.getNode('Samples').data()
-            except:
-                samples = 1
-#            if samples > 1:
+ #            if samples > 1:
 #                sigDef['Samples'] = samples
             inputs.append(sigDef)
         retGam['Inputs'] = inputs
@@ -1360,8 +1364,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Samples': samples
             })
         for sigNode in signalsToBeStored:
+            sigName = self.getSignalName(sigNode)
+            if sigName == 'Time':
+                continue
             sigDef = {}
-            sigDef['Name'] = self.getSignalName(sigNode)
+            sigDef['Name'] = sigName
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
@@ -1381,8 +1388,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Return the definitions of RTNOut DataSource and IOGAM for handling data sending to other supervisors
     def handleOutputsToBeSent(self, outputsToBeSent):
-        print('HANDLE OUTPUTS TO BE SENT')
-        print(outputsToBeSent)
         retDataSource = {}
         retDataSource['Class'] = 'RTNOut'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_RTN_OUT'
