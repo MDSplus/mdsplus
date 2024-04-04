@@ -539,8 +539,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     },
                     'Signals':[{
                         'Name': 'Time',
-                        'Type': timerType
-                    }]
+                        'Type': timerType,
+                     }]
                 })
                 retDataSources.append({
                     'Name': threadName+'_TimerDDB',
@@ -558,12 +558,13 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     'Outputs': [{
                         'Name': 'Time',
                         'Type': timerType,
-                        'DataSource':  threadName+'_TimerDDB'
+                        'DataSource':  threadName+'_TimerDDB',
+                        'Samples': 1
                      }] 
                 })
                 retInfo['TimerDDB'] = threadName+'_TimerDDB'
                 retInfo['TimerType'] = timerType
-                retInfo['TimerPeriod'] = timerPeriod / syncDiv
+                retInfo['TimerPeriod'] = timerPeriod * syncDiv
                 retInfo['DataSources'] = retDataSources
                 retInfo['Gams'] = retGams
                 return retInfo

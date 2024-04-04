@@ -175,7 +175,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MDS write trigger:"/>
                 <Property name="numCols" type="int" value="30"/>
-                <Property name="offsetNid" type="int" value="123"/>
+                <Property name="offsetNid" type="int" value="131"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField78">
@@ -183,7 +183,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Post trig. Samples: "/>
                 <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="125"/>
+                <Property name="offsetNid" type="int" value="133"/>
               </Properties>
             </Component>
           </SubComponents>
