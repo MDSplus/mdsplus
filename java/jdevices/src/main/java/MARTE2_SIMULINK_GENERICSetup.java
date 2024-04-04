@@ -108,13 +108,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField77.setIdentifier("");
         deviceField77.setLabelString("MDS write trigger:");
         deviceField77.setNumCols(30);
-        deviceField77.setOffsetNid(123);
+        deviceField77.setOffsetNid(131);
         jPanel47.add(deviceField77);
 
         deviceField78.setIdentifier("");
         deviceField78.setLabelString("Post trig. Samples: ");
         deviceField78.setNumCols(6);
-        deviceField78.setOffsetNid(125);
+        deviceField78.setOffsetNid(133);
         jPanel47.add(deviceField78);
 
         jPanel1.add(jPanel47);

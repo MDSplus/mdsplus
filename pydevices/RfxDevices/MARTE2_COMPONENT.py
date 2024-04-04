@@ -628,19 +628,20 @@ class MARTE2_COMPONENT(MDSplus.Device):
                             currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_Async'
                     else: #Reference from another supervisor
                         if self.hostedInSynchronizingThread(value, threadMap):
+                            subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             syncInputsToBeReceived.append({'Name':currSig['Name'], 
                                                       'DataSource': self.getMarteDeviceName(value)+'_Output_Sync',
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
                                                       'Alias' : currSig['Alias'],
-                                                      'Samples': samples,
+                                                      'Samples': subsamplingRatio * samples,
                                                       })
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             if subsamplingRatio > 1:
                                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
                                 resampledSyncSigs.append({'Name':currSig['Name'], 
-                                                        'DataSource': self.getMarteDeviceName(value)+'_SYNC_RTN_IN',
+                                                        'DataSource': self.getMarteDeviceName(self)+'_RTN_IN_DDB',
                                                         'Type': currSig['Type'],
                                                         'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                         'NumberOfElements' : currSig['NumberOfElements'],
@@ -648,7 +649,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                         'Samples': subsamplingRatio*samples,
                                                         })
                             else: #Not subsampled
-                                currSig['DataSource'] = self.getMarteDeviceName(self)+'_SYNC_RTN_IN'
+                                currSig['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
                         else: #not synchronous
                             asyncInputsToBeReceived.append({'Name':currSig['Name'], 
                                     'DataSource': self.getMarteDeviceName(value)+'_Output_Sync',
@@ -658,7 +659,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                     'Alias' : currSig['Alias'],
                                     'Samples': samples,
                                     })
-                            currSig['DataSource'] = self.getMarteDeviceName(self)+'_ASYNC_RTN_IN'
+                            currSig['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
             else: #Not a reference to the output of a MARTe2 device
                 try:
                     currInput = value.evaluate()
@@ -724,7 +725,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                     if subsamplingRatio > 1:
                         resampledSyncSigs.append({'Name':'OutputTrigger', 
-                                                'DataSource': self.getMarteDeviceName(value)+'_SYNC_RTN_IN',
+                                                'DataSource': self.getMarteDeviceName(value)+'_RTN_IN_DDB',
                                                 'Type': self.getReferencedType(value),
                                                 'NumberOfDimensions': 0,
                                                 'NumberOfElements' : 1,
@@ -747,6 +748,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                           
     #Return DataSource definition (dictionary) handling the inputs to be received form other supervisors
     def handleInputsToBeReceived(self, inputs, isSync):
+        retDataSources = []
+        retGams = []
         retData = {}
         if isSync:
             retData['Name'] = self.getMarteDeviceName(self)+'_SYNC_RTN_IN'
@@ -768,9 +771,36 @@ class MARTE2_COMPONENT(MDSplus.Device):
             currInput['Name'] = currInput['Alias']
             currInput.pop('Alias')
             currInput.pop('DataSource')
+            currInput.pop('Samples')
             signals.append(currInput)
         retData['Signals'] = signals
-        return retData
+        retDataSources.append(retData)
+        retDataSources.append({
+            'Name': self.getMarteDeviceName(self)+'_RTN_IN_DDB',
+            'Class': 'GAMDataSource'
+        })
+        retGam = {}
+        retGam['Name'] = self.getMarteDeviceName(self)+'_RTN_IN_IOGAM'
+        retGam['Class'] = 'IOGAM'
+        gamInputs = []
+        for syncInput in inputs:
+            currInput = copy.deepcopy(syncInput)
+            currInput['DataSource'] = retData['Name']
+            gamInputs.append(currInput)
+        retGam['Inputs'] = gamInputs
+        gamOutputs = []
+        for syncInput in inputs:
+            currOutput = copy.deepcopy(syncInput)
+ #           currOutput['Name'] = currInput['Alias']
+ #           currOutput.pop('Alias')
+            currOutput['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
+            gamOutputs.append(currOutput)
+        retGam['Outputs'] = gamOutputs
+        retGams.append(retGam)
+        return {
+            'DataSources': retDataSources,
+            'Gams': retGams
+        }
 
     #Build PickSampleGAM instance required to handle resampling
     def handleResampledSyncSigs(self, resampledSyncSigs):
@@ -1286,7 +1316,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'NodeName': self.getNode('OUTPUTS:OUT_TIME').getFullPath(),
             'AutomaticSegmentation': 0,
             'TimeSignal': 1,
-            'Period': str(self.timerPeriod / numSamples).replace('D', 'E'),
+            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data()
             })
         for sigNode in signalsToBeStored:
@@ -1295,7 +1325,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
-            sigDef['Period'] = str(self.timerPeriod / numSamples).replace('D', 'E')
+            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
@@ -1321,9 +1351,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_Output_Async'
             else: #Hosted in another supervisor
                 if self.hostedInSynchronizingThread(trigger, threadMap):
-                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_SYNC_RTN_IN'
+                    currInput['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
                 else:
-                    currInput['DataSource'] = self.getMarteDeviceName(trigger)+'_ASYNC_RTN_IN'
+                    currInput['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
             inputs.append(currInput)
 
         inputs.append({'Name': 'Time', 'Type': self.timerType, 'DataSource': self.timerDDB})
@@ -1481,11 +1511,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         #Handle reception of input signals from devices belonging to a different supervisor
         if len(syncInputsToBeReceived) > 0:
-            rtnInDataSource = self.handleInputsToBeReceived(syncInputsToBeReceived, isSync = True)
-            retDataSources.append(rtnInDataSource)
+            rtnInInfo = self.handleInputsToBeReceived(syncInputsToBeReceived, isSync = True)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
         if len(asyncInputsToBeReceived) > 0:
-            rtnInDataSource = self.handleInputsToBeReceived(asyncInputsToBeReceived, isSync = False)
-            retDataSources.append(rtnInDataSource)
+            rtnInInfo = self.handleInputsToBeReceived(asyncInputsToBeReceived, isSync = False)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
+
             
         #Handle resampling of Input Signals
         if len(resampledSyncSigs) > 0:
@@ -1712,11 +1745,13 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         #Handle reception of input signals from devices belonging to a different supervisor
         if len(syncInputsToBeReceived) > 0:
-            rtnInDataSource = self.handleInputsToBeReceived(syncInputsToBeReceived, isSync = True)
-            retDataSources.append(rtnInDataSource)
+            rtnInInfo = self.handleInputsToBeReceived(syncInputsToBeReceived, isSync = True)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
         if len(asyncInputsToBeReceived) > 0:
-            rtnInDataSource = self.handleInputsToBeReceived(asyncInputsToBeReceived, isSync = False)
-            retDataSources.append(rtnInDataSource)
+            rtnInInfo = self.handleInputsToBeReceived(asyncInputsToBeReceived, isSync = False)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
             
         #Handle resampling of Input Signals
         if len(resampledSyncSigs) > 0:
