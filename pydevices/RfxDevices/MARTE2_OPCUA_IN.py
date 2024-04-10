@@ -134,7 +134,7 @@ class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
         {'name': 'Authentication', 'type': 'string', 'value': 'None'},
         {'name': 'ReadMode', 'type': 'string', 'value': 'Read'},
         {'name': 'SamplingTime', 'type': 'int32', 'value': 300},
-        {'name': 'Synchronize', 'type': 'string', 'value': 'no'},
+        {'name': 'Synchronise', 'type': 'string', 'value': 'yes'},
         {'name': 'CpuMask', 'type': 'int32', 'value': 255},
         {'name': 'StackSize', 'type': 'int32', 'value': 10000000},
         {'name': 'Traverse', 'type': 'int32', 'value': 0},

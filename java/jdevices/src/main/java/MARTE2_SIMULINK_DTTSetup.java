@@ -29,6 +29,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
+        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
@@ -49,6 +50,12 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceField3.setNumCols(4);
         deviceField3.setOffsetNid(145);
         jPanel2.add(deviceField3);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Port: ");
+        deviceField1.setNumCols(6);
+        deviceField1.setOffsetNid(309);
+        jPanel2.add(deviceField1);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -81,6 +88,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceField deviceField1;
     private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;

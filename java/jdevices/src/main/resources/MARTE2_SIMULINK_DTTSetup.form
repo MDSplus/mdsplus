@@ -50,6 +50,14 @@
             <Property name="offsetNid" type="int" value="145"/>
           </Properties>
         </Component>
+        <Component class="DeviceField" name="deviceField1">
+          <Properties>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Port: "/>
+            <Property name="numCols" type="int" value="6"/>
+            <Property name="offsetNid" type="int" value="309"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
