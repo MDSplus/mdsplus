@@ -14,7 +14,7 @@ public class DeviceInputs extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int numInputs;
 	private JTextField valuesTF[], dimensionsTF[], fieldsTF[][], parametersTF[][];
-        private JComboBox typesCB[];
+        private JTextField typesTF[];
         private boolean parametersIsText[][];
 	private JLabel labels[];
         int numParameters[], numFields[];
@@ -46,7 +46,7 @@ public class DeviceInputs extends DeviceComponent
                 numInputs = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
             }catch(Exception exc){numInputs = 0;}
             valuesTF = new JTextField[numInputs];
-            typesCB = new JComboBox[numInputs];
+            typesTF = new JTextField[numInputs];
             dimensionsTF = new JTextField[numInputs];
             labels = new JLabel[numInputs];
             fieldsTF = new JTextField[numInputs][];
@@ -105,7 +105,7 @@ public class DeviceInputs extends DeviceComponent
                 jp2.add(new JLabel("Value:"));
                 jp2.add(valuesTF[i] = new JTextField(30));
                 jp2.add(new JLabel("Type:"));
-                jp2.add(typesCB[i] = new JComboBox(types));
+                jp2.add(typesTF[i] = new JTextField(10));
                 jp2.add(new JLabel("Dimensions:"));
                 jp2.add(dimensionsTF[i] = new JTextField(4));
                 for(int parIdx = 0; parIdx < numParameters[i]; parIdx++)
@@ -171,13 +171,13 @@ public class DeviceInputs extends DeviceComponent
                     valuesTF[inputIdx].setText("");
                 }
                 try {
-                    int typeIdx = stringToIdx(subtree.getDataExpr(currInputNid + 1).replace("\"", ""));
-                     typesCB[inputIdx].setSelectedIndex(typeIdx);
+                     String typeStr = subtree.getDataExpr(currInputNid + 1).replace("\"", "");
+                     typesTF[inputIdx].setText(typeStr);
                 }catch(Exception exc)
                 {
-                    typesCB[inputIdx].setSelectedIndex(-1);
+                    typesTF[inputIdx].setText("");
                 }
-               try {
+                try {
                      dimensionsTF[inputIdx].setText(subtree.getDataExpr(currInputNid + 2));
                 }catch(Exception exc)
                 {
@@ -229,7 +229,7 @@ public class DeviceInputs extends DeviceComponent
                     System.out.println("Error getting number of input children");
                 }
                 try {
-                     subtree.putDataExpr(currInputNid + 1, "\""+types[typesCB[inputIdx].getSelectedIndex()]+"\"");
+                     subtree.putDataExpr(currInputNid + 1, "\""+typesTF[inputIdx].getText()+"\"");
                 }catch(Exception exc)
                 {
                     JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);

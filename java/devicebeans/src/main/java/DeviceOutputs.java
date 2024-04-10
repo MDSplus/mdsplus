@@ -42,7 +42,7 @@ public class DeviceOutputs extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int numOutputs;
 	private JTextField segLensTF[], parametersTF[], dimensionsTF[];
-        private JComboBox typesCB[];
+        private JTextField typesTF[];
         private boolean parametersIsText[];
         private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
         private int numOutputChildren = 0;
@@ -107,7 +107,7 @@ public class DeviceOutputs extends DeviceComponent
                 numParItems += numPars;
                 currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
             }
-            typesCB = new JComboBox[numItems];
+            typesTF = new JTextField[numItems];
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
             parametersTF = new JTextField[numParItems];
@@ -154,7 +154,7 @@ public class DeviceOutputs extends DeviceComponent
                     jp1.add(dimensionsTF[currItem] = new JTextField(4));
                     dimensionNids[currItem] = currOutNid + 4;
                     jp1.add(new JLabel("Type: "));
-                    jp1.add(typesCB[currItem] = new JComboBox(types));
+                    jp1.add(typesTF[currItem] = new JTextField(10));
                     typeNids[currItem] = currOutNid + 2;
                     jp1.add(new JLabel("Segment len.: "));
                     jp1.add(segLensTF[currItem] = new JTextField(4));
@@ -210,10 +210,12 @@ public class DeviceOutputs extends DeviceComponent
                         JPanel jp1 = new JPanel();
                         jp1.setBorder(new TitledBorder(outName+'.'+fieldName));
                        // jp1.setLayout(new GridLayout(1,2));
-                        jp1.add(new JLabel("Dimensions: "));
+                        //jp1.add(new JLabel("Dimensions: "));
                         jp1.add(dimensionsTF[currItem] = new JTextField(4));
-                        jp1.add(new JLabel("Type: "));
-                        jp1.add(typesCB[currItem] = new JComboBox(types));
+                        dimensionsTF[currItem].setVisible(false);
+                        //jp1.add(new JLabel("Type: "));
+                        jp1.add(typesTF[currItem] = new JTextField(10));
+                        typesTF[currItem].setVisible(false);
                         jp1.add(new JLabel("Segment len.: "));
                         jp1.add(segLensTF[currItem] = new JTextField(4));
                         
@@ -253,16 +255,20 @@ public class DeviceOutputs extends DeviceComponent
                     segLensTF[idx].setText("");
                 }
                 try {
-                     dimensionsTF[idx].setText(subtree.getDataExpr(dimensionNids[idx]));
+                     if(dimensionsTF[idx].isVisible())
+                        dimensionsTF[idx].setText(subtree.getDataExpr(dimensionNids[idx]));
                 }catch(Exception exc)
                 {
                     dimensionsTF[idx].setText("");
                 }
                 try {
-                     typesCB[idx].setSelectedIndex(stringToIdx(subtree.getDataExpr(typeNids[idx]).replace("\"", "")));
+                     if(typesTF[idx].isVisible())
+                     {
+                        typesTF[idx].setText(subtree.getDataExpr(typeNids[idx]).replace("\"", ""));
+                     }
                 }catch(Exception exc)
                 {
-                    typesCB[idx].setSelectedIndex(-1);
+                    typesTF[idx].setText("");
                 }
             }
             for(int parIdx = 0; parIdx < numParItems; parIdx++)
@@ -293,14 +299,18 @@ public class DeviceOutputs extends DeviceComponent
             for(int idx = 0; idx < numItems; idx++)
             {
                 try {
-                    subtree.putDataExpr(dimensionNids[idx], dimensionsTF[idx].getText());
+                    if(dimensionsTF[idx].isVisible())
+                        subtree.putDataExpr(dimensionNids[idx], dimensionsTF[idx].getText());
                 }catch(Exception exc)
                 {
                     System.out.println("Error saving Dimensions");
                 }
                 try {
-                    int typeIdx = typesCB[idx].getSelectedIndex();
-                    subtree.putDataExpr(typeNids[idx], "\""+types[typeIdx]+"\"");
+                    if(typesTF[idx].isVisible())
+                    {
+                        String typeStr = typesTF[idx].getText();
+                        subtree.putDataExpr(typeNids[idx], "\""+typeStr+"\"");
+                    }
                 }catch(Exception exc)
                 {
                     System.out.println("Error saving Type");
