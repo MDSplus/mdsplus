@@ -725,7 +725,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                     if subsamplingRatio > 1:
                         resampledSyncSigs.append({'Name':'OutputTrigger', 
-                                                'DataSource': self.getMarteDeviceName(self)+'_RTN_IN_DDB',
+                                                'DataSource': self.getMarteDeviceName(value)+'_RTN_IN_DDB',
                                                 'Type': self.getReferencedType(value),
                                                 'NumberOfDimensions': 0,
                                                 'NumberOfElements' : 1,
