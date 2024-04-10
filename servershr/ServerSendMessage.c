@@ -62,6 +62,7 @@ int ServerSendMessage();
 #include <unistd.h>
 #endif
 
+// #define DEBUG
 #include <socket_port.h>
 #include <condition.h>
 #include <ipdesc.h>
@@ -73,7 +74,6 @@ int ServerSendMessage();
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 
-//#define DEBUG
 #include "Client.h"
 
 extern short ArgLen();
@@ -196,7 +196,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
   status = SendArg(conid, 0, DTYPE_CSTRING, 1, (short)(ccmd - cmd), 0, 0, cmd);
   if (STATUS_NOT_OK)
   {
-    MDSWRN("could not sending message to server");
+    MDSWRN("could not send message to server");
     Job_cleanup(status, jobid);
     return status;
   }
@@ -246,7 +246,7 @@ static SOCKET new_reply_socket(uint16_t *port_out)
     {
       char *dash;
       for (dash = range; *dash && *dash != '-'; dash++)
-        ;
+        continue;
       if (dash)
         *(dash++) = 0;
       start_port = (uint16_t)(strtol(range, NULL, 0) & 0xffff);
@@ -527,16 +527,24 @@ static inline int server_connect(char *server, uint32_t addr, uint16_t port)
 {
   int conid;
   LOCK_CLIENTS;
-  conid = ConnectToMds(server);
-  if (conid != INVALID_CONNECTION_ID)
+  Client *c = Client_get_by_addr_and_port_locked(addr, port);
+  if (c)
   {
-    Client *c = newClient(addr, port, conid);
-    MDSDBG(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
-    Client_push_locked(c);
+    conid = c->conid;
   }
   else
   {
-    MDSWRN("Could not connect to %s (" IPADDRPRI ":%d)", server, IPADDRVAR(&addr), port);
+    conid = ConnectToMds(server);
+    if (conid != INVALID_CONNECTION_ID)
+    {
+      c = newClient(addr, port, conid);
+      MDSDBG(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
+      Client_push_locked(c);
+    }
+    else
+    {
+      MDSWRN("Could not connect to %s (" IPADDRPRI ":%d)", server, IPADDRVAR(&addr), port);
+    }
   }
   UNLOCK_CLIENTS;
   return conid;
