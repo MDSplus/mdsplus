@@ -856,7 +856,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'PulseNumber': self.getTree().shot,
             'StoreOnTrigger': 0,
             'TimeRefresh': 5,
-            'EventName': 'UpdateTimes'
+            'EventName': 'UpdateTimes',
+            'DiscontinuityFactor': 10
         }
         retSignals = []
         retSignals.append({
