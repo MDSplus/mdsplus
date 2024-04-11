@@ -148,7 +148,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
     addr = *(uint32_t *)&addr_struct.sin_addr;
   if (!addr)
   {
-    MDSWRN("could not resolve address the socket is bound to");
+    MDSWRN("could not resolve address socket %d is bound to", sock);
     if (callback_done)
       callback_done(callback_param);
     return ServerSOCKET_ADDR_ERROR;
@@ -528,7 +528,7 @@ static inline int server_connect(char *server, uint32_t addr, uint16_t port)
   int conid;
   LOCK_CLIENTS;
   Client *c = Client_get_by_addr_and_port_locked(addr, port);
-  if (c)
+  if (c && get_socket_by_conid(c->conid) != INVALID_SOCKET)
   {
     conid = c->conid;
   }
@@ -537,9 +537,17 @@ static inline int server_connect(char *server, uint32_t addr, uint16_t port)
     conid = ConnectToMds(server);
     if (conid != INVALID_CONNECTION_ID)
     {
-      c = newClient(addr, port, conid);
-      MDSDBG(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
-      Client_push_locked(c);
+      if (c)
+      {
+        MDSDBG(CLIENT_PRI " re-connected to %s as %d", CLIENT_VAR(c), server, conid);
+        c->conid = conid;
+      }
+      else
+      {
+        c = newClient(addr, port, conid);
+        MDSDBG(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
+        Client_push_locked(c);
+      }
     }
     else
     {
@@ -593,7 +601,7 @@ static void accept_client(SOCKET reply_sock, struct sockaddr_in *sin, fd_set *fd
   else
   {
     MDSWRN("Dropped connection from " IPADDRPRI ":%d", IPADDRVAR(&addr), port);
-    shutdown(reply_sock, 2);
-    close(reply_sock);
+    shutdown(reply_sock, SHUT_RDWR);
+    closesocket(reply_sock);
   }
 }
