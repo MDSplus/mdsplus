@@ -857,7 +857,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'StoreOnTrigger': 0,
             'TimeRefresh': 5,
             'EventName': 'UpdateTimes',
-            'DiscontinuityFactor': 10
         }
         retSignals = []
         retSignals.append({
@@ -866,7 +865,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_cycle' % (stateIdx+1, threadIdx+1)).getFullPath(),
                 'Period': threadPeriod,
                 'MakeSegmentAfterNWrites': segLen,
-                'AutomaticSegmentation' : 0
+                'AutomaticSegmentation' : 0,
+                'DiscontinuityFactor': 10
             }
         })
         sigIdx = 1
@@ -876,7 +876,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_gam' % (stateIdx+1, threadIdx+1)+str(sigIdx)).getFullPath(),
                 'Period': threadPeriod,
                 'MakeSegmentAfterNWrites': segLen,
-                'AutomaticSegmentation' : 0
+                'AutomaticSegmentation' : 0,
+                'DiscontinuityFactor': 10
            })
 
         retDataSource['Signals'] = retSignals
