@@ -44,7 +44,7 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Write CPU Mask: ");
         deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(44);
+        deviceField3.setOffsetNid(51);
         jPanel1.add(deviceField3);
 
         deviceField1.setIdentifier("");
