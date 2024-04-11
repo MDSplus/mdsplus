@@ -47,7 +47,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
             <Property name="numCols" type="int" value="6"/>
-            <Property name="offsetNid" type="int" value="44"/>
+            <Property name="offsetNid" type="int" value="51"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField1">
