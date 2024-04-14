@@ -892,9 +892,10 @@ static int check_socket(SOCKET socket)
 }
 static SOCKET find_client(uint32_t addr, uint16_t port)
 {
+  ClientList **p;
   SOCKET sock = INVALID_SOCKET;
   pthread_mutex_lock(&ClientsMutex);
-  for (ClientList **p = &Clients; *p != NULL; p = &(*p)->next)
+  for (p = &Clients; *p != NULL; p = &(*p)->next)
   {
     if ((*p)->addr == addr && (*p)->port == port)
     {
@@ -919,9 +920,10 @@ static SOCKET find_client(uint32_t addr, uint16_t port)
 }
 static SOCKET remove_client(uint32_t addr, uint16_t port)
 {
+  ClientList **p;
   SOCKET sock = INVALID_SOCKET;
   pthread_mutex_lock(&ClientsMutex);
-  for (ClientList **p = &Clients; *p != NULL; p = &(*p)->next)
+  for (p = &Clients; *p != NULL; p = &(*p)->next)
   {
     if ((*p)->addr == addr && (*p)->port == port)
     {
