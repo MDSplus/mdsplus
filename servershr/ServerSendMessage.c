@@ -148,7 +148,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
     addr = *(uint32_t *)&addr_struct.sin_addr;
   if (!addr)
   {
-    MDSWRN("could not resolve address socket %d is bound to", sock);
+    MDSWRN("could not resolve address socket %" PRI_SOCKET " is bound to", sock);
     if (callback_done)
       callback_done(callback_param);
     return ServerSOCKET_ADDR_ERROR;

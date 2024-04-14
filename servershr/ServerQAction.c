@@ -872,7 +872,7 @@ static void add_client(uint32_t addr, uint16_t port, SOCKET sock)
   new->addr = addr;
   new->port = port;
   new->sock = sock;
-  MDSDBG("add socket %d for " IPADDRPRI ":%u", new->sock, IPADDRVAR(&new->addr), new->port);
+  MDSDBG("add socket %" PRI_SOCKET " for " IPADDRPRI ":%u", new->sock, IPADDRVAR(&new->addr), new->port);
   pthread_mutex_lock(&ClientsMutex);
   new->next = Clients;
   Clients = new;
@@ -902,13 +902,13 @@ static SOCKET find_client(uint32_t addr, uint16_t port)
       if (check_socket(l->sock))
       {
         sock = l->sock;
-        MDSDBG("reuse socket %d for " IPADDRPRI ":%u", sock, IPADDRVAR(&addr), port);
+        MDSDBG("reuse socket %" PRI_SOCKET " for " IPADDRPRI ":%u", sock, IPADDRVAR(&addr), port);
       }
       else
       {
         *p = l->next;
         close_socket(l->sock);
-        MDSDBG("cannot reuse socket %d for " IPADDRPRI ":%u?", l->sock, IPADDRVAR(&addr), port);
+        MDSDBG("cannot reuse socket %" PRI_SOCKET " for " IPADDRPRI ":%u?", l->sock, IPADDRVAR(&addr), port);
         free(l);
       }
       break;
@@ -946,7 +946,7 @@ static SOCKET setup_client(SrvJob *job)
     if (sock != INVALID_SOCKET)
     {
       add_client(addr, port, sock);
-      MDSMSG("setup connection %d " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+      MDSMSG("setup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
     }
   }
   return sock;
@@ -959,11 +959,11 @@ static void cleanup_client(SrvJob *job)
     close_socket(sock);
   if (STATIC_Debug)
   {
-    MDSMSG("cleanup connection %d " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+    MDSMSG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
   }
   else
   {
-    MDSDBG("cleanup connection %d " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+    MDSDBG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
   }
 }
 
