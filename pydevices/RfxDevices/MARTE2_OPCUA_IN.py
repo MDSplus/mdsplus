@@ -30,104 +30,11 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 @MC.BUILDER('OPCUADataSource::OPCUADSInput', MC.MARTE2_COMPONENT.MODE_INPUT)
 class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
-    outputs = [
-        {'name': 'Out1', 'type': 'int32', 'dimensions': 0, 'parameters': [
+    outputs = []
+    for idx in range(128):
+        outputs += [{'name': 'Out'+str(idx+1), 'type': 'int32', 'dimensions': -1, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out2', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out3', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out4', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out5', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out6', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out7', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out8', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out9', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out10', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out11', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out12', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out13', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out14', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out15', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out16', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out17', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out18', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out19', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out20', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out21', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out22', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out23', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out24', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out25', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out26', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out27', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out28', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out29', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out30', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out31', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-        {'name': 'Out32', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
-    ]
+            {'name': 'Path', 'type':'string', 'value': ''} ]}]
     print(outputs)
     parameters = [
         {'name': 'Address', 'type': 'string', 'value': ''},
