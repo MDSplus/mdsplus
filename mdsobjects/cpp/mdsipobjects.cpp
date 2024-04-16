@@ -549,7 +549,7 @@ void Connection::put(const char *inPath, Data *data)
     put(inPath, (char *)"$", &data, 1);
 }
 
-void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
+void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
 {
   char clazz, dtype, nDims;
   short length;
