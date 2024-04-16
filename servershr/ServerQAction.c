@@ -1006,7 +1006,6 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
     if (sock == INVALID_SOCKET)
     {
       MDSMSG(SVRJOB_PRI " break connection", SVRJOB_VAR(job));
-      cleanup_client(job);
       break;
     }
     int bytes = send_all(sock, reply, 60);
