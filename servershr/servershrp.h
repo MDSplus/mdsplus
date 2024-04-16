@@ -4,11 +4,13 @@
 #include <mdsdescrip.h>
 #ifdef _WIN32
 #include <time.h>
+#define PRI_SOCKET PRIdPTR
 #else
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
 extern void pthread_lock_global_np();
 extern void pthread_unlock_global_np();
 #endif
+#define PRI_SOCKET "d"
 #endif
 
 #ifdef MDSOBJECTSCPPSHRVS_EXPORTS

@@ -634,20 +634,16 @@ static void dispatch(int i)
     }
     else
     {
+      actions[i].dispatched = 1;
       UNLOCK_ACTION(i, d_w);
       status = ServerDispatchAction(
           0, Server(server, actions[i].server), table->tree, table->shot,
           actions[i].nid, action_done, (void *)(intptr_t)i, &actions[i].status,
           &actions[i].lock, &actions[i].netid, before);
-      if (STATUS_OK)
+      if (STATUS_NOT_OK)
       {
         WRLOCK_ACTION(i, d_w);
-        actions[i].dispatched = 1;
-        UNLOCK_ACTION(i, d);
-      }
-      else
-      {
-        WRLOCK_ACTION(i, d_w);
+        actions[i].dispatched = 0;
         actions[i].status = status;
         action_done_action_locked(i);
         UNLOCK_ACTION(i, d);
