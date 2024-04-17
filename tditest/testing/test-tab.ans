@@ -8,19 +8,18 @@ TR
  ^
 %TDI Error in EXECUTE("TR")
 
-
-tree
+tree
 tree_from_tag(         treefindtagend(        treeputrecord(
-treeabspath(           treefindtagwild(       treeputstraight(
-treeaddnode(           treeflushoff(          treequit(
-treeaddtag(            treeflushreset(        treesetcurrentshot(
-treeclose(             treegetcurrentshot(    treesetdbiitm(
-treecreatepulsefile(   treegetrecord(         treesetdefault(
-treedeletepulsefile(   treegetsource(         treesetnciitm(
-treedirname(           treeopen(              treesetsource(
-treefilename(          treeopenedit(          treeturnoff(
-treefindnodetags(      treeopennew(           treeturnon(
-treefindnodetagsjeff(  treeput(               treewrite(
+treeabspath(           treefindtagwild(       treequit(
+treeaddnode(           treeflushoff(          treesetcurrentshot(
+treeaddtag(            treeflushreset(        treesetdbiitm(
+treeclose(             treegetcurrentshot(    treesetdefault(
+treecreatepulsefile(   treegetrecord(         treesetnciitm(
+treedeletepulsefile(   treegetsource(         treesetsource(
+treedirname(           treeopen(              treeturnoff(
+treefilename(          treeopenedit(          treeturnon(
+treefindnodetags(      treeopennew(           treewrite(
+treefindnodetagsjeff(  treeput(               
 treefindnodewild(      treeputdeserialized(   
 tree
 %TREE-W-NOT_OPEN, Tree not currently open
@@ -28,4 +27,6 @@ tree
 tree
    ^
 %TDI Error in EXECUTE("tree")
+
+
 
