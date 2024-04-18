@@ -35,7 +35,6 @@ class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
         outputs += [{'name': 'Out'+str(idx+1), 'type': 'int32', 'dimensions': -1, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
             {'name': 'Path', 'type':'string', 'value': ''} ]}]
-    print(outputs)
     parameters = [
         {'name': 'Address', 'type': 'string', 'value': ''},
         {'name': 'Authentication', 'type': 'string', 'value': 'None'},
@@ -48,7 +47,6 @@ class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
         {'name': 'RootNamespaceIndex', 'type': 'int32', 'value': 1},
         {'name': 'RootIdentifierValue', 'type': 'string', 'value': 'DataBlocksGlobal'},
         {'name': 'RootIdentifierType', 'type': 'string'}]
-    print(parameters)
     parts = []
 
     def prepareMarteInfo(self):

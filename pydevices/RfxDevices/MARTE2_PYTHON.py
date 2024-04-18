@@ -122,7 +122,6 @@ class BUILDER:
             'type': 'structure',
             'value': pyParams
         })
-        print(cls.parameters)
         cls.parts = []
         cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
         return cls

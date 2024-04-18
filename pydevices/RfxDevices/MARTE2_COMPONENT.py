@@ -1261,9 +1261,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Return the definitions of MDSWriter DataSource and ConversionGAM GAM for handling the stored outputs
     def handleOutputsStorage(self, signalsToBeStored, threadMap):
-        print('\n\nOUTPUTS TO BE STORED')
-        print(signalsToBeStored)
-        print('\n\n')
         retDataSource = {}
         retDataSource['Class'] = 'MDSWriter'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_TreeOut'
