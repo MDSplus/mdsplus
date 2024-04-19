@@ -28,23 +28,27 @@ from MDSplus import Data
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('StreamOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
-class MARTE2_STREAM(MC.MARTE2_COMPONENT):
-    inputs = []
-    for i in range(128):
-        inputs.append(
-            {'name': 'OutStream'+format(i+1, '03d'), 'type': 'int32', 'dimensions': 0, 'seg_len': 100, 'parameters': [
-                {'name': 'Channel', 'type': 'string', 'value': 'CH'+format(i+1, '03d')}]})
+@MC.BUILDER('OPCUADataSource::OPCUADSInput', MC.MARTE2_COMPONENT.MODE_INPUT)
+class MARTE2_OPCUA_IN(MC.MARTE2_COMPONENT):
+    outputs = []
+    for idx in range(128):
+        outputs += [{'name': 'Out'+str(idx+1), 'type': 'int32', 'dimensions': -1, 'parameters': [
+            {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
+            {'name': 'Path', 'type':'string', 'value': ''} ]}]
     parameters = [
-        {'name': 'EventDivision', 'type': 'float32'},
-        {'name': 'PulseNumber', 'type': 'int32'},
-        {'name': 'TimeIdx', 'type': 'int32', 'value': 0},
-        {'name': 'TimeStreaming', 'type': 'int32', 'value': 1},
-        {'name': 'CpuMask', 'type': 'int32', 'value': 15},
+        {'name': 'Address', 'type': 'string', 'value': ''},
+        {'name': 'Authentication', 'type': 'string', 'value': 'None'},
+        {'name': 'ReadMode', 'type': 'string', 'value': 'Read'},
+        {'name': 'SamplingTime', 'type': 'int32', 'value': 300},
+        {'name': 'Synchronise', 'type': 'string', 'value': 'yes'},
+        {'name': 'CpuMask', 'type': 'int32', 'value': 255},
         {'name': 'StackSize', 'type': 'int32', 'value': 10000000},
-        {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 10},
-    ]
+        {'name': 'Traverse', 'type': 'int32', 'value': 0},
+        {'name': 'RootNamespaceIndex', 'type': 'int32', 'value': 1},
+        {'name': 'RootIdentifierValue', 'type': 'string', 'value': 'DataBlocksGlobal'},
+        {'name': 'RootIdentifierType', 'type': 'string'}]
     parts = []
 
     def prepareMarteInfo(self):
-        pass
+        self.timebase.putData(Data.compile(
+            ' * : * : (build_path("\\'+self.getFullPath()+'.parameters:par_4:value"))'))

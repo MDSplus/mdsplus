@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
+public class MARTE2_OPCUA_INSetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_STREAM_IN_ASetup
+     * Creates new form MARTE2_OPCUA_INSetup
      */
-    public MARTE2_STREAM_IN_ASetup() {
+    public MARTE2_OPCUA_INSetup() {
         initComponents();
     }
 
@@ -27,78 +27,72 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
+        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
+        deviceField6 = new DeviceField();
+        jPanel3 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
-        jPanel13 = new javax.swing.JPanel();
-        deviceField30 = new DeviceField();
-        deviceField31 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         deviceOutputs1 = new DeviceOutputs();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("Async Stream In");
-        setDeviceType("MARTE2_STREAM_IN_A");
-        setHeight(400);
+        setDeviceTitle("MARTE2 OPCUA In");
+        setDeviceType("MARTE2_OPCUA_IN");
+        setHeight(300);
         setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.GridLayout(3, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
 
         deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
+        deviceField1.setLabelString("Address");
         deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel3.add(deviceField1);
+        deviceField1.setOffsetNid(7);
+        deviceField1.setTextOnly(true);
+        jPanel2.add(deviceField1);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(1560);
-        jPanel3.add(deviceField2);
+        deviceField2.setLabelString("CPU Mask");
+        deviceField2.setNumCols(8);
+        deviceField2.setOffsetNid(22);
+        jPanel2.add(deviceField2);
 
-        jPanel2.add(jPanel3);
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("RootIdentifierType: ");
+        deviceField6.setOffsetNid(37);
+        deviceField6.setTextOnly(true);
+        jPanel2.add(deviceField6);
+
+        jPanel1.add(jPanel2);
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Num Buffers: ");
-        deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(7);
-        jPanel4.add(deviceField3);
+        deviceField3.setLabelString("Traverse");
+        deviceField3.setNumCols(4);
+        deviceField3.setOffsetNid(28);
+        jPanel3.add(deviceField3);
 
         deviceField4.setIdentifier("");
-        deviceField4.setLabelString("StackSize: ");
-        deviceField4.setOffsetNid(13);
-        jPanel4.add(deviceField4);
+        deviceField4.setLabelString("RootNameSpaceIndex:");
+        deviceField4.setNumCols(4);
+        deviceField4.setOffsetNid(31);
+        jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("CPU Mask: ");
-        deviceField5.setNumCols(6);
-        deviceField5.setOffsetNid(10);
-        jPanel4.add(deviceField5);
+        deviceField5.setLabelString("RootIdentifierValue:");
+        deviceField5.setNumCols(15);
+        deviceField5.setOffsetNid(34);
+        deviceField5.setTextOnly(true);
+        jPanel3.add(deviceField5);
 
-        jPanel2.add(jPanel4);
+        jPanel1.add(jPanel3);
 
-        deviceField30.setIdentifier("");
-        deviceField30.setLabelString("Output trigger:");
-        deviceField30.setNumCols(25);
-        deviceField30.setOffsetNid(18);
-        jPanel13.add(deviceField30);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        deviceField31.setIdentifier("");
-        deviceField31.setLabelString("PTS: ");
-        deviceField31.setOffsetNid(20);
-        jPanel13.add(deviceField31);
-
-        jPanel2.add(jPanel13);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
-
-        deviceOutputs1.setOffsetNid(17);
+        deviceOutputs1.setOffsetNid(26);
         jScrollPane1.setViewportView(deviceOutputs1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -110,15 +104,13 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
-    private DeviceField deviceField30;
-    private DeviceField deviceField31;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private DeviceOutputs deviceOutputs1;
-    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

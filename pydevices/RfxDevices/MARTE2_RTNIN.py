@@ -23,28 +23,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Data
-
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('StreamOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
-class MARTE2_STREAM(MC.MARTE2_COMPONENT):
-    inputs = []
-    for i in range(128):
-        inputs.append(
-            {'name': 'OutStream'+format(i+1, '03d'), 'type': 'int32', 'dimensions': 0, 'seg_len': 100, 'parameters': [
-                {'name': 'Channel', 'type': 'string', 'value': 'CH'+format(i+1, '03d')}]})
+@MC.BUILDER('RTNIn', MC.MARTE2_COMPONENT.MODE_INPUT)
+class MARTE2_RTNIN(MC.MARTE2_COMPONENT):
+    outputs = [
+        {'name': 'Out1', 'type': 'float32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Out2', 'type': 'float32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Out3', 'type': 'float32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Out4', 'type': 'float32', 'dimensions': 0, 'parameters': []} ]
     parameters = [
-        {'name': 'EventDivision', 'type': 'float32'},
-        {'name': 'PulseNumber', 'type': 'int32'},
-        {'name': 'TimeIdx', 'type': 'int32', 'value': 0},
-        {'name': 'TimeStreaming', 'type': 'int32', 'value': 1},
-        {'name': 'CpuMask', 'type': 'int32', 'value': 15},
-        {'name': 'StackSize', 'type': 'int32', 'value': 10000000},
-        {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 10},
+        {'name': 'Ip', 'type': 'string', 'value': 'localhost'},
+        {'name': 'Port', 'type': 'int32', 'value': 8123},
+        {'name': 'CircuitId', 'type': 'int32', 'value': 1},
+        {'name': 'IsSynch', 'type': 'int32', 'value': 1},
+        {'name': 'CpuMask', 'type': 'int32'}
     ]
     parts = []
-
-    def prepareMarteInfo(self):
-        pass

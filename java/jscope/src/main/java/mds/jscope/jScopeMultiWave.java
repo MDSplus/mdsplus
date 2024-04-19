@@ -256,10 +256,10 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		}
 		catch (final IOException e)
 		{}
-		final Thread p = new Thread()
-		{
-			@Override
-			public void run()
+	//	final Thread p = new Thread()
+	//	{
+	//		@Override
+	//		public void run()
 			{
 				final MdsWaveInterface mwi = (MdsWaveInterface) wi;
 				try
@@ -277,8 +277,8 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 					}
 				});
 			}
-		};
-		p.start();
+	//	};
+	//	p.start();
 	}
 
 	public void RefreshOnEvent()
