@@ -61,10 +61,10 @@ class MARTE2_DTACQAI(MC.MARTE2_COMPONENT):
     def prepareMarteInfo(self):
         print('0:1000000 :1. / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))')
         self.timebase.putData(Data.compile('0:1000000 : 1. / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))'))
-        self.outputs_time_samples.putData(self.parameters_par_13_value.data())
-        self.outputs_counter_samples.putData(self.parameters_par_13_value.data())
+        self.outputs_time_samples.putData(self.getNode('PARAMETERS.PAR_13:VALUE').data())
+        self.outputs_counter_samples.putData(self.getNode('PARAMETERS.PAR_13:VALUE').data())
         for i in range(64):
-            getattr(self, 'outputs_chan_'+str(i+1)+'_samples').putData(self.parameters_par_13_value.data())
+            getattr(self, 'outputs_chan_'+str(i+1)+'_samples').putData(self.getNode('PARAMETERS.PAR_13:VALUE').data())
         for i in range(32):
-            getattr(self, 'outputs_di_'+str(i+1)+'_samples').putData(self.parameters_par_13_value.data())
+            getattr(self, 'outputs_di_'+str(i+1)+'_samples').putData(self.getNode('PARAMETERS.PAR_13:VALUE').data())
        

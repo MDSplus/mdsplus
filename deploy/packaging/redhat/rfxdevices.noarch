@@ -31,9 +31,12 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_COMPONENT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_CONVERSION.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DOUBLEH_MASTER.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DOUBLEH_SLAVE.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DTACQAI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DTACQAO.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DUTY_CYCLE.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICSCA.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_IN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EXPR.py
