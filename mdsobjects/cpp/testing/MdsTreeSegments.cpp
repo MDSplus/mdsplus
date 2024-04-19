@@ -30,6 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testing.h"
 #include "testutils/unique_ptr.h"
 #include "testutils/String.h"
+#include "testutils/MdsIpInstancer.h"
+
 //#include "mdsplus/AutoPointer.hpp"
 #ifdef _WIN32
 #include <windows.h>
@@ -38,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace testing;
 using namespace MDSplus;
+static void makeSegmentInt( MDSplus::TreeNode *n, MDSplus::TreeNode *n1, MDSplus::TreeNode *nRes, MDSplus::TreeNode *pn, 
+MDSplus::TreeNode *pnRes, MDSplus::TreeNode *pn1, MDSplus::TreeNode *mmn, MDSplus::TreeNode *mmnRes, MDSplus::TreeNode *mmpn, MDSplus::TreeNode *mmpnRes);
 
 #define TEST_SEGMENT_FLOAT(node, seg, test)           \
   do                                                  \
@@ -146,6 +150,7 @@ void BlockAndRows()
 
 #define NUM_SEGMENTS 10
 #define SEG_SAMPLES 1000000
+
 void makeSegment()
 {
 
@@ -186,6 +191,53 @@ void makeSegment()
   MDSplus::TreeNode *mmnRes = t->getNode("MMSEG_RES");
   MDSplus::TreeNode *mmpn = t->getNode("MMPSEG");
   MDSplus::TreeNode *mmpnRes = t->getNode("MMPSEG_RES");
+  makeSegmentInt(n, n1, nRes, pn, pnRes, pn1, mmn, mmnRes, mmpn, mmpnRes);
+  delete t;
+
+//Do the same with thin client TreeNode
+  t = new MDSplus::Tree("t_treeseg", -1);
+  t->createPulse(1);
+  delete (t);
+ 
+  MdsIpInstancer mdsip("tcp", 8908, "-m");
+  std::string addr = mdsip.getAddress();
+  std::cout << "attempt to connect to: " << addr << " (-m)" <<std::endl << std::flush;
+  unique_ptr<Connection> cnx = NULL;
+  int retry = 3;
+  for (; !cnx; retry--)
+    try
+    {
+      cnx = new Connection(const_cast<char *>(addr.c_str()));
+    }
+    catch (...)
+    {
+      if (retry <= 1)
+        TEST0("could not connect");
+      std::cout << "retry\n"
+                << std::flush;
+      usleep(500000);
+    }
+  std::cout << "success: starting test\n"
+            << std::flush;
+  cnx->get("setenv('t_treeseg_path=.')");
+  cnx->openTree((char *)"t_treeseg", 1);
+  n = cnx->getNode((char *)"SEG");
+  n1 = cnx->getNode((char *)"SEG1");
+  nRes = cnx->getNode((char *)"SEG_RES");
+  pn = cnx->getNode((char *)"PSEG");
+  pnRes = cnx->getNode((char *)"PSEG_RES");
+  pn1 = cnx->getNode((char *)"PSEG1");
+  mmn = cnx->getNode((char *)"MMSEG");
+  mmnRes = cnx->getNode((char *)"MMSEG_RES");
+  mmpn = cnx->getNode((char *)"MMPSEG");
+  mmpnRes = cnx->getNode((char *)"MMPSEG_RES");
+  makeSegmentInt(n, n1, nRes, pn, pnRes, pn1, mmn, mmnRes, mmpn, mmpnRes);
+ 
+}
+
+static void makeSegmentInt( MDSplus::TreeNode *n, MDSplus::TreeNode *n1, MDSplus::TreeNode *nRes, MDSplus::TreeNode *pn, 
+MDSplus::TreeNode *pnRes, MDSplus::TreeNode *pn1, MDSplus::TreeNode *mmn, MDSplus::TreeNode *mmnRes, MDSplus::TreeNode *mmpn, MDSplus::TreeNode *mmpnRes)
+{
   for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
   {
     float *segData = new float[SEG_SAMPLES];
@@ -197,8 +249,8 @@ void makeSegment()
     MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
     MDSplus::Float32Array *data =
         new MDSplus::Float32Array(segData, SEG_SAMPLES);
-    n->makeSegmentResampled(start, end, dim, data, nRes, 1000);
     n1->makeSegment(start, end, dim, data);
+    n->makeSegmentResampled(start, end, dim, data, nRes, 1000);
     deleteData(start);
     deleteData(end);
     deleteData(delta);
@@ -217,8 +269,8 @@ void makeSegment()
     MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
     MDSplus::Float32Array *data =
         new MDSplus::Float32Array(segData, SEG_SAMPLES);
-    pn->beginSegmentResampled(start, end, dim, data, pnRes, 1000);
     pn1->beginSegment(start, end, dim, data);
+    pn->beginSegmentResampled(start, end, dim, data, pnRes, 1000);
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = i;
     for (int i = 0; i < 10; i++)
@@ -284,6 +336,7 @@ void makeSegment()
     delete[] segData;
   }
 
+ 
   int dataLen;
   int resDataLen;
   MDSplus::Data *retData = n->data();
@@ -336,7 +389,6 @@ void makeSegment()
   delete mmnRes;
   delete mmpn;
   delete mmpnRes;
-  delete t;
 }
 
 #define TEST(prcedure)       \

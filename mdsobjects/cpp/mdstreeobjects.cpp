@@ -2503,6 +2503,12 @@ EXPORT Data *TreeNodeThinClient::getData()
   return retData;
 }
 
+
+EXPORT Data *TreeNodeThinClient::data()
+{
+    return getData();
+} 
+
 EXPORT void TreeNodeThinClient::putData(Data *data)
 {
   AutoArray<char> path(getPath());
@@ -2552,6 +2558,34 @@ EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time,
   AutoData<Data> retData(connection->get(expr, args, 4));
 }
 
+EXPORT void TreeNodeThinClient::beginSegmentMinMax(Data *start, Data *end, Data *time,
+                              Array *initialData, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
+                            initialData->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
+                  argsD[3].get()};
+  sprintf(expr, "BeginSegmentMinMax(%d, $1, $2, $3, $4, -1, %d, %d)", nid, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+EXPORT void TreeNodeThinClient::beginSegmentResampled(Data *start, Data *end, Data *time,
+                              Array *initialData, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
+                            initialData->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
+                  argsD[3].get()};
+  sprintf(expr, "BeginSegmentResampled(%d, $1, $2, $3, $4, -1, %d, %d)", nid, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+
+
 EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time,
                                             Array *initialData)
 {
@@ -2564,6 +2598,36 @@ EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time,
   AutoData<Data> retData(connection->get(expr, args, 4));
 }
 
+EXPORT void TreeNodeThinClient::makeSegmentMinMax(Data *start, Data *end, Data *time,
+                                   Array *initialData, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
+                            initialData->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
+                  argsD[3].get()};
+  sprintf(expr, "MakeSegmentMinMax(%d, $1, $2, $3, $4, -1, size($4), %d, %d)", nid, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+EXPORT void TreeNodeThinClient::makeSegmentResampled(Data *start, Data *end, Data *time,
+                                   Array *initialData, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
+                            initialData->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
+                  argsD[3].get()};
+  sprintf(expr, "MakeSegmentResampled(%d, $1, $2, $3, $4, -1, size($4), %d, %d)", nid, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 4));
+}
+
+   
+
+
+
 EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
 {
   char expr[256];
@@ -2572,6 +2636,33 @@ EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
   sprintf(expr, "PutSegment(%d, %d, $1)", nid, ofs);
   AutoData<Data> retData(connection->get(expr, args, 1));
 }
+
+
+EXPORT void TreeNodeThinClient::putSegmentMinMax(Array *data, int ofs, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {data->data()};
+  Data *args[] = {argsD[0].get()};
+  sprintf(expr, "PutSegmentMinMax(%d, %d, $1, %d, %d)", nid, ofs, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 1));
+}
+
+
+EXPORT void TreeNodeThinClient::putSegmentResampled(Array *data, int ofs, TreeNode *resampledNode,
+                                   int resFactor)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {data->data()};
+  Data *args[] = {argsD[0].get()};
+  sprintf(expr, "PutSegmentResampled(%d, %d, $1, %d, %d)", nid, ofs, resampledNode->getNid(), resFactor);
+  AutoData<Data> retData(connection->get(expr, args, 1));
+}
+
+
+
+
+
 
 EXPORT int TreeNodeThinClient::getNumSegments()
 {

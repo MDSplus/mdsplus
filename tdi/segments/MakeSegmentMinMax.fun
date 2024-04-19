@@ -9,9 +9,9 @@ public fun MakeSegmentMinMax(as_is _node, in _start, in _end, optional as_is _di
     return(TreeShr->TreeMakeSegmentMinMax(val(_nid),descr(_start),descr(_end),xd(_dim),xd(_array),val(_idx),val(_rows_filled), val(_res_nid), val(_res_factor)));
   } else {
     if (!present(_dim)) {
-      return(TreeShr->TreeMakeSegmentMinMax(val(_nid),descr(_start),descr(_end), val(0) ,descr(data(_array)),val(_idx),val(_rows_filled)), val(_res_nid), val(_res_factor));
+      return(TreeShr->TreeMakeSegmentMinMax(val(_nid),descr(_start),descr(_end), val(0) ,descr(data(_array)),val(_idx),val(_rows_filled), val(_res_nid), val(_res_factor)));
     } else {
-      return(TreeShr->TreeMakeSegmentMinMax(val(_nid),descr(_start),descr(_end),xd(_dim),descr(data(_array)),val(_idx),val(_rows_filled)), val(_res_nid), val(_res_factor));
+      return(TreeShr->TreeMakeSegmentMinMax(val(_nid),descr(_start),descr(_end),xd(_dim),descr(data(_array)),val(_idx),val(_rows_filled), val(_res_nid), val(_res_factor)));
     }
   }
 }
