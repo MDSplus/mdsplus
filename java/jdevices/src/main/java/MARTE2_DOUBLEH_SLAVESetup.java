@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
+public class MARTE2_DOUBLEH_SLAVESetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_SIMULINK_DTT_VSSetup
+     * Creates new form MARTE2_DOUBLEH_SLAVESetup
      */
-    public MARTE2_SIMULINK_DTT_VSSetup() {
+    public MARTE2_DOUBLEH_SLAVESetup() {
         initComponents();
     }
 
@@ -27,37 +27,33 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
-        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
+        jPanel2 = new javax.swing.JPanel();
         deviceOutputs1 = new DeviceOutputs();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("DTT VS Control");
-        setDeviceType("MARTE2_SIMULINK_DTT_VS");
-        setHeight(400);
-        setWidth(800);
+        setDeviceTitle("MARTe2 DoubleHanshaking Slave");
+        setDeviceType("MARTE2_DOUBLEH_SLAVE");
+        setHeight(200);
+        setUpdateEvent("");
+        setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Write CPU Mask: ");
-        deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(51);
-        jPanel1.add(deviceField3);
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Port");
-        deviceField1.setNumCols(6);
-        deviceField1.setOffsetNid(62);
-        jPanel1.add(deviceField1);
+        deviceInputs1.setOffsetNid(5);
+        jPanel1.add(deviceInputs1, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        jTabbedPane1.addTab("Inputs", jPanel1);
 
-        deviceInputs1.setOffsetNid(17);
-        jTabbedPane1.addTab("Inputs", deviceInputs1);
-        jTabbedPane1.addTab("Outputs", deviceOutputs1);
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        deviceOutputs1.setOffsetNid(70);
+        jPanel2.add(deviceOutputs1, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Outputs", jPanel2);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -65,11 +61,10 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceField deviceField1;
-    private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
