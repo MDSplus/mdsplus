@@ -969,7 +969,7 @@ static void cleanup_client(SrvJob *job)
   }
 }
 
-/// returns the number of bytes sent
+/// on success returns the number of bytes sent, on failure returns -1
 static int send_all(SOCKET sock, char *msg, int len)
 {
   int sent;
