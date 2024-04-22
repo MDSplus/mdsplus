@@ -3683,26 +3683,11 @@ namespace MDSplus
                                       int resFactor = 100);
 
     /// Update start, end time and dimension for the last segment
-    virtual void updateSegment(Data *start, Data *end, Data *time)
-    {
-      (void)start;
-      (void)end;
-      (void)time;
-      throw MdsException(
-          "updateSegment() not supported for TreeNodeThinClient object");
-    }
-
+    virtual void updateSegment(Data *start, Data *end, Data *time);
+    
     /// Update start, end time and dimension for the specified segment
-    virtual void updateSegment(int idx, Data *start, Data *end, Data *time)
-    {
-      (void)idx;
-      (void)start;
-      (void)end;
-      (void)time;
-      throw MdsException(
-          "updateSegment() not supported for TreeNodeThinClient object");
-    }
-
+    virtual void updateSegment(int idx, Data *start, Data *end, Data *time);
+  
     /// Get the number of segments
     virtual int getNumSegments();
 

@@ -2660,9 +2660,22 @@ EXPORT void TreeNodeThinClient::putSegmentResampled(Array *data, int ofs, TreeNo
 }
 
 
-
-
-
+void TreeNodeThinClient::updateSegment(int idx, Data *start, Data *end, Data *time)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get()};
+  sprintf(expr, "UpdateSegment(%d, $1, $2, $3, %d)", nid, idx);
+  AutoData<Data> retData(connection->get(expr, args, 3));
+}
+void TreeNodeThinClient::updateSegment(Data *start, Data *end, Data *time)
+{
+  char expr[256];
+  AutoData<Data> argsD[] = {start->data(), end->data(), time->data()};
+  Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get()};
+  sprintf(expr, "UpdateSegment(%d, $1, $2, $3, -1)", nid);
+  AutoData<Data> retData(connection->get(expr, args, 3));
+}
 
 EXPORT int TreeNodeThinClient::getNumSegments()
 {
