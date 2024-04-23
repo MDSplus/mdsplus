@@ -624,7 +624,7 @@ static void dispatch(int i)
     // ProgLoc = 7001;
     send_monitor(MonitorDispatched, i);
     // ProgLoc = 7002;
-    if (noact)
+    if (noact) // global, 1 = show actions but don't dispatch, 0 = dispatch
     {
       actions[i].dispatched = 1;
       actions[i].status = status = 1;
@@ -687,6 +687,7 @@ static void action_done_action_locked(int idx)
   MdsFree1Dx(&xd, NULL);
 }
 
+// Uses recursion to deal with cascade of actions
 static void action_done_action_unlocked(int idx)
 {
   if (is_abort_in_progress())
