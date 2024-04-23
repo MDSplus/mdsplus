@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 #include <mdsmsg.h>
 
+// Can return non-MDSplus error code, SsINTERNAL
 static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send, int options)
 {
   if (!c || !c->io)
@@ -74,6 +75,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send, int opt
   return MDSplusSUCCESS;
 }
 
+// Can return non-MDSplus error code of SsINTERNAL because of send_bytes()
 int SendMdsMsgC(Connection *c, Message *m, int msg_options)
 {
   unsigned long len = m->h.msglen - sizeof(m->h);
@@ -104,7 +106,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     m->h.client_type = ClientType();
   if (clength &&
       compress2((unsigned char *)cm->bytes + 4, &clength,
-                (unsigned char *)m->bytes, len, c->compression_level) == 0 &&
+                (unsigned char *)m->bytes, len, c->compression_level) == Z_OK &&
       clength < len)
   {
     cm->h = m->h;

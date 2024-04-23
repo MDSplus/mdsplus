@@ -310,6 +310,7 @@ static SOCKET new_reply_socket(uint16_t *port_out)
 
 static Condition ReceiverRunning = CONDITION_INITIALIZER;
 
+// Returns non-MDSplus status: -1, 0, or 1.  OK is 0, others are error.
 static int start_receiver(uint16_t *port_out)
 {
   INIT_STATUS;
@@ -330,7 +331,7 @@ static int start_receiver(uint16_t *port_out)
   if (!ReceiverRunning.value)
   {
     CREATE_DETACHED_THREAD(thread, *16, receiver_thread, &sock);
-    if (c_status)
+    if (c_status)  // is from preceding macro
     {
       perror("Error creating pthread");
       status = MDSplusERROR;
@@ -349,7 +350,7 @@ static int start_receiver(uint16_t *port_out)
 static void receiver_atexit(void *arg)
 {
   (void)arg;
-  MDSDBG("ServerSendMessage thread exitted");
+  MDSDBG("ServerSendMessage thread exited");
   CONDITION_RESET(&ReceiverRunning);
 }
 
