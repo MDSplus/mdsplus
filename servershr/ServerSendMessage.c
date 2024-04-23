@@ -405,6 +405,7 @@ static void receiver_thread(void *sockptr)
   int rep;
   int num = 0;
   struct timeval readto, timeout = {10, 0};
+  // Tries 10 times if select() always returns error (i.e., num < 0)
   for (rep = 0; rep < 10; rep++)
   {
     for (readfds = fdactive, readto = timeout;;
