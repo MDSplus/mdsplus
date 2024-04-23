@@ -107,7 +107,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *inData, float *inDim, int *inSize,
   
   
   float *in_data, *in_dim;
-  int size;
+  int size = 0;
   
 
   struct descriptor start_d = { sizeof(float), DTYPE_FLOAT, CLASS_S, 0 }, end_d = {
