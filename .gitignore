@@ -85,6 +85,7 @@ target/
 ###
 
 [Bb]uild/
+workspace*/
 Testing/Temporary
 mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
 

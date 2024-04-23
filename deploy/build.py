@@ -14,18 +14,44 @@ import shutil
 import signal
 import subprocess
 import platform
+import glob
 
 from datetime import datetime
 
 deploy_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(deploy_dir)
 
-parser = argparse.ArgumentParser()
+os_options = {}
+for file in glob.glob(os.path.join(deploy_dir, 'os/*.opts')):
+    name = os.path.basename(file).removesuffix('.opts')
+    if os.path.islink(file):
+        real_file = os.path.realpath(file)
+        real_name = os.path.basename(real_file).removesuffix('.opts')
+
+        if real_name not in os_options:
+            os_options[real_name] = []
+
+        os_options[real_name].append(name)
+    else:
+        if name not in os_options:
+            os_options[name] = []
+
+os_option_text = 'The following values (and aliases) for --os are available:\n'
+for name, aliases in sorted(os_options.items()):
+    os_option_text += f'    {name}'
+    if len(aliases) > 0:
+        os_option_text += f" -> {', '.join(sorted(aliases, reverse=True))}"
+    os_option_text += '\n'
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    epilog=os_option_text,
+)
 
 parser.add_argument(
     '--os',
     metavar='',
-    help='',
+    help='The OS definition to use (see below), which will reference `deploy/os/{--os}.opts` for additional parameters to this script and `deploy/os/{--os}.env` for additional environment variables. This will also change the default for --workspace to be `workspace-{--os}/`',
 )
 
 parser.add_argument(
@@ -43,62 +69,75 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '-i', '--interactive',
-    action='store_true',
-    help='',
+    '-G', '--generator',
+    metavar='',
+    help='CMake Generator, defaults to "Unix Makefiles", see `cmake --help` for more options.',
 )
 
-nproc = os.cpu_count()
+parser.add_argument(
+    '-i', '--interactive',
+    action='store_true',
+    help='Drop into an interactive shell, allowing you to configure/build/install/test. This will attempt to clean your environment of references to $MDSPLUS_DIR if any are found.',
+)
 
 parser.add_argument(
     '-j', '--parallel',
     nargs='?',
-    const=nproc,
+    const=os.cpu_count(),
     default=1,
     metavar='',
-    help='',
-)
-
-parser.add_argument(
-    '--source',
-    metavar='',
-    help='',
-)
-
-parser.add_argument(
-    '-G', '--generator',
-    metavar='',
-    help='',
+    help='The number of parallel files to build or tests to run, defaults to `nproc` if no value is specified.',
 )
 
 parser.add_argument(
     '--env-file',
     metavar='',
-    help='',
+    help='A shell script that will be used to determine the additional environment to add while running. This is to `deploy/os/{--os}.env` if --os is set and the file exists.',
 )
 
 parser.add_argument(
     '--workspace',
     metavar='',
-    help='',
+    help='The directory that will contain the default build/install directories and helper scripts, defaults to `workspace/` or `workspace-{--os}/` if --os is specified.',
+)
+
+parser.add_argument(
+    '--source',
+    metavar='',
+    help='The directory containing the source files, used for CMAKE_SOURCE_DIR, defaults to the directory above this file.',
+)
+
+parser.add_argument(
+    '--buildroot',
+    metavar='',
+    help='The directory that will contain the intermediate files, used for CMAKE_BINARY_DIR, defaults to `{--workspace}/build/`.',
+)
+
+parser.add_argument(
+    '--install',
+    metavar='',
+    help='The directory that will contain the full usr/local/mdsplus installation, used for CMAKE_INSTALL_PREFIX, defaults to `{--workspace}/install/`.',
+    nargs='?',
+    const=True,
+    default=True,
 )
 
 parser.add_argument(
     '--dockerpull',
     action='store_true',
-    help='',
+    help='Pull the latest docker image before creating the container.',
 )
 
 parser.add_argument(
     '--dockerimage',
     metavar='',
-    help='',
+    help='Create a docker container with this image, and run the build inside there. Can be combined with -i/--interactive to get a shell inside the docker container.',
 )
 
 parser.add_argument(
     '--dockernetwork',
     metavar='',
-    help='',
+    help='Create and use this docker network when creating the docker container.',
 )
 
 parser.add_argument(
@@ -197,11 +236,15 @@ cmake_args = unknown_args
 if cli_args.os is not None:
 
     opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.opts')
+
     if not os.path.exists(opts_filename):
-        opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}-{platform.machine()}.opts')
-        if not os.path.exists(opts_filename):
-            print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
-            exit(1)
+        print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
+        exit(1)
+
+    os_alias = None
+    if os.path.islink(opts_filename):
+        opts_filename = os.path.realpath(opts_filename)
+        os_alias = os.path.basename(opts_filename).removesuffix('.opts')
     
     opts = open(opts_filename).read().strip().split()
 
@@ -220,11 +263,17 @@ if cli_args.os is not None:
     cli_args, unknown_args = parser.parse_known_args(namespace=cli_args)
     cmake_args.extend(unknown_args)
 
+    if os_alias is not None:
+        print()
+        print(f"Using aliased --os={cli_args.os} -> --os={os_alias}")
+        cli_args.os = os_alias
+
 ###
 ### Convert the arguments to a dictionary and fill in computed values
 ###
 
 args = dict()
+
 for name in vars(cli_args):
     # argparse replaces - with _ in the names
     original_name = name.replace('_', '-')
@@ -252,16 +301,26 @@ if args['source'] is None:
 
 if args['workspace'] is None:
     if args['os'] is None:
-        args['workspace'] = 'build/'
+        args['workspace'] = 'workspace/'
     else:
-        branch = 'cmake' # TODO:
-        args['workspace'] = f"build/{args['os']}/{branch}"
+        args['workspace'] = f"workspace-{args['os']}/"
 
 # Convert the workspace to an absolute path
 if not os.path.isabs(args['workspace']):
     args['workspace'] = os.path.join(root_dir, args['workspace'])
 
 os.makedirs(args['workspace'], exist_ok=True)
+
+if not args['buildroot']:
+    args['buildroot'] = os.path.join(args['workspace'], 'build')
+
+os.makedirs(args['buildroot'], exist_ok=True)
+
+# If no install path is specified, use the default
+if args['install'] == True:
+    args['install'] = os.path.join(args['workspace'], 'install/usr/local/mdsplus')
+
+os.makedirs(args['install'], exist_ok=True)
 
 if args['dockerimage'] is not None:
 
@@ -290,14 +349,23 @@ if args['dockerimage'] is not None:
         # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
     
     docker_args = [
-        '--volume', f"{root_dir}:{args['source']}", # TODO: Improve?
-        '--volume', f"{args['workspace']}:/workspace",
-        '--workdir', '/workspace',
+        f"--volume={args['workspace']}:{args['workspace']}",
+        f"--volume={args['source']}:{args['source']}", # TODO: Improve?
+        f"--volume={args['buildroot']}:{args['buildroot']}",
+        f"--volume={args['install']}:{args['install']}",
+        f"--workdir={args['workspace']}",
         args['dockerimage'],
-        '/bin/bash', '-c', docker_command
     ]
 
-    print(' '.join(docker_args))
+    print()
+    print('Docker arguments:')
+    for arg in docker_args:
+        print(f"    {arg}")
+    print()
+
+    docker_args.extend([
+        '/bin/bash', '-c', docker_command
+    ])
 
     # groupadd -g os.getgid() group_name
     # useradd -u os.getuid() -g group_name -h /workspace user_name
@@ -398,7 +466,7 @@ else:
     if 'SHELL' in os.environ:
         shell = os.environ['SHELL']
 
-    if args['env-file'] is not None:
+    if args['env-file'] and os.path.exists(args['env-file']):
         result = subprocess.run(
             [ shell, '-c', f". {args['env-file']}; env" ],
             stdout=subprocess.PIPE,
@@ -440,91 +508,164 @@ else:
         print('Unable to find ctest')
         exit(1)
 
-    if args['interactive']:
+    # TODO: Improve
+    cmake_cache_filename = os.path.join(args['buildroot'], 'CMakeCache.txt')
+    cmake_cache = parse_cmake_cache(cmake_cache_filename)
+
+    current_generator = None
+    if 'CMAKE_GENERATOR' in cmake_cache:
+        current_generator = cmake_cache['CMAKE_GENERATOR']
         
-        extra_env = {
-            'SOURCE': args['source'],
-            'WORKSPACE': args['workspace'],
-        }
+    if args['generator'] is None:
+        args['generator'] = current_generator
+    
+    if args['generator'] != current_generator:
+        # Perform a clean configure
+        cmake_args.append('--fresh')
 
+    if args['generator'] is None:
+        args['generator'] = 'Unix Makefiles'
+
+    # TODO: Add more
+    build_command = f'{cmake} --build .'
+    if args['generator'] == 'Unix Makefiles':
+        build_command = f"make -j{args['parallel']}"
+    elif args['generator'] == 'Ninja':
+        build_command = f"ninja -j{args['parallel']}"
+
+    if args['install'] is not None:
+        install_command = f"{build_command} install"
+
+    cmake_args = [ '-G', args['generator'] ] + cmake_args
+
+    if args['sanitize'] is not None and args['valgrind'] is not None:
         print()
-        print('The following environment variables have been set for interactive mode:')
-        for name, value in extra_env.items():
-            print(f'    {name}: {value}')
-        print()
-        print('When you are done, run exit')
+        print('It is not recommended to run valgrind with a sanitizer')
         print()
 
-        env = dict(os.environ)
-        env.update(extra_env)
+    if args['sanitize'] is not None:
+        flavor = args['sanitize']
+        cmake_args.append(f'-DENABLE_SANITIZE={flavor}')
+
+    if args['valgrind'] is not None:
+        cmake_args.append('-DENABLE_VALGRIND=ON')
+
+        if args['valgrind'] != True:
+            cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
+    else:
+        cmake_args.append('-DENABLE_VALGRIND=OFF')
+
+    print()
+    print('Combined build arguments:')
+    for arg in build_command_line(args):
+        print(f"    {arg}")
+    print()
+
+    if args['test']:
+        cmake_args.append('-DBUILD_TESTING=ON')
+
+    if args['install'] is not None:
+        cmake_args.append(f"-DCMAKE_INSTALL_PREFIX={args['install']}")
+
+    print('CMake arguments:')
+    for arg in cmake_args:
+        print(f"    {arg}")
+    print()
+
+    if args['interactive']:
+
+        # TODO: Improve
+        cmake_args_env = ''
+        for arg in cmake_args:
+            if ' ' in arg:
+                cmake_args_env += f'\'{arg}\' '
+            else:
+                cmake_args_env += f'{arg} '
+                
+
+        configure_filename = os.path.join(args['workspace'], 'do-configure.sh')
+        with open(configure_filename, 'wt') as file:
+            file.write('#!/bin/bash\n')
+            file.write(f"cd {args['buildroot']}\n")
+            file.write(f"{cmake}  {cmake_args_env} \"$@\" {args['source']}\n")
+
+        os.chmod(configure_filename, 0o755)
+
+        build_filename = os.path.join(args['workspace'], 'do-build.sh')
+        with open(build_filename, 'wt') as file:
+            file.write('#!/bin/bash\n')
+            file.write(f"cd {args['buildroot']}\n")
+            file.write(f"{build_command} \"$@\"\n")
+            
+        os.chmod(build_filename, 0o755)
+
+        if args['install'] is not None:
+            install_filename = os.path.join(args['workspace'], 'do-install.sh')
+            with open(install_filename, 'wt') as file:
+                file.write('#!/bin/bash\n')
+                file.write(f"cd {args['buildroot']}\n")
+                file.write(f"{install_command} \"$@\"\n")
+
+            os.chmod(install_filename, 0o755)
+
+            setup_filename = os.path.join(args['workspace'], 'setup.sh')
+            with open(setup_filename, 'wt') as file:
+                file.write('#!/bin/bash\n')
+                file.write(f"export MDSPLUS_DIR={args['install']}\n")
+                file.write(f"source $MDSPLUS_DIR/setup.sh\n")
+                
+            os.chmod(setup_filename, 0o755)
+
+
+        # TODO: Check file locations as well?
+        # TODO: Better handle environments where setup.sh is automatically sourced
+        # TODO: Python?
+        if 'MDSPLUS_DIR' in os.environ:
+            mdsplus_dir = os.environ['MDSPLUS_DIR']
+
+            print('Detected $MDSPLUS_DIR, cleaning environment variables to allow sourcing setup.sh')
+
+            modified_envs = []
+
+            for key, value in os.environ.items():
+                if mdsplus_dir in value:
+
+                    modified_envs.append(f"${key}")
+
+                    sep = os.pathsep
+                    if key == 'MDS_PATH' or key.endswith('_path'):
+                        sep = ';'
+
+                    parts = []
+                    for part in value.split(sep):
+                        if mdsplus_dir not in part:
+                            parts.append(part)
+
+                    if len(parts) > 0:
+                        os.environ[key] = sep.join(parts)
+                    else:
+                        del os.environ[key]
+
+            modified_envs = ', '.join(modified_envs)
+            print(f"    Modified: {modified_envs}")
+            print()
+
+            # For systems where setup.sh is automatically sourced
+            os.environ['MDSPLUS_DIR'] = args['install']
+            
+        print('Spawning a new shell, type `exit` to leave.')
+        print()
 
         subprocess.run(
             [ shell ],
             cwd=args['workspace'],
-            env=env
         )
     
     else:
-        # TODO: Improve
-        cmake_cache_filename = os.path.join(args['workspace'], 'CMakeCache.txt')
-        cmake_cache = parse_cmake_cache(cmake_cache_filename)
-
-        current_generator = None
-        if 'CMAKE_GENERATOR' in cmake_cache:
-            current_generator = cmake_cache['CMAKE_GENERATOR']
-            
-        if args['generator'] is None:
-            args['generator'] = current_generator
-        
-        if args['generator'] != current_generator:
-            # Perform a clean configure
-            cmake_args.append('--fresh')
-
-        if args['generator'] is None:
-            args['generator'] = 'Unix Makefiles'
-
-        # TODO: Add more
-        build_command = f'{cmake} --build .'
-        if args['generator'] == 'Unix Makefiles':
-            build_command = f"make -j{args['parallel']}"
-        elif args['generator'] == 'Ninja':
-            build_command = f"ninja -j{args['parallel']}"
-
-        cmake_args = [ '-G', args['generator'] ] + cmake_args
-
-        if args['sanitize'] is not None and args['valgrind'] is not None:
-            print()
-            print('It is not recommended to run valgrind with a sanitizer')
-            print()
-
-        if args['sanitize'] is not None:
-            flavor = args['sanitize']
-            cmake_args.append(f'-DENABLE_SANITIZE={flavor}')
-
-        if args['valgrind'] is not None:
-            cmake_args.append('-DENABLE_VALGRIND=ON')
-
-            if args['valgrind'] != True:
-                cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
-        else:
-            cmake_args.append('-DENABLE_VALGRIND=OFF')
-
-
-        print()
-        print(f"Combined build arguments:")
-        print(f"    {' '.join(build_command_line(args))}")
-        print()
-
-        if args['test']:
-            cmake_args.append('-DBUILD_TESTING=ON')
-
-        print(f"CMake arguments:")
-        print(f"    {' '.join(cmake_args)}")
-        print()
         
         result = subprocess.run(
             [ cmake ] + cmake_args + [ args['source'] ],
-            cwd=args['workspace'],
+            cwd=args['buildroot'],
         )
 
         if result.returncode != 0:
@@ -536,12 +677,29 @@ else:
                 shell, '-c',
                 build_command
             ],
-            cwd=args['workspace'],
+            cwd=args['buildroot'],
         )
 
         if result.returncode != 0:
             print('CMake Build failed')
             exit(result.returncode)
+
+        if args['install'] is not None:
+            subprocess.run(
+                [
+                    shell, '-c',
+                    install_command
+                ],
+                cwd=args['buildroot'],
+            )
+
+            fake_setup_filename = os.path.join(args['workspace'], 'setup.sh')
+            with open(fake_setup_filename, 'wt') as file:
+                file.write('#!/bin/sh\n')
+                file.write(f"export MDSPLUS_DIR=\"{args['install']}\"\n")
+                file.write('. $MDSPLUS_DIR/setup.sh\n')
+
+            # todo: error checking
 
         if args['test']:
             # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
@@ -556,7 +714,7 @@ else:
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                cwd=args['workspace'],
+                cwd=args['buildroot'],
             )
 
             if result.returncode != 0:
@@ -570,7 +728,6 @@ else:
                 test_queue.append({
                     'index': i + 1,
                     'name': test['name'],
-                    'workspace': args['workspace'],
                 })
 
             start_time = datetime.now()
@@ -639,7 +796,7 @@ else:
                 while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
                     test = test_queue.pop(0)
 
-                    log_filename = os.path.join(test['workspace'], 'testing', test['name'] + '.log')
+                    log_filename = os.path.join(args['buildroot'], 'testing', test['name'] + '.log')
                     os.makedirs(os.path.dirname(log_filename), exist_ok=True)
                     log_file = open(log_filename, 'wb')
 
@@ -654,7 +811,7 @@ else:
                         [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
                         stdout=log_file,
                         stderr=subprocess.STDOUT,
-                        cwd=test['workspace'],
+                        cwd=args['buildroot'],
                         env=test_env,
                     )
                     
