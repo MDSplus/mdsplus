@@ -106,7 +106,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *inData, float *inDim, int *inSize,
   DESCRIPTOR_RANGE(range_d, 0, 0, 0);
   
   
-  float *in_data, *in_dim;
+  float *in_data = 0, *in_dim = 0;
   int size = 0;
   
 
@@ -119,7 +119,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *inData, float *inDim, int *inSize,
 
   int num_samples, num_poles, start_idx, end_idx, i;
   float fc, dummy, *filtered_data, start, end, time_at_0;
-  double delta;
+  double delta = 0;
   float phs_steep;
   float delay = 0.0f;
   static Filter *filter;
