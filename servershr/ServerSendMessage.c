@@ -100,6 +100,11 @@ static SOCKET get_socket_by_conid(int conid)
   return INVALID_SOCKET;
 }
 
+// Mdstcl has two threads: main and receiver.  The main thread dispatches
+// actions to action services (typically one service per computer).
+// The receiver thread processes replies from all action services.
+// Each thread uses a different port, thus a different network connection.
+// Connections persist and thus handle all traffic between the endpoints.
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
                       pthread_rwlock_t *lock, int *conid_out, void (*callback_done)(),
                       void *callback_param, void (*callback_before)(), int numargs_in,
@@ -200,9 +205,11 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
     Job_cleanup(status, jobid);
     return status;
   }
+  // The "action service" immediately sends back a handshake status confirming
+  // that it received the command sent above.
   status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes,
                            (void **)&dptr, &mem);
-  if (op == SrvStop)
+  if (op == SrvStop)  // If stopped the server, a failed status is expected
   {
     if (STATUS_NOT_OK)
     {
@@ -303,6 +310,7 @@ static SOCKET new_reply_socket(uint16_t *port_out)
 
 static Condition ReceiverRunning = CONDITION_INITIALIZER;
 
+// Returns non-MDSplus status: -1, 0, or 1.  OK is 0, others are error.
 static int start_receiver(uint16_t *port_out)
 {
   INIT_STATUS;
@@ -323,7 +331,7 @@ static int start_receiver(uint16_t *port_out)
   if (!ReceiverRunning.value)
   {
     CREATE_DETACHED_THREAD(thread, *16, receiver_thread, &sock);
-    if (c_status)
+    if (c_status)  // is from preceding macro
     {
       perror("Error creating pthread");
       status = MDSplusERROR;
@@ -342,7 +350,7 @@ static int start_receiver(uint16_t *port_out)
 static void receiver_atexit(void *arg)
 {
   (void)arg;
-  MDSDBG("ServerSendMessage thread exitted");
+  MDSDBG("ServerSendMessage thread exited");
   CONDITION_RESET(&ReceiverRunning);
 }
 
@@ -376,6 +384,8 @@ static void reset_fdactive(int rep, SOCKET server, fd_set *fdactive)
   MDSWRN("reset fdactive in reset_fdactive");
 }
 
+// When any action service completes an action, a reply is sent back to mdstcl.
+// The single receiver thread processes the replies from all action services.
 static void receiver_thread(void *sockptr)
 {
   atexit((void *)receiver_atexit);
@@ -395,6 +405,7 @@ static void receiver_thread(void *sockptr)
   int rep;
   int num = 0;
   struct timeval readto, timeout = {10, 0};
+  // Tries 10 times if select() always returns error (i.e., num < 0)
   for (rep = 0; rep < 10; rep++)
   {
     for (readfds = fdactive, readto = timeout;;
@@ -523,6 +534,12 @@ EXPORT int ServerDisconnect(char *server_in)
   return status;
 }
 
+// If a network connection already exists, reuse it.   Only create a 
+// connection in two scenarios: new or defunct.
+// In the simplest configuration, mdstcl has three connections:
+// 1) to the mdsip service for tree access (to read the action nodes),
+// 2) a connection to dispatch actions to the action service, and
+// 3) a connection to receive replies from the action service.
 static inline int server_connect(char *server, uint32_t addr, uint16_t port)
 {
   int conid;
