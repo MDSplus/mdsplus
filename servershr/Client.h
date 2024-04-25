@@ -188,6 +188,9 @@ static void Client_do_message(Client *c, fd_set *fdactive)
   }
   switch (replyType)
   {
+  // When an action service has processed an action, it sends back this reply.
+  // So update the status flags for the job.  Don't remove the client because
+  // want the network connection to remain active.
   case SrvJobFINISHED:
   {
     Job *j = Job_get_by_jobid(jobid);

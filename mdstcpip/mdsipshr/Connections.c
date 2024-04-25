@@ -38,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #define DEBUG
 #include <mdsmsg.h>
 
+// Because threads have their own MdsipThreadStatic data, the receiver thread
+// cannot access the connection list that is stored in the main thread.  If
+// that capability is ever needed, must use a global pointer.  However, sharing
+// the connection list with both threads is inadvisable because it can result
+// in deadlock.
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
   if (id == INVALID_CONNECTION_ID)
