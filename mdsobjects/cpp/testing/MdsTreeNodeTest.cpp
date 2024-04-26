@@ -889,8 +889,11 @@ void main_test()
     delete n1->addDevice("device", "DIO2");
   }
 
+  // If we don't close the existing "t_treenode" tree, windows will fail when attempting to make a NEW one
+  tree = NULL;
 
   {
+    // TODO: Rename these so they don't use the same names from the top of this function
     Tree *tree = new Tree("t_treenode", -1, "NEW");
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;
