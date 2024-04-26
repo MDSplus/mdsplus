@@ -72,7 +72,8 @@ extern int tdi_get_data();
 extern int TdiGetLong();
 extern int _TdiEvaluate();
 
-static int compare(struct descriptor *s1, struct item s2[1])
+// s2 is a pointer to the middle of the table, which is why the -1 below works
+static int compare(struct descriptor *s1, struct item *s2)
 {
   int cmp, len1 = s1->length, len2 = strlen(s2[0].item_name);
   char c0;
