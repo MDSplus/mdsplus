@@ -558,7 +558,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n", user_p);
     }
     msg->h.msglen = sizeof(MsgHdr);
-    msg->h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
+    msg->h.status = IS_OK(auth_status) ? (1 | (c->compression_level << 1)) : 0;
     msg->h.ndims = 1;
     msg->h.dims[0] = MDSIP_VERSION;
     // reply to client //
@@ -578,6 +578,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     else
     {
       destroyConnection(c);
+      status = MDSplusERROR;
     }
   }
   return status;
