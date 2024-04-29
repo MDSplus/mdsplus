@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifdef _WIN32
+#include <winsock2.h>
 #include <windows.h>
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
