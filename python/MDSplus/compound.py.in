@@ -23,9 +23,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import sys
 import ctypes as _C
 import numpy as _N
 
+try:
+    import imp
+except:
+    # imp was removed in 3.12
+    from types import ModuleType
+
+    class imp:
+        @staticmethod
+        def new_module(name):
+            return ModuleType(name)
 
 def _mimport(name, level=1):
     try:
@@ -249,8 +260,7 @@ class Conglom(_dat.TreeRefX, Compound):
     def getDevice(self, *args, **kwargs):
         if not self.image == '__python__':
             raise _exc.DevNOT_A_PYDEVICE
-        import imp
-        import sys
+
         model, unique = self.__model_unique
         if unique is None:
             module = imp.new_module(model)
