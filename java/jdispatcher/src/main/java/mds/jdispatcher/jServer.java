@@ -201,8 +201,7 @@ public class jServer extends MdsIp
 				{
 					currentActionAborted = false;
 					currMaker = new ActionMaker(currAction);
-System.out.println("-----Action started");
-                    currMaker.run();
+                    currMaker.run(); //Avoid useless thread with potential deadlock
 /*
 					currMaker.start();
 					try
@@ -212,7 +211,6 @@ System.out.println("-----Action started");
 					catch (final InterruptedException exc)
 					{}
 */
-System.out.println("-----Action ended");
 				}
 				if (currentActionAborted)
 				{
