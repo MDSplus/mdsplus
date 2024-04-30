@@ -56,7 +56,7 @@ EXPORT int TclShowCurrent(void *ctx, char **error, char **output)
   }
   else
   {
-    *error = strdup("Failed to get shotid.  (Means no 'set current', mispelled tree or bad tree path.)\n");
+    *error = strdup("Failed to get shotid.  (Means no 'set current', misspelled tree or bad tree path.)\n");
   }
   free(experiment);
   return 1;
