@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="NOTCHILDLESS" value="4127" severity="Error" text="Node must be childless to become subtree reference"/>
     <status name="NOT_IN_LIST" value="4152" severity="Error" text="Tree being opened was not in the list"/>
     <status name="NOTMEMBERLESS" value="4142" severity="Error" text="Subtree reference can not have members"/>
-    <status name="NOTOPEN" value="4125" severity="Error" text="No tree file currently open"/>
+    <status name="NOTOPEN" value="4125" severity="Error" text="No tree file currently open" deprecated="TreeNOT_OPEN"/>
     <status name="NOTSON" value="4143" severity="Error" text="Subtree reference cannot be a member"/>
     <status name="NOT_CONGLOM" value="4140" severity="Error" text="Head node of conglomerate does not contain a DTYPE_CONGLOM record"/>
     <status name="NOT_OPEN" value="4117" severity="Warning" text="Tree not currently open"/>

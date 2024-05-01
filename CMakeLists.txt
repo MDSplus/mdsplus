@@ -547,6 +547,16 @@ foreach(_lang IN ITEMS C CXX)
         set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -Wno-deprecated-non-prototype")
 
     endif()
+
+    if(CMAKE_${_lang}_COMPILER_ID STREQUAL "GNU" AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "13")
+
+        # We should conform to strict aliasing, but it's going to take some work
+        # https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8
+        #
+        # The uninitialized and clobbered checkers are giving us some false positives as well
+        set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -Wno-strict-aliasing -Wno-uninitialized -Wno-clobbered")
+
+    endif()
 endforeach()
 
 ###
@@ -941,13 +951,17 @@ mdsplus_generate_files(
 ### Generate Documentation
 ###
 
-find_package(Doxygen)
+if(ENABLE_DOXYGEN)
 
-if(Doxygen_FOUND)
+    find_package(Doxygen)
 
-    add_custom_target(
-        docs
-    )
+    if(Doxygen_FOUND)
+
+        add_custom_target(
+            docs
+        )
+
+    endif()
 
 endif()
 

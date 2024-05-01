@@ -1816,7 +1816,7 @@ static void AutoScale(int num, float *value, float *minval, float *maxval,
   vmax = max(vmin, min(vmax, huge));
   if (vmax == vmin)
   {
-    if (vmin == huge)
+    if (vmin == (float)huge)
       vmin = vmax = 0.0;
     span = fabs(vmax);
     if (span <= 0.0)
