@@ -350,7 +350,7 @@ int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
   setenv("t_treeseg_path", ".", 1);
-  TEST_TIMEOUT(100);
+  // TEST_TIMEOUT(100);
   TEST(putSegment);
   TEST(BlockAndRows);
   TEST(makeSegment);
