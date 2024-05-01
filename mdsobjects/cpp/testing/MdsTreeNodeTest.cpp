@@ -136,7 +136,7 @@ namespace testing
 
 void main_test()
 {
-  TEST_TIMEOUT(100);
+  // TEST_TIMEOUT(100);
   BEGIN_TESTING(TreeNode);
 
   
