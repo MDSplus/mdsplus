@@ -32,55 +32,101 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *4    21-NOV-1994 14:08:37 MDSPLUS "Boh?" */
 /*  *3    21-NOV-1994 14:07:40 MDSPLUS "Boh?" */
 /*  *2    21-NOV-1994 13:53:26 MDSPLUS "Boh?" */
-/*  *1    21-NOV-1994 13:11:53 MDSPLUS "Low pass filter (10 poles Butterworth)"
- */
+/*  *1    21-NOV-1994 13:11:53 MDSPLUS "Low pass filter (10 poles Butterworth)" */
 /*  DEC/CMS REPLACEMENT HISTORY, Element MDS$FILTER.C */
 /*------------------------------------------------------------------------------
 
-        Name:	MDS$FILTER
+	Name:	MDS$FILTER
 
-        Type:   C function
+	Type:   C function
 
-        Author:	Gabriele Manduchi
-                Istituto Gas Ionizzati del CNR - Padova (Italy)
+	Author:	Gabriele Manduchi
+		Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-        Date:   21-NOV-1994
+	Date:   21-NOV-1994
 
-        Purpose: Filter a signal using a 10 poles Butterworth filter and Impulse
-Invariance Method
---------------------------------------------------------------------------------
-*/
-#include "filter.h"
-#include <math.h>
+	Purpose: Filter a signal using a 10 poles Butterworth filter and Impulse Invariance Method
+-------------------------------------------------------------------------------- */
 #include <mdsdescrip.h>
+#include <stdlib.h>
 #include <mdsshr.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include "filter.h"
 
-EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
-                                       float *cut_off, int *num_in_poles)
+// Check whether the signal has been originated by MinMax resampling, i.e. whether the X values are the same in pairs
+//If not, copy the signal, otherwise build a signal with half the points, removing dumplicated X dimension and replacing the 
+//corresponding par of Y samples with their average
+
+static void checkSignal(float *inData, float *inDim, int size, float **outData, float **outDim, int *retSize, double *outDelta)
 {
-  static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+   int i;
+   
+   if(size > 4 && (inDim[0] == inDim[1] && inDim[2] == inDim[3]))
+    { //Derived from MinMax resampling
+     *outData = (float *)malloc(sizeof(float)*size);
+     *outDim = (float *)malloc(sizeof(float)*size);
+     for(i = 0; i < size - 1; i++)
+     {
+       (*outData)[i] = inData[i];
+       (*outDim)[i] = (inDim[i] + inDim[i+1])/2.;
+       *retSize = size;     
+      }
+      (*outDim)[size - 1] = inDim[size - 1];
+      (*outData)[size - 1] = inData[size - 1];
+   }
+   else
+   {
+     *outData = (float *)malloc(sizeof(float)*size);
+     *outDim = (float *)malloc(sizeof(float)*size);
+     memcpy(*outData, inData,sizeof(float)*size); 
+     memcpy(*outDim, inDim,sizeof(float)*size); 
+     *retSize = size;
+   }
+   *outDelta = 0;
+   for(i = 0; i < size - 1; i++)
+   {
+     *outDelta += (*outDim)[i+1] - (*outDim)[i];
+   }
+   *outDelta /= (size - 1);
+}
+
+
+
+EXPORT struct descriptor_xd *MdsFilter(float *inData, float *inDim, int *inSize, float *cut_off,
+				int *num_in_poles)
+{
+  static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
   DESCRIPTOR_A(data_d, sizeof(float), DTYPE_FLOAT, 0, 0);
   DESCRIPTOR_SIGNAL(signal_d, 1, 0, 0);
   DESCRIPTOR_DIMENSION(dimension_d, 0, 0);
   DESCRIPTOR_WINDOW(window_d, 0, 0, 0);
   DESCRIPTOR_RANGE(range_d, 0, 0, 0);
+  
+  
+  float *in_data = 0, *in_dim = 0;
+  int size = 0;
+  
 
-  struct descriptor start_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
-                    end_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
-                    delta_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
-                    start_idx_d = {sizeof(int), DTYPE_L, CLASS_S, 0},
-                    end_idx_d = {sizeof(int), DTYPE_L, CLASS_S, 0},
-                    time_at_0_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
+  struct descriptor start_d = { sizeof(float), DTYPE_FLOAT, CLASS_S, 0 }, end_d = {
+  sizeof(float), DTYPE_FLOAT, CLASS_S, 0}, delta_d = {
+  sizeof(double), DTYPE_DOUBLE, CLASS_S, 0}, start_idx_d = {
+  sizeof(int), DTYPE_L, CLASS_S, 0}, end_idx_d = {
+  sizeof(int), DTYPE_L, CLASS_S, 0}, time_at_0_d = {
+  sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
 
   int num_samples, num_poles, start_idx, end_idx, i;
-  float fc, delta, dummy, *filtered_data, start, end, time_at_0;
+  float fc, dummy, *filtered_data, start, end, time_at_0;
+  double delta = 0;
   float phs_steep;
   float delay = 0.0f;
   static Filter *filter;
 
+  checkSignal(inData, inDim, *inSize, &in_data, &in_dim, &size, &delta);
+   
+  
   if (*num_in_poles > 0)
     num_poles = *num_in_poles;
   else
@@ -103,7 +149,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   end_d.pointer = (char *)&end;
   delta_d.pointer = (char *)&delta;
 
-  num_samples = *size;
+  num_samples = size;
 
   fc = 1 / (in_dim[1] - in_dim[0]);
   filter = ButtwInvar(cut_off, &dummy, &dummy, &dummy, &fc, &num_poles);
@@ -113,13 +159,9 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   float phs[1000];
   TestFilter(filter, fc, 1000, mod, phs);
 
-  for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) &&
-              phs[i] > phs[i + 1];
-       i++)
-    ;
+  for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) && phs[i] > phs[i + 1]; i++) ;
 
-  if (i > 1)
-  {
+  if (i > 1) {
     phs_steep = (phs[1] - phs[i]) / ((i / 1000.) * fc / 2.);
     delay = phs_steep / (2 * PI);
   }
@@ -130,7 +172,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   data_d.arsize = num_samples * sizeof(float);
   start = in_dim[0] - delay;
   end = in_dim[num_samples - 1] - delay;
-  delta = in_dim[1] - in_dim[0];
+  //delta = (double)in_dim[1] - (double)in_dim[0];
   start_idx = 0;
   end_idx = num_samples - 1;
   time_at_0 = in_dim[0] - delay;
@@ -138,23 +180,25 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   MdsCopyDxXd((struct descriptor *)&signal_d, &out_xd);
   free(filtered_data);
 
+  free((char *)in_data);
+  free((char *)in_dim);
   return &out_xd;
 }
 
-EXPORT void PrintFilter(Filter *filter)
+EXPORT void PrintFilter(Filter * filter)
 {
   int i, j;
 
-  for (i = 0; i < filter->num_parallels; i++)
-  {
-    // if(filter->units[i].den_degree > 0)
+  for (i = 0; i < filter->num_parallels; i++) {
+    //if(filter->units[i].den_degree > 0)
     {
       for (j = 0; j < filter->units[i].num_degree; j++)
-        printf("%f ", filter->units[i].num[j]);
+	printf("%f ", filter->units[i].num[j]);
       for (j = 0; j < filter->units[i].den_degree; j++)
-        printf("%f ", filter->units[i].den[j]);
+	printf("%f ", filter->units[i].den[j]);
 
       printf("\n");
     }
   }
 }
+
