@@ -128,7 +128,7 @@ pipeline {
                                         checkout scm;
 
                                         if (new_tag) {
-                                            sh "git tag ${new_tag}"
+                                            sh "git tag ${new_tag} || true"
                                         }
                                     }
 
