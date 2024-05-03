@@ -836,6 +836,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  </packages>
 
  <!-- dist first -->
+  <external_packages dist="Ubuntu24">
+   <numpy package="python3-numpy"/>
+   <java package="java-runtime"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
  <external_packages dist="Ubuntu22">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
@@ -843,6 +849,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  </external_packages>
 
  <external_packages dist="Ubuntu20">
+   <numpy package="python3-numpy"/>
+   <java package="java-runtime"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="DebianBookworm">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
    <readline package="libreadline8"/>
