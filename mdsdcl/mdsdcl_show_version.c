@@ -25,6 +25,7 @@ EXPORT int mdsdcl_show_version(void *ctx __attribute__((unused)),
   info += sprintf(info, "MDSplus version: %d.%d.%d\n", MdsVersion.MAJOR, MdsVersion.MINOR, MdsVersion.MICRO);
   info += sprintf(info, "----------------------\n");
   info += sprintf(info, "  Release:  %s\n", tag);
+  info += sprintf(info, "  Date:     %s\n", MdsReleaseDate());
   info += sprintf(info, "  Browse:   https://github.com/MDSplus/mdsplus/tree/%s\n", tag);
   info += sprintf(info, "  Download: https://github.com/MDSplus/mdsplus/releases/tag/%s\n", tag);
   info += sprintf(info, "\n\n");
