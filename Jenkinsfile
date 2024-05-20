@@ -155,7 +155,7 @@ pipeline {
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version}"
+                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
