@@ -572,13 +572,17 @@ def BUILDER(cls):
                             raise Exception('Unsupported parameter datatype.')
 
                     # retrieved data is saved to a dictionary
-                    paramDict = dict(name='Parameters.'+retrievedName,
+ #                   paramDict = dict(name='Parameters.'+retrievedName,
+ #                                   type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
+                    paramDict = dict(name=retrievedName,
                                     type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
 
                     # dictionary is appended to the MDSplus-style list
                     paramList.append(paramDict)
                 else: #retrievedSLIdType == 255  SRUCTURED PARAMETERS
-                    GetModelParameterFields(retrievedTypeIdx, ParameterStruct, paramIdx, 'Parameters.'+retrievedName, paramList, 1)  
+                    paramDict = dict(name=retrievedName, type = 'structure',
+                                     value = GetModelParameterFields(retrievedTypeIdx, ParameterStruct, paramIdx, 1))
+                    #GetModelParameterFields(retrievedTypeIdx, ParameterStruct, paramIdx, 'Parameters.'+retrievedName, paramList, 1)  
                   
                     #numFields = WrapperLib.WCAPI_GetDataTypeNumElements(
                         #DataTypeMap, retrievedTypeIdx)
@@ -737,15 +741,17 @@ def BUILDER(cls):
                  #endif STRUCTURED PARAMETER
             #endfor parameters
             #print('PARAMETRI FATTI')
-            return paramList
+            return  [dict(name='Parameters',
+                            type='structure', 
+                            value= paramList)]
 
 #################################################################
 #Recursive method for parameter structures
 ##################################################################          
-        def GetModelParameterFields(structTypeIdx, ParameterStruct, paramIdx, baseParName, paramList, recLev  ):
+        def GetModelParameterFields(structTypeIdx, ParameterStruct, paramIdx, recLev  ):
             if recLev == 10:
               raise Exception
-            
+            paramList = []
             numFields = WrapperLib.WCAPI_GetDataTypeNumElements(
                 DataTypeMap, structTypeIdx)
             elementMapIndex = WrapperLib.WCAPI_GetDataTypeElemMapIndex(
@@ -828,7 +834,10 @@ def BUILDER(cls):
                         raise Exception('Unsupported Enum datatype.')
                 else: #NESTED STRUCTURES!!!!!!!!!!!!!!!!
                     #print('TYPE '+str(fieldSLIdType) + '   '+str(fieldTypeIdx))
-                    GetModelParameterFields(fieldTypeIdx, ParameterStruct, paramIdx, baseParName + '-'+fieldName, paramList, recLev+1)
+                    paramDict = dict(name=fieldName,
+                            type='structure', 
+                            value= GetModelParameterFields(fieldTypeIdx, ParameterStruct, paramIdx, recLev+1))
+                    paramList.append(paramDict)                   
                     continue #no direct data associated
         # field dimensions
                 # dimensions are retrieved
@@ -901,10 +910,11 @@ def BUILDER(cls):
                     else:
                         raise Exception('Unsupported parameter datatype.')
                       
-                paramDict = dict(name=baseParName+'-'+fieldName,
+                paramDict = dict(name=fieldName,
                             type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
               # dictionary is appended to the MDSplus-style list
                 paramList.append(paramDict)
+            return paramList
           #end GetModelParameterFields
 
         # First parameter should be the model name

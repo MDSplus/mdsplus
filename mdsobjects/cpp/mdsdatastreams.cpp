@@ -183,7 +183,7 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
 {
   bool isAbsTime = (timesD->dtype == DTYPE_Q || timesD->dtype == DTYPE_QU);
   int nTimes, nSamples;
-  int *dims;
+  int *dims = NULL;
   float *samples, sample;
   int nDims = 1;
 

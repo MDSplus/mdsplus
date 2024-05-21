@@ -42,28 +42,20 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
       <SubComponents>
-        <Component class="DeviceField" name="deviceField1">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Timebase"/>
-            <Property name="numCols" type="int" value="20"/>
-            <Property name="offsetNid" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField2">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Time Div.:"/>
-            <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="253"/>
-          </Properties>
-        </Component>
         <Component class="DeviceField" name="deviceField3">
           <Properties>
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="120"/>
+            <Property name="offsetNid" type="int" value="145"/>
+          </Properties>
+        </Component>
+        <Component class="DeviceField" name="deviceField1">
+          <Properties>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Port: "/>
+            <Property name="numCols" type="int" value="6"/>
+            <Property name="offsetNid" type="int" value="309"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -115,7 +107,7 @@
           <SubComponents>
             <Container class="DeviceOutputs" name="deviceOutputs1">
               <Properties>
-                <Property name="offsetNid" type="int" value="114"/>
+                <Property name="offsetNid" type="int" value="139"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

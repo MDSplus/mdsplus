@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
+// To activate the MDSDBG() debug messages, uncomment the following line.
 //#define DEBUG
 //#undef DEBUG
 #ifdef MDSDBG
@@ -27,7 +29,7 @@
 #define __MDSMSGPREFIX(LV) (                                  \
     {                                                         \
       pos = __FILE__;                                         \
-      while (!strncmp(pos, "../", 3))                         \
+      while (!strncmp(pos, "../", (unsigned long int) 3))                         \
         pos += 3;                                             \
       pos = msg + sprintf(msg, "%c, %u:%lu, %u.%09u: %s:%d ", \
                           LV, getpid(), CURRENT_THREAD_ID(),  \

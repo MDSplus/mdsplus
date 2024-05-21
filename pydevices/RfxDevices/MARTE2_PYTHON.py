@@ -77,9 +77,9 @@ class BUILDER:
         except KeyError:
             dtype = 'int32'
         return {
-            'name': 'Parameters.' + name,
+            'name': name,
             'type': dtype,
-            'value': np.array(val, dtype),
+            'value': val,
         }
 
     def __call__(self, cls):
@@ -107,7 +107,8 @@ class BUILDER:
             'name': 'FileName',
             'type': 'string',
             'value': self.module.__file__.split('/')[-1].split('.')[0]},
-        ] + [
+        ]
+        pyParams = [
             self.convert_param(
                 self.pygam.getParameterName(self.module.__name__, i),
                 self.pygam.getParameterDimensions(self.module.__name__, i),
@@ -116,6 +117,11 @@ class BUILDER:
             )
             for i in range(self.pygam.getNumberOfParameters(self.module.__name__))
         ]
+        cls.parameters.append({
+            'name': 'Parameters',
+            'type': 'structure',
+            'value': pyParams
+        })
         cls.parts = []
         cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
         return cls

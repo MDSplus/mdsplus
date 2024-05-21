@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 //package jTraverser;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -771,13 +772,18 @@ public class Node
 		}
 		catch (final Exception e)
 		{
+			if (e instanceof InvocationTargetException) {
+				// Exceptions thrown through reflected code are wrapped in InvocationTargetException
+				// so we call printStackTrace to allow debugging
+				e.printStackTrace();
+			}
+
 			/*
 			 * try { nid.doMethod("dw_setup") ; } catch(Exception exc)
 			 */
 			{
-				JOptionPane.showMessageDialog(FrameRepository.frame, "Class " + e.getMessage() + " not found",
+				JOptionPane.showMessageDialog(FrameRepository.frame, "Class " + e + " not found",
 						"Error in device setup 4", JOptionPane.WARNING_MESSAGE);
-				// e.printStackTrace();
 				return;
 			}
 		}

@@ -14,5 +14,7 @@ trap cleanup EXIT INT
 docker run -t -a stdout -a stderr --cidfile=$cid \
    -u $(id -u):$(id -g) --privileged \
    -e "HOME=/tmp" \
+   -e "BRANCH" \
+   -e "RELEASE_VERSION" \
    -v "${SRCDIR}:${DOCKER_SRCDIR}" \
    ${DOCKERIMAGE} "${DOCKER_SRCDIR}/bootstrap"

@@ -372,7 +372,7 @@ void Connection::closeAllTrees()
     throw MdsException(status);
 }
 
-Data *Connection::get(const char *expr, Data **args, int nArgs)
+Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
 {
   char clazz, dtype, nDims;
   short length;
@@ -395,8 +395,22 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   }
 
   lockLocal();
-  status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
-                   std::string(expr).size(), 0, 0, (char *)expr);
+
+  if(serialized)
+  {
+    std::string expExpr("serializeout(`(data(");
+    expExpr +=expr;
+    expExpr += ")))";
+    status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
+                   expExpr.size(), 0, 0, (char *)expExpr.c_str());
+  }
+  else
+  {
+     status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
+                   strlen((char *)expr), 0, 0, (char *)expr);
+  }
+//                   std::string(expr).size(), 0, 0, (char *)expr);
+
   if (STATUS_NOT_OK)
   {
     unlockLocal();
@@ -519,10 +533,23 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 
   if (mem)
     FreeMessage(mem);
-  return resData;
+
+
+  if(!serialized || nDims == 0) //Error code returned
+    return resData;
+
+  
+  Data *deserData = deserialize(resData);  //Otherwise deserialze it
+  deleteData(resData);
+  
+  return deserData;
+}
+void Connection::put(const char *inPath, Data *data)
+{
+    put(inPath, (char *)"$", &data, 1);
 }
 
-void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
+void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
 {
   char clazz, dtype, nDims;
   short length;
@@ -532,15 +559,33 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
   
   int sockId = getSockId();
 
-  // Check whether arguments are compatible (Scalars or Arrays)
-  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+
+  Data **args;
+
+  //Check id any passed argument is APD. Serialize arguments only in this case
+  bool serialized = false;
+
+  for(int i = 0; i < nArgs; i++)
   {
-    args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
-    if (!ptr)
-      throw MdsException("Invalid argument passed to Connection::put(). Can "
-                         "only be Scalar or Array");
-    if (nDims > 0)
-      delete[] dims;
+    if (inArgs[i]->clazz == CLASS_APD)
+      serialized = true;
+  }
+
+//Serialize Arguments
+  if(serialized)
+  {
+    args = new Data*[nArgs];
+    for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+    {
+        int currSerSize;
+        char *currSer = inArgs[argIdx]->serialize(&currSerSize);
+        args[argIdx] = new Uint8Array((unsigned char *)currSer, currSerSize);
+        delete []currSer;
+    }
+  }
+  else
+  {
+    args = inArgs;
   }
 
   // Double backslashes!!
@@ -548,7 +593,16 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
   if (path.at(0) == '\\')
     path.insert(path.begin(), '\\');
 
-  std::string putExpr("TreePut(\'");
+  std::string putExpr;
+  if(serialized)
+  {
+    putExpr += "TreePutDeserialized(\'";
+  }
+  else
+  {
+    putExpr += "TreePut(\'";
+  }
+
   putExpr += path + "\',\'" + expr + "\'";
   for (int varIdx = 0; varIdx < nArgs; ++varIdx)
     putExpr += ",$";
@@ -588,6 +642,18 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
     status = *(reinterpret_cast<int *>(ptr));
   if (mem)
     FreeMessage(mem);
+
+//Delete serialize args
+  if (serialized)
+  {
+    for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+    {
+        deleteData(args[argIdx]);
+    }
+    delete [] args;
+  }
+
+
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }

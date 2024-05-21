@@ -28,9 +28,8 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
+        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         deviceInputs1 = new DeviceInputs();
         deviceOutputs1 = new DeviceOutputs();
@@ -42,23 +41,17 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
         setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel1.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Time Div.: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(54);
-        jPanel1.add(deviceField2);
-
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Write CPU Mask: ");
         deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(44);
+        deviceField3.setOffsetNid(51);
         jPanel1.add(deviceField3);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Port");
+        deviceField1.setNumCols(6);
+        deviceField1.setOffsetNid(62);
+        jPanel1.add(deviceField1);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
@@ -73,7 +66,6 @@ public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
