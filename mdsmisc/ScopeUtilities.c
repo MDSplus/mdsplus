@@ -1206,7 +1206,7 @@ EXPORT mdsdsc_xd_t *GetXYWave(char *inY, float *inXMin, float *inXMax,
 EXPORT mdsdsc_xd_t *GetLastTime(char *inY)
 {
   static EMPTYXD(xd);
-  int nid, numSegments, status;
+  int nid, numSegments = 0, status;
   EMPTYXD(segXd);
   EMPTYXD(dimXd);
   struct descriptor_a *arrD = NULL;
