@@ -25,7 +25,7 @@ do_createrepo() {
   checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
   rm -f ${tmpdir}/repodata/repomd.xml.asc
   export GNUPGHOME=/sign_keys/.gnupg
-  gpg --local-user RPM-GPG-KEY-MDSplus --detach-sign --armor ${tmpdir}/repodata/repomd.xml
+  gpg --local-user MDSplus --detach-sign --armor ${tmpdir}/repodata/repomd.xml
   unset GNUPGHOME
   : && rsync -a ${tmpdir}/repodata ${repodir}/${FLAVOR}/RPMS/
 }
