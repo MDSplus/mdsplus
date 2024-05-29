@@ -559,19 +559,6 @@ public class MdsDataProvider implements DataProvider
 			return false;
 		}
 
-		public String duplicateBackslashes(String inStr)
-		{
-			final StringBuffer outStr = new StringBuffer();
-			for (int i = 0; i < inStr.length(); i++)
-			{
-				if (inStr.charAt(i) == '\\')
-				{
-					outStr.append('\\');
-				}
-				outStr.append(inStr.charAt(i));
-			}
-			return outStr.toString();
-		}
 
 		@Override
 		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
@@ -1273,6 +1260,19 @@ public class MdsDataProvider implements DataProvider
 		// updateWorker = new UpdateWorker();
 		// updateWorker.start();
 	}
+        public String duplicateBackslashes(String inStr)
+        {
+                final StringBuffer outStr = new StringBuffer();
+                for (int i = 0; i < inStr.length(); i++)
+                {
+                        if (inStr.charAt(i) == '\\')
+                        {
+                                outStr.append('\\');
+                        }
+                        outStr.append(inStr.charAt(i));
+                }
+                return outStr.toString();
+        }
 
 	@Override
 	public synchronized void addConnectionListener(ConnectionListener l)
@@ -1572,6 +1572,15 @@ public class MdsDataProvider implements DataProvider
 			return null;
 		return realArray.getDoubleArray();
 	}
+	public long[] getLongArray(String in) throws IOException
+	{
+		if (debug)
+			System.out.println("GetDoubleArray " + in);
+		final RealArray realArray = GetRealArray(in);
+		if (realArray == null)
+                    throw new IOException("Failed to evaluate "+in);
+		return realArray.getLongArray();
+	}
 
 	@Override
 	public synchronized String getError()
@@ -1592,6 +1601,15 @@ public class MdsDataProvider implements DataProvider
 		return exp;
 	}
 
+        @Override
+	public synchronized long getLastTime(String in, int row, int col, int index) throws IOException
+	{
+            final String lastTimeExpr = "MdsMisc->GetLastTime:DSC(\"" + duplicateBackslashes(in) + "\")";
+	    final long[] retData = getLongArray(lastTimeExpr);
+            return retData[0];
+        }
+        
+        
 	@Override
 	public synchronized double getFloat(String in, int row, int col, int index) throws IOException
 	{
