@@ -333,6 +333,13 @@ public class AsciiDataProvider implements DataProvider
 	}
 
 	@Override
+	public long getLastTime(String in, int row, int col, int index)
+	{
+		error = null;
+		return 0; //Fake implementation
+	}
+
+	@Override
 	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		throw (new IOException("Frames visualization on DemoDataProvider not implemented"));

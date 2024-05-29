@@ -1363,6 +1363,10 @@ public class TwuDataProvider implements DataProvider
 	{
 		return Double.parseDouble(in);
 	}
+	public long getLastTime(String in, int row, int col, int index)
+	{
+		return 0; //Fake implementation
+	}
 
 	// ---------------------------------------------------------------------------------------------
 	public synchronized float[] GetFloatArray(String in)

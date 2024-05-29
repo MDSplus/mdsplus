@@ -93,16 +93,33 @@ public interface DataProvider extends AutoCloseable
 
 	/**
 	 * Method GetFloat is called by jScope to evaluate x min, x max, y min, y max
-	 * when defined in the stup data source popup form. The argument is in fact the
+	 * when defined in the setup data source popup form. The argument is in fact the
 	 * string typed by the user in the form. In its simplest implementation, method
 	 * GetFloat converts the string into a float value and returns it. Other data
 	 * providers, such as MdsDataProvider, evaluate, possibly remotely, the passed
 	 * string which may therefore be represented by an expression.
 	 *
 	 * @param in The specification of the value.
+         * @param row accessory information
+         * @param col accessory information
+         * @param index accessory information 
 	 * @return The evaluated value.
 	 */
 	public double getFloat(String in, int row, int col, int index) throws IOException;
+
+	/**
+	 * Method GetLastTime is called by jScope to evaluate window limits when displaying the last 
+         * part of a trend signal with absolute time when defined in the setup data source popup form. 
+         * In this case the xmin expression is terminates with a colon and it represents the window size
+         * in seconds
+	 *
+	 * @param in The specification of the value.
+         * @param row accessory information
+         * @param col accessory information
+         * @param index accessory information 
+	 * @return The absolute time of the last data point.
+	 */
+	public long getLastTime(String in, int row, int col, int index) throws IOException;
 
 	/**
 	 * GetFrameData is called by jScope to retrieve and display a frame sequence.

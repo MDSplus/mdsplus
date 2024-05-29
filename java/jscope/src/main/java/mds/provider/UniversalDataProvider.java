@@ -82,6 +82,20 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
+	public long getLastTime(String in, int row, int col, int index)
+	{
+		try
+		{
+			return defaultProvider.getLastTime(in, row, col, index);
+		}
+		catch (final Exception exc)
+		{
+			error = "" + exc;
+			return 0;
+		}
+	}
+
+	@Override
 	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		return null;
