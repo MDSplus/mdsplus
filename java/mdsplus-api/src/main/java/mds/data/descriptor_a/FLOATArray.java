@@ -46,7 +46,7 @@ public abstract class FLOATArray<T extends Number> extends NUMBERArray<T>
 	@Override
 	public final StringBuilder decompile(final StringBuilder pout, final T value)
 	{
-		return pout.append(FLOAT.decompile(value, this.dtype(), Descriptor.DECO_NRM));
+		return pout.append(FLOAT.decompile(mds, value, this.dtype(), Descriptor.DECO_NRM));
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public abstract class FLOATArray<T extends Number> extends NUMBERArray<T>
 	@Override
 	public final String toString(final T value)
 	{
-		return FLOAT.decompile(value, this.dtype(), Descriptor.DECO_STR);
+		return FLOAT.decompile(mds, value, this.dtype(), Descriptor.DECO_STR);
 	}
 }

@@ -30,7 +30,7 @@ public enum DTYPE
 	OU("Octaword_Unsigned", "OU"), // 25
 	O("Octaword", "O"), // 26
 	G("G_Float", "G"), // 27
-	H("H_Float", "H"), // 28
+	H("H_Float", "H"), // 28 /*bad*/
 	GC("G_Complex", "G"), // 29 IEEE
 	HC("H_Complex", "H"), // 30 128bit
 	CIT, // 31 COBOL Intermediate Temporary

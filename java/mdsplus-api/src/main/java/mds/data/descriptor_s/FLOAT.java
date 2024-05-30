@@ -2,21 +2,57 @@ package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
 import java.util.Locale;
+
+import mds.Mds;
 import mds.MdsException;
-import mds.data.DATA;
-import mds.data.DTYPE;
+import mds.data.*;
 import mds.data.descriptor.Descriptor;
+import mds.data.descriptor_r.Function;
 
 public abstract class FLOAT<T extends Number> extends NUMBER<T>
 {
-	public static final String decompile(final Number value, final DTYPE dtype, final int mode)
+	static public final String decompile(Mds mds, final Number value, final DTYPE dtype, final int mode)
 	{
-		final boolean isF = dtype == DTYPE.F || dtype == DTYPE.FS || dtype == DTYPE.FC || dtype == DTYPE.FSC;
-		if (value.doubleValue() == 0)
-			return isF ? "0." : new StringBuilder(3).append('0').append(dtype.suffix).append('0').toString();
-		final double val, absval = Math.abs(value.doubleValue());
+		boolean is32;
+		switch (dtype)
+		{
+		case FS:
+		case FSC:
+		{
+			final float v = value.floatValue();
+			is32 = true;
+			if (Float.isNaN(v))
+				return "$ROPRAND";
+			if (v == 0)
+				return "0.";
+			break;
+		}
+		case FT:
+		case FTC:
+		{
+			final double v = value.doubleValue();
+			is32 = false;
+			if (Double.isNaN(v))
+				return "$ROPRAND";
+			if (v == 0)
+				return "0D0";
+			break;
+		}
+		case F:
+		case FC:
+			return Function.Decompile(new Float32(dtype, value.floatValue())).evaluate().toString();
+		case G:
+		case GC:
+		case D:
+		case DC:
+			return Function.Decompile(new Float64(dtype, value.doubleValue())).evaluate().toString();
+		default:
+			return "/*bad*/";
+		};
+		final double val;
 		final int E;
-		if (absval >= (isF ? 1e6 : 1e16) || absval < 1e-4)
+		final double absval = Math.abs(value.doubleValue());
+		if (absval >= (is32 ? 1e6 : 1e16) || absval < 1e-4)
 		{
 			E = Math.floorDiv((int) Math.log10(absval), 3) * 3;
 			val = value.doubleValue() / Math.pow(10, E);
@@ -27,7 +63,7 @@ public abstract class FLOAT<T extends Number> extends NUMBER<T>
 			E = 0;
 		}
 		final String tmp = String.format(Locale.US, "%f", new Double(val));
-		if (isF && E == 0)
+		if (is32 && E == 0)
 			return tmp.replaceAll("((?<=^-|^)0*|0*$)", "");
 		return new StringBuilder(16).append(tmp.replaceAll("((?<=^-|^)0*|\\.?0*$)", "")).append(dtype.suffix).append(E)
 				.toString();
@@ -67,7 +103,7 @@ public abstract class FLOAT<T extends Number> extends NUMBER<T>
 	@Override
 	public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode)
 	{
-		return pout.append(FLOAT.decompile(this.getAtomic(), this.dtype(), mode));
+		return pout.append(decompile(mds, this.getAtomic(), this.dtype(), mode));
 	}
 
 	@Override
@@ -78,7 +114,9 @@ public abstract class FLOAT<T extends Number> extends NUMBER<T>
 
 	@Override
 	protected final byte getRankClass()
-	{ return 0x30; }
+	{
+		return 0x30;
+	}
 
 	@Override
 	public final FLOAT<?> multiply(final Descriptor<?> X, final Descriptor<?> Y)
