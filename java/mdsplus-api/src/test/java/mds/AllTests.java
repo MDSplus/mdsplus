@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import mds.data.CONST_Test;
+import mds.data.FLOAT_Test;
 import mds.data.TREE_Test;
 import mds.data.descriptor.*;
 import mds.data.descriptor_r.Function;
@@ -14,12 +15,12 @@ import mds.mdsip.MdsIp.Provider;
 
 @RunWith(Suite.class)
 @SuiteClasses(
-{ TREE_Test.class, CONST_Test.class, Mds_Test.class, TreeShr_Test.class, MdsShr_Test.class, Function_Test.class,
-		Descriptor_S_Test.class, Descriptor_A_Test.class, Descriptor_CA_Test.class }) // ,
+{ TREE_Test.class, CONST_Test.class, FLOAT_Test.class, Mds_Test.class, TreeShr_Test.class, MdsShr_Test.class,
+		Function_Test.class, Descriptor_S_Test.class, Descriptor_A_Test.class, Descriptor_CA_Test.class }) // ,
 // Editors_Test.class})
 public class AllTests
 {
-	private static boolean local = true;
+	private static boolean local = false;
 	private static boolean mdsip = true;
 	private static boolean use_local = false;
 	private static final int port = 8000;
@@ -31,10 +32,10 @@ public class AllTests
 	public static Mds setUpBeforeClass() throws Exception
 	{
 		final boolean local_win = System.getProperty("os.name").startsWith("Win");
-		final String host = System.getenv("MDSIP_SERVER");
+		String host = System.getenv("MDSIP_SERVER");
 		AllTests.local = AllTests.local || (!AllTests.mdsip) || host == null || host.length() == 0;
 		final String treepath = (AllTests.local ? local_win : AllTests.remote_win) ? "C:\\Temp" : "/tmp";
-		final String prefix = AllTests.local ? "local://" : (AllTests.ssh ? "ssh://" : null);
+		final String prefix = AllTests.local ? "local://" : (AllTests.ssh ? "ssh://" : "");
 		final String command = AllTests.local ? "local" : (AllTests.ssh ? host : host + ":" + AllTests.port);
 		final Mds mdslocal = Mds.getLocal();
 		if (!AllTests.use_local && mdslocal != null)
@@ -49,9 +50,15 @@ public class AllTests
 			final MdsIp tmds = MdsIp.sharedConnection(new Provider(prefix + command));
 			if (tmds.isConnected())
 				mds = tmds;
+			else if (AllTests.local) {
+				final MdsIp lh = MdsIp.sharedConnection(new Provider("localhost"));
+				if (lh.isConnected())
+					mds = lh;
+			}
 		}
 		if (mds == null)
 			throw new Exception("Could not connect to mdsip.");
+		mds.setActive();
 		Function.setWindowsLineEnding(AllTests.local ? local_win : AllTests.remote_win);
 		mds.getAPI().setenv(AllTests.tree + "_path", treepath);
 		return mds;
