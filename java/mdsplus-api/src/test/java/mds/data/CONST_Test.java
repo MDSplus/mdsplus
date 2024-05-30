@@ -7,6 +7,7 @@ import mds.Mds;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.With_Error;
 import mds.data.descriptor_r.With_Units;
+import mds.data.descriptor_r.function.CAST;
 import mds.data.descriptor_r.function.CONST.*;
 
 @SuppressWarnings("static-method")
@@ -52,7 +53,8 @@ public class CONST_Test
 	{
 		// exact
 		Assert.assertEquals(new dMissing().evaluate(), CONST_Test.mds.getDescriptor("$Missing", Descriptor.class));
-		Assert.assertEquals(new dRoprand().evaluate(), CONST_Test.mds.getDescriptor("$Roprand", Descriptor.class));
+		Assert.assertEquals("$ROPRAND", CONST_Test.mds.getDescriptor("$Roprand", Descriptor.class).decompile());
+		Assert.assertEquals("$ROPRAND", new dRoprand().evaluate().decompile());
 		Assert.assertEquals(new dI().evaluate(), CONST_Test.mds.getDescriptor("$I", Descriptor.class));
 		Assert.assertEquals(new dTrue().evaluate(), CONST_Test.mds.getDescriptor("$True", Descriptor.class));
 		Assert.assertEquals(new dFalse().evaluate(), CONST_Test.mds.getDescriptor("$False", Descriptor.class));
