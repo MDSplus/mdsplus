@@ -104,6 +104,14 @@ class testing(object):
         tr.run(tests)
 
     def run_nose(self, module_name):
+        import collections
+
+        try:
+            collections.Callable
+        except:
+            import collections.abc
+            collections.Callable = collections.abc.Callable
+
         import nose
         import shutil
         f = self.test_format
