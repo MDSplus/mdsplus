@@ -122,14 +122,19 @@ pipeline {
                     parallel OSList.collectEntries {
                         OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
+
                                 ws("${WORKSPACE}/${OS}") {
+
                                     stage("${OS} Clone") {
                                         checkout scm;
                                     }
 
                                     stage("${OS} Test") {
                                         def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                        
                                         sh "./deploy/build.py -j --os=${OS} --test --output-junit --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
+
+                                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
                                     }
 
                                     if (!OS.startsWith("test-")) {
@@ -146,7 +151,9 @@ pipeline {
                                         }
                                     }
                                 }
+
                             }
+                            
                         }]
                     }
                 }
@@ -202,7 +209,7 @@ pipeline {
     post {
         always {
             
-            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
+            // junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
 
             // Collect valgrind core dumps
             archiveArtifacts artifacts: "**/core", allowEmptyArchive: true
