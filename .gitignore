@@ -1,4 +1,17 @@
 Makefile
+**/testing/*
+!**/testing/*.*
+**/testing/.tmp
+**/testing/testing
+**/testing/*.txt
+**/testing/*.tree
+**/testing/*.characteristics
+**/testing/*.datafile
+testing/MDSplus/
+testing/*Devices/
+*.log
+*.tap
+*.trs
 .deps
 config.log
 config.status
@@ -99,9 +112,6 @@ _version.py
 
 .vscode/
 
-testing/MDSplus/
-testing/*Devices/
-
 eclipse/
 target/
 .project
@@ -194,6 +204,7 @@ m4/ax_git_revision.m4
 
 # Generated Java binaries
 java/*/classes/
+java/mdsobjects/META-INF/
 java/jdispatcher/jDispatchMonitor
 java/jdispatcher/jDispatcherIp
 java/jdispatcher/jServer
