@@ -123,6 +123,7 @@ pipeline {
                     parallel OSList.collectEntries {
                         OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
+
                                 ws("${WORKSPACE}/${OS}") {
                                     def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
 
@@ -139,20 +140,16 @@ pipeline {
                                     }
 
                                     stage("${OS} Test") {
-                                        try {
-                                            sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
-                                        }
-                                        finally {
-                                            sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                                            junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
+                                        def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                        
+                                        sh "./deploy/build.py -j --os=${OS} --test --output-junit --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
 
-                                            echo "Testing complete"
-                                        }
+                                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
                                     }
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --dockernetwork=${network} --keys=/mdsplus/certs"
+                                            sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Release"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
@@ -164,7 +161,9 @@ pipeline {
                                         }
                                     }
                                 }
+
                             }
+                            
                         }]
                     }
                 }
@@ -248,7 +247,7 @@ pipeline {
     post {
         always {
             
-            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
+            // junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
 
             // Collect valgrind core dumps
             archiveArtifacts artifacts: "**/core", allowEmptyArchive: true

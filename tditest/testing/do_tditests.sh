@@ -80,7 +80,7 @@ if [ ! -z $1 ]; then
     run "${cmd}" >"${srcdir}/$test.ans"
   else
     unset ok
-    if diff --help | grep side-by-side &>/dev/null; then
+    if diff --help 2>&1 | grep side-by-side &>/dev/null; then
       run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
         diff $DIFF_Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
