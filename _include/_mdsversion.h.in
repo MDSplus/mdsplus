@@ -23,14 +23,14 @@ const mds_version_t VERSIONCONST = {
 EXPORT
 const char * GETRELEASE()
 {
-	static char tag[] = "@RELEASE_BRANCH@_release_@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@";
+	static char tag[] = "@RELEASE_BRANCH@_release-@RELEASE_MAJOR@-@RELEASE_MINOR@-@RELEASE_RELEASE@";
 	return tag;
 }
 
 EXPORT
 const mdsdsc_t * GETRELEASEDSC()
 {
-	static char tag[] = "@RELEASE_BRANCH@_release_@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@";
+	static char tag[] = "@RELEASE_BRANCH@_release-@RELEASE_MAJOR@-@RELEASE_MINOR@-@RELEASE_RELEASE@";
 	static mdsdsc_t dsc = { sizeof(tag), DTYPE_T, CLASS_S, tag };
 	return &dsc;
 }

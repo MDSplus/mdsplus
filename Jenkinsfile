@@ -118,44 +118,36 @@ pipeline {
 
         stage('Distributions') {
             steps {
-                dynamicMatrix([
-                    failFast: false,
-                    axes: [
-                        OS: OSList
-                    ],
-                    actions: {
+                script {
+                    parallel OSList.collectEntries {
+                        OS -> [ "${OS} Build & Test": {
+                            stage("${OS} Build & Test") {
+                                ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Clone") {
+                                        checkout scm;
+                                    }
 
-                        ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Test") {
+                                        def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                        sh "./deploy/build.py -j --os=${OS} --test --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
+                                    }
 
-                            stage("${OS} Clone") {
-                                checkout scm;
+                                    if (!OS.startsWith("test-")) {
+                                        stage("${OS} Release") {
+                                            sh "./deploy/build.py -j --os=${OS} --branch=${BRANCH_NAME} --version=${new_version} -DCMAKE_BUILD_TYPE=Release"
+                                            
+                                            findFiles(glob: "packages/*.tgz").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
 
-                                // if (env.OS.endsWith("armhf")) {
-                                //     sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
-                                // }
+                                            findFiles(glob: "packages/*.exe").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }]
-                    }
-                }
-            }
-        }
-
-                            stage("${OS} Build") {
-                                sh "./deploy/build.py -j --os=${OS} --dockerpull -DCMAKE_BUILD_TYPE=Debug"
-                            }
-
-                            stage("${OS} Test") {
-                                network="jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                sh "./deploy/build.py -j --os=${OS} --test --output-junit --dockernetwork=${network}"
-                            }
-                        }
-                    }
-                }
-
-                stage("Test MATLAB") {
-                    steps {
-                        echo "Testing MATLAB"
-                        // TODO
                     }
                 }
             }
