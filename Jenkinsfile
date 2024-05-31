@@ -134,7 +134,7 @@ pipeline {
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.py -j --os=${OS} --branch=${BRANCH_NAME} --version=${new_version} -DCMAKE_BUILD_TYPE=Release"
+                                            sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Release"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)

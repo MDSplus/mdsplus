@@ -154,12 +154,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--version',
-    metavar='',
-    help='',
-)
-
-parser.add_argument(
     '--arch',
     metavar='',
     help='',
