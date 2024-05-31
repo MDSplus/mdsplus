@@ -129,7 +129,7 @@ pipeline {
 
                                     stage("${OS} Test") {
                                         def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                        sh "./deploy/build.py -j --os=${OS} --test --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
+                                        sh "./deploy/build.py -j --os=${OS} --test --output-junit --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
                                     }
 
                                     if (!OS.startsWith("test-")) {

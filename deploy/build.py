@@ -23,10 +23,11 @@ root_dir = os.path.dirname(deploy_dir)
 
 os_options = {}
 for file in glob.glob(os.path.join(deploy_dir, 'os/*.opts')):
-    name = os.path.basename(file).removesuffix('.opts')
+    name = os.path.basename(file)[:-5] # .removesuffix('.opts')
+
     if os.path.islink(file):
         real_file = os.path.realpath(file)
-        real_name = os.path.basename(real_file).removesuffix('.opts')
+        real_name = os.path.basename(real_file)[:-5] # .removesuffix('.opts')
 
         if real_name not in os_options:
             os_options[real_name] = []
@@ -153,6 +154,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--version',
+    metavar='',
+    help='',
+)
+
+parser.add_argument(
     '--arch',
     metavar='',
     help='',
@@ -244,7 +251,7 @@ if cli_args.os is not None:
     os_alias = None
     if os.path.islink(opts_filename):
         opts_filename = os.path.realpath(opts_filename)
-        os_alias = os.path.basename(opts_filename).removesuffix('.opts')
+        os_alias = os.path.basename(opts_filename)[:-5] # .removesuffix('.opts')
     
     opts = open(opts_filename).read().strip().split()
 
