@@ -18,6 +18,8 @@ def OSList = [
     'test-asan',
     'test-tsan',
     'test-ubsan',
+    'test-helgrind',
+    'test-memcheck',
 ]
 
 def AdminList = [
