@@ -273,7 +273,7 @@ static int write_property(TREE_INFO *tinfo, int64_t *offset, const char *buffer,
     for (i = 0; i < FACILITIES_PER_EA; i++)                        \
       swap_inplace(dir, int32, ptr, ext_attr->facility_length[i]); \
   }
-#define EXTENDED_ATTRIBUTES_SIZE 8 + FACILITIES_PER_EA *(8 + 4)
+#define EXTENDED_ATTRIBUTES_SIZE 8 + FACILITIES_PER_EA * (8 + 4)
 int TreePutExtendedAttributes(TREE_INFO *tinfo, EXTENDED_ATTRIBUTES *ext_attr,
                               int64_t *offset)
 {
@@ -311,17 +311,10 @@ inline static void begin_extended_nci(vars_t *vars)
   {
     vars->attr_offset =
         RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
-    if (vars->attr.facility_offset[STANDARD_RECORD_FACILITY] != -1)
-    {
-      vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
-      vars->attr.facility_length[STANDARD_RECORD_FACILITY] = 0;
-      vars->attr_update = 1;
-    }
   }
   else
   {
     memset(&vars->attr, -1, sizeof(vars->attr));
-    vars->attr_update = 1;
     vars->attr_offset = -1;
   }
 }
@@ -412,9 +405,10 @@ inline static int open_datafile_write1(vars_t *vars)
 inline static void set_compress(vars_t *vars)
 {
   vars->compress = ((vars->local_nci.flags & NciM_COMPRESS_ON_PUT) &&
-                   (vars->local_nci.flags & NciM_COMPRESS_SEGMENTS) &&
-                   !(vars->local_nci.flags & NciM_DO_NOT_COMPRESS)) ? 
-                       vars->local_nci.compression_method : -1;
+                    (vars->local_nci.flags & NciM_COMPRESS_SEGMENTS) &&
+                    !(vars->local_nci.flags & NciM_DO_NOT_COMPRESS))
+                       ? vars->local_nci.compression_method
+                       : -1;
 }
 
 #define NAMED_ATTRIBUTES_INDEX_SIZE \
@@ -594,6 +588,7 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
         length_t dlen = vars->local_nci.length - 8;
         l_length_t ddlen = dlen + sizeof(mdsdsc_t);
         status = MdsGet1Dx(&ddlen, &dsc_dtype, &dsc, 0);
+        RETURN_IF_STATUS_NOT_OK;
         dptr = dsc.pointer;
         dptr->length = dlen;
         dptr->dtype = vars->local_nci.dtype;
@@ -616,6 +611,8 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
             break;
           }
         }
+        vars->attr_update = 1;
+        vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
         status =
             tree_put_dsc(vars->dblist, vars->tinfo, *(int *)vars->nid_ptr, dptr,
                          &vars->attr.facility_offset[STANDARD_RECORD_FACILITY],
@@ -650,6 +647,8 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
           FREE_NOW(data);
           if (STATUS_OK)
           {
+            vars->attr_update = 1;
+            vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
             status = tree_put_dsc(
                 vars->dblist, vars->tinfo, *(int *)vars->nid_ptr,
                 (mdsdsc_t *)&xd,
@@ -661,8 +660,6 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
         }
         if (length <= 0 || STATUS_NOT_OK)
         {
-          vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = 0;
-          vars->attr.facility_length[STANDARD_RECORD_FACILITY] = 0;
           vars->local_nci.length = 0;
           vars->local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
         }
@@ -915,14 +912,21 @@ static int save_segment_header(vars_t *vars)
   }
   else
   {
-    return put_segment_header(
+    const int status = put_segment_header(
         vars->tinfo, &vars->shead,
         &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    if (STATUS_OK)
+    {
+      vars->attr_update = 1;
+      vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
+      vars->attr.facility_length[STANDARD_RECORD_FACILITY] = -1;
+    }
+    return status;
   }
 }
 
 #define SEGMENT_INDEX_SIZE \
-  8 + 4 + SEGMENTS_PER_INDEX *(8 + 8 + 8 + 4 + 8 + 4 + 8 + 4 + 8 + 4)
+  8 + 4 + SEGMENTS_PER_INDEX * (8 + 8 + 8 + 4 + 8 + 4 + 8 + 4 + 8 + 4)
 #define swap_sindex(dir, buf, sindex)                                     \
   {                                                                       \
     char *ptr = buf;                                                      \
@@ -987,7 +991,8 @@ inline static int begin_finish(vars_t *vars)
 #ifndef _WIN32
 static int saved_uic = 0;
 static int saved_uic32 = 0;
-static void init_saved_uic() {
+static void init_saved_uic()
+{
   if (!saved_uic)
   {
     saved_uic = getuid();
@@ -1047,7 +1052,6 @@ inline static int begin_segment_header(vars_t *vars, mdsdsc_a_t *initialValue)
     memset(&vars->shead, 0, sizeof(vars->shead));
     vars->shead.index_offset = -1;
     vars->shead.idx = -1;
-    vars->attr_update = 1;
   }
   return TreeSUCCESS;
 }
@@ -1735,7 +1739,8 @@ int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char *xnci,
   rows_to_insert = rows_to_insert > remaining_rows_in_segment
                        ? remaining_rows_in_segment
                        : rows_to_insert;
-  /*if STATUS_OK*/ {
+  if (STATUS_OK)
+  {
     int64_t offset = vars->shead.data_offset + start_idx * bytes_per_row;
     uint32_t bytes_to_insert = rows_to_insert * bytes_per_row;
     if (bytes_to_insert <
@@ -2303,7 +2308,7 @@ int tree_put_dsc(PINO_DATABASE *dbid, TREE_INFO *tinfo, int nid_in,
   unsigned char tree = nid->tree;
   void *dbid_tree[2] = {(void *)dbid, (void *)&tree};
   int status = MdsSerializeDscOutZ(dsc, &xd, tree_fixup_nid, dbid_tree, 0, 0,
-                                   compress, 
+                                   compress,
                                    &compressible, &ddlen, &reclen,
                                    &dtype, &class, 0, 0, &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A &&
@@ -2575,12 +2580,12 @@ int TreeCopyExtended(PINO_DATABASE *dbid_in, PINO_DATABASE *dbid_out, int nid,
     copy_segmented_records(tinfo_in, dbid_out, tinfo_out, nid,
                            &attr.facility_offset[SEGMENTED_RECORD_FACILITY],
                            &attr.facility_length[SEGMENTED_RECORD_FACILITY],
-                          (compress) ? nci->compression_method : -1);
+                           (compress) ? nci->compression_method : -1);
   if (attr.facility_offset[STANDARD_RECORD_FACILITY] != -1)
     copy_standard_record(tinfo_in, dbid_out, tinfo_out, nid,
                          &attr.facility_offset[STANDARD_RECORD_FACILITY],
                          &attr.facility_length[STANDARD_RECORD_FACILITY],
-                          (compress) ? nci->compression_method : -1);
+                         (compress) ? nci->compression_method : -1);
   RETURN_IF_NOT_OK(TreePutExtendedAttributes(tinfo_out, &attr, &offset));
   SeekToRfa(offset, nci->DATA_INFO.DATA_LOCATION.rfa);
   int locked = 0;

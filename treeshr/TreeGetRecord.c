@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 #include "treethreadstatic.h"
 
-#define align(bytes, size) ((((bytes) + (size)-1) / (size)) * (size))
+#define align(bytes, size) ((((bytes) + (size) - 1) / (size)) * (size))
 
 static int64_t ViewDate = -1;
 
@@ -64,7 +64,9 @@ static inline int read_descriptor(TREE_INFO *info, int length, NCI *nci, int nid
     status = TreeBADRECORD;
   else if (!(nci->flags2 & NciM_NON_VMS) &&
            ((retsize != length) || (nodenum != nidx)))
+  {
     status = TreeBADRECORD;
+  }
   else
     status = (MdsSerializeDscIn(data, dsc) & 1)
                  ? TreeSUCCESS
@@ -130,22 +132,16 @@ int _TreeGetRecord(void *dbid, int nid_in, mdsdsc_xd_t *dsc)
                 status = TreeGetExtendedAttributes(
                     info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
                     &attributes);
-                if (STATUS_OK &&
-                    attributes
-                            .facility_offset[STANDARD_RECORD_FACILITY] !=
-                        -1)
+                RETURN_IF_STATUS_NOT_OK;
+                if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1)
                 {
                   status = tree_get_dsc(
                       info, nid->tree,
-                      attributes
-                          .facility_offset[STANDARD_RECORD_FACILITY],
-                      attributes
-                          .facility_length[STANDARD_RECORD_FACILITY],
+                      attributes.facility_offset[STANDARD_RECORD_FACILITY],
+                      attributes.facility_length[STANDARD_RECORD_FACILITY],
                       dsc);
                 }
-                else if (STATUS_OK &&
-                         attributes.facility_offset
-                                 [SEGMENTED_RECORD_FACILITY] != -1)
+                else if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
                 {
                   status = _TreeGetSegmentedRecord(dbid, nid_in, dsc);
                 }
