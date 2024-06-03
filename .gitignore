@@ -1,3 +1,15 @@
+# test outputs
+**/testing/*
+!**/testing/*.*
+**/testing/*.characteristics
+**/testing/*.datafile
+**/testing/*.tree
+**/testing/*.hosts
+**/testing/*.txt
+*.tap
+*.tmp
+*.trs
+
 Makefile
 .deps
 config.log
