@@ -132,8 +132,9 @@ int _TreeGetRecord(void *dbid, int nid_in, mdsdsc_xd_t *dsc)
                 status = TreeGetExtendedAttributes(
                     info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
                     &attributes);
-                RETURN_IF_STATUS_NOT_OK;
-                if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1)
+                if (STATUS_NOT_OK)
+                  status = TreeBADRECORD;
+                else if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1)
                 {
                   status = tree_get_dsc(
                       info, nid->tree,
