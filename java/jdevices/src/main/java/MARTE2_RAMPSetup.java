@@ -39,14 +39,14 @@ public class MARTE2_RAMPSetup extends DeviceSetup {
         setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceParameters1.setNumParameters(8);
+        deviceParameters1.setNumParameters(9);
         deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
-        deviceInputs1.setOffsetNid(29);
+        deviceInputs1.setOffsetNid(32);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
-        deviceOutputs1.setOffsetNid(54);
+        deviceOutputs1.setOffsetNid(57);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);

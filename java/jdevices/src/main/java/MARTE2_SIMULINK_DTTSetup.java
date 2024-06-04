@@ -39,7 +39,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("DTT Simularot");
+        setDeviceTitle("DTT Simulator");
         setDeviceType("MARTE2_SIMULINK_DTT");
         setHeight(500);
         setWidth(700);
@@ -48,13 +48,13 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Write CPU Mask: ");
         deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(145);
+        deviceField3.setOffsetNid(154);
         jPanel2.add(deviceField3);
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Port: ");
         deviceField1.setNumCols(6);
-        deviceField1.setOffsetNid(309);
+        deviceField1.setOffsetNid(315);
         jPanel2.add(deviceField1);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
