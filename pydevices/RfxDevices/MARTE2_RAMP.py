@@ -47,7 +47,8 @@ class MARTE2_RAMP(MC.MARTE2_COMPONENT):
         {'name': 'SetPointScaling', 'type': 'float64'}, 
         {'name': 'SlopeScaling', 'type': 'float64'}, 
         {'name': 'TimeScaling', 'type': 'float64'}, 
-        {'name': 'SoftLandingSlope', 'type': 'float64'}
+        {'name': 'SoftLandingSlope', 'type': 'float64'},
+        {'name': 'VerticesMode', 'type': 'string'}
     ]
 
     parts = []
