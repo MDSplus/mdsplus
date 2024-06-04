@@ -613,11 +613,11 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
         }
         vars->attr_update = 1;
         vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
-        status =
-            tree_put_dsc(vars->dblist, vars->tinfo, *(int *)vars->nid_ptr, dptr,
-                         &vars->attr.facility_offset[STANDARD_RECORD_FACILITY],
-                         &vars->attr.facility_length[STANDARD_RECORD_FACILITY],
-                         vars->compress);
+        RETURN_IF_NOT_OK(tree_put_dsc(
+           vars->dblist, vars->tinfo, *(int *)vars->nid_ptr, dptr,
+           &vars->attr.facility_offset[STANDARD_RECORD_FACILITY],
+           &vars->attr.facility_length[STANDARD_RECORD_FACILITY],
+           vars->compress));
         vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
       }
       else
