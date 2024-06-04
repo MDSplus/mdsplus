@@ -394,7 +394,7 @@ disp(mdsvalue(DATA));
 # Read: various permutations of reading data from a tree
 matlab_test(f'''
             
-testid = 'MATLAB-read-various'; 
+testid = 'MATLAB-read-various';
                     
 mdsconnect('{args.mdsip_server}');
 mdsopen('{args.tree}', {args.shot});
@@ -441,7 +441,7 @@ f'''
 #       The $default_tree_path must point to the "matlab/testing" directory.
 matlab_test(f'''
             
-testid = 'MATLAB-write-various';         
+testid = 'MATLAB-write-various';
 
 mdsopen('{args.write_tree}', {args.write_shot});
 mdsput('A_TEXT', ' "string_a" ');
@@ -480,6 +480,23 @@ string_d
 volts
 66
 77
+
+''')
+
+
+## ---------------------------------------------------------------------
+## test type conversion from/to MATLAB
+matlab_test(f'''
+
+addpath('../');
+run("run_tests.m");
+
+''',
+'''
+
+PASSED:     115
+FAILED:       0
+INCOMPLETE:   0
 
 ''')
 
