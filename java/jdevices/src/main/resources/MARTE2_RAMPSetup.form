@@ -47,7 +47,7 @@
       <SubComponents>
         <Container class="DeviceParameters" name="deviceParameters1">
           <Properties>
-            <Property name="numParameters" type="int" value="8"/>
+            <Property name="numParameters" type="int" value="9"/>
             <Property name="offsetNid" type="int" value="4"/>
           </Properties>
           <Constraints>
@@ -62,7 +62,7 @@
         </Container>
         <Container class="DeviceInputs" name="deviceInputs1">
           <Properties>
-            <Property name="offsetNid" type="int" value="29"/>
+            <Property name="offsetNid" type="int" value="32"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -76,7 +76,7 @@
         </Container>
         <Container class="DeviceOutputs" name="deviceOutputs1">
           <Properties>
-            <Property name="offsetNid" type="int" value="54"/>
+            <Property name="offsetNid" type="int" value="57"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
