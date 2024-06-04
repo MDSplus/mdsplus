@@ -533,6 +533,7 @@ esac
 
 # add specific flags for fortran depending on compiler version
 AX_FORTRAN_FLAGS([FCFLAGS])
+AX_C_FLAGS([CFLAGS])
 
 AC_CHECK_SIZEOF(long)
 

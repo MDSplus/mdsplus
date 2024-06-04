@@ -129,6 +129,7 @@ public class WaveInterface
 	public int num_waves;
 	public boolean x_log, y_log;
 	public String in_label[], in_x[], in_y[], in_up_err[], in_low_err[];
+        public String eval_labels[];
 	// Prameter used to evaluate waveform
 	public String in_xmin, in_xmax, in_ymax, in_ymin, in_timemax, in_timemin;
 	public String in_title, in_xlabel, in_ylabel;
@@ -818,7 +819,21 @@ public class WaveInterface
 			name = new String[num_waves / ns];
 			for (int i = 0, j = 0; i < num_waves; i += ns)
 			{
-				s = (in_label[i] != null && in_label[i].length() != 0) ? in_label[i] : in_y[i];
+//				s = (in_label[i] != null && in_label[i].length() != 0) ? in_label[i] : in_y[i];
+				if(in_label[i] != null && in_label[i].length() != 0)
+                                {
+                                    try {
+                                        s = dp.getString(in_label[i], wave.getRow(), wave.getColumn(), wave.getIndex());
+                                    }catch(Exception exc)
+                                    {
+                                        s = in_label[i];
+                                    }
+                                           
+                                }
+                                else
+                                {
+                                    s = in_label[i];
+                                }
 				name[j++] = s;
 			}
 		}
@@ -875,8 +890,9 @@ public class WaveInterface
 				 * frames.setVerticalFlip(vertical_flip);
 				 */
 				frames.SetFrameData(fd);
-				if (in_label != null && in_label[0] != null && in_label[0].length() != 0)
-					frames.setName(in_label[0]);
+//				if (in_label != null && in_label[0] != null && in_label[0].length() != 0)
+				if (eval_labels != null && eval_labels[0] != null && eval_labels[0].length() != 0)
+					frames.setName(eval_labels[0]);
 				else
 					frames.setName(in_y[0]);
 				evaluated[0] = true;
@@ -1005,7 +1021,7 @@ public class WaveInterface
 
 	public synchronized int StartEvaluate() throws IOException
 	{
-		error = null;
+            error = null;
 		if (modified)
 			evaluated = null;
 		if ((in_y == null || in_x == null))
@@ -1054,6 +1070,20 @@ public class WaveInterface
 			error = dp.getError();
 			return 0;
 		}
+                //Compute labels
+                if(in_label != null)
+                {
+                    eval_labels = new String[in_label.length];
+                    for(int i = 0; i < in_label.length; i++)
+                    {   
+                        try {
+                             eval_labels[i] = dp.getString(in_label[i], wave.getRow(), wave.getColumn(), wave.getIndex());
+                         }catch(Exception exc)
+                        {
+                            eval_labels[i] = in_label[i];
+                        }
+                    }
+                }
 		// Compute title
 		if (in_title != null && (in_title.trim()).length() != 0)
 		{
@@ -1067,18 +1097,45 @@ public class WaveInterface
 		// compute limits
 		if (in_xmin != null && (in_xmin.trim()).length() != 0 && in_upd_limits)
 		{
-			xmin = dp.getFloat(in_xmin, wave.getRow(), wave.getColumn(), wave.getIndex());
-			if (dp.getError() != null)
-			{
-				error = dp.getError();
-				return 0;
-			}
-			final long timeLong = getDate(in_xmin);
-			if (timeLong != -1)
-			{
-				xLimitsLong = true;
-				xminLong = timeLong;
-			}
+                    //Check for Window selection for most recent samples. 
+                    //This is indicated in the graphical interface by a colon at the end of the expression
+                    //In this case it is assumed that the times are absolute and the xmin expression before column returns the 
+                    //window size in seconds
+                        if (in_xmin.charAt(in_xmin.length() - 1) == ':')
+                        {
+                            long lastTime = dp.getLastTime(in_y[0], wave.getRow(), wave.getColumn(), wave.getIndex());
+                            double windowSize = dp.getFloat(in_xmin.substring(0, in_xmin.length() - 1), wave.getRow(), wave.getColumn(), wave.getIndex());
+                            if (dp.getError() != null)
+                            {
+                                    error = dp.getError();
+                                    return 0;
+                            }
+                            xLimitsLong = true;
+                            if(Waveform.timeMode == Waveform.EPICS_TIME)
+                            {
+                                xminLong = lastTime - (long)(windowSize * 1E9);
+                            }
+                            else
+                            {
+                                xminLong = lastTime - (long)(windowSize * 1E3);
+                            }
+                            xmaxLong = lastTime;
+                        }
+                        else
+                        {
+                            xmin = dp.getFloat(in_xmin, wave.getRow(), wave.getColumn(), wave.getIndex());
+                            if (dp.getError() != null)
+                            {
+                                    error = dp.getError();
+                                    return 0;
+                            }
+                            final long timeLong = getDate(in_xmin);
+                            if (timeLong != -1)
+                            {
+                                    xLimitsLong = true;
+                                    xminLong = timeLong;
+                            }
+                        }
 		}
 		else
 			xmin = (!is_image) ? -Double.MAX_VALUE : -1;

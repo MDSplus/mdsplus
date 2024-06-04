@@ -38,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #define DEBUG
 #include <mdsmsg.h>
 
+// Because threads have their own MdsipThreadStatic data, the receiver thread
+// cannot access the connection list that is stored in the main thread.  If
+// that capability is ever needed, must use a global pointer.  However, sharing
+// the connection list with both threads is inadvisable because it can result
+// in deadlock.
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
   if (id == INVALID_CONNECTION_ID)
@@ -553,7 +558,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n", user_p);
     }
     msg->h.msglen = sizeof(MsgHdr);
-    msg->h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
+    msg->h.status = IS_OK(auth_status) ? (1 | (c->compression_level << 1)) : 0;
     msg->h.ndims = 1;
     msg->h.dims[0] = MDSIP_VERSION;
     // reply to client //
@@ -573,6 +578,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     else
     {
       destroyConnection(c);
+      status = MDSplusERROR;
     }
   }
   return status;

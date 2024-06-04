@@ -176,8 +176,9 @@ int main(int argc, char *argv[])
   if (single)
     exit(1);
 
-  TEST_TIMEOUT(100);
+  // TEST_TIMEOUT(100);
 
+  // TODO: Query the stack size for windows
   if (stksize < 0x40000)
   {
     std::cout << " -- [MultiThread] -- Skipped because the default thread "

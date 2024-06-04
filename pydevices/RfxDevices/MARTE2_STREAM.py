@@ -47,18 +47,4 @@ class MARTE2_STREAM(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-        if self.parameters_par_4_value.data() == 0:  # If oscilloscope mode
-            for chanIdx in range(8):
-                currInput = getattr(
-                    self, 'inputs_outstream%d_value' % (chanIdx+1))
-                info = self.getInputChanInfo(currInput)
-                if info != None:
-                    getattr(self, 'inputs_outstream%d_type' %
-                            (chanIdx+1)).putData(info['type'])
-                    if info['samples'] != None and info['samples'] > 1:
-                        getattr(self, 'inputs_outstream%d_dimensions' % (
-                            chanIdx+1)).putData(Data.compile('[$]', info['samples']))
-                    else:
-                        if info['dimensions'] != None:
-                            getattr(self, 'inputs_outstream%d_dimensions' %
-                                    (chanIdx+1)).putData(info['dimensions'])
+        pass

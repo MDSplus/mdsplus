@@ -4,6 +4,7 @@ def OSList = [
     'ubuntu18',
     'ubuntu20',
     'ubuntu22',
+    'ubuntu24',
     'rhel7',
     'rhel8',
     'rhel9',
@@ -13,6 +14,7 @@ def OSList = [
     'debian9-64',
     'debian10-64',
     'debian11-64',
+    'debian12-64',
     'test-asan',
     'test-tsan',
     'test-ubsan',
@@ -39,6 +41,7 @@ if (BRANCH_NAME == "stable") {
 }
 
 def new_version = '0.0.0';
+def new_tag = null;
 
 def release_file_list = [];
 
@@ -105,6 +108,8 @@ pipeline {
                         if (new_version == '0.0.0') {
                             error "Failed to calculate new version"
                         }
+                        
+                        new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
 
                         echo "Calculated new version to be ${new_version}"
                     }
@@ -121,10 +126,14 @@ pipeline {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Clone") {
                                         checkout scm;
+
+                                        if (new_tag) {
+                                            sh "git tag ${new_tag} || true"
+                                        }
                                     }
 
                                     stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --version=${new_version}"
+                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME}"
 
                                         if (OS.endsWith("armhf")) {
                                             sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
@@ -146,7 +155,7 @@ pipeline {
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version}"
+                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
@@ -220,8 +229,7 @@ pipeline {
 
                     stage("Publish to GitHub") {
                         ws("${WORKSPACE}/publish") {
-                            def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
-                            echo "Creating GitHub Release and Tag for ${tag}"
+                            echo "Creating GitHub Release and Tag for ${new_tag}"
                             withCredentials([
                                 usernamePassword(
                                     credentialsId: 'MDSplusJenkins',
@@ -231,7 +239,7 @@ pipeline {
 
                                 // TODO: Protect against spaces in filenames
                                 def release_file_list_arg = release_file_list.join(" ")
-                                sh "./deploy/create_github_release.py --tag ${tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
+                                sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
                             }
 
                         }
