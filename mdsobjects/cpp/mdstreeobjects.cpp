@@ -714,6 +714,27 @@ Data *TreeNode::data()
   return outD;
 }
 
+
+Data *TreeNode::dim_of()
+{
+    if(tree)
+      return tree->tdiExecute("DIM_OF($)", this);
+    else
+      return executeWithArgs("DIM_OF($)", 1, this);
+}
+
+Data *TreeNode::units_of()
+{
+    if(tree)
+      return tree->tdiExecute("UNITS_OF($)", this);
+    else
+      return executeWithArgs("UNITS_OF($)", 1, this);
+}
+
+
+
+
+
 char TreeNode::getByte()
 {
   Data *d = data();
