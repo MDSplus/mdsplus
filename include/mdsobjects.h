@@ -3073,6 +3073,10 @@ namespace MDSplus
     virtual void putData(Data *data);
     virtual void deleteData();
 
+    virtual Data *dim_of();
+    virtual Data *units_of();
+
+
     /// virtual function to resolve node id in the active tree.
     /// This is called each time a path to nid conversion is needed.
     virtual void resolveNid() {}
