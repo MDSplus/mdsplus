@@ -46,14 +46,9 @@ static int64_t ViewDate = -1;
 extern void **TreeCtx();
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
-int TreeGetRecord(int nid_in, mdsdsc_xd_t *dsc);
-int _TreeGetRecord(void *dbid, int nid_in, mdsdsc_xd_t *dsc)
+int TreeGetRecord(int nid_in, mdsdsc_xd_t *dsc)
 {
-  int status;
-  CTX_PUSH(&dbid);
-  status = TreeGetRecord(nid_in, dsc);
-  CTX_POP(&dbid);
-  return status;
+  return _TreeGetRecord(*TreeCtx(), nid_in, dsc);
 }
 
 static inline int read_descriptor(TREE_INFO *info, int length, NCI *nci, int nidx, mdsdsc_xd_t *dsc)
@@ -78,9 +73,8 @@ static inline int read_descriptor(TREE_INFO *info, int length, NCI *nci, int nid
   return status;
 }
 
-int TreeGetRecord(int nid_in, mdsdsc_xd_t *dsc)
+int _TreeGetRecord(void *dbid, int nid_in, mdsdsc_xd_t *dsc)
 {
-  void *dbid = *TreeCtx();
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nid_in;
   struct descriptor *dptr;
