@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="EPICS In"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_EPICS_IN"/>
     <Property name="height" type="int" value="500"/>
@@ -24,7 +24,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,45,0,0,2,108"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,32,0,0,3,55"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -45,31 +45,9 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="2"/>
+        <Property name="rows" type="int" value="1"/>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel3">
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-                <Property name="numCols" type="int" value="25"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Tibase div.:"/>
-                <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="210"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -174,7 +152,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="41"/>
+                    <Property name="offsetNid" type="int" value="42"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -192,7 +170,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="35"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -201,7 +179,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="35"/>
+                    <Property name="offsetNid" type="int" value="36"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -222,7 +200,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="53"/>
+                    <Property name="offsetNid" type="int" value="55"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -240,7 +218,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="46"/>
+                    <Property name="offsetNid" type="int" value="48"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -249,7 +227,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="47"/>
+                    <Property name="offsetNid" type="int" value="49"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -270,7 +248,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="65"/>
+                    <Property name="offsetNid" type="int" value="68"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -288,7 +266,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="58"/>
+                    <Property name="offsetNid" type="int" value="61"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -297,7 +275,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="59"/>
+                    <Property name="offsetNid" type="int" value="62"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -318,7 +296,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="77"/>
+                    <Property name="offsetNid" type="int" value="81"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -336,7 +314,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="70"/>
+                    <Property name="offsetNid" type="int" value="74"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -345,7 +323,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="71"/>
+                    <Property name="offsetNid" type="int" value="75"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -366,7 +344,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="89"/>
+                    <Property name="offsetNid" type="int" value="94"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -384,7 +362,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="82"/>
+                    <Property name="offsetNid" type="int" value="87"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -393,7 +371,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="83"/>
+                    <Property name="offsetNid" type="int" value="88"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -414,7 +392,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="101"/>
+                    <Property name="offsetNid" type="int" value="107"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -432,7 +410,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="94"/>
+                    <Property name="offsetNid" type="int" value="100"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -441,7 +419,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="95"/>
+                    <Property name="offsetNid" type="int" value="101"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -462,7 +440,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="113"/>
+                    <Property name="offsetNid" type="int" value="120"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -480,7 +458,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="106"/>
+                    <Property name="offsetNid" type="int" value="113"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -489,7 +467,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="107"/>
+                    <Property name="offsetNid" type="int" value="114"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -510,7 +488,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="125"/>
+                    <Property name="offsetNid" type="int" value="133"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -528,7 +506,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="118"/>
+                    <Property name="offsetNid" type="int" value="126"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -537,7 +515,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="119"/>
+                    <Property name="offsetNid" type="int" value="127"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -558,7 +536,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="137"/>
+                    <Property name="offsetNid" type="int" value="146"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -576,7 +554,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="130"/>
+                    <Property name="offsetNid" type="int" value="139"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -585,7 +563,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="131"/>
+                    <Property name="offsetNid" type="int" value="140"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -606,7 +584,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="149"/>
+                    <Property name="offsetNid" type="int" value="159"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -624,7 +602,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="142"/>
+                    <Property name="offsetNid" type="int" value="152"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -633,7 +611,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="143"/>
+                    <Property name="offsetNid" type="int" value="153"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -654,7 +632,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="161"/>
+                    <Property name="offsetNid" type="int" value="172"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -672,7 +650,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="154"/>
+                    <Property name="offsetNid" type="int" value="165"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -681,7 +659,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="155"/>
+                    <Property name="offsetNid" type="int" value="166"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -702,7 +680,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="173"/>
+                    <Property name="offsetNid" type="int" value="185"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -720,7 +698,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="166"/>
+                    <Property name="offsetNid" type="int" value="178"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -729,7 +707,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="167"/>
+                    <Property name="offsetNid" type="int" value="179"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -750,7 +728,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="185"/>
+                    <Property name="offsetNid" type="int" value="198"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -768,7 +746,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="178"/>
+                    <Property name="offsetNid" type="int" value="191"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -777,7 +755,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="179"/>
+                    <Property name="offsetNid" type="int" value="192"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -798,7 +776,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="197"/>
+                    <Property name="offsetNid" type="int" value="211"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -816,7 +794,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="190"/>
+                    <Property name="offsetNid" type="int" value="204"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -825,7 +803,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="191"/>
+                    <Property name="offsetNid" type="int" value="205"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -846,7 +824,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="209"/>
+                    <Property name="offsetNid" type="int" value="224"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -864,7 +842,7 @@
                     <Property name="convert" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Output: "/>
-                    <Property name="offsetNid" type="int" value="202"/>
+                    <Property name="offsetNid" type="int" value="217"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -873,7 +851,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="203"/>
+                    <Property name="offsetNid" type="int" value="218"/>
                   </Properties>
                 </Component>
               </SubComponents>

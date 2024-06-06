@@ -340,7 +340,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         try:
             refTypeNode = refSigNode.getNode('TYPE')
         except:
-            raise Exception ('Not a valid MARTE2 device reference for '+ self.getSignalName(sigNode) + ' of '+self.getPath()+ ':  '+ value()) 
+            raise Exception ('Not a valid MARTE2 device reference for '+ self.getSignalName(sigNode) + ' of '+self.getPath()) 
 
         if refTypeNode.data() != sigNode.getNode('TYPE').data():
             raise Exception ('Invalid type for signal '+ self.getSignalName(sigNode) + ' of '+self.getPath()+':'+value.getPath()+': '+refTypeNode.data()+'  '+sigNode.getNode('TYPE').data()) 
@@ -937,7 +937,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def isReferencedByAnyThread(self, outValNode, threadMap):
         marteNids = threadMap['DeviceInfo'].keys()
         for marteNid in marteNids:
-            inputNodes = MDSplus.TreeNode(marteNid).getNode('INPUTS').getChildren()
+            try:
+                inputNodes = MDSplus.TreeNode(marteNid).getNode('INPUTS').getChildren()
+            except: 
+                return False #No Inputs
             if self.isReferenced(outValNode, inputNodes):
                 return True
             marteDevice = MDSplus.TreeNode(marteNid)
@@ -1661,6 +1664,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Name': self.getMarteDeviceName(self)+'_Output_DDB',
             'Class': 'GAMDataSource'})
 
+       #Handle unpacking of output structures
+        if len(outputsToBeUnpacked) > 0:
+            retGams.append(self.handleOutputUnpack(outputsToBeUnpacked))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_Expanded_Output_DDB', 'Class': 'GAMDataSource'})
         #Handle Synchronous Outputs
         if len(syncThreadSignals) > 0:
             retGams.append(self.handleSynchronoutOutputs(syncThreadSignals))
@@ -1767,6 +1774,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             retGams.append(self.handleConstRefs(constRefs))
             retDataSources.append({'Name': self.getMarteDeviceName(self)+'_ConstInDDB', 'Class': 'GAMDataSource'})
 
+        #Handle Packing of input structures defined in separate fields
+        if len(inputsToBePacked) > 0:
+            retGams.append(self.handleInputPacking(inputsToBePacked))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_Input_Bus_DDB', 'Class': 'GAMDataSource'})
 
 
         retGams.append({
