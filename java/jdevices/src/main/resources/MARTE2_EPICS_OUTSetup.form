@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 EPICS Out"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_EPICS_OUT"/>
     <Property name="height" type="int" value="500"/>
@@ -24,7 +24,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,100"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,104,0,0,2,-25"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -45,31 +45,9 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="2"/>
+        <Property name="rows" type="int" value="1"/>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel3">
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-                <Property name="numCols" type="int" value="25"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase Div.: "/>
-                <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="178"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -197,7 +175,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="37"/>
+                        <Property name="offsetNid" type="int" value="38"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -212,7 +190,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="29"/>
+                        <Property name="offsetNid" type="int" value="30"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -227,7 +205,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="32"/>
+                        <Property name="offsetNid" type="int" value="33"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -261,7 +239,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="47"/>
+                        <Property name="offsetNid" type="int" value="49"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -276,7 +254,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="39"/>
+                        <Property name="offsetNid" type="int" value="41"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -291,7 +269,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="42"/>
+                        <Property name="offsetNid" type="int" value="44"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -325,7 +303,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="57"/>
+                        <Property name="offsetNid" type="int" value="60"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -340,7 +318,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="49"/>
+                        <Property name="offsetNid" type="int" value="52"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -355,7 +333,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="52"/>
+                        <Property name="offsetNid" type="int" value="55"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -389,7 +367,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="67"/>
+                        <Property name="offsetNid" type="int" value="71"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -404,7 +382,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="59"/>
+                        <Property name="offsetNid" type="int" value="63"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -419,7 +397,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="62"/>
+                        <Property name="offsetNid" type="int" value="66"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -453,7 +431,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="77"/>
+                        <Property name="offsetNid" type="int" value="82"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -468,7 +446,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="69"/>
+                        <Property name="offsetNid" type="int" value="74"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -483,7 +461,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="72"/>
+                        <Property name="offsetNid" type="int" value="77"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -517,7 +495,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="87"/>
+                        <Property name="offsetNid" type="int" value="93"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -532,7 +510,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="79"/>
+                        <Property name="offsetNid" type="int" value="85"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -547,7 +525,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="82"/>
+                        <Property name="offsetNid" type="int" value="88"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -581,7 +559,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="97"/>
+                        <Property name="offsetNid" type="int" value="104"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -596,7 +574,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="89"/>
+                        <Property name="offsetNid" type="int" value="96"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -611,7 +589,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="92"/>
+                        <Property name="offsetNid" type="int" value="99"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -645,7 +623,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="107"/>
+                        <Property name="offsetNid" type="int" value="115"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -660,7 +638,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="99"/>
+                        <Property name="offsetNid" type="int" value="107"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -675,7 +653,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="102"/>
+                        <Property name="offsetNid" type="int" value="110"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -709,7 +687,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="117"/>
+                        <Property name="offsetNid" type="int" value="126"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -724,7 +702,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="109"/>
+                        <Property name="offsetNid" type="int" value="118"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -739,7 +717,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="112"/>
+                        <Property name="offsetNid" type="int" value="121"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -773,7 +751,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="127"/>
+                        <Property name="offsetNid" type="int" value="137"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -788,7 +766,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="119"/>
+                        <Property name="offsetNid" type="int" value="129"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -803,7 +781,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="122"/>
+                        <Property name="offsetNid" type="int" value="132"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -837,7 +815,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="137"/>
+                        <Property name="offsetNid" type="int" value="148"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -852,7 +830,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="129"/>
+                        <Property name="offsetNid" type="int" value="140"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -867,7 +845,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="132"/>
+                        <Property name="offsetNid" type="int" value="143"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -901,7 +879,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="147"/>
+                        <Property name="offsetNid" type="int" value="159"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -916,7 +894,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="139"/>
+                        <Property name="offsetNid" type="int" value="151"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -931,7 +909,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="142"/>
+                        <Property name="offsetNid" type="int" value="154"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -965,7 +943,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="157"/>
+                        <Property name="offsetNid" type="int" value="170"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -980,7 +958,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="149"/>
+                        <Property name="offsetNid" type="int" value="162"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -995,7 +973,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="152"/>
+                        <Property name="offsetNid" type="int" value="165"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1029,7 +1007,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="167"/>
+                        <Property name="offsetNid" type="int" value="181"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1044,7 +1022,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="159"/>
+                        <Property name="offsetNid" type="int" value="173"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1059,7 +1037,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="162"/>
+                        <Property name="offsetNid" type="int" value="176"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1093,7 +1071,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="PV Name: "/>
                         <Property name="numCols" type="int" value="15"/>
-                        <Property name="offsetNid" type="int" value="177"/>
+                        <Property name="offsetNid" type="int" value="192"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1108,7 +1086,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="169"/>
+                        <Property name="offsetNid" type="int" value="184"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1123,7 +1101,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="172"/>
+                        <Property name="offsetNid" type="int" value="187"/>
                       </Properties>
                     </Component>
                   </SubComponents>
