@@ -3,7 +3,7 @@
 <Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
-    <Property name="deviceTitle" type="java.lang.String" value="DTT Simularot"/>
+    <Property name="deviceTitle" type="java.lang.String" value="DTT Simulator"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_SIMULINK_DTT"/>
     <Property name="height" type="int" value="500"/>
     <Property name="width" type="int" value="700"/>
@@ -47,7 +47,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="145"/>
+            <Property name="offsetNid" type="int" value="154"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField1">
@@ -55,7 +55,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Port: "/>
             <Property name="numCols" type="int" value="6"/>
-            <Property name="offsetNid" type="int" value="309"/>
+            <Property name="offsetNid" type="int" value="315"/>
           </Properties>
         </Component>
       </SubComponents>
