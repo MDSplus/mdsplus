@@ -29,8 +29,6 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -53,7 +51,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         jPanel13 = new javax.swing.JPanel();
         deviceField7 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("NI6368 DAC");
         setDeviceType("MARTE2_NI6368_DAC");
         setHeight(200);
@@ -65,18 +63,6 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceField1.setNumCols(2);
         deviceField1.setOffsetNid(10);
         jPanel1.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase: ");
-        deviceField2.setNumCols(15);
-        deviceField2.setOffsetNid(3);
-        jPanel1.add(deviceField2);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Timebase div: ");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(85);
-        jPanel1.add(deviceField3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
@@ -106,7 +92,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"10", "5", "APFI0", "APFI1"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Range: ");
-        deviceChoice2.setOffsetNid(61);
+        deviceChoice2.setOffsetNid(62);
         deviceChoice2.setUpdateIdentifier("");
         jPanel6.add(deviceChoice2);
 
@@ -115,7 +101,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Value: ");
         deviceField5.setNumCols(30);
-        deviceField5.setOffsetNid(53);
+        deviceField5.setOffsetNid(54);
         jPanel7.add(deviceField5);
 
         jPanel5.add(jPanel7);
@@ -127,7 +113,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceChoice3.setChoiceItems(new String[] {"10", "5", "APFI0", "APFI1"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Range: ");
-        deviceChoice3.setOffsetNid(74);
+        deviceChoice3.setOffsetNid(76);
         deviceChoice3.setUpdateIdentifier("");
         jPanel9.add(deviceChoice3);
 
@@ -136,7 +122,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Value: ");
         deviceField6.setNumCols(30);
-        deviceField6.setOffsetNid(66);
+        deviceField6.setOffsetNid(68);
         jPanel10.add(deviceField6);
 
         jPanel8.add(jPanel10);
@@ -148,7 +134,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceChoice4.setChoiceItems(new String[] {"10", "5", "APFI0", "APFI1"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Range: ");
-        deviceChoice4.setOffsetNid(87);
+        deviceChoice4.setOffsetNid(90);
         deviceChoice4.setUpdateIdentifier("");
         jPanel12.add(deviceChoice4);
 
@@ -157,7 +143,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Value: ");
         deviceField7.setNumCols(30);
-        deviceField7.setOffsetNid(79);
+        deviceField7.setOffsetNid(82);
         jPanel13.add(deviceField7);
 
         jPanel11.add(jPanel13);
@@ -177,8 +163,6 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
-    private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;

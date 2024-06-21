@@ -35,8 +35,6 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         jPanel2 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
         jPanel15 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceChoice2 = new DeviceChoice();
@@ -64,7 +62,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceField6 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 NI 6250 DAC");
         setDeviceType("MARTE2_NI6259_DAC");
         setHeight(300);
@@ -78,24 +76,12 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceField1.setOffsetNid(10);
         jPanel14.add(deviceField1);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Timebase: ");
-        deviceField7.setNumCols(25);
-        deviceField7.setOffsetNid(3);
-        jPanel14.add(deviceField7);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Timebase div:");
-        deviceField8.setNumCols(4);
-        deviceField8.setOffsetNid(76);
-        jPanel14.add(deviceField8);
-
         jPanel2.add(jPanel14);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Clock update divisor: ");
         deviceField2.setNumCols(3);
-        deviceField2.setOffsetNid(19);
+        deviceField2.setOffsetNid(16);
         jPanel15.add(deviceField2);
 
         deviceChoice2.setChoiceItems(new String[] {"RISING_EDGE", "FALLING_EDGE"});
@@ -142,7 +128,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceChoice4.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Polarity:");
-        deviceChoice4.setOffsetNid(62);
+        deviceChoice4.setOffsetNid(50);
         deviceChoice4.setUpdateIdentifier("");
         jPanel6.add(deviceChoice4);
 
@@ -151,7 +137,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Value: ");
         deviceField4.setNumCols(40);
-        deviceField4.setOffsetNid(41);
+        deviceField4.setOffsetNid(42);
         jPanel7.add(deviceField4);
 
         jPanel5.add(jPanel7);
@@ -163,7 +149,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceChoice5.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Polarity:");
-        deviceChoice5.setOffsetNid(62);
+        deviceChoice5.setOffsetNid(64);
         deviceChoice5.setUpdateIdentifier("");
         jPanel9.add(deviceChoice5);
 
@@ -172,7 +158,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Value: ");
         deviceField5.setNumCols(40);
-        deviceField5.setOffsetNid(54);
+        deviceField5.setOffsetNid(56);
         jPanel10.add(deviceField5);
 
         jPanel8.add(jPanel10);
@@ -184,7 +170,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceChoice6.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Polarity:");
-        deviceChoice6.setOffsetNid(75);
+        deviceChoice6.setOffsetNid(78);
         deviceChoice6.setUpdateIdentifier("");
         jPanel12.add(deviceChoice6);
 
@@ -193,7 +179,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Value: ");
         deviceField6.setNumCols(40);
-        deviceField6.setOffsetNid(67);
+        deviceField6.setOffsetNid(70);
         jPanel13.add(deviceField6);
 
         jPanel11.add(jPanel13);
@@ -220,8 +206,6 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
-    private DeviceField deviceField7;
-    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
