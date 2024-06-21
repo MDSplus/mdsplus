@@ -48,7 +48,7 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 NI6259 Digital Output ");
         setDeviceType("MARTE2_NI6259_DO");
         setHeight(200);
@@ -90,26 +90,26 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Mask: ");
-        deviceField4.setOffsetNid(40);
+        deviceField4.setOffsetNid(41);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Value: ");
         deviceField5.setNumCols(35);
-        deviceField5.setOffsetNid(32);
+        deviceField5.setOffsetNid(33);
         jPanel4.add(deviceField5);
 
         jTabbedPane1.addTab("Port 2", jPanel4);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Mask: ");
-        deviceField6.setOffsetNid(53);
+        deviceField6.setOffsetNid(55);
         jPanel5.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Value: ");
         deviceField7.setNumCols(35);
-        deviceField7.setOffsetNid(45);
+        deviceField7.setOffsetNid(47);
         jPanel5.add(deviceField7);
 
         jTabbedPane1.addTab("Port 3", jPanel5);

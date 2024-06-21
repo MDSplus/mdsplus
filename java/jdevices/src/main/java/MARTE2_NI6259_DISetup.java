@@ -34,7 +34,6 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
 
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
@@ -43,18 +42,12 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("NI6259 Digital Input");
         setDeviceType("MARTE2_NI6259_DI");
         setHeight(200);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Timebase: ");
-        deviceField6.setNumCols(25);
-        deviceField6.setOffsetNid(3);
-        jPanel2.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Storage CPUs: ");
@@ -73,19 +66,19 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Port 1 Mask: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(31);
+        deviceField2.setOffsetNid(32);
         jPanel1.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Port 2 Mask: ");
         deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(45);
+        deviceField3.setOffsetNid(48);
         jPanel1.add(deviceField3);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Port 3 Mask: ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(59);
+        deviceField4.setOffsetNid(64);
         jPanel1.add(deviceField4);
 
         deviceField5.setIdentifier("");
@@ -105,7 +98,6 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
-    private DeviceField deviceField6;
     private DeviceField deviceField7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

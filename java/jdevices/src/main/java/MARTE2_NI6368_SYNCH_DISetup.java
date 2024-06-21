@@ -40,8 +40,8 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
 
-        setDeviceProvider("spilds.rfx.local:8100");
-        setDeviceTitle("NI6259 Synch Digital In");
+        setDeviceProvider("localhost:8100");
+        setDeviceTitle("NI6368 Synch Digital In");
         setDeviceType("MARTE2_NI6259_SYNCH_DI");
         setHeight(200);
         setWidth(800);
@@ -92,7 +92,7 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Out Bits seg. len: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(49);
+        deviceField7.setOffsetNid(51);
         jPanel4.add(deviceField7);
 
         deviceField8.setIdentifier("");

@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI 6368 ADC Setup"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6368"/>
     <Property name="height" type="int" value="400"/>
@@ -327,7 +327,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Samples"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="70"/>
+                <Property name="offsetNid" type="int" value="74"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField7">
@@ -392,7 +392,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="77"/>
+                    <Property name="offsetNid" type="int" value="82"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -401,7 +401,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="72"/>
+                    <Property name="offsetNid" type="int" value="76"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -432,7 +432,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="91"/>
+                    <Property name="offsetNid" type="int" value="98"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -441,7 +441,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="86"/>
+                    <Property name="offsetNid" type="int" value="92"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -472,7 +472,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="105"/>
+                    <Property name="offsetNid" type="int" value="114"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -481,7 +481,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="100"/>
+                    <Property name="offsetNid" type="int" value="108"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -512,7 +512,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="119"/>
+                    <Property name="offsetNid" type="int" value="130"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -521,7 +521,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="114"/>
+                    <Property name="offsetNid" type="int" value="124"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -552,7 +552,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="133"/>
+                    <Property name="offsetNid" type="int" value="146"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -561,7 +561,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="128"/>
+                    <Property name="offsetNid" type="int" value="140"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -592,7 +592,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="147"/>
+                    <Property name="offsetNid" type="int" value="162"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -601,7 +601,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="142"/>
+                    <Property name="offsetNid" type="int" value="156"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -632,7 +632,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="161"/>
+                    <Property name="offsetNid" type="int" value="178"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -641,7 +641,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="156"/>
+                    <Property name="offsetNid" type="int" value="172"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -672,7 +672,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                    <Property name="offsetNid" type="int" value="175"/>
+                    <Property name="offsetNid" type="int" value="194"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -681,7 +681,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Seg. Len: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="170"/>
+                    <Property name="offsetNid" type="int" value="188"/>
                   </Properties>
                 </Component>
               </SubComponents>

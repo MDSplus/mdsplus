@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="NI6368 DAC"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6368_DAC"/>
     <Property name="height" type="int" value="200"/>
@@ -51,22 +51,6 @@
             <Property name="labelString" type="java.lang.String" value="Board Id:"/>
             <Property name="numCols" type="int" value="2"/>
             <Property name="offsetNid" type="int" value="10"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField2">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-            <Property name="numCols" type="int" value="15"/>
-            <Property name="offsetNid" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField3">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Timebase div: "/>
-            <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="85"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -162,7 +146,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Range: "/>
-                    <Property name="offsetNid" type="int" value="61"/>
+                    <Property name="offsetNid" type="int" value="62"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -177,7 +161,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="30"/>
-                    <Property name="offsetNid" type="int" value="53"/>
+                    <Property name="offsetNid" type="int" value="54"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -214,7 +198,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Range: "/>
-                    <Property name="offsetNid" type="int" value="74"/>
+                    <Property name="offsetNid" type="int" value="76"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -229,7 +213,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="30"/>
-                    <Property name="offsetNid" type="int" value="66"/>
+                    <Property name="offsetNid" type="int" value="68"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -266,7 +250,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Range: "/>
-                    <Property name="offsetNid" type="int" value="87"/>
+                    <Property name="offsetNid" type="int" value="90"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -281,7 +265,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="30"/>
-                    <Property name="offsetNid" type="int" value="79"/>
+                    <Property name="offsetNid" type="int" value="82"/>
                   </Properties>
                 </Component>
               </SubComponents>

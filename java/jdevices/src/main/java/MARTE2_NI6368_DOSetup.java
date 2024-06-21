@@ -28,8 +28,6 @@ public class MARTE2_NI6368_DOSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
@@ -44,15 +42,7 @@ public class MARTE2_NI6368_DOSetup extends DeviceSetup {
         setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
-
-        jPanel1.add(jPanel2);
+        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Board Id: ");
@@ -81,12 +71,10 @@ public class MARTE2_NI6368_DOSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceField deviceField1;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables
