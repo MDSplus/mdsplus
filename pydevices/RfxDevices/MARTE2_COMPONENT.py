@@ -24,7 +24,6 @@
 #
 
 import MDSplus
-import RfxDevices
 import numpy as np
 import copy
 
@@ -289,7 +288,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         except:
             name = currSigNode.getName()
 
-        while not isinstance(currSigNode.getParent().getParent(), RfxDevices.MARTE2_COMPONENT):
+        while not isinstance(currSigNode.getParent().getParent(), MARTE2_COMPONENT):
             currSigNode = currSigNode.getParent().getParent()
             try:
                 currName = currSigNode.getNode('NAME').data()
@@ -304,7 +303,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     #return the containing MARTE2 device 
     def getMarteDevice(self, node):
         currNode = node
-        while not isinstance(currNode, RfxDevices.MARTE2_COMPONENT):
+        while not isinstance(currNode, MARTE2_COMPONENT):
             if currNode.getParent().getNid() == 0: #TOP reached
                 raise Exception('Node '+ node.getPath() +' is not contained in a MARTe2 device')
             currNode = currNode.getParent()
@@ -1316,7 +1315,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'NodeName': self.getNode('OUTPUTS:OUT_TIME').getFullPath(),
             'AutomaticSegmentation': 0,
             'TimeSignal': 1,
-            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
+#            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
+            'Period': str(self.timerPeriod).replace('D', 'E'),
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data(),
             'DiscontinuityFactor': 10
             })
@@ -1326,7 +1326,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
-            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
+#            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
+            sigDef['Period'] = str(self.timerPeriod).replace('D', 'E')
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0

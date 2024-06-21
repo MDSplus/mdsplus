@@ -31,14 +31,79 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jButton2 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel29 = new javax.swing.JPanel();
+        jPanel30 = new javax.swing.JPanel();
+        deviceField29 = new DeviceField();
+        deviceChoice9 = new DeviceChoice();
+        deviceField30 = new DeviceField();
+        deviceField31 = new DeviceField();
+        jPanel31 = new javax.swing.JPanel();
+        deviceField32 = new DeviceField();
+        deviceChoice10 = new DeviceChoice();
+        deviceField33 = new DeviceField();
+        deviceField34 = new DeviceField();
+        jPanel32 = new javax.swing.JPanel();
+        deviceField35 = new DeviceField();
+        deviceChoice11 = new DeviceChoice();
+        deviceField36 = new DeviceField();
+        deviceField37 = new DeviceField();
+        jPanel33 = new javax.swing.JPanel();
+        deviceField38 = new DeviceField();
+        deviceChoice12 = new DeviceChoice();
+        deviceField39 = new DeviceField();
+        deviceField40 = new DeviceField();
+        jPanel34 = new javax.swing.JPanel();
+        deviceField41 = new DeviceField();
+        deviceChoice13 = new DeviceChoice();
+        deviceField42 = new DeviceField();
+        deviceField43 = new DeviceField();
+        jPanel35 = new javax.swing.JPanel();
+        deviceField44 = new DeviceField();
+        deviceChoice14 = new DeviceChoice();
+        deviceField45 = new DeviceField();
+        deviceField46 = new DeviceField();
+        jPanel36 = new javax.swing.JPanel();
+        deviceField47 = new DeviceField();
+        deviceChoice15 = new DeviceChoice();
+        deviceField48 = new DeviceField();
+        deviceField49 = new DeviceField();
+        jPanel37 = new javax.swing.JPanel();
+        deviceField50 = new DeviceField();
+        deviceChoice16 = new DeviceChoice();
+        deviceField51 = new DeviceField();
+        deviceField52 = new DeviceField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jPanel38 = new javax.swing.JPanel();
+        jPanel39 = new javax.swing.JPanel();
+        deviceField53 = new DeviceField();
+        deviceField54 = new DeviceField();
+        jPanel40 = new javax.swing.JPanel();
+        deviceField55 = new DeviceField();
+        deviceField56 = new DeviceField();
+        jPanel41 = new javax.swing.JPanel();
+        deviceField57 = new DeviceField();
+        deviceField58 = new DeviceField();
+        jPanel42 = new javax.swing.JPanel();
+        deviceField59 = new DeviceField();
+        deviceField60 = new DeviceField();
+        jPanel43 = new javax.swing.JPanel();
+        deviceField61 = new DeviceField();
+        deviceField62 = new DeviceField();
+        jPanel44 = new javax.swing.JPanel();
+        deviceField63 = new DeviceField();
+        deviceField64 = new DeviceField();
+        jPanel45 = new javax.swing.JPanel();
+        deviceField65 = new DeviceField();
+        deviceField66 = new DeviceField();
+        jPanel46 = new javax.swing.JPanel();
+        deviceField67 = new DeviceField();
+        deviceField68 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -97,105 +162,15 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField27 = new DeviceField();
         jPanel28 = new javax.swing.JPanel();
         deviceField28 = new DeviceField();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jPanel29 = new javax.swing.JPanel();
-        jPanel30 = new javax.swing.JPanel();
-        deviceField29 = new DeviceField();
-        deviceChoice9 = new DeviceChoice();
-        deviceField30 = new DeviceField();
-        deviceField31 = new DeviceField();
-        deviceField69 = new DeviceField();
-        jPanel31 = new javax.swing.JPanel();
-        deviceField32 = new DeviceField();
-        deviceChoice10 = new DeviceChoice();
-        deviceField33 = new DeviceField();
-        deviceField34 = new DeviceField();
-        deviceField70 = new DeviceField();
-        jPanel32 = new javax.swing.JPanel();
-        deviceField35 = new DeviceField();
-        deviceChoice11 = new DeviceChoice();
-        deviceField36 = new DeviceField();
-        deviceField37 = new DeviceField();
-        deviceField71 = new DeviceField();
-        jPanel33 = new javax.swing.JPanel();
-        deviceField38 = new DeviceField();
-        deviceChoice12 = new DeviceChoice();
-        deviceField39 = new DeviceField();
-        deviceField40 = new DeviceField();
-        deviceField72 = new DeviceField();
-        jPanel34 = new javax.swing.JPanel();
-        deviceField41 = new DeviceField();
-        deviceChoice13 = new DeviceChoice();
-        deviceField42 = new DeviceField();
-        deviceField43 = new DeviceField();
-        deviceField73 = new DeviceField();
-        jPanel35 = new javax.swing.JPanel();
-        deviceField44 = new DeviceField();
-        deviceChoice14 = new DeviceChoice();
-        deviceField45 = new DeviceField();
-        deviceField46 = new DeviceField();
-        deviceField74 = new DeviceField();
-        jPanel36 = new javax.swing.JPanel();
-        deviceField47 = new DeviceField();
-        deviceChoice15 = new DeviceChoice();
-        deviceField48 = new DeviceField();
-        deviceField49 = new DeviceField();
-        deviceField75 = new DeviceField();
-        jPanel37 = new javax.swing.JPanel();
-        deviceField50 = new DeviceField();
-        deviceChoice16 = new DeviceChoice();
-        deviceField51 = new DeviceField();
-        deviceField52 = new DeviceField();
-        deviceField76 = new DeviceField();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jPanel38 = new javax.swing.JPanel();
-        jPanel39 = new javax.swing.JPanel();
-        deviceField53 = new DeviceField();
-        deviceField54 = new DeviceField();
-        jPanel40 = new javax.swing.JPanel();
-        deviceField55 = new DeviceField();
-        deviceField56 = new DeviceField();
-        jPanel41 = new javax.swing.JPanel();
-        deviceField57 = new DeviceField();
-        deviceField58 = new DeviceField();
-        jPanel42 = new javax.swing.JPanel();
-        deviceField59 = new DeviceField();
-        deviceField60 = new DeviceField();
-        jPanel43 = new javax.swing.JPanel();
-        deviceField61 = new DeviceField();
-        deviceField62 = new DeviceField();
-        jPanel44 = new javax.swing.JPanel();
-        deviceField63 = new DeviceField();
-        deviceField64 = new DeviceField();
-        jPanel45 = new javax.swing.JPanel();
-        deviceField65 = new DeviceField();
-        deviceField66 = new DeviceField();
-        jPanel46 = new javax.swing.JPanel();
-        deviceField67 = new DeviceField();
-        deviceField68 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Python Generic");
         setDeviceType("MARTE2_PYTHON_GENERIC");
         setHeight(400);
         setWidth(850);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase:");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel3.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div (if from another thread):");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(160);
-        jPanel3.add(deviceField2);
-
-        jPanel2.add(jPanel3);
+        jPanel2.setLayout(new java.awt.GridLayout(1, 1));
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Python module:");
@@ -206,7 +181,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Write CPU Mask:");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(95);
+        deviceField4.setOffsetNid(106);
         jPanel4.add(deviceField4);
 
         jButton2.setText("FillFields");
@@ -221,318 +196,34 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        jPanel1.setLayout(new java.awt.GridLayout(8, 1));
-
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 1"));
-        jPanel5.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Name: ");
-        deviceField5.setOffsetNid(38);
-        deviceField5.setTextOnly(true);
-        jPanel6.add(deviceField5);
-
-        deviceChoice1.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Type: ");
-        deviceChoice1.setOffsetNid(34);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice1);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(35);
-        jPanel6.add(deviceField6);
-
-        jPanel5.add(jPanel6);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Value: ");
-        deviceField7.setNumCols(35);
-        deviceField7.setOffsetNid(37);
-        jPanel7.add(deviceField7);
-
-        jPanel5.add(jPanel7);
-
-        jPanel1.add(jPanel5);
-
-        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 2"));
-        jPanel8.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Name: ");
-        deviceField8.setOffsetNid(45);
-        deviceField8.setTextOnly(true);
-        jPanel9.add(deviceField8);
-
-        deviceChoice2.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Type: ");
-        deviceChoice2.setOffsetNid(41);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice2);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(42);
-        jPanel9.add(deviceField9);
-
-        jPanel8.add(jPanel9);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Value: ");
-        deviceField10.setNumCols(35);
-        deviceField10.setOffsetNid(44);
-        jPanel10.add(deviceField10);
-
-        jPanel8.add(jPanel10);
-
-        jPanel1.add(jPanel8);
-
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 3"));
-        jPanel11.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Name: ");
-        deviceField11.setOffsetNid(52);
-        deviceField11.setTextOnly(true);
-        jPanel12.add(deviceField11);
-
-        deviceChoice3.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Type: ");
-        deviceChoice3.setOffsetNid(48);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice3);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(49);
-        jPanel12.add(deviceField12);
-
-        jPanel11.add(jPanel12);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Value: ");
-        deviceField13.setNumCols(35);
-        deviceField13.setOffsetNid(51);
-        jPanel13.add(deviceField13);
-
-        jPanel11.add(jPanel13);
-
-        jPanel1.add(jPanel11);
-
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 4"));
-        jPanel14.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Name: ");
-        deviceField14.setOffsetNid(59);
-        deviceField14.setTextOnly(true);
-        jPanel15.add(deviceField14);
-
-        deviceChoice4.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Type: ");
-        deviceChoice4.setOffsetNid(55);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice4);
-
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField15.setNumCols(4);
-        deviceField15.setOffsetNid(56);
-        jPanel15.add(deviceField15);
-
-        jPanel14.add(jPanel15);
-
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Value: ");
-        deviceField16.setNumCols(35);
-        deviceField16.setOffsetNid(58);
-        jPanel16.add(deviceField16);
-
-        jPanel14.add(jPanel16);
-
-        jPanel1.add(jPanel14);
-
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 5"));
-        jPanel17.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Name: ");
-        deviceField17.setOffsetNid(66);
-        deviceField17.setTextOnly(true);
-        jPanel18.add(deviceField17);
-
-        deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Type: ");
-        deviceChoice5.setOffsetNid(62);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice5);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField18.setNumCols(4);
-        deviceField18.setOffsetNid(63);
-        jPanel18.add(deviceField18);
-
-        jPanel17.add(jPanel18);
-
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Value: ");
-        deviceField19.setNumCols(35);
-        deviceField19.setOffsetNid(65);
-        jPanel19.add(deviceField19);
-
-        jPanel17.add(jPanel19);
-
-        jPanel1.add(jPanel17);
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 6"));
-        jPanel20.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Name: ");
-        deviceField20.setOffsetNid(73);
-        deviceField20.setTextOnly(true);
-        jPanel21.add(deviceField20);
-
-        deviceChoice6.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Type: ");
-        deviceChoice6.setOffsetNid(69);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice6);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField21.setNumCols(4);
-        deviceField21.setOffsetNid(70);
-        jPanel21.add(deviceField21);
-
-        jPanel20.add(jPanel21);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Value: ");
-        deviceField22.setNumCols(35);
-        deviceField22.setOffsetNid(72);
-        jPanel22.add(deviceField22);
-
-        jPanel20.add(jPanel22);
-
-        jPanel1.add(jPanel20);
-
-        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 7"));
-        jPanel23.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Name: ");
-        deviceField23.setOffsetNid(80);
-        deviceField23.setTextOnly(true);
-        jPanel24.add(deviceField23);
-
-        deviceChoice7.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Type: ");
-        deviceChoice7.setOffsetNid(76);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice7);
-
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField24.setNumCols(4);
-        deviceField24.setOffsetNid(77);
-        jPanel24.add(deviceField24);
-
-        jPanel23.add(jPanel24);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Value: ");
-        deviceField25.setNumCols(35);
-        deviceField25.setOffsetNid(79);
-        jPanel25.add(deviceField25);
-
-        jPanel23.add(jPanel25);
-
-        jPanel1.add(jPanel23);
-
-        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 8"));
-        jPanel26.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("Name: ");
-        deviceField26.setOffsetNid(87);
-        deviceField26.setTextOnly(true);
-        jPanel27.add(deviceField26);
-
-        deviceChoice8.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Type: ");
-        deviceChoice8.setOffsetNid(83);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel27.add(deviceChoice8);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("Dimensions (0 for scalar, array otherwise):");
-        deviceField27.setNumCols(4);
-        deviceField27.setOffsetNid(84);
-        jPanel27.add(deviceField27);
-
-        jPanel26.add(jPanel27);
-
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Value: ");
-        deviceField28.setNumCols(35);
-        deviceField28.setOffsetNid(86);
-        jPanel28.add(deviceField28);
-
-        jPanel26.add(jPanel28);
-
-        jPanel1.add(jPanel26);
-
-        jScrollPane1.setViewportView(jPanel1);
-
-        jTabbedPane1.addTab("Inputs", jScrollPane1);
-
         jPanel29.setLayout(new java.awt.GridLayout(8, 1));
 
         jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Output 1"));
 
         deviceField29.setIdentifier("");
         deviceField29.setLabelString("Name: ");
-        deviceField29.setOffsetNid(97);
+        deviceField29.setOffsetNid(108);
         deviceField29.setTextOnly(true);
         jPanel30.add(deviceField29);
 
         deviceChoice9.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Type: ");
-        deviceChoice9.setOffsetNid(98);
+        deviceChoice9.setOffsetNid(109);
         deviceChoice9.setUpdateIdentifier("");
         jPanel30.add(deviceChoice9);
 
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField30.setNumCols(4);
-        deviceField30.setOffsetNid(100);
+        deviceField30.setOffsetNid(111);
         jPanel30.add(deviceField30);
 
         deviceField31.setIdentifier("");
         deviceField31.setLabelString("Seg. Len (0 to disable)");
         deviceField31.setNumCols(4);
-        deviceField31.setOffsetNid(101);
+        deviceField31.setOffsetNid(112);
         jPanel30.add(deviceField31);
-
-        deviceField69.setIdentifier("");
-        deviceField69.setLabelString("Stream Name:");
-        deviceField69.setOffsetNid(102);
-        deviceField69.setTextOnly(true);
-        jPanel30.add(deviceField69);
 
         jPanel29.add(jPanel30);
 
@@ -540,34 +231,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Name: ");
-        deviceField32.setOffsetNid(106);
+        deviceField32.setOffsetNid(118);
         deviceField32.setTextOnly(true);
         jPanel31.add(deviceField32);
 
         deviceChoice10.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Type: ");
-        deviceChoice10.setOffsetNid(107);
+        deviceChoice10.setOffsetNid(119);
         deviceChoice10.setUpdateIdentifier("");
         jPanel31.add(deviceChoice10);
 
         deviceField33.setIdentifier("");
         deviceField33.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField33.setNumCols(4);
-        deviceField33.setOffsetNid(109);
+        deviceField33.setOffsetNid(121);
         jPanel31.add(deviceField33);
 
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Seg. Len (0 to disable)");
         deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(110);
+        deviceField34.setOffsetNid(122);
         jPanel31.add(deviceField34);
-
-        deviceField70.setIdentifier("");
-        deviceField70.setLabelString("Stream Name:");
-        deviceField70.setOffsetNid(111);
-        deviceField70.setTextOnly(true);
-        jPanel31.add(deviceField70);
 
         jPanel29.add(jPanel31);
 
@@ -575,34 +260,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Name: ");
-        deviceField35.setOffsetNid(115);
+        deviceField35.setOffsetNid(128);
         deviceField35.setTextOnly(true);
         jPanel32.add(deviceField35);
 
         deviceChoice11.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Type: ");
-        deviceChoice11.setOffsetNid(116);
+        deviceChoice11.setOffsetNid(129);
         deviceChoice11.setUpdateIdentifier("");
         jPanel32.add(deviceChoice11);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(118);
+        deviceField36.setOffsetNid(131);
         jPanel32.add(deviceField36);
 
         deviceField37.setIdentifier("");
         deviceField37.setLabelString("Seg. Len (0 to disable)");
         deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(119);
+        deviceField37.setOffsetNid(132);
         jPanel32.add(deviceField37);
-
-        deviceField71.setIdentifier("");
-        deviceField71.setLabelString("Stream Name:");
-        deviceField71.setOffsetNid(120);
-        deviceField71.setTextOnly(true);
-        jPanel32.add(deviceField71);
 
         jPanel29.add(jPanel32);
 
@@ -610,34 +289,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField38.setIdentifier("");
         deviceField38.setLabelString("Name: ");
-        deviceField38.setOffsetNid(124);
+        deviceField38.setOffsetNid(138);
         deviceField38.setTextOnly(true);
         jPanel33.add(deviceField38);
 
         deviceChoice12.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Type: ");
-        deviceChoice12.setOffsetNid(125);
+        deviceChoice12.setOffsetNid(139);
         deviceChoice12.setUpdateIdentifier("");
         jPanel33.add(deviceChoice12);
 
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField39.setNumCols(4);
-        deviceField39.setOffsetNid(127);
+        deviceField39.setOffsetNid(141);
         jPanel33.add(deviceField39);
 
         deviceField40.setIdentifier("");
         deviceField40.setLabelString("Seg. Len (0 to disable)");
         deviceField40.setNumCols(4);
-        deviceField40.setOffsetNid(128);
+        deviceField40.setOffsetNid(142);
         jPanel33.add(deviceField40);
-
-        deviceField72.setIdentifier("");
-        deviceField72.setLabelString("Stream Name:");
-        deviceField72.setOffsetNid(129);
-        deviceField72.setTextOnly(true);
-        jPanel33.add(deviceField72);
 
         jPanel29.add(jPanel33);
 
@@ -645,34 +318,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("Name: ");
-        deviceField41.setOffsetNid(133);
+        deviceField41.setOffsetNid(148);
         deviceField41.setTextOnly(true);
         jPanel34.add(deviceField41);
 
         deviceChoice13.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Type: ");
-        deviceChoice13.setOffsetNid(134);
+        deviceChoice13.setOffsetNid(149);
         deviceChoice13.setUpdateIdentifier("");
         jPanel34.add(deviceChoice13);
 
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField42.setNumCols(4);
-        deviceField42.setOffsetNid(136);
+        deviceField42.setOffsetNid(151);
         jPanel34.add(deviceField42);
 
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Seg. Len (0 to disable)");
         deviceField43.setNumCols(4);
-        deviceField43.setOffsetNid(137);
+        deviceField43.setOffsetNid(152);
         jPanel34.add(deviceField43);
-
-        deviceField73.setIdentifier("");
-        deviceField73.setLabelString("Stream Name:");
-        deviceField73.setOffsetNid(138);
-        deviceField73.setTextOnly(true);
-        jPanel34.add(deviceField73);
 
         jPanel29.add(jPanel34);
 
@@ -680,34 +347,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField44.setIdentifier("");
         deviceField44.setLabelString("Name: ");
-        deviceField44.setOffsetNid(142);
+        deviceField44.setOffsetNid(158);
         deviceField44.setTextOnly(true);
         jPanel35.add(deviceField44);
 
         deviceChoice14.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Type: ");
-        deviceChoice14.setOffsetNid(143);
+        deviceChoice14.setOffsetNid(159);
         deviceChoice14.setUpdateIdentifier("");
         jPanel35.add(deviceChoice14);
 
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField45.setNumCols(4);
-        deviceField45.setOffsetNid(145);
+        deviceField45.setOffsetNid(161);
         jPanel35.add(deviceField45);
 
         deviceField46.setIdentifier("");
         deviceField46.setLabelString("Seg. Len (0 to disable)");
         deviceField46.setNumCols(4);
-        deviceField46.setOffsetNid(146);
+        deviceField46.setOffsetNid(162);
         jPanel35.add(deviceField46);
-
-        deviceField74.setIdentifier("");
-        deviceField74.setLabelString("Stream Name:");
-        deviceField74.setOffsetNid(147);
-        deviceField74.setTextOnly(true);
-        jPanel35.add(deviceField74);
 
         jPanel29.add(jPanel35);
 
@@ -715,34 +376,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Name: ");
-        deviceField47.setOffsetNid(151);
+        deviceField47.setOffsetNid(168);
         deviceField47.setTextOnly(true);
         jPanel36.add(deviceField47);
 
         deviceChoice15.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Type: ");
-        deviceChoice15.setOffsetNid(152);
+        deviceChoice15.setOffsetNid(169);
         deviceChoice15.setUpdateIdentifier("");
         jPanel36.add(deviceChoice15);
 
         deviceField48.setIdentifier("");
         deviceField48.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField48.setNumCols(4);
-        deviceField48.setOffsetNid(154);
+        deviceField48.setOffsetNid(171);
         jPanel36.add(deviceField48);
 
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Seg. Len (0 to disable)");
         deviceField49.setNumCols(4);
-        deviceField49.setOffsetNid(155);
+        deviceField49.setOffsetNid(172);
         jPanel36.add(deviceField49);
-
-        deviceField75.setIdentifier("");
-        deviceField75.setLabelString("Stream Name:");
-        deviceField75.setOffsetNid(156);
-        deviceField75.setTextOnly(true);
-        jPanel36.add(deviceField75);
 
         jPanel29.add(jPanel36);
 
@@ -750,34 +405,28 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField50.setIdentifier("");
         deviceField50.setLabelString("Name: ");
-        deviceField50.setOffsetNid(160);
+        deviceField50.setOffsetNid(178);
         deviceField50.setTextOnly(true);
         jPanel37.add(deviceField50);
 
         deviceChoice16.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Type: ");
-        deviceChoice16.setOffsetNid(161);
+        deviceChoice16.setOffsetNid(179);
         deviceChoice16.setUpdateIdentifier("");
         jPanel37.add(deviceChoice16);
 
         deviceField51.setIdentifier("");
         deviceField51.setLabelString("Dimensions (0 for scalar, -1 to disable):");
         deviceField51.setNumCols(4);
-        deviceField51.setOffsetNid(163);
+        deviceField51.setOffsetNid(181);
         jPanel37.add(deviceField51);
 
         deviceField52.setIdentifier("");
         deviceField52.setLabelString("Seg. Len (0 to disable)");
         deviceField52.setNumCols(4);
-        deviceField52.setOffsetNid(164);
+        deviceField52.setOffsetNid(182);
         jPanel37.add(deviceField52);
-
-        deviceField76.setIdentifier("");
-        deviceField76.setLabelString("Stream Name:");
-        deviceField76.setOffsetNid(165);
-        deviceField76.setTextOnly(true);
-        jPanel37.add(deviceField76);
 
         jPanel29.add(jPanel37);
 
@@ -791,14 +440,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField53.setIdentifier("");
         deviceField53.setLabelString("Name: ");
-        deviceField53.setOffsetNid(9);
+        deviceField53.setOffsetNid(12);
         deviceField53.setTextOnly(true);
         jPanel39.add(deviceField53);
 
         deviceField54.setIdentifier("");
         deviceField54.setLabelString("Value: ");
         deviceField54.setNumCols(15);
-        deviceField54.setOffsetNid(10);
+        deviceField54.setOffsetNid(13);
         jPanel39.add(deviceField54);
 
         jPanel38.add(jPanel39);
@@ -807,14 +456,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField55.setIdentifier("");
         deviceField55.setLabelString("Name: ");
-        deviceField55.setOffsetNid(12);
+        deviceField55.setOffsetNid(15);
         deviceField55.setTextOnly(true);
         jPanel40.add(deviceField55);
 
         deviceField56.setIdentifier("");
         deviceField56.setLabelString("Value: ");
         deviceField56.setNumCols(15);
-        deviceField56.setOffsetNid(13);
+        deviceField56.setOffsetNid(16);
         jPanel40.add(deviceField56);
 
         jPanel38.add(jPanel40);
@@ -823,14 +472,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField57.setIdentifier("");
         deviceField57.setLabelString("Name: ");
-        deviceField57.setOffsetNid(15);
+        deviceField57.setOffsetNid(18);
         deviceField57.setTextOnly(true);
         jPanel41.add(deviceField57);
 
         deviceField58.setIdentifier("");
         deviceField58.setLabelString("Value: ");
         deviceField58.setNumCols(15);
-        deviceField58.setOffsetNid(16);
+        deviceField58.setOffsetNid(19);
         jPanel41.add(deviceField58);
 
         jPanel38.add(jPanel41);
@@ -839,14 +488,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField59.setIdentifier("");
         deviceField59.setLabelString("Name: ");
-        deviceField59.setOffsetNid(18);
+        deviceField59.setOffsetNid(21);
         deviceField59.setTextOnly(true);
         jPanel42.add(deviceField59);
 
         deviceField60.setIdentifier("");
         deviceField60.setLabelString("Value: ");
         deviceField60.setNumCols(15);
-        deviceField60.setOffsetNid(19);
+        deviceField60.setOffsetNid(22);
         jPanel42.add(deviceField60);
 
         jPanel38.add(jPanel42);
@@ -855,14 +504,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField61.setIdentifier("");
         deviceField61.setLabelString("Name: ");
-        deviceField61.setOffsetNid(21);
+        deviceField61.setOffsetNid(24);
         deviceField61.setTextOnly(true);
         jPanel43.add(deviceField61);
 
         deviceField62.setIdentifier("");
         deviceField62.setLabelString("Value: ");
         deviceField62.setNumCols(15);
-        deviceField62.setOffsetNid(22);
+        deviceField62.setOffsetNid(25);
         jPanel43.add(deviceField62);
 
         jPanel38.add(jPanel43);
@@ -871,14 +520,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField63.setIdentifier("");
         deviceField63.setLabelString("Name: ");
-        deviceField63.setOffsetNid(24);
+        deviceField63.setOffsetNid(27);
         deviceField63.setTextOnly(true);
         jPanel44.add(deviceField63);
 
         deviceField64.setIdentifier("");
         deviceField64.setLabelString("Value: ");
         deviceField64.setNumCols(15);
-        deviceField64.setOffsetNid(25);
+        deviceField64.setOffsetNid(28);
         jPanel44.add(deviceField64);
 
         jPanel38.add(jPanel44);
@@ -887,14 +536,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField65.setIdentifier("");
         deviceField65.setLabelString("Name: ");
-        deviceField65.setOffsetNid(27);
+        deviceField65.setOffsetNid(30);
         deviceField65.setTextOnly(true);
         jPanel45.add(deviceField65);
 
         deviceField66.setIdentifier("");
         deviceField66.setLabelString("Value: ");
         deviceField66.setNumCols(15);
-        deviceField66.setOffsetNid(28);
+        deviceField66.setOffsetNid(31);
         jPanel45.add(deviceField66);
 
         jPanel38.add(jPanel45);
@@ -903,14 +552,14 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
 
         deviceField67.setIdentifier("");
         deviceField67.setLabelString("Name: ");
-        deviceField67.setOffsetNid(30);
+        deviceField67.setOffsetNid(33);
         deviceField67.setTextOnly(true);
         jPanel46.add(deviceField67);
 
         deviceField68.setIdentifier("");
         deviceField68.setLabelString("Value: ");
         deviceField68.setNumCols(15);
-        deviceField68.setOffsetNid(31);
+        deviceField68.setOffsetNid(34);
         jPanel46.add(deviceField68);
 
         jPanel38.add(jPanel46);
@@ -918,6 +567,284 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         jScrollPane3.setViewportView(jPanel38);
 
         jTabbedPane1.addTab("Parameters", jScrollPane3);
+
+        jPanel1.setLayout(new java.awt.GridLayout(8, 1));
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 1"));
+        jPanel5.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Name: ");
+        deviceField5.setOffsetNid(41);
+        deviceField5.setTextOnly(true);
+        jPanel6.add(deviceField5);
+
+        deviceChoice1.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Type: ");
+        deviceChoice1.setOffsetNid(37);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel6.add(deviceChoice1);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField6.setNumCols(4);
+        deviceField6.setOffsetNid(38);
+        jPanel6.add(deviceField6);
+
+        jPanel5.add(jPanel6);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Value: ");
+        deviceField7.setNumCols(35);
+        deviceField7.setOffsetNid(40);
+        jPanel7.add(deviceField7);
+
+        jPanel5.add(jPanel7);
+
+        jPanel1.add(jPanel5);
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 2"));
+        jPanel8.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Name: ");
+        deviceField8.setOffsetNid(49);
+        deviceField8.setTextOnly(true);
+        jPanel9.add(deviceField8);
+
+        deviceChoice2.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Type: ");
+        deviceChoice2.setOffsetNid(45);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel9.add(deviceChoice2);
+
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField9.setNumCols(4);
+        deviceField9.setOffsetNid(46);
+        jPanel9.add(deviceField9);
+
+        jPanel8.add(jPanel9);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Value: ");
+        deviceField10.setNumCols(35);
+        deviceField10.setOffsetNid(48);
+        jPanel10.add(deviceField10);
+
+        jPanel8.add(jPanel10);
+
+        jPanel1.add(jPanel8);
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 3"));
+        jPanel11.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("Name: ");
+        deviceField11.setOffsetNid(57);
+        deviceField11.setTextOnly(true);
+        jPanel12.add(deviceField11);
+
+        deviceChoice3.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("Type: ");
+        deviceChoice3.setOffsetNid(53);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice3);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField12.setNumCols(4);
+        deviceField12.setOffsetNid(54);
+        jPanel12.add(deviceField12);
+
+        jPanel11.add(jPanel12);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Value: ");
+        deviceField13.setNumCols(35);
+        deviceField13.setOffsetNid(56);
+        jPanel13.add(deviceField13);
+
+        jPanel11.add(jPanel13);
+
+        jPanel1.add(jPanel11);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 4"));
+        jPanel14.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("Name: ");
+        deviceField14.setOffsetNid(65);
+        deviceField14.setTextOnly(true);
+        jPanel15.add(deviceField14);
+
+        deviceChoice4.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("Type: ");
+        deviceChoice4.setOffsetNid(61);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel15.add(deviceChoice4);
+
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField15.setNumCols(4);
+        deviceField15.setOffsetNid(62);
+        jPanel15.add(deviceField15);
+
+        jPanel14.add(jPanel15);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("Value: ");
+        deviceField16.setNumCols(35);
+        deviceField16.setOffsetNid(64);
+        jPanel16.add(deviceField16);
+
+        jPanel14.add(jPanel16);
+
+        jPanel1.add(jPanel14);
+
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 5"));
+        jPanel17.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField17.setIdentifier("");
+        deviceField17.setLabelString("Name: ");
+        deviceField17.setOffsetNid(73);
+        deviceField17.setTextOnly(true);
+        jPanel18.add(deviceField17);
+
+        deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice5.setIdentifier("");
+        deviceChoice5.setLabelString("Type: ");
+        deviceChoice5.setOffsetNid(69);
+        deviceChoice5.setUpdateIdentifier("");
+        jPanel18.add(deviceChoice5);
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField18.setNumCols(4);
+        deviceField18.setOffsetNid(70);
+        jPanel18.add(deviceField18);
+
+        jPanel17.add(jPanel18);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Value: ");
+        deviceField19.setNumCols(35);
+        deviceField19.setOffsetNid(72);
+        jPanel19.add(deviceField19);
+
+        jPanel17.add(jPanel19);
+
+        jPanel1.add(jPanel17);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 6"));
+        jPanel20.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("Name: ");
+        deviceField20.setOffsetNid(81);
+        deviceField20.setTextOnly(true);
+        jPanel21.add(deviceField20);
+
+        deviceChoice6.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice6.setIdentifier("");
+        deviceChoice6.setLabelString("Type: ");
+        deviceChoice6.setOffsetNid(77);
+        deviceChoice6.setUpdateIdentifier("");
+        jPanel21.add(deviceChoice6);
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField21.setNumCols(4);
+        deviceField21.setOffsetNid(78);
+        jPanel21.add(deviceField21);
+
+        jPanel20.add(jPanel21);
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("Value: ");
+        deviceField22.setNumCols(35);
+        deviceField22.setOffsetNid(80);
+        jPanel22.add(deviceField22);
+
+        jPanel20.add(jPanel22);
+
+        jPanel1.add(jPanel20);
+
+        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 7"));
+        jPanel23.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("Name: ");
+        deviceField23.setOffsetNid(89);
+        deviceField23.setTextOnly(true);
+        jPanel24.add(deviceField23);
+
+        deviceChoice7.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice7.setIdentifier("");
+        deviceChoice7.setLabelString("Type: ");
+        deviceChoice7.setOffsetNid(85);
+        deviceChoice7.setUpdateIdentifier("");
+        jPanel24.add(deviceChoice7);
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField24.setNumCols(4);
+        deviceField24.setOffsetNid(86);
+        jPanel24.add(deviceField24);
+
+        jPanel23.add(jPanel24);
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("Value: ");
+        deviceField25.setNumCols(35);
+        deviceField25.setOffsetNid(88);
+        jPanel25.add(deviceField25);
+
+        jPanel23.add(jPanel25);
+
+        jPanel1.add(jPanel23);
+
+        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Input 8"));
+        jPanel26.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("Name: ");
+        deviceField26.setOffsetNid(97);
+        deviceField26.setTextOnly(true);
+        jPanel27.add(deviceField26);
+
+        deviceChoice8.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice8.setIdentifier("");
+        deviceChoice8.setLabelString("Type: ");
+        deviceChoice8.setOffsetNid(93);
+        deviceChoice8.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice8);
+
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("Dimensions (0 for scalar, array otherwise):");
+        deviceField27.setNumCols(4);
+        deviceField27.setOffsetNid(94);
+        jPanel27.add(deviceField27);
+
+        jPanel26.add(jPanel27);
+
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("Value: ");
+        deviceField28.setNumCols(35);
+        deviceField28.setOffsetNid(96);
+        jPanel28.add(deviceField28);
+
+        jPanel26.add(jPanel28);
+
+        jPanel1.add(jPanel26);
+
+        jScrollPane1.setViewportView(jPanel1);
+
+        jTabbedPane1.addTab("Inputs", jScrollPane1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -956,7 +883,6 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice7;
     private DeviceChoice deviceChoice8;
     private DeviceChoice deviceChoice9;
-    private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
@@ -967,7 +893,6 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField17;
     private DeviceField deviceField18;
     private DeviceField deviceField19;
-    private DeviceField deviceField2;
     private DeviceField deviceField20;
     private DeviceField deviceField21;
     private DeviceField deviceField22;
@@ -1021,15 +946,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField66;
     private DeviceField deviceField67;
     private DeviceField deviceField68;
-    private DeviceField deviceField69;
     private DeviceField deviceField7;
-    private DeviceField deviceField70;
-    private DeviceField deviceField71;
-    private DeviceField deviceField72;
-    private DeviceField deviceField73;
-    private DeviceField deviceField74;
-    private DeviceField deviceField75;
-    private DeviceField deviceField76;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JButton jButton2;
@@ -1055,7 +972,6 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel29;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;

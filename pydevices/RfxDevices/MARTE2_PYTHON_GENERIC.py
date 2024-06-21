@@ -52,31 +52,20 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
     ]
     parameters = [
         {'name': 'FileName', 'type': 'string'},
-        {'name': 'Parameter1', 'type': 'int32'},
-        {'name': 'Parameter2', 'type': 'int32'},
-        {'name': 'Parameter3', 'type': 'int32'},
-        {'name': 'Parameter4', 'type': 'int32'},
-        {'name': 'Parameter5', 'type': 'int32'},
-        {'name': 'Parameter6', 'type': 'int32'},
-        {'name': 'Parameter7', 'type': 'int32'},
-        {'name': 'Parameter8', 'type': 'int32'},
-    ]
+        {'name':'Parameters', 'type':'structure', 'value': [
+            {'name':'Parameter1', 'type':'int32'},
+            {'name':'Parameter2', 'type':'int32'},
+            {'name':'Parameter3', 'type':'int32'},
+            {'name':'Parameter4', 'type':'int32'},
+            {'name':'Parameter5', 'type':'int32'},
+            {'name':'Parameter6', 'type':'int32'},
+            {'name':'Parameter7', 'type':'int32'},
+            {'name':'Parameter8', 'type':'int32'}]},
+        ]
     parts = []
 
     def prepareMarteInfo(self):
-        for i in range(8):  # Append 'Parameters.' in from to every parameter name for defined parameters (i.e. with non empty value)
-            try:
-                parVal = self.getNode(
-                    'parameters.par_'+str(2+i)+':value').data()
-                # if code arrives here, append 'Paratemeters.' in front if not already done
-                parName = self.getNode(
-                    'parameters.par_'+str(2+i)+':name').data()
-                if parName[:11] != 'Parameters.':
-                    parName = 'Parameters.'+parName
-                    self.getNode('parameters.par_'+str(2+i) +
-                                 ':name').putData(parName)
-            except:
-                pass
+        pass
 
     def getConfigurationFromPython(self):
         try:
@@ -97,6 +86,7 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
             float: 'float64',
             np.int16: 'int16',
             np.int32: 'int32',
+            np.int64: 'int64',
             np.float32: 'float32',
             np.float64: 'float64',
         }
@@ -128,7 +118,8 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
             else:
                 outVal = np.array(val, dtype)
             return {
-                'name': 'Parameters.' + name,
+#                'name': 'Parameters.' + name,
+                'name': name,
                 'type': dtype,
                 'value': outVal,
             }
@@ -163,15 +154,17 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
             for i in range(pygam.getNumberOfParameters(moduleName))
         ]
         # Fill Parameters
+        print('RIEMPIO PARAMETRI')
         for i in range(8):
-            self.getNode('parameters.par_'+str(i+2)+':name').deleteData()
-            self.getNode('parameters.par_'+str(i+2)+':value').deleteData()
+            self.getNode('parameters.par_2.value.par_'+str(i+1)+':name').deleteData()
+            self.getNode('parameters.par_2.value.par_'+str(i+1)+':value').deleteData()
             self.getNode('inputs.in'+str(i+1)+':dimensions').deleteData()
             self.getNode('inputs.in'+str(i+1)+':name').deleteData()
             self.getNode('inputs.in'+str(i+1)+':type').putData('int32')
             self.getNode('outputs.out'+str(i+1)+':dimensions').putData(-1)
             self.getNode('outputs.out'+str(i+1)+':name').deleteData()
             self.getNode('outputs.out'+str(i+1)+':type').putData('int32')
+        print('RIEMPITO PARAMETRI')
 
         if len(paramDicts) > 8:
             raise Exception('Number '+str(len(paramDicts)) +
@@ -183,11 +176,11 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
             raise Exception('Number '+str(len(outputDicts)) +
                             ' of outputs cannot be greater than 8')
 
-        parIdx = 2
+        parIdx = 1
         for paramDict in paramDicts:
-            self.getNode('parameters.par_'+str(parIdx) +
+            self.getNode('parameters.par_2.value.par_'+str(parIdx) +
                          ':name').putData(paramDict['name'])
-            self.getNode('parameters.par_'+str(parIdx) +
+            self.getNode('parameters.par_2.value.par_'+str(parIdx) +
                          ':value').putData(paramDict['value'])
             parIdx += 1
 
