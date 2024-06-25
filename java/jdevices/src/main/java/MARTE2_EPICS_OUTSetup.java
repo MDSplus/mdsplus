@@ -167,7 +167,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField5.setTextOnly(true);
         jPanel6.add(deviceField5);
 
-        deviceChoice1.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice1.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Type: ");
         deviceChoice1.setOffsetNid(19);
@@ -196,7 +196,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField7.setTextOnly(true);
         jPanel9.add(deviceField7);
 
-        deviceChoice2.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice2.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type: ");
         deviceChoice2.setOffsetNid(30);
@@ -225,7 +225,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField9.setTextOnly(true);
         jPanel12.add(deviceField9);
 
-        deviceChoice3.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice3.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type: ");
         deviceChoice3.setOffsetNid(41);
@@ -254,7 +254,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField11.setTextOnly(true);
         jPanel15.add(deviceField11);
 
-        deviceChoice4.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice4.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type: ");
         deviceChoice4.setOffsetNid(52);
@@ -283,7 +283,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField13.setTextOnly(true);
         jPanel18.add(deviceField13);
 
-        deviceChoice5.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice5.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
         deviceChoice5.setOffsetNid(63);
@@ -312,7 +312,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField15.setTextOnly(true);
         jPanel21.add(deviceField15);
 
-        deviceChoice6.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice6.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type: ");
         deviceChoice6.setOffsetNid(74);
@@ -341,7 +341,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField17.setTextOnly(true);
         jPanel24.add(deviceField17);
 
-        deviceChoice7.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice7.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type: ");
         deviceChoice7.setOffsetNid(85);
@@ -370,7 +370,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField19.setTextOnly(true);
         jPanel27.add(deviceField19);
 
-        deviceChoice8.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice8.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type: ");
         deviceChoice8.setOffsetNid(96);
@@ -399,7 +399,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField21.setTextOnly(true);
         jPanel30.add(deviceField21);
 
-        deviceChoice9.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice9.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Type: ");
         deviceChoice9.setOffsetNid(107);
@@ -428,7 +428,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField23.setTextOnly(true);
         jPanel33.add(deviceField23);
 
-        deviceChoice10.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice10.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Type: ");
         deviceChoice10.setOffsetNid(118);
@@ -457,7 +457,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField25.setTextOnly(true);
         jPanel36.add(deviceField25);
 
-        deviceChoice11.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice11.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Type: ");
         deviceChoice11.setOffsetNid(129);
@@ -486,7 +486,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField27.setTextOnly(true);
         jPanel39.add(deviceField27);
 
-        deviceChoice12.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice12.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Type: ");
         deviceChoice12.setOffsetNid(140);
@@ -515,7 +515,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField29.setTextOnly(true);
         jPanel42.add(deviceField29);
 
-        deviceChoice13.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice13.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Type: ");
         deviceChoice13.setOffsetNid(151);
@@ -544,7 +544,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField31.setTextOnly(true);
         jPanel45.add(deviceField31);
 
-        deviceChoice14.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice14.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Type: ");
         deviceChoice14.setOffsetNid(162);
@@ -573,7 +573,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField33.setTextOnly(true);
         jPanel48.add(deviceField33);
 
-        deviceChoice15.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice15.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Type: ");
         deviceChoice15.setOffsetNid(173);
@@ -602,7 +602,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
         deviceField35.setTextOnly(true);
         jPanel51.add(deviceField35);
 
-        deviceChoice16.setChoiceItems(new String[] {"int32", "uint32", "float32"});
+        deviceChoice16.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Type: ");
         deviceChoice16.setOffsetNid(184);
