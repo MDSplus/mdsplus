@@ -14,7 +14,16 @@ class RFX_TRIGUART(MDSplus.Device):
              {'path': ':CHAN_2', 'type': 'signal'},
              {'path': ':CHAN_3', 'type': 'signal'},
              {'path': ':CHAN_4', 'type': 'signal'},
-             {'path': ':CHAN_5', 'type': 'signal'}]
+             {'path': ':CHAN_5', 'type': 'signal'},
+             {'path': ':INIT_ACTION', 'type': 'action',
+              'valueExpr': "Action(Dispatch('RP_SERVER','INIT',50,None),Method(None,'init',head))",
+              'options': ('no_write_shot',)},
+             {'path': ':START_ACTION', 'type': 'action',
+              'valueExpr': "Action(Dispatch('RP_SERVER','READY',50,None),Method(None,'start_store',head))",
+              'options': ('no_write_shot',)},
+             {'path': ':STOP_ACTION', 'type': 'action',
+              'valueExpr': "Action(Dispatch('RP_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_store',head))",
+              'options': ('no_write_shot',)}]
 
     stopped = {}
     workers = {}
