@@ -76,7 +76,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM7', 'type': 'signal'})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
-    parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
+    parts.append({'path': ':MARTE_CONFIG', 'type': 'text'})
 
 
     parts.append({'path': ':INIT', 'type': 'action',
@@ -1295,6 +1295,7 @@ $<APP_NAME> = {
         f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
         f.write(config)
         f.close()
+        self.getNode('MARTE_CONFIG').putData(config)
 
 
     def startMarteIdle(self):
