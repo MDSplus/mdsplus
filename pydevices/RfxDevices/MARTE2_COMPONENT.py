@@ -1692,7 +1692,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         return retDataSources, retGams
 
 
-    #return the list of GAM and DataSource (dictionaries) corresponding to this GAM MARTe2 device 
+    #return the list of GAM and DataSource (dictionaries) corresponding to this Output MARTe2 device 
     def generateMarteOutputConfiguration(self, threadMap, timerDDB, timerType, timerPeriod, typesDict):
         self.timerDDB = timerDDB
         self.timerType = timerType
@@ -1785,7 +1785,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Name': self.getMarteDeviceName(self)+'_IOGAM', 
             'Class': 'IOGAM', 
             'Inputs': self.removeParametersFromList(inputs),
-            'Outputs': self.removeParametersFromList(outputs)})
+            'Outputs': outputs})
+#            'Outputs': self.removeParametersFromList(outputs)})
 
         return retDataSources, retGams
 
