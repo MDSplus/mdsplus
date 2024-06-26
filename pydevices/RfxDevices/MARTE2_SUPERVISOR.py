@@ -1295,7 +1295,7 @@ $<APP_NAME> = {
         f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
         f.write(config)
         f.close()
-        self.getNode('MARTE_CONFIG').putData(MDSplus.Int8Array(np.fromstring(config), dtype=np.int8))
+        self.getNode('MARTE_CONFIG').putData(MDSplus.Int8Array(np.fromstring(config, dtype=np.int8)))
 
 
     def startMarteIdle(self):
