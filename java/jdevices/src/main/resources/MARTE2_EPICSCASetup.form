@@ -75,12 +75,15 @@
                 <Component class="DeviceChoice" name="deviceChoice1">
                   <Properties>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="5">
+                      <StringArray count="8">
                         <StringItem index="0" value="int16"/>
-                        <StringItem index="1" value="int32"/>
-                        <StringItem index="2" value="int64"/>
-                        <StringItem index="3" value="float32"/>
-                        <StringItem index="4" value="float64"/>
+                        <StringItem index="1" value="uint16"/>
+                        <StringItem index="2" value="int32"/>
+                        <StringItem index="3" value="uint32"/>
+                        <StringItem index="4" value="int64"/>
+                        <StringItem index="5" value="uint64"/>
+                        <StringItem index="6" value="float32"/>
+                        <StringItem index="7" value="float64"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
@@ -146,12 +149,15 @@
                 <Component class="DeviceChoice" name="deviceChoice2">
                   <Properties>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="5">
+                      <StringArray count="8">
                         <StringItem index="0" value="int16"/>
-                        <StringItem index="1" value="int32"/>
-                        <StringItem index="2" value="int64"/>
-                        <StringItem index="3" value="float32"/>
-                        <StringItem index="4" value="float64"/>
+                        <StringItem index="1" value="uint16"/>
+                        <StringItem index="2" value="int32"/>
+                        <StringItem index="3" value="uint32"/>
+                        <StringItem index="4" value="int64"/>
+                        <StringItem index="5" value="uint64"/>
+                        <StringItem index="6" value="float32"/>
+                        <StringItem index="7" value="float64"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
@@ -217,12 +223,15 @@
                 <Component class="DeviceChoice" name="deviceChoice3">
                   <Properties>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="5">
+                      <StringArray count="8">
                         <StringItem index="0" value="int16"/>
-                        <StringItem index="1" value="int32"/>
-                        <StringItem index="2" value="int64"/>
-                        <StringItem index="3" value="float32"/>
-                        <StringItem index="4" value="float64"/>
+                        <StringItem index="1" value="uint16"/>
+                        <StringItem index="2" value="int32"/>
+                        <StringItem index="3" value="uint32"/>
+                        <StringItem index="4" value="int64"/>
+                        <StringItem index="5" value="uint64"/>
+                        <StringItem index="6" value="float32"/>
+                        <StringItem index="7" value="float64"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
@@ -288,12 +297,15 @@
                 <Component class="DeviceChoice" name="deviceChoice4">
                   <Properties>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="5">
+                      <StringArray count="8">
                         <StringItem index="0" value="int16"/>
-                        <StringItem index="1" value="int32"/>
-                        <StringItem index="2" value="int64"/>
-                        <StringItem index="3" value="float32"/>
-                        <StringItem index="4" value="float64"/>
+                        <StringItem index="1" value="uint16"/>
+                        <StringItem index="2" value="int32"/>
+                        <StringItem index="3" value="uint32"/>
+                        <StringItem index="4" value="int64"/>
+                        <StringItem index="5" value="uint64"/>
+                        <StringItem index="6" value="float32"/>
+                        <StringItem index="7" value="float64"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
