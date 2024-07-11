@@ -238,7 +238,7 @@ class RFX_RPADC(Device):
             	
             print('opening device')
             self.fd = self.lib.rpadcInit(c_int(mode), c_int(clockMode), c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
-                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation-1), c_int(deadTime), c_int(offsa), c_int(offsb))
+                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(deadTime), c_int(offsa), c_int(offsb))
             if self.fd < 0:
                 print("Error opening device")
                 raise mdsExceptions.TclFAILED_ESSENTIAL
