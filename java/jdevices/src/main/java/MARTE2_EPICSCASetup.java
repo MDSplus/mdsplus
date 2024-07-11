@@ -76,7 +76,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
         deviceField1.setTextOnly(true);
         jPanel3.add(deviceField1);
 
-        deviceChoice1.setChoiceItems(new String[] {"int16", "int32", "int64", "float32", "float64"});
+        deviceChoice1.setChoiceItems(new String[] {"int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("PV Type: ");
         deviceChoice1.setOffsetNid(15);
@@ -112,7 +112,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
         deviceField4.setTextOnly(true);
         jPanel6.add(deviceField4);
 
-        deviceChoice2.setChoiceItems(new String[] {"int16", "int32", "int64", "float32", "float64"});
+        deviceChoice2.setChoiceItems(new String[] {"int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("PV Type: ");
         deviceChoice2.setOffsetNid(42);
@@ -148,7 +148,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
         deviceField7.setTextOnly(true);
         jPanel9.add(deviceField7);
 
-        deviceChoice3.setChoiceItems(new String[] {"int16", "int32", "int64", "float32", "float64"});
+        deviceChoice3.setChoiceItems(new String[] {"int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("PV Type: ");
         deviceChoice3.setOffsetNid(69);
@@ -184,7 +184,7 @@ public class MARTE2_EPICSCASetup extends DeviceSetup {
         deviceField10.setTextOnly(true);
         jPanel12.add(deviceField10);
 
-        deviceChoice4.setChoiceItems(new String[] {"int16", "int32", "int64", "float32", "float64"});
+        deviceChoice4.setChoiceItems(new String[] {"int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("PV Type: ");
         deviceChoice4.setOffsetNid(96);
