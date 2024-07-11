@@ -250,7 +250,7 @@ VOID CALLBACK ShutdownEvent(PVOID arg __attribute__((unused)),
   fprintf(stderr, "Service shut down\n");
   exit(0);
 }
-#ifdef _WiN64
+#ifdef _WIN64
 #define SOCKET_FMT "%d:%lld"
 #else
 #define SOCKET_FMT "%d:%d"
