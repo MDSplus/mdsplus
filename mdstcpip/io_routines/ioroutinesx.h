@@ -256,9 +256,9 @@ static inline SOCKET get_single_server_socket(char *name)
   HANDLE shutdownEvent, waitHandle;
   HANDLE h;
   int ppid;
-  SOCKET psock;
+  SOCKET psock = INVALID_SOCKET;
   char shutdownEventName[120];
-  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
+  if (name == 0 || sscanf(name, "%d:%lld", &ppid, &psock) != 2)
   {
     fprintf(stderr, "Mdsip single connection server can only be started from "
                     "windows service\n");
