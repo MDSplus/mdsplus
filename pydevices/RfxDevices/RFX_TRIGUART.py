@@ -1,5 +1,6 @@
 import  MDSplus
 import threading
+import queue
 import time
 from ctypes import CDLL, c_int, c_double, c_char_p, byref, c_byte
 
@@ -9,7 +10,8 @@ class RFX_TRIGUART(MDSplus.Device):
              {'path': ':HI_DIV', 'type': 'numeric', 'value': 500},
              {'path': ':LO_DIV', 'type': 'numeric', 'value': 500},
              {'path': ':SEG_SIZE', 'type': 'numeric', 'value': 1000},
-             {'path': ':TRIG_TIME', 'type': 'numeric', 'value': 0.},
+             {'path': ':TRIG_ABSTIME', 'type': 'numeric', 'value': 0.},
+             {'path': ':TRIGGER', 'type': 'numeric', 'value': 0.},
              {'path': ':CHAN_1', 'type': 'signal'},
              {'path': ':CHAN_2', 'type': 'signal'},
              {'path': ':CHAN_3', 'type': 'signal'},
@@ -29,7 +31,26 @@ class RFX_TRIGUART(MDSplus.Device):
     workers = {}
     fds = {}
 
-    class AsynchStore(threading.Thread):
+
+
+    class AsynchReadout(threading.Thread):
+        class AsynchStore(threading.Thread):
+            def configure(self, nid, queue, chanNodes):
+                self.nid = nid
+                self.queue = queue
+                self.chanNodes = chanNodes
+            def run(self):
+                while not RFX_TRIGUART.stopped[self.nid]:
+                    try:
+                        info = queue.get(timeout = 1)
+                    except:
+                        continue
+                    self.chanNodes[info['chan']].makeSegment(info['startTime'], info['endTime'], info['dim'], info['data'])
+                    print('SEGMENT APPENDED')
+
+
+        
+        
         def configure(self, lib, nid, segLen, chanNodes, startTime, period):
             self.nid = nid
             self.lib = lib
@@ -39,6 +60,10 @@ class RFX_TRIGUART(MDSplus.Device):
             self.chanNodes = []
             for chan in range(5):
                 self.chanNodes.append(chanNodes[chan].copy())
+            self.asynchStore = self.AsynchStore()
+            self.queue = queue.Queue()
+            self.asynchStore.configure(self.nid, self.queue, self.chanNodes)
+            
 
                                           
                                           
@@ -54,18 +79,29 @@ class RFX_TRIGUART(MDSplus.Device):
             rawChan.append(DataArray())
             rawChan.append(DataArray())
 
+            self.asynchStore.start()
+
             while not RFX_TRIGUART.stopped[self.nid]:
                 self.lib.rpuartGetSegment(c_int(fd), c_int(self.segLen), byref(rawChan[0]), byref(rawChan[1]), 
                              byref(rawChan[2]), byref(rawChan[3]), byref(rawChan[4]))
-                startTime = MDSplus.Float64(self.startTime + self.segmentCount * self.segLen * self.period)
-                endTime = MDSplus.Float64(self.startTime + (self.segmentCount + 1) * self.segLen * self.period)
+
+                t = self.nid.getTree()  
+                startTime = t.tdiCompile('$1 + $2', self.startTime, self.segmentCount*self.segLen*self.period)
+                #startTime = MDSplus.Float64(self.startTime + self.segmentCount * self.segLen * self.period)
+                endTime = t.tdiCompile('$1 + $2', self.startTime, (self.segmentCount + 1) * self.segLen * self.period)
+                #endTime = MDSplus.Float64(self.startTime + (self.segmentCount + 1) * self.segLen * self.period)
                 dim = MDSplus.Range(startTime, endTime, MDSplus.Float64(self.period))
                 for chan in range(5):
                     data = MDSplus.Int8Array(rawChan[chan])
-                    self.chanNodes[chan].makeSegment(startTime, endTime, dim, data)
-                    print('SEGMENT APPENDED')
+
+                    queue.put({'chan': chan, 'startTime': startTime, 'endTime': endTime, 'dim': dim, 'data': data})
+                    #self.chanNodes[chan].makeSegment(startTime, endTime, dim, data)
+
+
                 self.segmentCount += 1
             self.lib.rpuartStopStore(c_int(fd))
+            self.asynchStore.join()
+
 
     def init(self):
         print('================= RPUART Init ===============')
@@ -102,9 +138,11 @@ class RFX_TRIGUART(MDSplus.Device):
             lib.rpuartTriggerFd(c_int(fd))
         else:
             lib.rpuartTrigger()
+        
+        self.trig_abstime.putData(MDSplus.Int64(int(round(time.time() * 1000))))
     
     def start_store(self):
-        worker = self.AsynchStore()
+        worker = self.AsynchReadout()
         lib = CDLL("libredpitaya.so")
         nid = self.getNid()
         segLen = self.seg_size.data()
@@ -119,7 +157,7 @@ class RFX_TRIGUART(MDSplus.Device):
         chanNodes.append(self.chan_3)
         chanNodes.append(self.chan_4)
         chanNodes.append(self.chan_5)
-        startTime = self.trig_time.data()
+        startTime = self.trigger
         period = (self.hi_div.data() + self.lo_div.data()) * 1E-6
         worker.configure(lib, nid, segLen, chanNodes, startTime, period)
         RFX_TRIGUART.workers[nid] = worker
