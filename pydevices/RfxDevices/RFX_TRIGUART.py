@@ -1,9 +1,8 @@
 import  MDSplus
 import threading
-import queue
+from Queue import  *
 import time
 from ctypes import CDLL, c_int, c_double, c_char_p, byref, c_byte
-
 
 class RFX_TRIGUART(MDSplus.Device):
     parts = [{'path': ':COMMENT', 'type': 'text'},
@@ -42,8 +41,9 @@ class RFX_TRIGUART(MDSplus.Device):
             def run(self):
                 while not RFX_TRIGUART.stopped[self.nid]:
                     try:
-                        info = queue.get(timeout = 1)
-                    except:
+                        info = self.queue.get(timeout = 100)
+                    except Exception as exc:
+                        print('TIMEOUT in queue.get '+str(exc))
                         continue
                     self.chanNodes[info['chan']].makeSegment(info['startTime'], info['endTime'], info['dim'], info['data'])
                     print('SEGMENT APPENDED')
@@ -51,7 +51,8 @@ class RFX_TRIGUART(MDSplus.Device):
 
         
         
-        def configure(self, lib, nid, segLen, chanNodes, startTime, period):
+        def configure(self, device, lib, nid, segLen, chanNodes, startTime, period):
+            self.device = device
             self.nid = nid
             self.lib = lib
             self.segLen = segLen
@@ -61,7 +62,7 @@ class RFX_TRIGUART(MDSplus.Device):
             for chan in range(5):
                 self.chanNodes.append(chanNodes[chan].copy())
             self.asynchStore = self.AsynchStore()
-            self.queue = queue.Queue()
+            self.queue = Queue()
             self.asynchStore.configure(self.nid, self.queue, self.chanNodes)
             
 
@@ -85,7 +86,9 @@ class RFX_TRIGUART(MDSplus.Device):
                 self.lib.rpuartGetSegment(c_int(fd), c_int(self.segLen), byref(rawChan[0]), byref(rawChan[1]), 
                              byref(rawChan[2]), byref(rawChan[3]), byref(rawChan[4]))
 
-                t = self.nid.getTree()  
+                #t = self.device.getTree()
+                print(self.device.getTree().name, self.device.getTree().shot)
+                t = MDSplus.Tree(self.device.getTree().name, self.device.getTree().shot)
                 startTime = t.tdiCompile('$1 + $2', self.startTime, self.segmentCount*self.segLen*self.period)
                 #startTime = MDSplus.Float64(self.startTime + self.segmentCount * self.segLen * self.period)
                 endTime = t.tdiCompile('$1 + $2', self.startTime, (self.segmentCount + 1) * self.segLen * self.period)
@@ -94,7 +97,7 @@ class RFX_TRIGUART(MDSplus.Device):
                 for chan in range(5):
                     data = MDSplus.Int8Array(rawChan[chan])
 
-                    queue.put({'chan': chan, 'startTime': startTime, 'endTime': endTime, 'dim': dim, 'data': data})
+                    self.queue.put({'chan': chan, 'startTime': startTime, 'endTime': endTime, 'dim': dim, 'data': data})
                     #self.chanNodes[chan].makeSegment(startTime, endTime, dim, data)
 
 
@@ -157,9 +160,9 @@ class RFX_TRIGUART(MDSplus.Device):
         chanNodes.append(self.chan_3)
         chanNodes.append(self.chan_4)
         chanNodes.append(self.chan_5)
-        startTime = self.trigger
+        startTime = self.getNode('trigger')
         period = (self.hi_div.data() + self.lo_div.data()) * 1E-6
-        worker.configure(lib, nid, segLen, chanNodes, startTime, period)
+        worker.configure(self.copy(), lib, nid, segLen, chanNodes, startTime, period)
         RFX_TRIGUART.workers[nid] = worker
         RFX_TRIGUART.stopped[nid] = False
         

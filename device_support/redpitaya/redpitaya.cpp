@@ -909,29 +909,38 @@ int rpuartStartStore()
 int rpuartGetSegment(int fd, int segment_size, char *ch1, char *ch2, char *ch3, char *ch4, char *ch5)
 {
     uint32_t hi, lo, rb;
+    char *hiPtr = (char *)&hi;
+    char *loPtr = (char *)&lo;
     for(int sample = 0; sample < segment_size; sample++)
     {
+      uint32_t bytesToRead = sizeof(int);
     	do {
-    	  rb = read(fd, &lo, sizeof(int));
-    	}while(rb == 0);
-        if(rb < 0)
- 	    return -1;
- 	do {
-   	    rb = read(fd, &hi, sizeof(int));
-   	} while(rb == 0);
-        if(rb < 0)
- 	    return -1;
- 	ch1[sample] = lo;
- 	ch2[sample] = lo >> 8;
- 	ch3[sample] = lo >> 16;
- 	ch4[sample] = lo >> 24;
- 	ch5[sample] = hi;
- 	ch1[sample] -= 128;
- 	ch2[sample] -= 128;
- 	ch3[sample] -= 128;
- 	ch4[sample] -= 128;
- 	ch5[sample] -= 128;
-     }
+    	  rb = read(fd, &loPtr[sizeof(int) - bytesToRead], bytesToRead);
+        if(rb > 0)
+          bytesToRead -= rb;
+    	}while( rb >= 0 && bytesToRead > 0);
+      if(rb < 0)
+ 	      return -1;
+
+      bytesToRead = sizeof(int);
+ 	    do {
+   	    rb = read(fd, &hiPtr[sizeof(int) - bytesToRead], bytesToRead);
+        if(rb > 0)
+          bytesToRead -= rb;
+   	  } while(rb >= 0 && bytesToRead > 0);
+      if(rb < 0)
+ 	      return -1;
+      ch1[sample] = lo;
+      ch2[sample] = lo >> 8;
+      ch3[sample] = lo >> 16;
+      ch4[sample] = lo >> 24;
+      ch5[sample] = hi;
+      ch1[sample] -= 128;
+      ch2[sample] -= 128;
+      ch3[sample] -= 128;
+      ch4[sample] -= 128;
+      ch5[sample] -= 128;
+    }
     return 0;
  }
 
