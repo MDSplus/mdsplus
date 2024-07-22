@@ -1,0 +1,1 @@
+--platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:debian_bookworm-64 --distname=DebianBookworm --arch=amd64

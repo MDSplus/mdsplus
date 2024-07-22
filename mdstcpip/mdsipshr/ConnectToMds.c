@@ -82,7 +82,7 @@ static int do_login(Connection *c)
   int status = SendMdsMsgC(c, msend, 0);
   int err;
   free(msend);
-  if (STATUS_NOT_OK)
+  if ((status == SsINTERNAL) || STATUS_NOT_OK)
   {
     perror("Error during login: send");
     err = C_ERROR;

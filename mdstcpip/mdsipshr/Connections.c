@@ -38,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #define DEBUG
 #include <mdsmsg.h>
 
+// Because threads have their own MdsipThreadStatic data, the receiver thread
+// cannot access the connection list that is stored in the main thread.  If
+// that capability is ever needed, must use a global pointer.  However, sharing
+// the connection list with both threads is inadvisable because it can result
+// in deadlock.
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
   if (id == INVALID_CONNECTION_ID)
@@ -513,6 +518,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     *usr = NULL;
   Connection *c = newConnection(protocol);
   INIT_STATUS_ERROR;
+  int auth_status = status;
   if (c)
   {
     Message *msg;
@@ -535,9 +541,9 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     }
     c->rm_user = user;
     user_p = user ? user : "?";
-    status = authorize_client(c, user_p);
+    auth_status = authorize_client(c, user_p);
     // SET COMPRESSION //
-    if (STATUS_OK)
+    if (IS_OK(auth_status))
     {
       const int max_version = get_max_version();
       c->compression_level = msg->h.status & 0xf;
@@ -552,13 +558,17 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n", user_p);
     }
     msg->h.msglen = sizeof(MsgHdr);
-    msg->h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
+    msg->h.status = IS_OK(auth_status) ? (1 | (c->compression_level << 1)) : 0;
     msg->h.ndims = 1;
     msg->h.dims[0] = MDSIP_VERSION;
     // reply to client //
     status = SendMdsMsgC(c, msg, 0);
     free(msg);
-    if (STATUS_OK)
+    // SsINTERNAL has low order bit set so is erroneously treated as OK.
+    if (status == SsINTERNAL) {
+      status = MDSplusERROR;
+    } 
+    if (STATUS_OK && IS_OK(auth_status))
     {
       if (usr)
         *usr = strdup(user_p);
@@ -568,6 +578,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     else
     {
       destroyConnection(c);
+      status = MDSplusERROR;
     }
   }
   return status;

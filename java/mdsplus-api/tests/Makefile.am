@@ -17,6 +17,7 @@ TESTS = \
  mds.TdiShr_Test\
  mds.TreeShr_Test\
  mds.data.CONST_Test\
+ mds.data.FLOAT_Test\
  mds.data.TREE_Test\
  mds.data.descriptor.Descriptor_A_Test\
  mds.data.descriptor.Descriptor_CA_Test\

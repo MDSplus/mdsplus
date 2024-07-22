@@ -75,9 +75,9 @@ static int DoSrvClose(SrvJob *job_in);
 static int DoSrvCreatePulse(SrvJob *job_in);
 static void DoSrvMonitor(SrvJob *job_in);
 
-static void RemoveClient(SrvJob *job);
 extern uint32_t MdsGetClientAddr();
 extern char *GetPortname();
+static pthread_mutex_t ClientsMutex = PTHREAD_MUTEX_INITIALIZER;
 static ClientList *Clients = NULL;
 
 static MonitorList *Monitors = NULL;
@@ -838,68 +838,138 @@ static void KillWorker()
 }
 
 // both
-static SOCKET AttachPort(uint32_t addr, uint16_t port)
+static void close_socket(SOCKET sock)
 {
-  SOCKET sock;
+  shutdown(sock, SHUT_RDWR);
+  closesocket(sock);
+}
+static SOCKET open_socket(uint32_t addr, uint16_t port)
+{
   struct sockaddr_in sin;
-  ClientList *l, *new;
-  for (l = Clients; l; l = l->next)
-    if (l->addr == addr && l->port == port)
-      return l->sock;
   sin.sin_port = htons(port);
   sin.sin_family = AF_INET;
   *(uint32_t *)(&sin.sin_addr) = addr;
-  sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock == INVALID_SOCKET)
+  SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock != INVALID_SOCKET)
   {
-    MDSERR("Cannot get socket for " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+    if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == 0)
+    {
+      MDSDBG("Connected to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+      return sock;
+    }
+    MDSERR("Cannot connect to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+    close_socket(sock);
   }
   else
   {
-    if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1)
+    MDSERR("Cannot get socket for " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+  }
+  return INVALID_SOCKET;
+}
+static void add_client(uint32_t addr, uint16_t port, SOCKET sock)
+{
+  ClientList *new = (ClientList *)malloc(sizeof(ClientList));
+  new->addr = addr;
+  new->port = port;
+  new->sock = sock;
+  MDSDBG("add socket %" PRI_SOCKET " for " IPADDRPRI ":%u", new->sock, IPADDRVAR(&new->addr), new->port);
+  pthread_mutex_lock(&ClientsMutex);
+  new->next = Clients;
+  Clients = new;
+  pthread_mutex_unlock(&ClientsMutex);
+}
+static int check_socket(SOCKET socket)
+{
+  if (socket != INVALID_SOCKET)
+  {
+    fd_set fdactive;
+    FD_ZERO(&fdactive);
+    FD_SET(socket, &fdactive);
+    struct timeval timeout = {0, 0}; // non-blocking
+    return select(socket + 1, &fdactive, 0, 0, &timeout) == 0;
+  }
+  return B_FALSE;
+}
+static SOCKET find_client(uint32_t addr, uint16_t port)
+{
+  ClientList **p;
+  SOCKET sock = INVALID_SOCKET;
+  pthread_mutex_lock(&ClientsMutex);
+  for (p = &Clients; *p != NULL; p = &(*p)->next)
+  {
+    if ((*p)->addr == addr && (*p)->port == port)
     {
-      MDSERR("Cannot connect to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
-      shutdown(sock, 2);
-      close(sock);
-      return INVALID_SOCKET;
+      ClientList *l = *p;
+      if (check_socket(l->sock))
+      {
+        sock = l->sock;
+        MDSDBG("reuse socket %" PRI_SOCKET " for " IPADDRPRI ":%u", sock, IPADDRVAR(&addr), port);
+      }
+      else
+      {
+        *p = l->next;
+        close_socket(l->sock);
+        MDSDBG("cannot reuse socket %" PRI_SOCKET " for " IPADDRPRI ":%u?", l->sock, IPADDRVAR(&addr), port);
+        free(l);
+      }
+      break;
     }
-    MDSDBG("Connected to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
-    new = (ClientList *)malloc(sizeof(ClientList));
-    l = Clients;
-    Clients = new;
-    new->addr = addr;
-    new->port = port;
-    new->sock = sock;
-    new->next = l;
+  }
+  pthread_mutex_unlock(&ClientsMutex);
+  return sock;
+}
+static SOCKET remove_client(uint32_t addr, uint16_t port)
+{
+  ClientList **p;
+  SOCKET sock = INVALID_SOCKET;
+  pthread_mutex_lock(&ClientsMutex);
+  for (p = &Clients; *p != NULL; p = &(*p)->next)
+  {
+    if ((*p)->addr == addr && (*p)->port == port)
+    {
+      ClientList *l = *p;
+      sock = l->sock;
+      *p = l->next;
+      free(l);
+      break;
+    }
+  }
+  pthread_mutex_unlock(&ClientsMutex);
+  return sock;
+}
+static SOCKET setup_client(SrvJob *job)
+{
+  const uint32_t addr = job->h.addr;
+  const uint16_t port = job->h.port;
+  SOCKET sock = find_client(addr, port);
+  if (sock == INVALID_SOCKET)
+  {
+    sock = open_socket(addr, port);
+    if (sock != INVALID_SOCKET)
+    {
+      add_client(addr, port, sock);
+      MDSMSG("setup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+    }
   }
   return sock;
 }
 // both
-static void RemoveClient(SrvJob *job)
+static void cleanup_client(SrvJob *job)
 {
-  ClientList *l, *prev;
-  for (prev = 0, l = Clients; l;)
+  SOCKET sock = remove_client(job->h.addr, job->h.port);
+  if (sock != INVALID_SOCKET)
+    close_socket(sock);
+  if (STATIC_Debug)
   {
-    if (job->h.addr == l->addr && job->h.port == l->port)
-    {
-      shutdown(l->sock, 2);
-      close(l->sock);
-      if (prev)
-        prev->next = l->next;
-      else
-        Clients = l->next;
-      free(l);
-      break;
-    }
-    else
-    {
-      prev = l;
-      l = l->next;
-    }
+    MDSMSG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+  }
+  else
+  {
+    MDSDBG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
   }
 }
 
-/// returns the number of bytes sent
+/// on success returns the number of bytes sent, on failure returns -1
 static int send_all(SOCKET sock, char *msg, int len)
 {
   int sent;
@@ -910,7 +980,8 @@ static int send_all(SOCKET sock, char *msg, int len)
     const int bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
     if (bytes <= 0)
     {
-      sent = bytes;
+      if (bytes != 0)
+        sent = bytes;
       break;
     }
     sent += bytes;
@@ -922,9 +993,7 @@ static int send_all(SOCKET sock, char *msg, int len)
 static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
   MDSDBG(SVRJOB_PRI " %d", SVRJOB_VAR(job), replyType);
-  int status;
-  status = MDSplusERROR;
-  SOCKET sock;
+  int status = MDSplusERROR;
   long msg_len = msg ? (long)strlen(msg) : 0;
   int try_again = FALSE;
   char reply[60];
@@ -933,32 +1002,31 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
   do
   {
     errno = 0;
-    sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
+    SOCKET sock = setup_client(job);
     if (sock == INVALID_SOCKET)
+    {
+      MDSMSG(SVRJOB_PRI " break connection", SVRJOB_VAR(job));
+      cleanup_client(job);
       break;
+    }
     int bytes = send_all(sock, reply, 60);
+    MDSDBG("send 60: %d %d", bytes, replyType);
     if (bytes == 60)
     {
-      bytes = send_all(sock, msg, length);
-      if (bytes == length)
+      if (check_socket(sock))
       {
-        status = MDSplusSUCCESS;
-        break;
+        bytes = send_all(sock, msg, length);
+        MDSDBG("send msg: %d/%d", bytes, length);
+        if (bytes == length)
+        {
+          status = MDSplusSUCCESS;
+          break;
+        }
       }
     }
-    if (STATUS_NOT_OK)
-    {
+    else
       try_again = errno == EPIPE;
-      int debug;
-      pthread_mutex_lock(&STATIC_lock);
-      debug = STATIC_Debug;
-      pthread_mutex_unlock(&STATIC_lock);
-      if (debug)
-      {
-        MDSMSG(SVRJOB_PRI " drop connection", SVRJOB_VAR(job));
-      }
-      RemoveClient(job);
-    }
+    cleanup_client(job);
   } while (try_again--);
   return status;
 }

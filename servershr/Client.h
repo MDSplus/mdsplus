@@ -86,8 +86,8 @@ static inline int Client_free(Client *client, fd_set *fdactive)
     MDSDBG(CLIENT_PRI, CLIENT_VAR(client));
     if (client->reply_sock != INVALID_SOCKET)
     {
-      shutdown(client->reply_sock, 2);
-      close(client->reply_sock);
+      shutdown(client->reply_sock, SHUT_RDWR);
+      closesocket(client->reply_sock);
       if (fdactive)
         FD_CLR(client->reply_sock, fdactive);
     }
@@ -161,7 +161,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
     if (nbytes != 0)
       MDSWRN(CLIENT_PRI " Invalid read %d/60", CLIENT_VAR(c), nbytes);
     else
-      MDSDBG(CLIENT_PRI " Clint disconnected", CLIENT_VAR(c));
+      MDSDBG(CLIENT_PRI " Client disconnected", CLIENT_VAR(c));
     Client_remove(c, fdactive);
     return;
   }
@@ -188,6 +188,9 @@ static void Client_do_message(Client *c, fd_set *fdactive)
   }
   switch (replyType)
   {
+  // When an action service has processed an action, it sends back this reply.
+  // So update the status flags for the job.  Don't remove the client because
+  // want the network connection to remain active.
   case SrvJobFINISHED:
   {
     Job *j = Job_get_by_jobid(jobid);

@@ -1,4 +1,4 @@
-JAVASOURCE = 6
+JAVASOURCE = 8
 DEPENDENCIES = $(srcdir)/src/main/resources/javax.json-1.0.4.jar
 include ../Makefile.inc.am
 

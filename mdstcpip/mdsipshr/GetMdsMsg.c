@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 #include <mdsmsg.h>
 
+// Can return non-MDSplus error code, SsINTERNAL
 static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv, int to_msec)
 {
   char *bptr = (char *)buffer;
@@ -83,6 +84,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv, int t
 //  GetMdsMsg  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+// Can set status to non-MDSplus error code, SsINTERNAL
 Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
 {
   MsgHdr header;
@@ -125,7 +127,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
       m = malloc(msglen);
       m->h = header;
       *status = uncompress((unsigned char *)m->bytes, &dlen,
-                           (unsigned char *)msg->bytes + 4, dlen - 4) == 0;
+                           (unsigned char *)msg->bytes + 4, dlen - 4) == Z_OK;
       if (IS_OK(*status))
       {
         m->h.msglen = msglen;

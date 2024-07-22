@@ -74,6 +74,7 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims,
     CloseConnection(id);
     status = MDSplusERROR;
   }
+  if (status == SsINTERNAL) status = MDSplusERROR;
   if (STATUS_NOT_OK)
   {
     free(m);

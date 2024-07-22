@@ -31,6 +31,7 @@ testprog autoconf	autoconf
 testprog $PYTHON	python2 or python3
 testprog bison		bison
 testprog flex		flex
+export PYTHON
 
 if [ ! -z $abort ]
 then

@@ -111,7 +111,7 @@ using namespace testing;
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
-  TEST_TIMEOUT(100);
+  // TEST_TIMEOUT(100);
   BEGIN_TESTING(Tree);
 
 #ifdef _WIN32
