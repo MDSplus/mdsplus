@@ -89,7 +89,6 @@ buildrelease() {
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/
-    cp ${srcdir}/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/
     if [ -d /sign_keys/.gnupg ]; then
       GPGCHECK="1"
     else

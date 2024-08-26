@@ -92,7 +92,18 @@ def doRequire(info, out, root, require):
         common.writeb(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 
+def checkSigningKey():
+    try:
+        os.stat('/sign_keys/.gnupg')
+        return True
+    except:
+        return False
+
+
 def build():
+
+    has_key = checkSigningKey()
+
     info = common.get_info()
     root = common.get_root()
     bin_packages = list()
@@ -190,6 +201,15 @@ def build():
                     common.writeb(out, "%%dir %s\n" % include)
                 else:
                     common.writeb(out, "%s\n" % include)
+        # The "repo" package varies depending on whether signing packages or not.
+        if has_key:
+            for inc in package.iter('sign_include'):
+                for inctype in inc.attrib:
+                    include = fixFilename(info, inc.attrib[inctype])
+                    if inctype == "dironly":
+                        common.writeb(out, "%%dir %s\n" % include)
+                    else:
+                        common.writeb(out, "%s\n" % include)
         for exc in package.iter('exclude'):
             for exctype in exc.attrib:
                 exclude = fixFilename(info, exc.attrib[exctype])
@@ -200,6 +220,12 @@ def build():
             script = package.find(s)
             if script is not None:
                 common.writeb(out, "%%%s\n%s\n" % (s, script.text))
+        # The "repo" package varies depending on whether signing packages or not.        
+        if has_key:
+            for s in ("sign_post", "sign_postun"):
+                script = package.find(s)
+                if script is not None:
+                    common.writeb(out, "%%%s\n%s\n" % (s[5:], script.text))  
         os.close(out)
         info['specfilename'] = specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
@@ -219,7 +245,7 @@ def build():
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            cmd = "/bin/sh -c 'GNUPGHOME=/sign_keys/.gnupg rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             try:
                 if sys.version_info < (3,):
                     bout = sys.stdout
