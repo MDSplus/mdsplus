@@ -245,7 +245,8 @@ def build():
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd = "/bin/sh -c 'GNUPGHOME=/sign_keys/.gnupg rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            # The rsync is needed so that the .gnupg and .rpmmacros files are accessible to rpmsign
+            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             try:
                 if sys.version_info < (3,):
                     bout = sys.stdout
