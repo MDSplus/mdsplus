@@ -104,6 +104,7 @@ name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${OS}/${FLAVOR}/RPMS
 enabled=1
 gpgcheck=${GPGCHECK}
+repo_gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
