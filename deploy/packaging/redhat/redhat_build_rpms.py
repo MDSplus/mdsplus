@@ -111,7 +111,9 @@ def build():
     for package in root.iter('package'):
         attr = package.attrib
         if attr["arch"] == "noarch":
-            noarch_packages.append(package)
+            # Unsigned builds don't create a "repo" package
+            if (has_key or attr["name"] != "repo"):
+                noarch_packages.append(package)
         else:
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
@@ -201,15 +203,6 @@ def build():
                     common.writeb(out, "%%dir %s\n" % include)
                 else:
                     common.writeb(out, "%s\n" % include)
-        # The "repo" package varies depending on whether signing packages or not.
-        if has_key:
-            for inc in package.iter('sign_include'):
-                for inctype in inc.attrib:
-                    include = fixFilename(info, inc.attrib[inctype])
-                    if inctype == "dironly":
-                        common.writeb(out, "%%dir %s\n" % include)
-                    else:
-                        common.writeb(out, "%s\n" % include)
         for exc in package.iter('exclude'):
             for exctype in exc.attrib:
                 exclude = fixFilename(info, exc.attrib[exctype])
@@ -220,12 +213,6 @@ def build():
             script = package.find(s)
             if script is not None:
                 common.writeb(out, "%%%s\n%s\n" % (s, script.text))
-        # The "repo" package varies depending on whether signing packages or not.        
-        if has_key:
-            for s in ("sign_post", "sign_postun"):
-                script = package.find(s)
-                if script is not None:
-                    common.writeb(out, "%%%s\n%s\n" % (s[5:], script.text))  
         os.close(out)
         info['specfilename'] = specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)

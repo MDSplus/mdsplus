@@ -819,20 +819,20 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <include dir="/usr/local/mdsplus/php"/>
   </package>
 
-  <!-- The "sign_*" elements are only used when the build server signs packages. -->
+  <!-- The "repo" package is only created when doing signed builds. -->
   <!-- The "rpm -e" line uninstalls the public key for the MDSplus signing certificate. -->
   <package name="repo" arch="noarch" summary="Yum Repository Setup for MDSplus" description="Yum Repository Setup for MDSplus">
     <include file="/etc/yum.repos.d/mdsplus%(bname)s.repo"/>
-    <sign_include file="/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus"/>
-    <sign_post>
+    <include file="/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus"/>
+    <post>
       rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus &gt;/dev/null 2&gt;/dev/null || true
-    </sign_post>
-    <sign_postun>
+    </post>
+    <postun>
       if [ "$1" == "0" ]
       then
         nohup rpm -e gpg-pubkey-ced51c1b &gt;/dev/null 2&gt;&amp;1 &amp;
       fi
-    </sign_postun>
+    </postun>
   </package>
 
  </packages>
