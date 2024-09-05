@@ -93,6 +93,8 @@ def doRequire(info, out, root, require):
 
 
 def build():
+    has_key = os.path.exists('/sign_keys/.gnupg')
+ 
     info = common.get_info()
     root = common.get_root()
     bin_packages = list()
@@ -100,7 +102,9 @@ def build():
     for package in root.iter('package'):
         attr = package.attrib
         if attr["arch"] == "noarch":
-            noarch_packages.append(package)
+            # Unsigned builds don't create a "repo" package
+            if (has_key or attr["name"] != "repo"):
+                noarch_packages.append(package)
         else:
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
@@ -216,9 +220,9 @@ def build():
                 "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
         print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
-    try:
-        os.stat('/sign_keys/.gnupg')
+    if has_key:
         try:
+            # The rsync is needed so that the .gnupg and .rpmmacros files are accessible to rpmsign
             cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             try:
                 if sys.version_info < (3,):
@@ -240,7 +244,7 @@ def build():
         except:
             print("Got exception in rpm signing:")
             traceback.print_exc()
-    except:
+    else:
         print("Sign keys unavailable. Not signing packages.")
 
 if __name__ == "__main__":

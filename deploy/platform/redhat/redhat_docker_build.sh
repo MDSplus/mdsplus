@@ -89,7 +89,6 @@ buildrelease() {
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/
-    cp ${srcdir}/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/
     if [ -d /sign_keys/.gnupg ]; then
       GPGCHECK="1"
     else
@@ -105,6 +104,7 @@ name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${OS}/${FLAVOR}/RPMS
 enabled=1
 gpgcheck=${GPGCHECK}
+repo_gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
