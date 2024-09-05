@@ -92,18 +92,9 @@ def doRequire(info, out, root, require):
         common.writeb(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 
-def checkSigningKey():
-    try:
-        os.stat('/sign_keys/.gnupg')
-        return True
-    except:
-        return False
-
-
 def build():
-
-    has_key = checkSigningKey()
-
+    has_key = os.path.exists('/sign_keys/.gnupg')
+ 
     info = common.get_info()
     root = common.get_root()
     bin_packages = list()
@@ -229,8 +220,7 @@ def build():
                 "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
         print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
-    try:
-        os.stat('/sign_keys/.gnupg')
+    if has_key:
         try:
             # The rsync is needed so that the .gnupg and .rpmmacros files are accessible to rpmsign
             cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
@@ -254,7 +244,7 @@ def build():
         except:
             print("Got exception in rpm signing:")
             traceback.print_exc()
-    except:
+    else:
         print("Sign keys unavailable. Not signing packages.")
 
 if __name__ == "__main__":
