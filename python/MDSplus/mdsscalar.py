@@ -416,8 +416,12 @@ _dsc._add_dtype_to_class(ComplexD)
 class String(Scalar):
     """String"""
     dtype_id = 14
-    _ntype = _ver.npbytes
-
+    
+    if sys.version_info[0] < 3:
+        _ntype = _ver.npbytes
+    else:
+        _ntype = _ver.npunicode
+        
     def __init__(self, value):
         super(String, self).__init__(value)
         if not isinstance(self._value, str):
