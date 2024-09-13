@@ -417,10 +417,11 @@ class String(Scalar):
     """String"""
     dtype_id = 14
     
-    if sys.version_info[0] < 3:
-        _ntype = _ver.npbytes
-    else:
+    if int(_N.__version__[0]) > 2:
         _ntype = _ver.npunicode
+    else:
+        _ntype = _ver.npbytes
+
         
     def __init__(self, value):
         super(String, self).__init__(value)
