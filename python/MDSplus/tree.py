@@ -3154,7 +3154,7 @@ class TreeNodeArray(_dat.TreeRef, _arr.Int32Array):  # HINT: TreeNodeArray begin
         nids = _N.array(nids)
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
-        self._value = _N.array(nids, dtype=_N.int32, copy=False)
+        self._value = _N.asarray(nids, dtype=_N.int32)
         if 'tree' in kw:
             self.tree = tree
         elif isinstance(tree[0], (Tree,)):
