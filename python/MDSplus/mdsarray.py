@@ -103,12 +103,22 @@ class Array(_dat.Data):
             except Exception:
                 pass
         else:
-            value = _N.array(value, self.ntype)
+            try:
+                value = _N.array(value, self.ntype)
+
+            # HACK: To workaround numpy 2+ no longer wrapping negative numbers in uint* types
+            except OverflowError as e:
+                if hasattr(self, 'ctype'):
+                    # TODO: Throw warning for slow conversion?
+                    value = _N.array([ self.ctype(v).value for v in value ], self.ntype)
+                else:
+                    raise e
+                
         if not value.shape:
             value = _N.array([value])
         elif len(value.shape) > Array.__MAX_DIM:
             value = value.flatten()
-        self._value = _N.array(value, dtype=self.ntype, copy=False, order='C')
+        self._value = _N.asarray(value, dtype=self.ntype, order='C')
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)

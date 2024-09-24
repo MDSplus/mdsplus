@@ -149,7 +149,7 @@ class Data(NoTreeRef):
 
     @property  # numpy array
     def __array_interface__(self):
-        data = _N.array(self.data(), copy=False)
+        data = _N.asarray(self.data())
         aif = data.__array_interface__
         aif['data'] = data
         return aif
