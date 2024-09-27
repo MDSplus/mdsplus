@@ -32,6 +32,8 @@ class ELAD(MDSplus.Device):
         {'path': ':AUTOZERO_TIM', 'type': 'numeric', 'value': 2.},
         {'path': ':REC_PORT', 'type': 'numeric', 'value': 8111},
         {'path': ':ACT_CHANS', 'type': 'numeric', 'value':2},
+        {'path': ':STREAM_MODE', 'type': 'text', 'value':'TCP'},
+        {'path': ':JSCOPE_EV', 'type': 'text', 'value':'JSCOPE_EVENT'},
     ]
     for i in range(12):
         parts.extend([
@@ -62,7 +64,7 @@ class ELAD(MDSplus.Device):
     del(i)
 
     socketDict = {}
-    class AsynchStore(Thread):
+    class AsynchStoreUdp(Thread):
 
             def configure(self, device):
                 self.device = device
@@ -96,6 +98,7 @@ class ELAD(MDSplus.Device):
                         sampleBuf = sock.recv(4*(2*activeChans+1))
                         chans[2*activeChans][sampleIdx] = np.frombuffer(sampleBuf[:4], dtype = np.int32)
                         for chanIdx in range(2*activeChans):
+                            print(np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32))
                             chans[chanIdx][sampleIdx] = np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32)
                         actSegmentSize = actSegmentSize+1
                         if stopAcq[self.nid]:
@@ -110,7 +113,77 @@ class ELAD(MDSplus.Device):
                         getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
                         getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
+                    MDSplus.Event.setevent(self.jscope_ev.data())
+
+
+    class AsynchStoreTcp(Thread):
+
+            def configure(self, device):
+                self.device = device
+                self.nid = device.getNid()
+                try:
+                    self.trigTime = device.trig_time.data()
+                except:
+                    self.trigTime = 0.
+
+            def run(self):
+                serverSocket = socket.socket()
+                serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                serverSocket.bind((socket.gethostname(),self.device.rec_port.data()))
+                serverSocket.listen(1)
+                sock, addr = serverSocket.accept()
+                print('TCP Connection established')
+                freqDiv = self.device.freq_div.data()
+                actFreq = 1E6/freqDiv
+                segmentSize = int(1000* (int(1E6/freqDiv)/int(1000)))  #save a segment every second rouded to 1000 samples
+                if segmentSize == 0:
+                    print('Invalid frequency division for TCP streaming. It must be less than 1000 (Samplig rate > 1kHz)')
+                    return
+                activeChans = self.device.act_chans.data()
+                chans = []
+                for chanIdx in range(2*activeChans+1):
+                    chans.append(np.zeros(segmentSize, dtype = np.int32))
+                for chanIdx in range(12):
+                    getattr(self.device, 'stream_%d_data' % (chanIdx+1)).deleteData()
+                for chanIdx in range(12):
+                    getattr(self.device, 'strint_%d_data' % (chanIdx+1)).deleteData()
+                stopped = False
+                actSamples = 0
+                prevSamples = 0
+                while not stopped:
+                    tcpPacketLen = 1000*4*(2*activeChans)
+                    for sampleSetIdx in range(int(segmentSize/1000)):
+                        sampleBuf = bytearray()
+                        while len(sampleBuf) < tcpPacketLen:
+                            packet = sock.recv(tcpPacketLen - len(sampleBuf))
+                            if not packet:
+                                return None
+                            sampleBuf.extend(packet)
+                        for chanIdx in range(2*activeChans):
+                            chans[chanIdx][sampleSetIdx*1000:(sampleSetIdx+1)*1000] = np.frombuffer(sampleBuf[chanIdx*4*1000:(chanIdx + 1)*4*1000], dtype = np.int32)
+                        actSamples += 1000
+                        if stopAcq[self.nid]:
+                            break
+                    if stopAcq[self.nid]:
+                        stopped = True
+                    period = freqDiv/1E6
+                    startTime = MDSplus.Float64(prevSamples*period)
+                    endTime = MDSplus.Float64(actSamples*period)
+                    timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
+                    print('segment size: '+str(len(chans[chanIdx])))
+                    print('startTime: '+str(startTime))
+                    print('endTime: '+str(startTime))
+                    print('dim: '+str(timebase))
+                    for chanIdx in range(activeChans):
+                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
+                    for chanIdx in range(activeChans):
+                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
                     MDSplus.Event.setevent('ELAD_JSCOPE')
+                    prevSamples = actSamples
+                sock.shutdown(socket.SHUT_RDWR)
+                sock.close()
+                serverSocket.shutdown(socket.SHUT_RDWR)
+                serverSocket.close()
 
 
     def init(self):
@@ -155,15 +228,7 @@ class ELAD(MDSplus.Device):
         except:
             print("Missing use HW Trigger flag")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        
-        try:
-            recPort = self.rec_port.data()
-        except:
-            print("Missing Receive port")
-            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        
-        localIp = socket.gethostbyname(socket.gethostname())
-
+    
         try:
             sock = ELAD.socketDict[self.getNid()]
         except:
@@ -193,13 +258,6 @@ class ELAD(MDSplus.Device):
             autoTicks = np.int32(autozeroTime * 1000)
             sock.send(b'AUT')
             sock.send(autoTicks.item().to_bytes(4,'little'))
-            print(sock.recv(2))
-
-            sock.send(b'IPP')
-            ipLen = np.int32(len(localIp))
-            sock.send(ipLen.item().to_bytes(4,'little'))
-            sock.send(bytes(localIp, 'utf-8'))
-            sock.send(recPort.item().to_bytes(4,'little'))
             print(sock.recv(2))
 
         except:
@@ -255,13 +313,41 @@ class ELAD(MDSplus.Device):
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
-        self.worker = self.AsynchStore()
+        try:
+            streamMode = self.stream_mode.data()
+        except:
+            print("Missing STREAM_MODE")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if streamMode != 'UDP' and streamMode != 'TCP':
+            print("Invalid STREAM_MODE: "+streamMode)
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        if streamMode == 'UDP':
+            self.worker = self.AsynchStoreUdp()
+        else:
+            self.worker = self.AsynchStoreTcp()
         self.worker.configure(self)
         self.worker.daemon = True
         stopAcq[self.getNid()] = False
         self.worker.start()
 
         time.sleep(1)
+
+        localIp = socket.gethostbyname(socket.gethostname())
+        try:
+            recPort = self.rec_port.data()
+        except:
+            print("Missing Receive port")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+
+        sock.send(b'IPP')
+        ipLen = np.int32(len(localIp))
+        sock.send(ipLen.item().to_bytes(4,'little'))
+        sock.send(bytes(localIp, 'utf-8'))
+        sock.send(recPort.item().to_bytes(4,'little'))
+        print(sock.recv(2))
+
         try:
             sock.send(b'STS')
             print(sock.recv(2))

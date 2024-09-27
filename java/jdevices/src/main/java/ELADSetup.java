@@ -39,15 +39,19 @@ public class ELADSetup extends DeviceSetup {
         deviceField7 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
+        deviceChoice1 = new DeviceChoice();
+        deviceField8 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("ELAD Setuo");
+        setDeviceTitle("ELAD Setup");
         setDeviceType("ELAD");
         setHeight(300);
-        setWidth(500);
+        setUpdateEvent("");
+        setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(5, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Comment:");
@@ -75,7 +79,6 @@ public class ELADSetup extends DeviceSetup {
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("PTS: ");
-        deviceField4.setNumCols(6);
         deviceField4.setOffsetNid(7);
         jPanel4.add(deviceField4);
 
@@ -101,12 +104,29 @@ public class ELADSetup extends DeviceSetup {
 
         jPanel1.add(jPanel5);
 
+        deviceChoice1.setChoiceItems(new String[] {"UDP", "TCP"});
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Stream Mode: ");
+        deviceChoice1.setOffsetNid(12);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel6.add(deviceChoice1);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("jScope Event: ");
+        deviceField8.setNumCols(15);
+        deviceField8.setOffsetNid(13);
+        deviceField8.setTextOnly(true);
+        jPanel6.add(deviceField8);
+
+        jPanel1.add(jPanel6);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceChoice deviceChoice1;
     private DeviceField deviceField1;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
@@ -114,10 +134,12 @@ public class ELADSetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     // End of variables declaration//GEN-END:variables
 }
