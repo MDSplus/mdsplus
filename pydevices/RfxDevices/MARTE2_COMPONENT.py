@@ -36,6 +36,10 @@ class BUILDER:
 
     def __call__(self, cls):
         cls.buildGam(cls.parts, self.clazz, self.mode, self.timebaseExpr)
+        try:
+            cls.postBuild()
+        except:
+            pass
         return cls
 
 

@@ -406,7 +406,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             try:
                 frequency = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).data()
             except:
-                raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '.self.getPath)
+                raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '+ self.getPath())
             retDataSources.append( {
                 'Name': threadName+'_Timer',
                 'Class': 'LinuxTimer',
@@ -1379,6 +1379,7 @@ $<APP_NAME> = {
         import os
 
         command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
+        print(command)
         os.system(command)
         return 1
 
