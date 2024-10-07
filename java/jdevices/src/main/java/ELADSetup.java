@@ -107,14 +107,14 @@ public class ELADSetup extends DeviceSetup {
         deviceChoice1.setChoiceItems(new String[] {"UDP", "TCP"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Stream Mode: ");
-        deviceChoice1.setOffsetNid(12);
+        deviceChoice1.setOffsetNid(14);
         deviceChoice1.setUpdateIdentifier("");
         jPanel6.add(deviceChoice1);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("jScope Event: ");
         deviceField8.setNumCols(15);
-        deviceField8.setOffsetNid(13);
+        deviceField8.setOffsetNid(15);
         deviceField8.setTextOnly(true);
         jPanel6.add(deviceField8);
 

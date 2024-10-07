@@ -1378,12 +1378,12 @@ $<APP_NAME> = {
         import subprocess
         import os
 
-        command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
+        command = 'kill -KILL `ps  | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
         print(command)
         os.system(command)
         return 1
 
-        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
+        command = 'ps | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'' % (
             marteName)
         pid, error = subprocess.Popen("{cmd}".format(
             cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
