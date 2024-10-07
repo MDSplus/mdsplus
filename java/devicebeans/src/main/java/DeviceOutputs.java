@@ -48,6 +48,11 @@ public class DeviceOutputs extends DeviceComponent
         private int numOutputChildren = 0;
         private int numItems;
         private int numParItems;
+        private int cpuMask;
+        private java.lang.String jScopeEvent;
+        private JTextField cpuMaskTF, jScopeEventTF;
+        private int cpuMaskNid, jScopeEventNid;
+        
         static final String types[] = {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"};
         private int stringToIdx(String type)
         {
@@ -118,7 +123,39 @@ public class DeviceOutputs extends DeviceComponent
             segLenNids = new int[numItems];
             parameterNids = new int[numParItems];
             JPanel jp = new JPanel();
-            jp.setLayout(new GridLayout(numItems+numBusItems, 1));
+            jp.setLayout(new GridLayout(numItems+numBusItems + 1, 1));
+            cpuMask = 0;
+            try {
+                cpuMask = subtree.getInt(subtree.getFullPath(baseNid)+".OUTPUTS:CPU_MASK");
+            }catch(Exception exc)
+            {
+                System.out.println("Cannot retrieve Output CPU Mask");
+            } 
+            try {
+                cpuMaskNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".OUTPUTS:CPU_MASK"+",\'NID_NUMBER\')");
+            }catch(Exception exc)
+            {
+                System.out.println("Cannot retrieve Output CPU Mask NID");
+            } 
+            try {
+                jScopeEvent = subtree.getString(subtree.getFullPath(baseNid)+":JSCOPE_EV");
+            }catch(Exception exc)
+            {
+                jScopeEvent = "";
+            }    
+            try {
+                jScopeEventNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+":JSCOPE_EV"+",\'NID_NUMBER\')");
+            }catch(Exception exc)
+            {
+                System.out.println("Cannot retrieve Output jScope Event NID");
+            } 
+            JPanel infoJp = new JPanel();
+            infoJp.add(new JLabel("CPU mask:"));
+            infoJp.add(cpuMaskTF = new JTextField(5));
+            infoJp.add(new JLabel("jScope Event:"));
+            infoJp.add(jScopeEventTF = new JTextField(15));
+            jp.add(infoJp);
+             
             currOutNid = currNid + 7;
             int currItem = 0;
             numParItems = 0;
@@ -246,7 +283,9 @@ public class DeviceOutputs extends DeviceComponent
         }
 	protected void displayData(String data, boolean is_on)
 	{
-             for(int idx = 0; idx < numItems; idx++)
+            cpuMaskTF.setText(""+cpuMask);
+            jScopeEventTF.setText(jScopeEvent);
+            for(int idx = 0; idx < numItems; idx++)
             {
                 try {
                      segLensTF[idx].setText(subtree.getDataExpr(segLenNids[idx]));
@@ -296,6 +335,22 @@ public class DeviceOutputs extends DeviceComponent
       
         public void apply() throws Exception
         {
+            int currCpuMask = Integer.parseInt(cpuMaskTF.getText());
+            java.lang.String currJScopeEvent = jScopeEventTF.getText();
+            try {
+                subtree.putDataExpr(cpuMaskNid, cpuMaskTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving CPU Mask");
+            }
+            try {
+                subtree.putDataExpr(jScopeEventNid, "\""+jScopeEventTF.getText()+"\"");
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving jScope Event");
+            }
+           
+            
             for(int idx = 0; idx < numItems; idx++)
             {
                 try {

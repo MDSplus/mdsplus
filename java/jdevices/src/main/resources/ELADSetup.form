@@ -141,7 +141,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Stream Mode: "/>
-                <Property name="offsetNid" type="int" value="12"/>
+                <Property name="offsetNid" type="int" value="14"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -150,7 +150,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="jScope Event: "/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="13"/>
+                <Property name="offsetNid" type="int" value="15"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>

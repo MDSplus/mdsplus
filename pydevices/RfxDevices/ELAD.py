@@ -32,6 +32,8 @@ class ELAD(MDSplus.Device):
         {'path': ':AUTOZERO_TIM', 'type': 'numeric', 'value': 2.},
         {'path': ':REC_PORT', 'type': 'numeric', 'value': 8111},
         {'path': ':ACT_CHANS', 'type': 'numeric', 'value':2},
+        {'path': ':CALIBRATION', 'type': 'text', 'value':"NO"},
+        {'path': ':CHOP_ENA', 'type': 'text', 'value':"NO"},
         {'path': ':STREAM_MODE', 'type': 'text', 'value':'TCP'},
         {'path': ':JSCOPE_EV', 'type': 'text', 'value':'JSCOPE_EVENT'},
     ]
@@ -40,6 +42,11 @@ class ELAD(MDSplus.Device):
             {'path': '.CHANNEL_%d' % (i+1), 'type': 'structure'},
             {'path': '.CHANNEL_%d:DATA' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
+            {'path': '.CHANNEL_%d:CHOP_ENA' % (i+1), 'type': 'numeric', 'value': 0 },
+            {'path': '.CHANNEL_%d:LH_MODE' % (i+1), 'type': 'numeric', 'value':0},
+            {'path': '.CHANNEL_%d:ID' % (i+1), 'type': 'text'},
+            {'path': '.CHANNEL_%d:STATUS' % (i+1), 'type': 'text'},
+            {'path': '.CHANNEL_%d:EPROM' % (i+1), 'type': 'text'}
         ])
     for i in range(12):
         parts.extend([
@@ -230,7 +237,41 @@ class ELAD(MDSplus.Device):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
     
         try:
+            recPort = self.rec_port.data()
+        except:
+            print("Missing Receive port")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        modeReg = int(0) 
+        chopActive = False    
+        globalChopEnable = self.chop_ena.data() == 'YES'        
+        for chan in range(12):
+            try:
+                chopEna = self.__getattr__('channel_%d_chop_ena' % (chan+1)).data()
+            except:
+                chopEna = 0
+            if globalChopEnable and chopEna > 0:
+                modeReg |= (1 << (chan+1))
+                chopActive = True
+            try:
+                lhMode = self.__getattr__('channel_%d_lh_mode' % (chan+1)).data()
+            except:
+                lhMode = 0
+            if lhMode > 0:
+                modeReg |= (1 << (chan+16))
+        if chopActive:
+            modeReg |= 1
+        calEnabled = self.calibration.data()
+        if calEnabled == 'YES':
+            modeReg |= (1 << 30)
+        #globalChopEnable = self.chop_ena.data() == 'YES'
+
+        localIp = socket.gethostbyname(socket.gethostname())
+
+        try:
             sock = ELAD.socketDict[self.getNid()]
+            sock.close()
+            sock.connect((ip, port))
         except:
             print('Connecting....')
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -259,6 +300,37 @@ class ELAD(MDSplus.Device):
             sock.send(b'AUT')
             sock.send(autoTicks.item().to_bytes(4,'little'))
             print(sock.recv(2))
+
+            sock.send(b'IPP')
+            ipLen = np.int32(len(localIp))
+            sock.send(ipLen.item().to_bytes(4,'little'))
+            sock.send(bytes(localIp, 'utf-8'))
+            sock.send(recPort.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+
+            sock.send(b'MOD')
+            sock.send(modeReg.to_bytes(4,'little'))
+            print(sock.recv(2))
+
+            sock.send(b'IDS')
+ #           ids = np.frombuffer(recvall(sock, 8 * 12), dtype = np.int8)
+
+            ids = np.frombuffer(recvall(sock, 16 * 12), dtype = np.int8)   
+ 
+            for chan in range(12):
+                id = ''
+                for i in range(16):  # era 7
+     #              id += hex(ids[chan*12+i])[2:] #id += hex(ids[chan*8+i])[2:]
+                    id += chr(ids[(chan*16)+i])
+                print(id)
+                self.__getattr__('channel_%d_id' % (chan+1)).putData(MDSplus.String(id))
+
+   #         sock.send(b'EPR')
+   #         for chan in range(12):
+   #             numBytes = int.from_bytes(sock.recv(4),'little')
+   #             epromBuffer  =  recvall(sock, numBytes)
+   #             epromString = epromBuffer.decode("utf-8")
+   #             self.__getattr__('channel_%d_eprom' % (chan+1)).putData(MDSplus.String(epromString))
 
         except:
             print("Socket communication failed")
@@ -386,10 +458,20 @@ class ELAD(MDSplus.Device):
             print("Cannot retrieve number of active chans")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         try:
+            sock.send(b'STA')
+            statusReg =  int.from_bytes(sock.recv(4),'little')
+            activeChans = statusReg & 0x0000000F
+            print('Active Chans: ', activeChans)
+            self.act_chans.putData(MDSplus.Int32(activeChans))
+            for chan in range(12):
+                if statusReg & (1 << (4+chan)) > 0:
+                    self.__getattr__('channel_%d_status' % (chan+1)).putData(MDSplus.String("ERROR"))
+                else:
+                    self.__getattr__('channel_%d_status' % (chan+1)).putData(MDSplus.String("OK"))
             sock.send(b'STR')
             numSamples = int.from_bytes(sock.recv(4),'little')
             print('num Samples: ', numSamples)
-            samples = np.zeros(numSamples, np.int)
+            samples = np.zeros(numSamples, np.int32)
             numChanSamples = int(numSamples/activeChans)
             print('num Chan Samples: ', numChanSamples)
             samples = np.frombuffer(recvall(sock, 4 * numSamples), dtype = np.int32)

@@ -132,9 +132,11 @@ class MARTE2_ELAD(MC.MARTE2_COMPONENT):
             print("Missing Autozero time")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-    
         try:
             sock = MARTE2_ELAD.socketDict[self.getNid()]
+            sock.close()
+            print('Connecting....')
+            sock.connect((ip, port))
         except:
             print('Connecting....')
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -143,7 +145,6 @@ class MARTE2_ELAD(MC.MARTE2_COMPONENT):
             except:
                 print("Cannot connect to "+ip+"  Port "+str(port))
                 raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-
         
         try:
             sock.send(b'CHK')
