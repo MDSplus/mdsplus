@@ -38,7 +38,7 @@ public class MARTE2_ELADSetup extends DeviceSetup {
         setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceParameters1.setNumParameters(7);
+        deviceParameters1.setNumParameters(8);
         deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
