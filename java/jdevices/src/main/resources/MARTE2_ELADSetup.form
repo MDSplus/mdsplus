@@ -44,7 +44,7 @@
       <SubComponents>
         <Container class="DeviceParameters" name="deviceParameters1">
           <Properties>
-            <Property name="numParameters" type="int" value="7"/>
+            <Property name="numParameters" type="int" value="8"/>
             <Property name="offsetNid" type="int" value="4"/>
           </Properties>
           <Constraints>
