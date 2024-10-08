@@ -996,6 +996,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             if 'Parameters' in gam:
                 gamConf += self.expandParameters(gam['Parameters'], 4)
             if 'Inputs' in gam:
+                if len(gam['Inputs']) == 0:
+                      raise Exception('Empty Input list for GAM  '+gam['Name']+'. This will raise a syntax error then parsing MARTe2 configuration file')   
                 gamConf += '\t\t\t\tInputSignals = {\n'
                 for inSig in gam['Inputs']:
                     gamConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
@@ -1010,6 +1012,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 gamConf += '\t\t\t\t}\n'
             if 'Outputs' in gam:
                 gamConf += '\t\t\t\tOutputSignals = {\n'
+                if len(gam['Outputs']) == 0:
+                      raise Exception('Empty Output list for GAM  '+gam['Name']+'. This will raise a syntax error then parsing MARTe2 configuration file')   
                 for outSig in gam['Outputs']:
                     gamConf += '\t\t\t\t\t'+outSig['Name']+ ' = {\n'
                     for outSigKey in outSig:
