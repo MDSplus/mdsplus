@@ -85,6 +85,7 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
         types = {
             int: 'int32',
             float: 'float64',
+            np.int8: 'int8',
             np.int16: 'int16',
             np.int32: 'int32',
             np.int64: 'int64',
