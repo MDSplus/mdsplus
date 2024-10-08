@@ -80,6 +80,7 @@ class MARTE2_ELAD(MC.MARTE2_COMPONENT):
         {'name': 'FreqDiv', 'type': 'int32', 'value': 100}, 
         {'name': 'Pts', 'type': 'int32', 'value': 100000}, 
         {'name': 'AutozeroTim', 'type': 'float64', 'value':1.}, 
+        {'name': 'ClientIp', 'type': 'string'}, 
     ]
 
     parts = []
@@ -218,18 +219,22 @@ class MARTE2_ELAD(MC.MARTE2_COMPONENT):
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-        localIp = socket.gethostbyname(socket.gethostname())
         try:
             recPort = self.getNode('parameters.par_2:value').data()
         except:
             print("Missing Receive port")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            clientIp = self.getNode('parameters.par_8:value').data()
+        except:
+            print("Missing Client IP")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
 
         sock.send(b'IPP')
-        ipLen = np.int32(len(localIp))
+        ipLen = np.int32(len(clientIp))
         sock.send(ipLen.item().to_bytes(4,'little'))
-        sock.send(bytes(localIp, 'utf-8'))
+        sock.send(bytes(clientIp, 'utf-8'))
         sock.send(recPort.item().to_bytes(4,'little'))
         print(sock.recv(2))
 
