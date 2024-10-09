@@ -123,7 +123,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         #Check
         for currGamNode in gamNodes:
             if not isinstance(currGamNode, RfxDevices.MARTE2_COMPONENT):
-                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode(getPath()))
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode)
             gamMode = currGamNode.getNode('MODE').data()
             if not (gamMode == MARTE2_SUPERVISOR.MODE_GAM or gamMode ==MARTE2_SUPERVISOR. MODE_INPUT 
                 or gamMode == MARTE2_SUPERVISOR.MODE_SYNC_INPUT or gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT):

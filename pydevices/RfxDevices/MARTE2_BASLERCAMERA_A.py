@@ -31,7 +31,7 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('BaslerCamera', MC.MARTE2_COMPONENT.MODE_INPUT)
 class MARTE2_BASLERCAMERA_A(MC.MARTE2_COMPONENT):
     outputs = [
-        {'name': 'Frame', 'type': 'uint8', 'dimensions': -1, 'parameters': []},
+        {'name': 'Frame', 'type': 'uint8', 'dimensions': [600,800], 'parameters': []},
         {'name': 'Timestamp', 'type': 'uint64', 'dimensions': 0, 'parameters': []},
     ]
     parameters = [

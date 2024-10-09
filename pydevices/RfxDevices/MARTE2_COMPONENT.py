@@ -351,7 +351,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             refDimNode = refSigNode.getNode('DIMENSIONS')
         except:
             raise Exception ('Not a valid MARTE2 device reference for '+ sigNode + ' of '+self.getPath()) 
-        if refDimNode.data() != sigNode.getNode('DIMENSIONS').data():
+        if not (refDimNode.data() == sigNode.getNode('DIMENSIONS').data()).all():
             raise Exception ('Invalid dimension for signal '+ sigNode.getPath()+ ' of '+self.getPath() ) 
         return True
 
@@ -1091,7 +1091,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currDimension = sigNode.getNode('DIMENSIONS').data()
             except:
                 currDimension = -1
-            if currDimension == -1:
+            if not hasattr(currDimension, '__len__') and currDimension == -1:
                 continue
 
             currName = self.getSignalName(sigNode)
