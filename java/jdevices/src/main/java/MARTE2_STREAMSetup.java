@@ -34,8 +34,6 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel2 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField14 = new DeviceField();
         deviceChoice9 = new DeviceChoice();
         jPanel12 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
@@ -53,18 +51,6 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         setWidth(900);
 
         jPanel2.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel11.add(deviceField1);
-
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Timebase div.:");
-        deviceField14.setNumCols(4);
-        deviceField14.setOffsetNid(1307);
-        jPanel11.add(deviceField14);
 
         deviceChoice9.setChoiceIntValues(new int[] {1, 0});
         deviceChoice9.setChoiceItems(new String[] {"Time Streaming", "Oscilloscope"});
@@ -118,12 +104,10 @@ public class MARTE2_STREAMSetup extends DeviceSetup
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice9;
-    private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
     private DeviceField deviceField13;
-    private DeviceField deviceField14;
     private DeviceInputs deviceInputs1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
