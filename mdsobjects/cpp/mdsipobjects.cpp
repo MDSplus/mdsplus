@@ -302,8 +302,8 @@ void *putManyObj(char *serializedIn)
       result->setItem(nodeNameData.get(), errorData.get());
     }
 
-    for (void * dsc : actualDscList) {
-      freeDsc(dsc);
+    for (size_t i = 0; i < actualDscList.size(); ++i) {
+      freeDsc(actualDscList[i]);
     }
   }
 
