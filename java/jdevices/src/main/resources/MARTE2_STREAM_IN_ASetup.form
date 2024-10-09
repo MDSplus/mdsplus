@@ -42,31 +42,9 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="3"/>
+        <Property name="rows" type="int" value="2"/>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel3">
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-                <Property name="numCols" type="int" value="25"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase div: "/>
-                <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="1560"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>

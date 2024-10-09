@@ -28,9 +28,6 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
@@ -48,21 +45,7 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
         setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.GridLayout(3, 1));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel3.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(1560);
-        jPanel3.add(deviceField2);
-
-        jPanel2.add(jPanel3);
+        jPanel2.setLayout(new java.awt.GridLayout(2, 1));
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Num Buffers: ");
@@ -107,8 +90,6 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField30;
     private DeviceField deviceField31;
@@ -117,7 +98,6 @@ public class MARTE2_STREAM_IN_ASetup extends DeviceSetup {
     private DeviceOutputs deviceOutputs1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
