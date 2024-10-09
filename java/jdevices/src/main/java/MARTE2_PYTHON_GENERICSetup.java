@@ -207,7 +207,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField5.setTextOnly(true);
         jPanel6.add(deviceField5);
 
-        deviceChoice1.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice1.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Type: ");
         deviceChoice1.setOffsetNid(37);
@@ -241,7 +241,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField8.setTextOnly(true);
         jPanel9.add(deviceField8);
 
-        deviceChoice2.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice2.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type: ");
         deviceChoice2.setOffsetNid(45);
@@ -275,7 +275,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField11.setTextOnly(true);
         jPanel12.add(deviceField11);
 
-        deviceChoice3.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice3.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type: ");
         deviceChoice3.setOffsetNid(53);
@@ -309,7 +309,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField14.setTextOnly(true);
         jPanel15.add(deviceField14);
 
-        deviceChoice4.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice4.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type: ");
         deviceChoice4.setOffsetNid(61);
@@ -343,7 +343,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField17.setTextOnly(true);
         jPanel18.add(deviceField17);
 
-        deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
         deviceChoice5.setOffsetNid(70);
@@ -377,7 +377,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField20.setTextOnly(true);
         jPanel21.add(deviceField20);
 
-        deviceChoice6.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice6.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type: ");
         deviceChoice6.setOffsetNid(77);
@@ -411,7 +411,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField23.setTextOnly(true);
         jPanel24.add(deviceField23);
 
-        deviceChoice7.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice7.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type: ");
         deviceChoice7.setOffsetNid(85);
@@ -445,7 +445,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField26.setTextOnly(true);
         jPanel27.add(deviceField26);
 
-        deviceChoice8.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice8.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type: ");
         deviceChoice8.setOffsetNid(93);
@@ -484,7 +484,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField29.setTextOnly(true);
         jPanel30.add(deviceField29);
 
-        deviceChoice9.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice9.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Type: ");
         deviceChoice9.setOffsetNid(109);
@@ -513,7 +513,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField32.setTextOnly(true);
         jPanel31.add(deviceField32);
 
-        deviceChoice10.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice10.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Type: ");
         deviceChoice10.setOffsetNid(119);
@@ -542,7 +542,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField35.setTextOnly(true);
         jPanel32.add(deviceField35);
 
-        deviceChoice11.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice11.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Type: ");
         deviceChoice11.setOffsetNid(129);
@@ -571,7 +571,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField38.setTextOnly(true);
         jPanel33.add(deviceField38);
 
-        deviceChoice12.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice12.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Type: ");
         deviceChoice12.setOffsetNid(139);
@@ -600,7 +600,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField41.setTextOnly(true);
         jPanel34.add(deviceField41);
 
-        deviceChoice13.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice13.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Type: ");
         deviceChoice13.setOffsetNid(149);
@@ -629,7 +629,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField44.setTextOnly(true);
         jPanel35.add(deviceField44);
 
-        deviceChoice14.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice14.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Type: ");
         deviceChoice14.setOffsetNid(159);
@@ -658,7 +658,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField47.setTextOnly(true);
         jPanel36.add(deviceField47);
 
-        deviceChoice15.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice15.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Type: ");
         deviceChoice15.setOffsetNid(169);
@@ -687,7 +687,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceField50.setTextOnly(true);
         jPanel37.add(deviceField50);
 
-        deviceChoice16.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "float32", "float64"});
+        deviceChoice16.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Type: ");
         deviceChoice16.setOffsetNid(179);
