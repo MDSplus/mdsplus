@@ -1,45 +1,5 @@
 
 ###
-### UDT4
-###
-
-# TODO: Investigate?
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
-
-file(GLOB
-    _udt4_source_list
-    "udt4/src/*.h"
-    "udt4/src/*.cpp"
-    "udt4/udtc/*.h"
-    "udt4/udtc/*.cpp"
-)
-
-add_library(
-    UDT4 OBJECT
-    ${_udt4_source_list}
-)
-
-target_include_directories(
-    UDT4
-    PUBLIC
-        "udt4/src/"
-        "udt4/udtc/"
-)
-
-set_target_properties(
-    UDT4
-    PROPERTIES
-        POSITION_INDEPENDENT_CODE ON
-)
-
-# TODO: Check if needed
-target_compile_options(
-    UDT4
-    PRIVATE
-       -Wno-null-pointer-subtraction
-)
-
-###
 ### MdsIpShr
 ###
 
@@ -89,62 +49,106 @@ target_link_libraries(
 
 install(TARGETS MdsIpTCP)
 
-###
-### MdsIpTCPV6
-###
+if(NOT WIN32)
 
-add_library(
-    MdsIpTCPV6
-    io_routines/IoRoutinesTcpV6.c
-)
+    ###
+    ### MdsIpTCPV6
+    ###
 
-target_link_libraries(
-    MdsIpTCPV6
-    PRIVATE
-        MdsIpShr
-)
+    add_library(
+        MdsIpTCPV6
+        io_routines/IoRoutinesTcpV6.c
+    )
 
-install(TARGETS MdsIpTCPV6)
+    target_link_libraries(
+        MdsIpTCPV6
+        PRIVATE
+            MdsIpShr
+    )
 
-###
-### MdsIpUDT
-###
+    install(TARGETS MdsIpTCPV6)
 
-add_library(
-    MdsIpUDT
-    io_routines/IoRoutinesUdt.c
-)
+    ###
+    ### UDT4
+    ###
 
-target_link_libraries(
-    MdsIpUDT
-    PUBLIC
-        MdsIpShr
-    PRIVATE
-        MdsIpShr
+    # TODO: Investigate?
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+
+    file(GLOB
+        _udt4_source_list
+        "udt4/src/*.h"
+        "udt4/src/*.cpp"
+        "udt4/udtc/*.h"
+        "udt4/udtc/*.cpp"
+    )
+
+    add_library(
+        UDT4 OBJECT
+        ${_udt4_source_list}
+    )
+
+    target_include_directories(
         UDT4
-)
+        PUBLIC
+            "udt4/src/"
+            "udt4/udtc/"
+    )
 
-install(TARGETS MdsIpUDT)
-
-###
-### MdsIpUDTV6
-###
-
-add_library(
-    MdsIpUDTV6
-    io_routines/IoRoutinesUdtV6.c
-)
-
-target_link_libraries(
-    MdsIpUDTV6
-    PUBLIC
-        MdsIpShr
-    PRIVATE
-        MdsIpShr
+    set_target_properties(
         UDT4
-)
+        PROPERTIES
+            POSITION_INDEPENDENT_CODE ON
+    )
 
-install(TARGETS MdsIpUDTV6)
+    # TODO: Check if needed
+    target_compile_options(
+        UDT4
+        PRIVATE
+        -Wno-null-pointer-subtraction
+    )
+    
+    ###
+    ### MdsIpUDT
+    ###
+
+    add_library(
+        MdsIpUDT
+        io_routines/IoRoutinesUdt.c
+    )
+
+    target_link_libraries(
+        MdsIpUDT
+        PUBLIC
+            MdsIpShr
+        PRIVATE
+            MdsIpShr
+            UDT4
+    )
+
+    install(TARGETS MdsIpUDT)
+
+    ###
+    ### MdsIpUDTV6
+    ###
+
+    add_library(
+        MdsIpUDTV6
+        io_routines/IoRoutinesUdtV6.c
+    )
+
+    target_link_libraries(
+        MdsIpUDTV6
+        PUBLIC
+            MdsIpShr
+        PRIVATE
+            MdsIpShr
+            UDT4
+    )
+
+    install(TARGETS MdsIpUDTV6)
+
+endif()
 
 ###
 ### mdsip
@@ -193,12 +197,12 @@ if(WIN32)
 endif()
 
 install(
-    FILES mdsip.hosts RENAME mdsip.hosts${_win}
+    FILES mdsip.hosts${_win} RENAME mdsip.hosts
     TYPE SYSCONF
 )
 
 install(
-    FILES multi.hosts RENAME multi.hosts${_win}
+    FILES multi.hosts${_win} RENAME multi.hosts
     TYPE SYSCONF
 )
 

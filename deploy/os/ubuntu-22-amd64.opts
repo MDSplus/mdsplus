@@ -1,0 +1,1 @@
+--dockerimage=mdsplus/builder:ubuntu-22.04-amd64 --distname=Ubuntu22 --platform=debian

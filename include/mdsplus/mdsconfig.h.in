@@ -16,63 +16,63 @@
 #define EVENT_THREAD_STACK_SIZE_MIN 1048576
 #endif
 
-/* Define to 1 if you have the <alloca.h> header file. */
-#cmakedefine01 HAVE_ALLOCA_H
+/* Define if you have the <alloca.h> header file. */
+#cmakedefine HAVE_ALLOCA_H
 
-/* "Define if you have the clock_gettime function." */
+/* Define if you have the clock_gettime function. */
 #cmakedefine HAVE_CLOCK_GETTIME 
 
-/* Define to 1 if you have the `fork' function. */
-#cmakedefine01 HAVE_FORK
+/* Define if you have the `fork' function. */
+#cmakedefine HAVE_FORK
 
-/* "Define if you have the getaddrinfo routine" */
+/* Define if you have the getaddrinfo routine */
 #cmakedefine HAVE_GETADDRINFO 
 
-/* "Define if you have getpwuid." */
+/* Define if you have getpwuid. */
 #cmakedefine HAVE_GETPWUID 
 
-/* Define to 1 if you have the <sys/resource.h> header file. */
-#cmakedefine01 HAVE_SYS_RESOURCE_H
+/* Define if you have the <sys/resource.h> header file. */
+#cmakedefine HAVE_SYS_RESOURCE_H
 
-/* "Define if you have the getrusage routine" */
+/* Define if you have the getrusage routine */
 #cmakedefine HAVE_GETRUSAGE 
 
-/* Define to 1 if you have the <grp.h> header file. */
-#cmakedefine01 HAVE_GRP_H
+/* Define if you have the <grp.h> header file. */
+#cmakedefine HAVE_GRP_H
 
-/* Define to 1 if you have the `mkstemp' function. */
-#cmakedefine01 HAVE_MKSTEMP
+/* Define if you have the `mkstemp' function. */
+#cmakedefine HAVE_MKSTEMP
 
-/* Define to 1 if you have the <pthread.h> header file. */
-#cmakedefine01 HAVE_PTHREAD_H
+/* Define if you have the <pthread.h> header file. */
+#cmakedefine HAVE_PTHREAD_H
 
-/* Define to 1 if you have the `pthread_lock_global_np' function. */
-#cmakedefine01 HAVE_PTHREAD_LOCK_GLOBAL_NP
+/* Define if you have the `pthread_lock_global_np' function. */
+#cmakedefine HAVE_PTHREAD_LOCK_GLOBAL_NP
 
-/* Define to 1 if you have the <pwd.h> header file. */
-#cmakedefine01 HAVE_PWD_H
+/* Define if you have the <pwd.h> header file. */
+#cmakedefine HAVE_PWD_H
 
-/* Define to 1 if you have the <readline/readline.h> header file. */
-#cmakedefine01 HAVE_READLINE_READLINE_H
+/* Define if you have the <readline/readline.h> header file. */
+#cmakedefine HAVE_READLINE_READLINE_H
 
-/* Define to 1 if you have the `rl_set_signals' function. */
-#cmakedefine01 HAVE_RL_SET_SIGNALS
+/* Define if you have the `rl_set_signals' function. */
+#cmakedefine HAVE_RL_SET_SIGNALS
 
-/* "Define if you have the sybase includes (freetds)" */
+/* Define if you have the sybase includes (freetds) */
 #cmakedefine HAVE_SYBASE
 
-/* Define to 1 if you have the <sys/types.h> header file. */
-#cmakedefine01 HAVE_SYS_TYPES_H
+/* Define if you have the <sys/types.h> header file. */
+#cmakedefine HAVE_SYS_TYPES_H
 
-/* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine01 HAVE_UNISTD_H
+/* Define if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H
 
 /* Define if you have the <valgrind/valgrind.h> header file. */
 #cmakedefine HAVE_VALGRIND_H
 
-/* Define to 1 or 0, depending whether the compiler supports simple visibility
+/* Define or 0, depending whether the compiler supports simple visibility
    declarations. */
-#cmakedefine01 HAVE_VISIBILITY
+#cmakedefine HAVE_VISIBILITY
 
 /* Define if you have the <vxWorks.h> header file. */
 #cmakedefine HAVE_VXWORKS_H
@@ -108,7 +108,7 @@
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
-#elif HAVE_VISIBILITY
+#elif defined(HAVE_VISIBILITY)
 # define EXPORT __attribute__((__visibility__("default")))
 #else
 #define EXPORT

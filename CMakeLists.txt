@@ -67,6 +67,14 @@ endif()
 # --host= CMAKE_SYSTEM_NAME?
 # --target= CMAKE_SYSTEM_PROCESSOR?
 
+# TODO: Provide options
+mdsplus_option(
+    PLATFORM STRING
+    "Intended platform for building and packaging."
+    # TODO: Detect platform..?
+    # DEFAULT "${_platform_default}"
+)
+
 # replaces --disable-shared
 mdsplus_option(
     BUILD_SHARED_LIBS BOOL
@@ -117,14 +125,7 @@ mdsplus_option(
     ${_override_install_dir}
 )
 
-# Must be included after CMAKE_INSTALL_PREFIX
-# Defines the following that we use:
-# * CMAKE_INSTALL_BINDIR
-# * CMAKE_INSTALL_LIBDIR
-# * CMAKE_INSTALL_SYSCONFIGDIR
-# * CMAKE_INSTALL_INCLUDEDIR
-include(GNUInstallDirs)
-
+# TODO: Remove?
 # Defines option(BUILD_TESTING)
 include(CTest)
 
@@ -196,10 +197,15 @@ if(PYTHON STREQUAL "$PYTHON")
     set(PYTHON "$ENV{PYTHON}")
 endif()
 
+set(_enable_motif_default ON)
+if(WIN32)
+    set(_enable_motif_default OFF)
+endif()
+
 mdsplus_option(
     ENABLE_MOTIF BOOL
     "Build motif libraries and applications."
-    DEFAULT ON
+    DEFAULT ${_enable_motif_default}
 )
 
 mdsplus_option(
@@ -264,6 +270,17 @@ if(WIN32)
         ENABLE_LARGEFILE BOOL
         "Enable support for large files when compiling for 32-bit."
         DEFAULT ON
+    )
+
+    mdsplus_option(
+        TEST_WITH_WINE BOOL
+        "Use wine for running tests, and create a wineprefix in \${CMAKE_BUILD_DIR}/.wine"
+        DEFAULT OFF
+    )
+
+    mdsplus_option(
+        WINE_PYTHON STRING
+        "Path to the python executable for the installation to use when running tests in wine."
     )
 endif()
 
@@ -357,10 +374,15 @@ mdsplus_option(
     "Location of libxml2 library"
 )
 
+set(_use_system_blas_default ON)
+if(WIN32)
+    set(_use_system_blas_default OFF)
+endif()
+
 mdsplus_option(
-    NO_SYSTEM_BLAS BOOL
-    "Use the local copy of blas in math/blas/ instead of a system version"
-    DEFAULT OFF
+    USE_SYSTEM_BLAS BOOL
+    "Use a system version of blas instead of the local copy in math/blas/"
+    DEFAULT ${_use_system_blas_default}
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
@@ -395,6 +417,47 @@ mdsplus_option(
 # $ENV{FFLAGS} is added by default
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
 
+set(CMAKE_INSTALL_BINDIR bin)
+set(CMAKE_INSTALL_LIBDIR lib)
+
+if(PLATFORM STREQUAL "windows")
+
+    # Windows does not differentiate between lib/ and bin/
+    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
+
+elseif(PLATFORM STREQUAL "redhat")
+    # Redhat requires the bits appended to lib and bin, e.g. lib32, bin64
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_bits 64)
+    else()
+        set(_bits 32)
+    endif()
+
+    set(CMAKE_INSTALL_BINDIR bin${_bits})
+    set(CMAKE_INSTALL_LIBDIR lib${_bits})
+
+    set(_bindir_symlink ${CMAKE_BINARY_DIR}/bin)
+    set(_libdir_symlink ${CMAKE_BINARY_DIR}/lib)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_INSTALL_BINDIR} ${_bindir_symlink}
+    )
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_INSTALL_LIBDIR} ${_libdir_symlink}
+    )
+
+    install(
+        DIRECTORY
+            ${_bindir_symlink}
+            ${_libdir_symlink}
+        DESTINATION .
+    )
+
+endif()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
@@ -420,7 +483,16 @@ add_compile_definitions(
 include(MDSplusCheckFlags)
 include(MDSplusAddCompilerFlag)
 
-if(ENABLE_TESTS)
+if(MINGW)
+    # This is not filled in correctly for mingw
+    set(CMAKE_DL_LIBS dl)
+
+    # Windows should not have any prefix on the .dll/.lib files
+    set(CMAKE_SHARED_LIBRARY_PREFIX "")
+    set(CMAKE_STATIC_LIBRARY_PREFIX "")
+endif()
+
+if(BUILD_TESTING)
     include(CTest)
 endif()
 
@@ -436,6 +508,11 @@ else()
 
     mdsplus_add_compiler_flags(-Wall)
     mdsplus_add_compiler_flags(-Wextra)
+
+    # Disable warnings for argument type mismatches in Fortran
+    # TODO: Investigate why both are needed
+    mdsplus_add_compiler_flags(-fallow-argument-mismatch)
+    mdsplus_add_compiler_flags(-Wno-argument-mismatch)
 
     if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
         set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
@@ -535,7 +612,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
 
     # TODO: Error checking
 
-    set(LD_PRELOAD ${_ld_preload})
+    set(LD_PRELOAD "${_ld_preload}")
 
 endif()
 
@@ -593,7 +670,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 # CMake built-in packages to find
 
 # Do not prefer system apple python
+if(APPLE)
 set(Python_FIND_FRAMEWORK LAST)
+endif()
 
 # In order for find_package(Python) to use the python specified with -DPYTHON or $PYTHON
 # we need to convert it to an absolute path
@@ -602,8 +681,52 @@ if(NOT DEFINED Python_EXECUTABLE AND NOT PYTHON STREQUAL "")
     mark_as_advanced(Python_EXECUTABLE)
 endif()
 
-find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
+find_package(Python COMPONENTS Interpreter REQUIRED)
+
+# Used to easily determine Python_LIBRARIES
+find_package(Python COMPONENTS Development.Embed)
+
 set(PYTHON "${Python_EXECUTABLE}")
+set(PyLib "${Python_LIBRARIES}")
+
+if(TEST_WITH_WINE)
+    find_program(wine_EXECUTABLE wine REQUIRED)
+
+    if(DEFINED WINE_PYTHON)
+        set(PYTHON "${WINE_PYTHON}")
+        cmake_path(GET WINE_PYTHON PARENT_PATH WINE_PYTHONHOME)
+        file(GLOB PyLib ${WINE_PYTHONHOME}/python*.dll)
+    endif()
+
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(WINEARCH "win64")
+    else()
+        set(WINEARCH "win32")
+    endif()
+
+    set(WINEPREFIX "${CMAKE_BINARY_DIR}/.wine")
+
+    # Create the wineprefix
+    if(NOT IS_DIRECTORY ${WINEPREFIX})
+        message(STATUS "Creating wineprefix: ${WINEPREFIX}")
+
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/.wine)
+
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E env
+                WINEARCH=${WINEARCH}
+                WINEPREFIX=${WINEPREFIX}
+                ${wine_EXECUTABLE} cmd.exe /C echo test
+            OUTPUT_VARIABLE _output
+            ERROR_VARIABLE _error
+            RESULT_VARIABLE _result
+        )
+
+        if(NOT _result EQUAL 0)
+            message(FATAL_ERROR "Failed to create wineprefix ${WINEPREFIX}\n${_output}\n${_result}")
+        endif()
+    endif()
+endif()
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
@@ -618,7 +741,7 @@ set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
 mark_as_advanced(LibXml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
 
-if(NOT NO_SYSTEM_BLAS)
+if(USE_SYSTEM_BLAS)
     # Finds the Basic Linear Algebra Subprograms fortran functions
     find_package(BLAS)
     if(NOT TARGET BLAS::BLAS)
@@ -668,18 +791,31 @@ if(ENABLE_JAVA)
         # but also allows you to pick the jdk version
         execute_process(
             COMMAND /usr/libexec/java_home -v ${JAVA_VERSION}
-            OUTPUT_VARIABLE _result
+            OUTPUT_VARIABLE _output
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_QUIET
         )
 
-        if(_result AND IS_DIRECTORY "${_result}")
-            set(JAVA_HOME ${_result})
+        if(_output AND IS_DIRECTORY "${_output}")
+            set(JAVA_HOME ${_output})
         endif()
     endif()
 
     find_package(Java ${JAVA_VERSION} COMPONENTS Runtime Development REQUIRED)
+
+    if(WIN32)
+
+        add_library(JNI::JNI INTERFACE IMPORTED)
+
+        set_target_properties(
+            JNI::JNI
+            PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/windows-jdk;${_3rd_party_apis}/windows-jdk/win32"
+        )
+
+    else()
     find_package(JNI REQUIRED)
+    endif()
 
     include(UseJava)
 
@@ -687,14 +823,17 @@ if(ENABLE_JAVA)
     mark_as_advanced(mvn_EXECUTABLE)
 
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -encoding UTF-8)
+    # Compile as Java 8 (1.8) compatible
+    list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
+    list(APPEND CMAKE_JAVA_COMPILE_FLAGS -target 8)
 
     if(JAVA_HOME STREQUAL "")
         execute_process(
             COMMAND ${Java_JAVA_EXECUTABLE} -XshowSettings:properties -version
-            ERROR_VARIABLE _result # for some reason this outputs to stderr
+            ERROR_VARIABLE _java_properties # for some reason this outputs to stderr
         )
 
-        if("${_result}" MATCHES "java\.home = ([^\n]*)")
+        if("${_java_properties}" MATCHES "java\.home = ([^\n]*)")
             set(JAVA_HOME "${CMAKE_MATCH_1}")
         endif()
     endif()
@@ -832,6 +971,8 @@ mdsplus_print_options()
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
 
+# TODO: Configure with --debug-trycompile and check that no includes are missing
+
 # POSIX
 check_include_files("alloca.h" HAVE_ALLOCA_H) # TODO: Remove?
 check_include_files("grp.h" HAVE_GRP_H)
@@ -856,8 +997,9 @@ set(HAVE_SYBASE ${Sybase_FOUND})
 check_include_files("vxWorks.h" HAVE_VXWORKS_H)
 
 # Readline
-check_include_files("readline/readline.h" HAVE_READLINE_READLINE_H)
-check_symbol_exists("rl_set_signals" "readline/readline.h" HAVE_RL_SET_SIGNALS)
+# We need to include <stdio.h> for <readline/readline.h> to work with mingw
+check_include_files("stdio.h;readline/readline.h" HAVE_READLINE_READLINE_H)
+check_symbol_exists("rl_set_signals" "stdio.h;readline/readline.h" HAVE_RL_SET_SIGNALS)
 
 # Linux Kernel
 check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
@@ -917,6 +1059,12 @@ mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-include-opcbuiltins.py
     GENERATED_FILES
     include/opcbuiltins.h
+)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-include-tdishr.py
+    GENERATED_FILES
+    include/tdishr.h
 )
 
 mdsplus_generate_files(
@@ -1012,6 +1160,7 @@ add_subdirectory(xmdsshr) # Requires TdiShr
 add_subdirectory(mdsmisc) # Requires XTreeShr
 add_subdirectory(mdsdcl) # Requires MdsIpShr
 add_subdirectory(servershr) # Requires libMdsdcl
+add_subdirectory(hdf5) # Requires TdiShr
 add_subdirectory(mdssql)
 # add_subdirectory(mdsvme)
 
@@ -1122,11 +1271,34 @@ if(Motif_FOUND)
         "xmdsshr/*.uil"
     )
 
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/uid)
+    set(_uid_directory ${CMAKE_BINARY_DIR}/uid)
+
+    if(PLATFORM STREQUAL "redhat")
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(_bits 64)
+        else()
+            set(_bits 32)
+        endif()
+        
+        set(_uid_directory_symlink ${_uid_directory})
+        set(_uid_directory ${_uid_directory}${_bits})
+
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E create_symlink
+                uid${_bits} ${_uid_directory_symlink}
+        )
+
+        install(
+            DIRECTORY ${_uid_directory_symlink}
+            DESTINATION .
+        )
+    endif()
+
+    file(MAKE_DIRECTORY ${_uid_directory})
 
     foreach(_uil_file IN LISTS _uil_list)
         cmake_path(GET _uil_file STEM LAST_ONLY _stem)
-        set(_uid_file ${CMAKE_CURRENT_BINARY_DIR}/uid/${_stem}.uid)
+        set(_uid_file ${_uid_directory}/${_stem}.uid)
 
         add_custom_command(
             OUTPUT ${_uid_file}
@@ -1143,8 +1315,71 @@ if(Motif_FOUND)
     )
 
     install(
-        DIRECTORY ${CMAKE_BINARY_DIR}/uid
+        DIRECTORY ${_uid_directory}
         DESTINATION .
+    )
+
+endif()
+
+# Generate Visual Studio compatible .lib files
+if(WIN32 AND BUILD_SHARED_LIBS)
+
+    # HACK: To find correct mingw-prefixed tools
+    # e.g. "/usr/bin/x86_64-w64-mingw32-gcc" -> "/usr/bin/x86_64-w64-mingw32-"
+    string(REGEX REPLACE "-([a-zA-Z_]*)$" "" _mingw_prefix "${CMAKE_C_COMPILER}")
+
+    find_program(
+        gendef_EXECUTABLE REQUIRED
+        NAMES
+            "${_mingw_prefix}-gendef"
+            gendef
+    )
+
+    find_program(
+        dlltool_EXECUTABLE REQUIRED
+        NAMES
+            "${_mingw_prefix}-dlltool"
+            dlltool
+    )
+
+    set(_defs_dir ${CMAKE_BINARY_DIR}/defs)
+    file(MAKE_DIRECTORY ${_defs_dir})
+
+    include(MDSplusGetAllTargets)
+    mdsplus_get_all_targets(_all_targets)
+
+    foreach(_target ${_all_targets})
+
+        get_property(_type TARGET ${_target} PROPERTY TYPE)
+
+        if(_type STREQUAL "SHARED_LIBRARY")
+
+            set(_lib_file "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/${_target}.lib")
+
+            add_custom_command(
+                COMMENT "Generating ${_target}.lib from $<TARGET_FILE_NAME:${_target}>"
+                OUTPUT ${_lib_file}
+                DEPENDS ${_target}
+                # Outputs <DLL NAME>.def in the current directory
+                COMMAND ${gendef_EXECUTABLE} -a $<TARGET_FILE:${_target}>
+                COMMAND ${dlltool_EXECUTABLE} -d $<TARGET_FILE_BASE_NAME:${_target}>.def -l ${_lib_file}
+                WORKING_DIRECTORY ${_defs_dir}
+            )
+
+            list(APPEND _lib_file_list "${_lib_file}")
+
+        endif()
+
+    endforeach()
+
+    install(
+        FILES ${_lib_file_list}
+        TYPE BIN
+    )
+
+    add_custom_target(
+        generate-libs-from-dlls ALL
+        DEPENDS ${_lib_file_list}
     )
 
 endif()
@@ -1210,6 +1445,13 @@ install(
         MDSplus-License.txt
     DESTINATION .
 )
+
+if(WIN32)
+    install(
+        DIRECTORY icons
+        DESTINATION .
+    )
+endif()
 
 install(
     FILES

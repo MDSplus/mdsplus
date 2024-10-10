@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -27,7 +27,7 @@ import traceback
 import subprocess
 import os
 import sys
-import pexpect
+# import pexpect
 import tempfile
 
 srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
@@ -158,10 +158,10 @@ def build():
                              info, shell=True).wait()
             for dir in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
                 try:
-                    os.mkdir(('/release/%(flavor)s/' % info) + dir)
+                    os.mkdir(('%(distroot)s/%(dist)s/%(flavor)s/' % info) + dir)
                 except OSError:
                     pass  # if exists
-            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
+            p = subprocess.Popen("rpmbuild -bb --define '_topdir %(distroot)s/%(dist)s/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
                                  info, stdout=subprocess.PIPE, shell=True)
             message = p.stdout.read()
             status = p.wait()
@@ -209,7 +209,7 @@ def build():
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
-        p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
+        p = subprocess.Popen("rpmbuild -bb --define '_topdir %(distroot)s/%(dist)s/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
                              info, stdout=subprocess.PIPE, shell=True)
         message = p.stdout.read()
         status = p.wait()

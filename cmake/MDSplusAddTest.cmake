@@ -7,7 +7,8 @@ set(MDSPLUS_TEST_INDEX 0 CACHE STRING "" FORCE)
 #                  COMMAND <command> [<arg>...])
 #                  [WORKING_DIRECTORY <dir>]
 #                  [ENVIRONMENT_MODIFICATIONS <mods>]
-#                  [NO_VALGRIND])
+#                  [NO_VALGRIND]
+#                  [NO_WINE])
 #
 # Call add_test() and set_tests_properties() to configure all of the test's properties.
 #
@@ -20,12 +21,17 @@ set(MDSPLUS_TEST_INDEX 0 CACHE STRING "" FORCE)
 # https://cmake.org/cmake/help/latest/command/add_test.html
 # https://cmake.org/cmake/help/latest/prop_test/ENVIRONMENT_MODIFICATION.html
 #
+if(GENERATE_VSCODE_LAUNCH_JSON AND NOT TARGET generate-vscode-launch-json)
+    add_custom_target(generate-vscode-launch-json)
+    set(LAST_VSCODE_LAUNCH_JSON_TARGET "generate-vscode-launch-json" CACHE INTERNAL "" FORCE)
+endif()
+
 function(mdsplus_add_test)
 
     cmake_parse_arguments(
         PARSE_ARGV 0 ARGS
         # Booleans
-        "NO_VALGRIND"
+        "NO_VALGRIND;NO_WINE"
         # Single-Value
         "NAME;WORKING_DIRECTORY;TEST_LIST_VARIABLE"
         # Multi-Value
@@ -48,8 +54,8 @@ function(mdsplus_add_test)
         "MDS_PATH=cmake_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}"
 
         # Used to run or load Python
-        "PYTHON=set:${Python_EXECUTABLE}"
-        "PyLib=set:${Python_LIBRARIES}"
+        "PYTHON=set:${PYTHON}"
+        "PyLib=set:${PyLib}"
 
         # Needed for `import MDSplus` in Python
         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
@@ -69,11 +75,30 @@ function(mdsplus_add_test)
     )
 
     if(WIN32)
-        # Windows searches $PATH for loading .dll's
+
         list(APPEND _env_mods
-            "PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+            "OS=set:windows" # for do_tditests.sh
         )
+        
+        if(TEST_WITH_WINE)
+            # These are used even if NO_WINE is set for do_tditests.sh
+            list(APPEND _env_mods
+                "WINEDEBUG=set:-all"
+                "WINEARCH=set:${WINEARCH}"
+                "WINEPREFIX=set:${WINEPREFIX}"
+                "WINEPATH=cmake_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+
+                # Don't inherit the system python environment
+                "PYTHONHOME=unset:"
+            )
+
+            if(NOT ARGS_NO_WINE)
+                list(PREPEND ARGS_COMMAND ${wine_EXECUTABLE})
+            endif()
+        endif()
+
     else()
+
         # Linux searches $LD_LIBRARY_PATH for loading .so's
         # This is set for Apple as well for backwards compatibility
         list(APPEND _env_mods
@@ -89,6 +114,7 @@ function(mdsplus_add_test)
                 "DYLD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
             )
         endif()
+        
     endif()
 
     set(_index ${MDSPLUS_TEST_INDEX})
@@ -126,17 +152,22 @@ function(mdsplus_add_test)
     math(EXPR _index "${_index} + 1")
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
-        message(STATUS "Adding ${_target} to .vscode/launch.json")
+        string(REPLACE "/" "-" _vscode_launch_target "generate-vscode-launch-json-${_target}")
 
-        execute_process(
+        add_custom_target(
+            "${_vscode_launch_target}"
+            COMMENT "Adding ${_target} to .vscode/launch.json"
             COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
                 --name "${_target}"
-                --command "${ARGS_COMMAND}"
-                --environment "${_base_env_mods}"
-                --bin "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                --command "\"${ARGS_COMMAND}\""
+                --environment "\"${_base_env_mods}\""
                 --cwd "${ARGS_WORKING_DIRECTORY}"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
+
+        # We chain the dependencies to force them to run in serial
+        add_dependencies("${LAST_VSCODE_LAUNCH_JSON_TARGET}" "${_vscode_launch_target}")
+        set(LAST_VSCODE_LAUNCH_JSON_TARGET "${_vscode_launch_target}" CACHE INTERNAL "" FORCE)
     endif()
 
     if(ENABLE_VALGRIND AND NOT ARGS_NO_VALGRIND)

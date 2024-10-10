@@ -60,7 +60,10 @@ set(_test_source_list
     MdsEventTest.cpp
     MdsConnectionTest.cpp
 
+    # SKIP_TEST is not supported
     # MdsCallTest.cpp
+
+    # These tests are't actually written yet
     # MdsActionTest.cpp
     # MdsApdTest.cpp
 )
@@ -93,7 +96,7 @@ foreach(_test_source ${_test_source_list})
 
     mdsplus_add_test(
         NAME ${_test_name}
-        COMMAND ${_test_name} ${_argument}
+        COMMAND $<TARGET_FILE:${_test_name}> ${_argument}
         ENVIRONMENT_MODIFICATION ${_env_mods}
     )
 

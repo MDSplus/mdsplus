@@ -1,0 +1,1 @@
+--dockerimage=mdsplus/builder:debian-11-amd64 --distname=DebianBullseye

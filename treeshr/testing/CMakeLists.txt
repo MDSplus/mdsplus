@@ -27,7 +27,7 @@ foreach(_test_source ${_test_source_list})
 
     mdsplus_add_test(
         NAME ${_test_name}
-        COMMAND ${_test_name}
+        COMMAND $<TARGET_FILE:${_test_name}>
         ${_no_valgrind}
     )
 

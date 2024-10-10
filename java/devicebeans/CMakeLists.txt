@@ -11,13 +11,19 @@ file(GLOB_RECURSE
 file(GLOB_RECURSE
     _resource_list
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "src/main/resources/mds/jscope/*"
+    "src/main/resources/*"
 )
 
 add_jar(
     DeviceBeans
     SOURCES ${_source_list}
-    RESOURCES ${_resource_list}
+    RESOURCES
+        NAMESPACE "" ${_resource_list}
     INCLUDE_JARS mdsobjects jScope
     MANIFEST DeviceBeansManifest.mf
+)
+
+install_jar(
+    DeviceBeans
+    DESTINATION java/classes
 )

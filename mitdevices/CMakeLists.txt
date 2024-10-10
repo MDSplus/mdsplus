@@ -142,144 +142,144 @@ if(TARGET XmdsShr)
         TYPE LIB
     )
 
-endif()
-
-###
-### MitDevicesIO
-###
-
-add_library(
-    MitDevicesIO
-    io.c
-    curvefit.c
-)
-
-target_link_libraries(
-    MitDevicesIO
-    PRIVATE
-        MdsMath
-)
-
-install(TARGETS MitDevicesIO)
-
-if(APPLE)
-    # Fix a namespace collision with FREAD and FWRITE
-    target_compile_definitions(
-        MitDevicesIO
-        PRIVATE
-            _POSIX_C_SOURCE
-    )
-endif()
-
-###
-### MitDevicesMsg
-###
-
-add_library(
-    MitDevicesMsg
-    mitdevices_msg.c
-)
-
-install(TARGETS MitDevicesMsg)
-
-# if(TARGET IDL::IDL AND TARGET Motif::Motif)
-
-#     ###
-#     ### Idl
-#     ###
-
-#     add_library(
-#         Idl
-#         callidl.c
-#     )
-
-#     target_link_libraries(
-#         Idl
-#         PUBLIC
-#             IDL::IDL
-#             Motif::Motif
-#     )
-
-# endif()
-
-if(TARGET DC1394::DC1394)
-
     ###
-    ### dc1394_support2
+    ### MitDevicesIO
     ###
-
-    # TODO DC1394_SUPPORT / DC1394_SUPPORT2
 
     add_library(
-        dc1394_support2
-        dc1394_support2.c
+        MitDevicesIO
+        io.c
+        curvefit.c
     )
 
     target_link_libraries(
-        dc1394_support2
-        PUBLIC
-            DC1394::DC1394
+        MitDevicesIO
+        PRIVATE
+            MdsMath
     )
 
-    install(TARGETS dc1394_support2)
+    install(TARGETS MitDevicesIO)
 
+    if(APPLE)
+        # Fix a namespace collision with FREAD and FWRITE
+        target_compile_definitions(
+            MitDevicesIO
+            PRIVATE
+                _POSIX_C_SOURCE
+        )
+    endif()
+
+    ###
+    ### MitDevicesMsg
+    ###
+
+    add_library(
+        MitDevicesMsg
+        mitdevices_msg.c
+    )
+
+    install(TARGETS MitDevicesMsg)
+
+    # if(TARGET IDL::IDL AND TARGET Motif::Motif)
+
+    #     ###
+    #     ### Idl
+    #     ###
+
+    #     add_library(
+    #         Idl
+    #         callidl.c
+    #     )
+
+    #     target_link_libraries(
+    #         Idl
+    #         PUBLIC
+    #             IDL::IDL
+    #             Motif::Motif
+    #     )
+
+    # endif()
+
+    if(TARGET DC1394::DC1394)
+
+        ###
+        ### dc1394_support2
+        ###
+
+        # TODO DC1394_SUPPORT / DC1394_SUPPORT2
+
+        add_library(
+            dc1394_support2
+            dc1394_support2.c
+        )
+
+        target_link_libraries(
+            dc1394_support2
+            PUBLIC
+                DC1394::DC1394
+        )
+
+        install(TARGETS dc1394_support2)
+
+    endif()
+
+    ###
+    ### reboot_dtaq_satelite / dtacq_update_board.sh
+    ###
+
+    install(
+        FILES
+            reboot_dtaq_satelite
+            dtaq_update_board.sh
+        TYPE BIN
+        PERMISSIONS ${MODE_755}
+    )
+
+    ###
+    ### acq_root_filesystem.tgz / acq_root_filesystem.tgz_ffs
+    ###
+
+    file(GLOB_RECURSE
+        _dtacq_filesystem
+        "acq_root_filesystem/bigffs/*"
+        "acq_root_filesystem/bin/*"
+        "acq_root_filesystem/cgi-bin/*"
+        "acq_root_filesystem/lib/*"
+        "acq_root_filesystem/mdsplus/*"
+        "acq_root_filesystem/usr/*"
+    )
+
+    file(GLOB_RECURSE
+        _dtacq_filesystem_ffs
+        "acq_root_filesystem/ffs/*"
+    )
+
+    add_custom_command(
+        OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
+        DEPENDS ${_dtacq_filesystem}
+        COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz ${_dtacq_filesystem}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
+    )
+
+    add_custom_command(
+        OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
+        DEPENDS ${_dtacq_filesystem_ffs}
+        COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs ${_dtacq_filesystem_ffs}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
+    )
+
+    add_custom_target(
+        generate-acq-root-filesystems ALL
+        DEPENDS
+            ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
+            ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
+    )
+
+    install(
+        FILES
+            ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
+            ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
+        TYPE LIB
+    )
+    
 endif()
-
-###
-### reboot_dtaq_satelite / dtacq_update_board.sh
-###
-
-install(
-    FILES
-        reboot_dtaq_satelite
-        dtaq_update_board.sh
-    TYPE BIN
-    PERMISSIONS ${MODE_755}
-)
-
-###
-### acq_root_filesystem.tgz / acq_root_filesystem.tgz_ffs
-###
-
-file(GLOB_RECURSE
-    _dtacq_filesystem
-    "acq_root_filesystem/bigffs/*"
-    "acq_root_filesystem/bin/*"
-    "acq_root_filesystem/cgi-bin/*"
-    "acq_root_filesystem/lib/*"
-    "acq_root_filesystem/mdsplus/*"
-    "acq_root_filesystem/usr/*"
-)
-
-file(GLOB_RECURSE
-    _dtacq_filesystem_ffs
-    "acq_root_filesystem/ffs/*"
-)
-
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
-    DEPENDS ${_dtacq_filesystem}
-    COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz ${_dtacq_filesystem}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
-)
-
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
-    DEPENDS ${_dtacq_filesystem_ffs}
-    COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs ${_dtacq_filesystem_ffs}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
-)
-
-add_custom_target(
-    generate-acq-root-filesystems ALL
-    DEPENDS
-        ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
-        ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
-)
-
-install(
-    FILES
-        ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
-        ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
-    TYPE LIB
-)

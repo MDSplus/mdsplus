@@ -5,7 +5,7 @@
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c
+    ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
 add_library(
@@ -19,7 +19,7 @@ add_library(
     cmdParse.c
     cmdParseLex.c
     mdsdclDeltatimeToSeconds.c
-    mdsdclVersionInfo.c
+    ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
 # On case-insensitive filesystems, we can't have both mdstcl and Mdstcl as targets

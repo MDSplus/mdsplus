@@ -7,72 +7,69 @@ if not sys.version_info >= (3, 6):
     exit(1)
 
 import argparse
+import glob
 import json
 import math
 import os
+import platform
 import shutil
 import signal
 import subprocess
-import platform
-import glob
 
 from datetime import datetime
 
+# Get the path to deploy/
 deploy_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(deploy_dir)
+
+# Get the path to the root of the repository
+source_dir = os.path.dirname(deploy_dir)
 
 os_options = {}
 for file in glob.glob(os.path.join(deploy_dir, 'os/*.opts')):
-    name = os.path.basename(file)[:-5] # .removesuffix('.opts')
+    name = os.path.basename(file).replace('.opts', '')
 
     if os.path.islink(file):
         real_file = os.path.realpath(file)
-        real_name = os.path.basename(real_file)[:-5] # .removesuffix('.opts')
+        real_name = os.path.basename(real_file).replace('.opts', '')
 
         if real_name not in os_options:
             os_options[real_name] = []
-
+        
         os_options[real_name].append(name)
+    
     else:
         if name not in os_options:
             os_options[name] = []
 
-os_option_text = 'The following values (and aliases) for --os are available:\n'
-for name, aliases in sorted(os_options.items()):
-    os_option_text += f'    {name}'
-    if len(aliases) > 0:
-        os_option_text += f" -> {', '.join(sorted(aliases, reverse=True))}"
-    os_option_text += '\n'
+os_options_help_text = 'The following values (and aliases) for --os are available:\n'
+for name, alias_list in sorted(os_options.items()):
+    os_options_help_text += f'  {name}'
+    if len(alias_list) > 0:
+        os_options_help_text += f" : {', '.join(sorted(alias_list, reverse=True))}"
+    os_options_help_text += '\n'
 
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    epilog=os_option_text,
+    # Use a custom formatter class to allow our --os options to display properly in --help
+    # Use max_help_position to increase the width of the left column in --help
+    formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(prog, max_help_position=40),
+    epilog=os_options_help_text,
 )
+
+# Configuration
 
 parser.add_argument(
     '--os',
-    metavar='',
     help='The OS definition to use (see below), which will reference `deploy/os/{--os}.opts` for additional parameters to this script and `deploy/os/{--os}.env` for additional environment variables. This will also change the default for --workspace to be `workspace-{--os}/`',
 )
 
 parser.add_argument(
-    '--test',
-    action='store_true',
-    # python 3.9+
-    # action=argparse.BooleanOptionalAction,
-    help='',
+    '--toolchain',
+    help='Path to the CMake toolchain file used for cross-compilation. This will be relative to the deploy/toolchains/ directory unless an absolute path is given.'
 )
 
 parser.add_argument(
-    '--no-test',
-    action='store_true',
-    help='',
-)
-
-parser.add_argument(
-    '-G', '--generator',
-    metavar='',
-    help='CMake Generator, defaults to "Unix Makefiles", see `cmake --help` for more options.',
+    '--workspace',
+    help='The directory that will contain the default build/install directories and helper scripts, defaults to `workspace/` or `workspace-{--os}/` if --os is specified. This will be relative to the source directory unless an absolute path is given.',
 )
 
 parser.add_argument(
@@ -87,41 +84,130 @@ parser.add_argument(
     const=os.cpu_count(),
     default=1,
     metavar='',
-    help='The number of parallel files to build or tests to run, defaults to `nproc` if no value is specified.',
+    help='The number of parallel files to build or tests to run, defaults to `os.cpu_count()` if no value is specified.',
 )
 
 parser.add_argument(
-    '--env-file',
-    metavar='',
-    help='A shell script that will be used to determine the additional environment to add while running. This is to `deploy/os/{--os}.env` if --os is set and the file exists.',
+    '--setup-vscode',
+    action='store_true',
+    help='Configure `.vscode/settings.json` for use with the CMake and clangd extensions, and generate `.vscode/launch.json` entries for each test.',
+)
+
+# Stages
+
+# TODO: Test with python < 3.9
+try:
+    boolean_action = argparse.BooleanOptionalAction
+except:
+    # Hack for python < 3.9
+    boolean_action = 'store_true'
+
+parser.add_argument(
+    '--configure',
+    action=boolean_action,
+    default=False,
+    help='Configures CMake in `{--workspace}/build`, enabled automatically if CMakeCache.txt is not found.'
 )
 
 parser.add_argument(
-    '--workspace',
-    metavar='',
-    help='The directory that will contain the default build/install directories and helper scripts, defaults to `workspace/` or `workspace-{--os}/` if --os is specified.',
+    '--build',
+    action=boolean_action,
+    default=True,
+    help='Builds the project in `{--workspace}/build`.'
+)
+
+# Hack for python < 3.9
+if boolean_action == 'store_true':
+    parser.add_argument(
+        '--no-build',
+        action='store_true',
+        default=False,
+    )
+
+parser.add_argument(
+    '--clean',
+    action='store_true',
+    default=False,
+    help='Cleans the project in `{--workspace}/build` before building.'
 )
 
 parser.add_argument(
-    '--source',
-    metavar='',
-    help='The directory containing the source files, used for CMAKE_SOURCE_DIR, defaults to the directory above this file.',
-)
-
-parser.add_argument(
-    '--buildroot',
-    metavar='',
-    help='The directory that will contain the intermediate files, used for CMAKE_BINARY_DIR, defaults to `{--workspace}/build/`.',
+    '--test',
+    action=boolean_action,
+    default=False,
+    help='Run all tests and report the results. Use -j/--parallel to run tests in parallel. Use -R/--test-regex or --rerun-failed to control which tests are run.',
 )
 
 parser.add_argument(
     '--install',
-    metavar='',
-    help='The directory that will contain the full usr/local/mdsplus installation, used for CMAKE_INSTALL_PREFIX, defaults to `{--workspace}/install/`.',
+    action=boolean_action,
+    default=False,
+    help='Install into `{--workspace}/install/usr/local/mdsplus`. Implied by --package. Sets CMAKE_INSTALL_PREFIX.',
+)
+
+parser.add_argument(
+    '--package',
+    action=boolean_action,
+    default=False,
+    help='Generates packages in `{--workspace}/package`.'
+)
+
+# Testing
+
+parser.add_argument(
+    '--valgrind',
     nargs='?',
     const=True,
-    default=True,
+    help='Specify valgrind tools to run for supported tests. An additional iteration of each test will be added for each tool. Leave blank to use all default tools. Cannot be used with --sanitize. Sets ENABLE_VALGRIND and VALGRIND_TOOLS.'
 )
+
+parser.add_argument(
+    '--sanitize',
+    help='Configures the build to use the specified sanitizer flavor. Cannot be used with --valgrind. Sets ENABLE_SANITIZE.',
+)
+
+parser.add_argument(
+    '--rerun-failed',
+    action='store_true',
+    default=False,
+    help='Use with --test to run only the tests that previously failed.',
+)
+
+parser.add_argument(
+    '-R', '--test-regex',
+    help='Use with --test to run only the tests that match this regex.',
+)
+
+parser.add_argument(
+    '--output-junit',
+    action='store_true',
+    default=False,
+    help='Use with --test to store jUnit-style test results in `{--workspace}/mdsplus-junit.xml`.',
+)
+
+parser.add_argument(
+    '--junit-suite-name',
+    help='Use with --output-junit to set the name of the jUnit test suite. Defaults to "mdsplus" (or --os if specified).',
+)
+
+# Packaging
+
+parser.add_argument(
+    '--distname',
+    help='Used by --package to determine the directory to generate repository information into, `{--workspace}/dist/{--distname}.',
+)
+
+parser.add_argument(
+    '--platform',
+    help='The platform type to build for. This controls how directories are named in the build folder, in preparation for packaging for a given platform type. Sets PLATFORM.',
+)
+
+parser.add_argument(
+    '--arch',
+    help='The architecture to label packages as. This should be used in conjunction with --toolchain when cross-compiling. Will attempt to autodetect from the current architecture.'
+)
+
+# Docker
 
 parser.add_argument(
     '--dockerpull',
@@ -141,192 +227,403 @@ parser.add_argument(
     help='Create and use this docker network when creating the docker container.',
 )
 
-parser.add_argument(
-    '--platform',
-    metavar='',
-    help='',
-)
+args, cmake_args = parser.parse_known_args()
 
-parser.add_argument(
-    '--distname',
-    metavar='',
-    help='',
-)
+if args.os is not None:
 
-parser.add_argument(
-    '--arch',
-    metavar='',
-    help='',
-)
-
-parser.add_argument(
-    '--valgrind',
-    metavar='',
-    help='',
-    nargs='?',
-    const=True,
-)
-
-parser.add_argument(
-    '--sanitize',
-    metavar='',
-    help='',
-)
-
-parser.add_argument(
-    '--rerun-failed',
-    metavar='',
-    help='',
-    nargs='?',
-    const=True,
-)
-
-parser.add_argument(
-    '--output-junit',
-    metavar='',
-    help='',
-    nargs='?',
-    const=True,
-)
-
-parser.add_argument(
-    '--junit-suite-name',
-    metavar='',
-    help='',
-)
-
-###
-### Helper functions
-###
-
-def build_command_line(args):
-    build_args = []
-    for name, value in args.items():
-        if value is not None:
-            if type(value) is bool:
-                if value:
-                    build_args.append(f'--{name}')
-            else:
-                build_args.append(f'--{name}={value}')
-    return build_args
-
-def parse_cmake_cache(filename):
-    settings = {}
-    try:
-        with open(filename, 'rt') as f:
-            for line in f.readlines():
-                if line.startswith('//'):
-                    continue
-                try:
-                    key, value = line.strip().split('=')
-                    name, type = key.split(':')
-                    settings[name] = value
-                except:
-                    continue
-    except FileNotFoundError:
-        pass
-    return settings
-
-###
-### Parse arguments from the command line and deploy/os/{os}.opts, if --os= is set
-###
-
-cli_args, unknown_args = parser.parse_known_args()
-cmake_args = unknown_args
-
-if cli_args.os is not None:
-
-    opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.opts')
+    opts_filename = os.path.join(deploy_dir, f'os/{args.os}.opts')
 
     if not os.path.exists(opts_filename):
-        print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
+        print(f'Unsupported --os={args.os}, ensure that deploy/os/{args.os}.opts exists.')
         exit(1)
 
     os_alias = None
     if os.path.islink(opts_filename):
         opts_filename = os.path.realpath(opts_filename)
-        os_alias = os.path.basename(opts_filename)[:-5] # .removesuffix('.opts')
+        os_alias = os.path.basename(opts_filename).replace('.opts', '')
     
     opts = open(opts_filename).read().strip().split()
 
-    env_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.env')
-    if os.path.exists(env_filename):
-        opts.append(f'--env-file={env_filename}')
-    else:
-        env_filename = os.path.join(deploy_dir, f'os/{cli_args.os}-{platform.machine()}.env')
-        if os.path.exists(opts_filename):
-            opts.append(f'--env-file={env_filename}')
+    # TODO: env files
 
-    cli_args, unknown_args = parser.parse_known_args(args=opts)
-    cmake_args = unknown_args
+    opts_args, cmake_opts_args = parser.parse_known_args(args=opts)
 
-    # To allow command-line arguments to override .opts file arguments, we need to parse them after the .opts file
-    cli_args, unknown_args = parser.parse_known_args(namespace=cli_args)
-    cmake_args.extend(unknown_args)
+    # To allow command-line arguments to override those from .opts files, we need to parse them again after parsing the .opts ones
+    args, cmake_args = parser.parse_known_args(namespace=opts_args)
+    cmake_args = cmake_opts_args + cmake_args
 
     if os_alias is not None:
         print()
-        print(f"Using aliased --os={cli_args.os} -> --os={os_alias}")
-        cli_args.os = os_alias
+        print(f'Using aliased --os={args.os} -> --os={os_alias}')
+        
+        args.os = os_alias
 
-###
-### Convert the arguments to a dictionary and fill in computed values
-###
+# Defaults
 
-args = dict()
-
-for name in vars(cli_args):
-    # argparse replaces - with _ in the names
-    original_name = name.replace('_', '-')
-    args[original_name] = getattr(cli_args, name)
-
-# TODO: Remove and replace with argparse.BooleanOptionalAction
-if args['no-test']:
-    args['test'] = False
-
-if args['valgrind'] == '':
-    args['valgrind'] = None
-
-if args['sanitize'] == '':
-    args['sanitize'] = None
-
-if args['output-junit']:
-    if args['junit-suite-name'] is None:
-        args['junit-suite-name'] = args['os']
-
-if args['dockernetwork'] == '':
-    args['dockernetwork'] = None
-
-if args['source'] is None:
-    args['source'] = root_dir
-
-if args['workspace'] is None:
-    if args['os'] is None:
-        args['workspace'] = 'workspace/'
+if args.workspace is None:
+    if args.os is None:
+        args.workspace = 'workspace'
     else:
-        args['workspace'] = f"workspace-{args['os']}/"
+        args.workspace = f'workspace-{args.os}'
 
-# Convert the workspace to an absolute path
-if not os.path.isabs(args['workspace']):
-    args['workspace'] = os.path.join(root_dir, args['workspace'])
+if not os.path.isabs(args.workspace):
+    args.workspace = os.path.join(source_dir, args.workspace)
 
-os.makedirs(args['workspace'], exist_ok=True)
+if args.output_junit and args.junit_suite_name is None:
+    if args.os is None:
+        args.junit_suite_name = 'mdsplus'
+    else:
+        args.junit_suite_name = args.os
 
-if not args['buildroot']:
-    args['buildroot'] = os.path.join(args['workspace'], 'build')
+# Hack for python < 3.9
+if boolean_action == 'store_true':
+    if args.no_build:
+        args.build = False
 
-os.makedirs(args['buildroot'], exist_ok=True)
+# Force --install if --package is specified
+if args.package:
+    args.install = True
 
-# If no install path is specified, use the default
-if args['install'] == True:
-    args['install'] = os.path.join(args['workspace'], 'install/usr/local/mdsplus')
+# Only autodetect --platform on the actual system where packages will be built
+if args.platform is None and args.dockerimage is None:
+    if platform.system() == 'Windows':
+        args.platform = 'windows'
+    if platform.system() == 'Darwin':
+        args.platform = 'macosx'
+    elif os.path.exists('/etc/os-release'):
+        id_list = []
+        with open('/etc/os-release', 'rt') as file:
+            lines = file.readlines()
+            for line in lines:
+                key, value = line.replace('"', '').split('=', maxsplit=1)
+                if key in [ 'ID', 'ID_LIKE' ]:
+                    id_list.extend(value.split())
 
-os.makedirs(args['install'], exist_ok=True)
+        if 'debian' in id_list:
+            args.platform = 'debian'
+        elif 'rhel' in id_list:
+            args.platform = 'redhat'
+        elif 'alpine' in id_list:
+            args.platform = 'alpine'
 
-if args['dockerimage'] is not None:
+# Directories
+
+build_dir = os.path.join(args.workspace, 'build')
+if args.build:
+    os.makedirs(build_dir, exist_ok=True)
+
+install_dir = os.path.join(args.workspace, 'install')
+usr_local_mdsplus_dir = os.path.join(install_dir, 'usr/local/mdsplus')
+if args.install:
+    os.makedirs(install_dir, exist_ok=True)
+    os.makedirs(usr_local_mdsplus_dir, exist_ok=True)
+
+testing_dir = os.path.join(args.workspace, 'testing')
+if args.test:
+    os.makedirs(testing_dir, exist_ok=True)
+
+packages_dir = os.path.join(args.workspace, 'packages')
+dist_dir = os.path.join(args.workspace, 'dist')
+if args.package:
+    os.makedirs(packages_dir, exist_ok=True)
+    os.makedirs(dist_dir, exist_ok=True)
+
+# System Configuration
+
+cmake = shutil.which('cmake')
+if cmake is None and args.dockerimage is not None:
+    print('Unable to find `cmake`')
+    exit(1)
+
+ctest = shutil.which('ctest')
+if ctest is None and args.dockerimage is not None:
+    print('Unable to find `ctest`')
+    exit(1)
+
+git_executable = shutil.which('git')
+if git_executable is None and args.dockerimage is not None:
+    print('Unable to find `git`')
+    exit(1)
+
+# Utilities
+
+def git(command):
+    proc = subprocess.Popen(
+        [ git_executable ] + command.split(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
+
+    stdout, _ = proc.communicate()
+    return stdout.decode().strip()
+
+def build_command_line():
+    global args
+
+    cli_args = []
+
+    # You can't iterate over a argparse.Namespace, so we use vars()
+    for name in vars(args):
+
+        # Equivalent to calling args.{name}
+        value = getattr(args, name)
+        
+        # argparse replaces '-' with '_', so we reverse this process
+        name = name.replace('_', '-')
+
+        if value is not None:
+            if type(value) is bool:
+                if value:
+                    cli_args.append(f'--{name}')
+                # elif name in ['configure', 'build', 'test', 'install', 'package']:
+                elif name in ['build']:
+                    cli_args.append(f'--no-{name}')
+            else:
+                cli_args.append(f'--{name}={value}')
+
+    return cli_args
+
+# CMake Configuration
+
+cmake_cache_filename = os.path.join(build_dir, 'CMakeCache.txt')
+
+def parse_cmake_cache():
+    global build_dir, cmake_cache_filename
+
+    cache = {}
+    try:
+        with open(cmake_cache_filename, 'rt') as f:
+            for line in f.readlines():
+                line = line.strip()
+                if len(line) == 0 or line.startswith(('//', '#', )) or '-ADVANCED' in line:
+                    continue
+                try:
+                    key, value = line.split('=', maxsplit=1)
+                    name, type = key.split(':', maxsplit=1)
+                    cache[name] = value
+                except:
+                    continue
+    except FileNotFoundError:
+        pass
+
+    return cache
+
+cmake_cache = parse_cmake_cache()
+
+# --fresh tells CMake to disregard the current cache and start over, so we need to do the same
+if '--fresh' in cmake_args:
+    cmake_cache = {}
+
+def check_add_cmake_arg(arg):
+    global args, cmake_args, cmake_cache
+
+    if arg.startswith('-D') and '=' in arg:
+        name, value = arg[2:].split('=', maxsplit=1)
+
+        # Skip arguments that are already set in the cache
+        if name in cmake_cache and cmake_cache[name] == value:
+            return
+    
+    if arg not in cmake_args:
+        args.configure = True
+        cmake_args.append(arg)
+
+# Attempt to filter out the arguments that are already set in the CMake cache
+cmake_args_unfiltered = cmake_args.copy()
+cmake_args = []
+for arg in cmake_args_unfiltered:
+    check_add_cmake_arg(arg)
+
+# If there is no CMake cache, we need to --configure
+if not args.configure and len(cmake_cache) == 0:
+    args.configure = True
+
+if args.toolchain is not None:
+    check_add_cmake_arg(f"--toolchain={args.toolchain}")
+
+check_add_cmake_arg(f'-DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir}')
+
+if args.platform is not None:
+    check_add_cmake_arg(f'-DPLATFORM={args.platform}')
+
+if args.sanitize is not None and args.valgrind is not None:
+    print()
+    print('It is not recommended to run valgrind with a sanitizer')
+    print()
+
+if args.sanitize:
+    check_add_cmake_arg(f'-DENABLE_SANITIZE={args.sanitize}')
+else:
+    check_add_cmake_arg(f'-DENABLE_SANITIZE=OFF')
+
+if args.valgrind is not None:
+    check_add_cmake_arg('-DENABLE_VALGRIND=ON')
+
+    if type(args.valgrind) is str:
+        check_add_cmake_arg(f'-DVALGRIND_TOOLS={args.valgrind}')
+else:
+    check_add_cmake_arg('-DENABLE_VALGRIND=OFF')
+
+# Force --configure if no CMakeCache.txt is found or if new CMake options are specified
+if not args.configure and len(cmake_args) != 0:
+        args.configure = True
+
+# Stages
+
+def do_setup_vscode():
+    global source_dir, build_dir
+        
+    # Force a reconfigure to generate launch.json targets
+    args.configure = True
+    cmake_args.append('-DGENERATE_VSCODE_LAUNCH_JSON=ON')
+    # See do_generate_vscode_launch_json() for the running of the 'generate-vscode-launch-json' target
+
+    # Update .vscode/settings.json
+
+    vscode_directory = os.path.join(source_dir, '.vscode/')
+    vscode_settings_filename = os.path.join(vscode_directory, 'settings.json')
+
+    os.makedirs(vscode_directory, exist_ok=True)
+
+    vscode_settings = {}
+    if os.path.exists(vscode_settings_filename):
+        with open(vscode_settings_filename, 'rt') as file:
+            try:
+                vscode_settings = json.load(file)
+            except:
+                pass
+
+    # Configure the CMake plugin to find our build directory
+    vscode_settings['cmake.buildDirectory'] = build_dir
+
+    # Disable the C/C++ plugin's intellisense
+    vscode_settings['C_Cpp.intelliSenseEngine'] = 'disabled'
+
+    clangd_argument_map = {}
+
+    if 'clangd.arguments' in vscode_settings:
+        for argument in vscode_settings['clangd.arguments']:
+            key, value = argument.split('=', maxsplit=1)
+            clangd_argument_map[key] = value
+
+    # Disable clangd's terrible automatic #include insertion
+    clangd_argument_map['--header-insertion'] = 'never'
+
+    # Configure clangd to find our compile_commands.json
+    clangd_argument_map['--compile-commands-dir'] = build_dir
+
+    vscode_settings['clangd.arguments'] = [ f'{k}={v}' for k, v in clangd_argument_map.items() ]
+
+    with open(vscode_settings_filename, 'wt') as file:
+        json.dump(vscode_settings, file, indent=4)
+    
+    import atexit
+    atexit.register(print, '\nVisual Studio Code Settings Configured, Run "clangd: Restart language server" to apply')
+
+def do_interactive():
+    global args, cmake_args
+
+    do_install_filename = os.path.join(args.workspace, 'do-configure.sh')
+    with open(do_install_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{build_dir}"\n')
+        file.write(f"{cmake} {source_dir} -DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir} {' '.join(cmake_args)} \"$@\"\n")
+    os.chmod(do_install_filename, 0o755)
+
+    do_install_filename = os.path.join(args.workspace, 'do-build.sh')
+    with open(do_install_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{build_dir}"\n')
+        file.write(f'{cmake} --build "{build_dir}" "$@"\n')
+    os.chmod(do_install_filename, 0o755)
+
+    do_install_filename = os.path.join(args.workspace, 'do-test.sh')
+    with open(do_install_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{source_dir}"\n')
+        file.write(f'{sys.executable} "{__file__}" --workspace="{args.workspace}" --no-configure --no-build --test "$@"\n')
+    os.chmod(do_install_filename, 0o755)
+
+    do_install_filename = os.path.join(args.workspace, 'do-install.sh')
+    with open(do_install_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'{cmake} --install "{build_dir}" "$@"\n')
+    os.chmod(do_install_filename, 0o755)
+    
+    setup_filename = os.path.join(args.workspace, 'setup.sh')
+    with open(setup_filename, 'wt') as file:
+        file.write('#!/bin/bash\n') # TODO: Remove?
+        file.write(f'export MDSPLUS_DIR=\"{usr_local_mdsplus_dir}\"\n')
+        file.write('source $MDSPLUS_DIR/setup.sh\n')
+    os.chmod(setup_filename, 0o755)
+
+    shell = '/bin/bash'
+    # TODO: Support other shells?
+
+    reset = '\\e[0m'
+    purple = '\\e[0;35m'
+    green = '\\e[0;32m'
+    turquoise = '\\e[0;36m'
+
+    git_tag_command = 'git describe --abbrev=0 --tag'
+
+    # Override shell prompt to ease confusion
+    # \w is the "current working directory"
+    os.environ['PS1'] = f'\n{purple}[interactive]{reset} {green}\\w{reset} {turquoise}($({git_tag_command})){reset}\n\\$ '
+
+    print()
+    print('Spawning a new shell, type `exit` to leave.')
+
+    # --login and --noprofile allow for $PS1 to be set and not overwritten
+    subprocess.run(
+        [ shell, '--login', '--noprofile' ],
+        cwd=args.workspace,
+    )
+
+def do_docker():
+
+    docker = shutil.which('docker')
+    if docker is None:
+        print('Unable to find `docker`')
+        exit(1)
+
+    if args.dockerpull:
+        print()
+        print(f'Pulling docker image {args.dockerimage}')
+
+        subprocess.run([ docker, 'pull', args.dockerimage ])
+    
+    docker_args = [
+        # Enable colors
+        '--tty',
+        # Mount the workspace and source directory as absolute paths inside the docker
+        f'--volume={args.workspace}:{args.workspace}',
+        f'--volume={source_dir}:{source_dir}',
+        # Working directory
+        f'--workdir={args.workspace}',
+    ]
+
+    if args.dockernetwork is not None:
+        subprocess.run([ docker, 'network', 'create', args.dockernetwork ])
+        # TODO: error checking
+        docker_args.append(f'--network={args.dockernetwork}')
+
+    # TODO: Improve errors from using --user
+    # if platform.system() != 'Windows':
+        # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
+    
+    if platform.system() != 'Windows':
+        docker_args.append(f'--user={os.getuid()}:{os.getgid()}')
+
+    docker_args.append(args.dockerimage)
+
+    print()
+    print('Docker arguments:')
+    for arg in docker_args:
+        print(f"    {arg}")
 
     passthrough_args = []
-    for arg in build_command_line(args):
+    for arg in build_command_line():
 
         # We don't want the .opts files to be parsed recursively
         if arg.startswith('--os='):
@@ -335,67 +632,36 @@ if args['dockerimage'] is not None:
         # We don't want docker to run recursively
         if arg.startswith('--docker'):
             continue
-
+        
         passthrough_args.append(arg)
 
-    if args['dockerpull']:
-        # TODO: Make this visible to the user
-        subprocess.run([ 'docker', 'pull', args['dockerimage'] ])
+    passthrough_args.extend(cmake_args)
 
-    docker_command = f"python3 {args['source']}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
+    # TODO: Detect python3 instead of assuming it?
+    command = f"python3 {__file__} {' '.join(passthrough_args)}"
 
-    # TODO: Improve
-    # import platform
-    # if platform.system() != 'Windows':
-        # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
-    
-    docker_args = [
-        f"--volume={args['workspace']}:{args['workspace']}",
-        f"--volume={args['source']}:{args['source']}", # TODO: Improve?
-        f"--volume={args['buildroot']}:{args['buildroot']}",
-        f"--volume={args['install']}:{args['install']}",
-        f"--workdir={args['workspace']}",
-        args['dockerimage'],
-    ]
+    docker_entrypoint = [ '/bin/bash', '-c', command ]
 
-    print()
-    print('Docker arguments:')
-    for arg in docker_args:
-        print(f"    {arg}")
-    print()
+    if args.interactive:
 
-    docker_args.extend([
-        '/bin/bash', '-c', docker_command
-    ])
-
-    # groupadd -g os.getgid() group_name
-    # useradd -u os.getuid() -g group_name -h /workspace user_name
-
-    import platform
-    if platform.system() != 'Windows':
-        docker_args = [ '--user', f"{os.getuid()}:{os.getgid()}" ] + docker_args
-
-    if args['dockernetwork'] is not None:
-        subprocess.run([ 'docker', 'network', 'create', args['dockernetwork'] ])
-        # TODO: error checking
-        docker_args = [ '--network', args['dockernetwork'] ] + docker_args
-
-    if args['interactive']:
         subprocess.run(
             [
-                'docker', 'run',
+                docker, 'run',
                 '--interactive',
-                '--tty',
                 '--rm',
-            ] + docker_args
+            ] + docker_args + docker_entrypoint,
         )
+
+        if args.dockernetwork is not None:
+            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
+
     else:
+
         result = subprocess.run(
             [
-                'docker', 'run',
+                docker, 'run',
                 '--detach',
-                '--tty',
-            ] + docker_args,
+            ] + docker_args + docker_entrypoint,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -408,7 +674,7 @@ if args['dockerimage'] is not None:
 
         docker_log = subprocess.Popen(
             [
-                'docker', 'logs',
+                docker, 'logs',
                 '--follow',
                 '--timestamps',
                 container_id
@@ -418,15 +684,16 @@ if args['dockerimage'] is not None:
         )
 
         def kill_docker(signum, frame):
-            print(f'\nKilling docker container {container_id}')
+            print()
+            print(f'Killing docker container {container_id}')
             
-            subprocess.run([ 'docker', 'kill', container_id ])
-            subprocess.run([ 'docker', 'rm', container_id ])
+            subprocess.run([ docker, 'kill', container_id ])
+            subprocess.run([ docker, 'rm', container_id ])
 
-            if args['dockernetwork'] is not None:
-                subprocess.run([ 'docker', 'network', 'rm', args['dockernetwork'] ])
+            if args.dockernetwork is not None:
+                subprocess.run([ 'docker', 'network', 'rm', args.dockernetwork ])
 
-            exit(1)
+            exit(0)
 
         signal.signal(signal.SIGINT, kill_docker)
 
@@ -441,8 +708,7 @@ if args['dockerimage'] is not None:
 
         result = subprocess.run(
             [
-                'docker',
-                'inspect',
+                docker, 'inspect',
                 container_id,
                 '--format="{{.State.ExitCode}}"'
             ],
@@ -450,444 +716,477 @@ if args['dockerimage'] is not None:
             stderr=subprocess.PIPE,
         )
 
-        # TODO: Improve
         exit_code = int(result.stdout.decode().strip().strip('"'))
         
-        subprocess.run([ 'docker', 'rm', container_id ])
+        subprocess.run([ docker, 'rm', container_id ])
 
-        if args['dockernetwork'] is not None:
-            subprocess.run([ 'docker', 'network', 'rm', args['dockernetwork'] ])
+        if args.dockernetwork is not None:
+            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
 
-        if exit_code != 0:
-            exit(exit_code)
+        exit(exit_code)
 
-else:
+def do_configure():
+    global cmake_args, cmake_cache, cmake, source_dir, build_dir
 
-    shell = '/bin/bash'
-    if 'SHELL' in os.environ:
-        shell = os.environ['SHELL']
-
-    if args['env-file'] and os.path.exists(args['env-file']):
-        result = subprocess.run(
-            [ shell, '-c', f". {args['env-file']}; env" ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            print(f"Failed to source {args['env-file']}: {result.stderr.decode()}")
-            exit(1)
-
-        new_environ = {}
-        for line in result.stdout.decode().splitlines():
-            name, value = line.split('=', maxsplit=1)
-            if name == '_':
-                continue
-            new_environ[name] = value
-        
-        env_changes = new_environ.copy()
-        for name, value in new_environ.items():
-            if name in os.environ:
-                if new_environ[name] == os.environ[name]:
-                    del env_changes[name]
-
-        os.environ.update(env_changes)
-
-        print('Sourced the following environment variables:')
-        for name, value in env_changes.items():
-            print(f'    {name}: {value}')
-        print()
-
-    # TODO: Improve
-    cmake = shutil.which('cmake')
-    if cmake is None:
-        print('Unable to find cmake')
-        exit(1)
-
-    ctest = shutil.which('ctest')
-    if ctest is None:
-        print('Unable to find ctest')
-        exit(1)
-
-    # TODO: Improve
-    cmake_cache_filename = os.path.join(args['buildroot'], 'CMakeCache.txt')
-    cmake_cache = parse_cmake_cache(cmake_cache_filename)
-
-    current_generator = None
-    if 'CMAKE_GENERATOR' in cmake_cache:
-        current_generator = cmake_cache['CMAKE_GENERATOR']
-        
-    if args['generator'] is None:
-        args['generator'] = current_generator
-    
-    if args['generator'] != current_generator:
-        # Perform a clean configure
-        cmake_args.append('--fresh')
-
-    if args['generator'] is None:
-        args['generator'] = 'Unix Makefiles'
-
-    # TODO: Add more
-    build_command = f'{cmake} --build .'
-    if args['generator'] == 'Unix Makefiles':
-        build_command = f"make -j{args['parallel']}"
-    elif args['generator'] == 'Ninja':
-        build_command = f"ninja -j{args['parallel']}"
-
-    if args['install'] is not None:
-        install_command = f"{build_command} install"
-
-    cmake_args = [ '-G', args['generator'] ] + cmake_args
-
-    if args['sanitize'] is not None and args['valgrind'] is not None:
-        print()
-        print('It is not recommended to run valgrind with a sanitizer')
-        print()
-
-    if args['sanitize'] is not None:
-        flavor = args['sanitize']
-        cmake_args.append(f'-DENABLE_SANITIZE={flavor}')
-
-    if args['valgrind'] is not None:
-        cmake_args.append('-DENABLE_VALGRIND=ON')
-
-        if args['valgrind'] != True:
-            cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
-    else:
-        cmake_args.append('-DENABLE_VALGRIND=OFF')
+    # If we have not already configured
+    if 'CMAKE_GENERATOR' not in cmake_cache:
+        # And the user has not specified a generator
+        if not any(arg.startswith('-G') for arg in cmake_args):
+            # Try to use Ninja if it is available
+            ninja = shutil.which('ninja')
+            if ninja is not None:
+                cmake_args.append('-GNinja')
 
     print()
     print('Combined build arguments:')
-    for arg in build_command_line(args):
+    for arg in build_command_line():
         print(f"    {arg}")
     print()
-
-    if args['test']:
-        cmake_args.append('-DBUILD_TESTING=ON')
-
-    if args['install'] is not None:
-        cmake_args.append(f"-DCMAKE_INSTALL_PREFIX={args['install']}")
 
     print('CMake arguments:')
     for arg in cmake_args:
         print(f"    {arg}")
     print()
 
-    if args['interactive']:
+    print('Configuring')
+    result = subprocess.run(
+        [ cmake, source_dir ] + cmake_args,
+        cwd=build_dir,
+    )
 
-        # TODO: Improve
-        cmake_args_env = ''
-        for arg in cmake_args:
-            if ' ' in arg:
-                cmake_args_env += f'\'{arg}\' '
-            else:
-                cmake_args_env += f'{arg} '
-                
+    if result.returncode != 0:
+        print('--configure failed')
+        exit(1)
 
-        configure_filename = os.path.join(args['workspace'], 'do-configure.sh')
-        with open(configure_filename, 'wt') as file:
-            file.write('#!/bin/bash\n')
-            file.write(f"cd {args['buildroot']}\n")
-            file.write(f"{cmake}  {cmake_args_env} \"$@\" {args['source']}\n")
+    cmake_cache = parse_cmake_cache()
 
-        os.chmod(configure_filename, 0o755)
+def do_build():
+    global args, cmake_cache, build_dir
 
-        build_filename = os.path.join(args['workspace'], 'do-build.sh')
-        with open(build_filename, 'wt') as file:
-            file.write('#!/bin/bash\n')
-            file.write(f"cd {args['buildroot']}\n")
-            file.write(f"{build_command} \"$@\"\n")
-            
-        os.chmod(build_filename, 0o755)
+    # This will work everywhere, but we can't inform the number of concurrent jobs
+    build_command = [ cmake, '--build', build_dir ]
 
-        if args['install'] is not None:
-            install_filename = os.path.join(args['workspace'], 'do-install.sh')
-            with open(install_filename, 'wt') as file:
-                file.write('#!/bin/bash\n')
-                file.write(f"cd {args['buildroot']}\n")
-                file.write(f"{install_command} \"$@\"\n")
+    # If we know the generator, we can infer the build command
+    if 'CMAKE_GENERATOR' in cmake_cache:
+        generator = cmake_cache['CMAKE_GENERATOR']
 
-            os.chmod(install_filename, 0o755)
+        if generator == 'Unix Makefiles':
+            make = shutil.which('make')
+            if make is not None:
+                build_command = [ make, f'-j{args.parallel}' ]
 
-            setup_filename = os.path.join(args['workspace'], 'setup.sh')
-            with open(setup_filename, 'wt') as file:
-                file.write('#!/bin/bash\n')
-                file.write(f"export MDSPLUS_DIR={args['install']}\n")
-                file.write(f"source $MDSPLUS_DIR/setup.sh\n")
-                
-            os.chmod(setup_filename, 0o755)
+        elif generator == 'Ninja':
+            ninja = shutil.which('ninja')
+            if ninja is not None:
+                build_command = [ ninja, f'-j{args.parallel}' ]
 
-
-        # TODO: Check file locations as well?
-        # TODO: Better handle environments where setup.sh is automatically sourced
-        # TODO: Python?
-        if 'MDSPLUS_DIR' in os.environ:
-            mdsplus_dir = os.environ['MDSPLUS_DIR']
-
-            print('Detected $MDSPLUS_DIR, cleaning environment variables to allow sourcing setup.sh')
-
-            modified_envs = []
-
-            for key, value in os.environ.items():
-                if mdsplus_dir in value:
-
-                    modified_envs.append(f"${key}")
-
-                    sep = os.pathsep
-                    if key == 'MDS_PATH' or key.endswith('_path'):
-                        sep = ';'
-
-                    parts = []
-                    for part in value.split(sep):
-                        if mdsplus_dir not in part:
-                            parts.append(part)
-
-                    if len(parts) > 0:
-                        os.environ[key] = sep.join(parts)
-                    else:
-                        del os.environ[key]
-
-            modified_envs = ', '.join(modified_envs)
-            print(f"    Modified: {modified_envs}")
-            print()
-
-            # For systems where setup.sh is automatically sourced
-            os.environ['MDSPLUS_DIR'] = args['install']
-            
-        print('Spawning a new shell, type `exit` to leave.')
-        print()
-
-        subprocess.run(
-            [ shell ],
-            cwd=args['workspace'],
+    if args.clean:
+        print('Cleaning')
+        result = subprocess.run(
+            build_command + [ 'clean' ],
+            cwd=build_dir,
         )
-    
-    else:
+
+        if result.returncode != 0:
+            print('--clean failed')
+            exit(1)
+
+    print('Building')
+    result = subprocess.run(
+        build_command,
+        cwd=build_dir,
+    )
+
+    if result.returncode != 0:
+        print('--build failed')
+        exit(1)
+
+def do_generate_vscode_launch_json():
+    global cmake, build_dir
+
+    # Run the custom target to generate .vscode/launch.json
+    result = subprocess.run(
+        [ cmake, '--build', build_dir, '--target', 'generate-vscode-launch-json' ],
+        cwd=build_dir,
+    )
         
-        result = subprocess.run(
-            [ cmake ] + cmake_args + [ args['source'] ],
-            cwd=args['buildroot'],
-        )
+    if result.returncode != 0:
+        print('--setup-vscode failed')
+        exit(1)
 
-        if result.returncode != 0:
-            print('CMake Configure failed')
-            exit(result.returncode)
+def do_test():
+    global args, build_dir, testing_dir
 
-        result = subprocess.run(
-            [
-                shell, '-c',
-                build_command
-            ],
-            cwd=args['buildroot'],
-        )
+    print('Testing')
 
-        if result.returncode != 0:
-            print('CMake Build failed')
-            exit(result.returncode)
+    # TODO: Move to testing_dir?
+    test_data_filename = os.path.join(args.workspace, 'mdsplus-test.json')
 
-        if args['install'] is not None:
-            subprocess.run(
-                [
-                    shell, '-c',
-                    install_command
-                ],
-                cwd=args['buildroot'],
+    result = subprocess.run(
+        [ ctest, '-N', '--show-only=json-v1' ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=build_dir,
+    )
+
+    if result.returncode != 0:
+        print('Failed to retrieve list of available tests, have you built yet?')
+        exit(1)
+
+    test_queue = []
+    test_data = json.loads(result.stdout.decode())
+
+    for i, test in enumerate(test_data['tests']):
+        test_queue.append({
+            'index': i + 1,
+            'name': test['name'],
+        })
+
+    start_time = datetime.now()
+    total_time_test = 0
+    test_count = len(test_queue)
+
+    running_tests = []
+    passed_tests = {}
+    failed_tests = {}
+
+    def stop_testing(signum, frame):
+        # Clear the test queue
+        test_queue.clear()
+
+        # Kill all running tests
+        for test in running_tests:
+            print(f"Killing {test['name']}")
+            test['process'].kill()
+
+    signal.signal(signal.SIGINT, stop_testing)
+
+    if args.rerun_failed:
+        print('Re-Running failed tests')
+
+        try:
+            # Preemptively "pass" the tests that previously passed
+            with open(test_data_filename, 'rt') as file:
+                old_tests = json.loads(file.read())
+                # We cannot modify a list while iterating over it, so use a copy
+                for test in test_queue.copy():
+                    if test['name'] in old_tests.keys():
+                        old_test = old_tests[test['name']]
+                        if old_test['passed']:
+                            test_queue.remove(test)
+                            passed_tests[test['name']] = old_test
+        except:
+            print(f'Failed to parse {test_data_filename}')
+    
+    test_regex = None
+    if args.test_regex is not None:
+        import re
+        test_regex = re.compile(f".*{args.test_regex}.*")
+        # TODO: Error handling
+
+    while len(test_queue) > 0 or len(running_tests) > 0:
+
+        # Check on all running tests and remove completed ones from the list
+        for test in running_tests:
+            result = test['process'].poll()
+            if result is not None:
+                running_tests.remove(test)
+
+                test['log_file'].close()
+
+                delta_time = datetime.now() - test['start_time']
+                delta_time = delta_time.total_seconds()
+                total_time_test += delta_time
+
+                passed = (result == 0)
+
+                result_message = 'Success' if passed else 'Failed'
+                print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
+                if not passed:
+                    print(f"[{test['index']:3}/{test_count}] Log File: {test['log_filename']}")
+
+                test_record = {
+                    'index': test['index'],
+                    'log': test['log_filename'],
+                    'time': delta_time,
+                    'passed': passed,
+                }
+
+                if passed:
+                    passed_tests[test['name']] = test_record
+                else:
+                    failed_tests[test['name']] = test_record
+        
+        # Take tests from the queue, start them, and add them to running_tests
+        while len(test_queue) > 0 and len(running_tests) < int(args.parallel):
+            test = test_queue.pop(0)
+
+            if test_regex is not None:
+                if test_regex.match(test['name']) is None:
+                    print(f"Skipping: {test['name']}, does not match the --test-regex")
+                    continue
+            
+            log_filename = os.path.join(testing_dir, f"{test['name']}.log")
+            os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+            log_file = open(log_filename, 'wb')
+
+            print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
+
+            test_start_time = datetime.now()
+
+            test_process = subprocess.Popen(
+                [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                cwd=build_dir,
             )
 
-            fake_setup_filename = os.path.join(args['workspace'], 'setup.sh')
-            with open(fake_setup_filename, 'wt') as file:
-                file.write('#!/bin/sh\n')
-                file.write(f"export MDSPLUS_DIR=\"{args['install']}\"\n")
-                file.write('. $MDSPLUS_DIR/setup.sh\n')
+            running_tests.append({
+                'index': test['index'],
+                'name': test['name'],
+                'process': test_process,
+                'start_time': test_start_time,
+                'log_filename': log_filename,
+                'log_file': log_file,
+            })
 
-            # todo: error checking
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        if args['test']:
-            # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
-            # we iterate over the tests manually.
+    passed_test_count = len(passed_tests)
 
-            TEST_DATA_FILENAME = os.path.join(args['workspace'], 'mdsplus-test.json')
-            JUNIT_FILENAME = os.path.join(args['workspace'], 'mdsplus-junit.xml')
+    percentage = 0
+    if test_count > 0:
+        percentage = math.floor((passed_test_count / test_count) * 100.0)
+    
+    total_time_real = datetime.now() - start_time
+    total_time_real = total_time_real.total_seconds()
 
+    print()
+    print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
+    print()
+    print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
+    print()
+
+    all_tests = dict(passed_tests, **failed_tests)
+
+    with open(test_data_filename, 'wt') as file:
+        file.write(json.dumps(all_tests, indent=2))
+
+    if len(failed_tests) > 0:
+        print("The following tests failed:")
+
+        for name, test in failed_tests.items():
+            log_filename_escaped = test['log'].replace(' ', '\\ ')
+            print(f"    #{test['index']} {name} ({log_filename_escaped})")
+
+        print()
+        print('You can run only these tests by passing --rerun-failed')
+    
+    if args.output_junit:
+        import xml.etree.ElementTree as xml
+
+        root = xml.Element('testsuites')
+        root.attrib['time'] = str(total_time_test)
+        root.attrib['tests'] = str(len(all_tests))
+        root.attrib['failures'] = str(len(failed_tests))
+
+        testsuite = xml.SubElement(root, 'testsuite')
+        testsuite.attrib['time'] = str(total_time_test)
+        testsuite.attrib['name'] = args.junit_suite_name
+
+        for test_name, test in all_tests.items():
+            testcase = xml.SubElement(testsuite, 'testcase')
+            testcase.attrib['name'] = test_name
+            testcase.attrib['time'] = str(test['time'])
+
+            system_out = xml.SubElement(testcase, 'system-out')
+            system_out.text = open(test['log'], 'rt').read()
+
+            if not test['passed']:
+                failure = xml.SubElement(testcase, 'failure')
+                failure.attrib['message'] = 'Failed'
+
+        junit_filename = os.path.join(args.workspace, 'mdsplus-junit.xml')
+        print(f'Writing jUnit XML to {junit_filename}')
+        with open(junit_filename, 'wb') as file:
+            file.write(xml.tostring(root))
+
+def do_install():
+    global args, cmake, build_dir
+
+    # TODO: Add parallel?
+    print('Installing')
+    result = subprocess.run(
+        [ cmake, '--install', '.' ],
+        cwd=build_dir,
+    )
+
+    if result.returncode != 0:
+        print('--install failed')
+        exit(1)
+
+def do_package():
+    global args
+
+    print('Packaging')
+
+    if args.distname is None:
+        print('You must specify --distname when using --package')
+        exit(1)
+    
+    if args.platform is None:
+        print('Unable to autodetect --platform, manually specify --platform to use --package')
+        exit(1)
+
+    # TODO: Improve
+    release_version = git('describe --tag')
+
+    # TODO: Harden
+    branch, major, minor, patch, hash = release_version.split('-', maxsplit=4)
+    branch = branch.removesuffix('_release')
+
+    release_version = f'{major}.{minor}.{patch}'
+
+    # Consider using the actual branch name for flavor instead of "alpha", "stable", or "other"
+    if branch in ['alpha', 'stable']:
+        flavor = branch
+    else:
+        flavor = 'other'
+
+    if args.arch is None:
+        if args.platform == 'debian':
             result = subprocess.run(
-                [
-                    ctest, '-N', '--show-only=json-v1'
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                cwd=args['buildroot'],
+                [ '/usr/bin/dpkg', '--print-architecture' ],
+                stdout=subprocess.PIPE
             )
+            args.arch = result.stdout.decode().strip()
 
-            if result.returncode != 0:
-                # TODO:
-                exit(1)
+        if args.platform == 'redhat':
+            result = subprocess.run(
+                [ '/usr/bin/rpm', '-E', '%{_arch}' ],
+                stdout=subprocess.PIPE
+            )
+            args.arch = result.stdout.decode().strip()
 
-            test_queue = []
-            test_data = json.loads(result.stdout.decode())
+    if args.arch is None:
+        print('Unable to autodetect --arch, manually specify --arch to use --package')
+        exit(1)
+
+    # Replace these with standard arguments when the packaging scripts are rewritten
+    package_env = dict(os.environ)
+    package_env['srcdir'] = source_dir
+    package_env['ARCH'] = args.arch
+    package_env['DISTNAME'] = args.distname
+    package_env['PLATFORM'] = args.platform
+    package_env['BRANCH'] = branch
+    package_env['FLAVOR'] = flavor
+    package_env['BNAME'] = f'-{branch}'
+    package_env['RELEASE_VERSION'] = release_version
+    package_env['BUILDROOT'] = install_dir
+    package_env['DISTROOT'] = dist_dir
+
+    # TODO: Move
+    import tarfile
+
+    if args.platform == 'alpine':
+        pass
+    elif args.platform == 'debian':
+
+        result = subprocess.run(
+            [ sys.executable, os.path.join(deploy_dir, 'packaging/debian/debian_build_debs.py') ],
+            cwd=build_dir,
+            env=package_env,
+        )
+
+        if result.returncode != 0:
+            print('Failed to build debian packages')
+            exit(1)
+
+        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_debs.tgz")
+        print(f'Creating {package_filename}')
+        
+        package_file = tarfile.open(package_filename, 'w:gz')
+
+        package_contents = glob.glob(os.path.join(dist_dir, 'DEBS/*/*.deb'))
+        for filename in package_contents:
+            package_file.add(filename, arcname=os.path.basename(filename))
             
-            for i, test in enumerate(test_data['tests']):
-                test_queue.append({
-                    'index': i + 1,
-                    'name': test['name'],
-                })
+        package_file.close()
 
-            start_time = datetime.now()
-            total_time_test = 0
-            test_count = len(test_queue)
+    elif args.platform == 'redhat':
 
-            passed_tests = {}
-            failed_tests = {}
-            running_test_list = []
+        result = subprocess.run(
+            [ sys.executable, os.path.join(deploy_dir, 'packaging/redhat/redhat_build_rpms.py') ],
+            cwd=build_dir,
+            env=package_env,
+        )
 
-            def kill_test_processes(signum, frame):
-                for test in running_test_list:
-                    print(f"Killing {test['name']}")
-                    test['process'].kill()
+        if result.returncode != 0:
+            print('Failed to build redhat packages')
+            exit(1)
 
-                test_queue.clear()
+        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_rpms.tgz")
+        print(f'Creating {package_filename}')
 
-            signal.signal(signal.SIGINT, kill_test_processes)
+        package_file = tarfile.open(package_filename, 'w:gz')
 
-            if args['rerun-failed']:
-                print('Re-Running failed tests')
-
-                try:
-                    with open(TEST_DATA_FILENAME, 'rt') as f:
-                        old_tests = json.loads(f.read())
-                        for test in test_queue.copy():
-                            if test['name'] in old_tests.keys():
-                                old_test = old_tests[test['name']]
-                                if old_test['passed']:
-                                    print(f"Skipping: {test['name']}")
-                                    test_queue.remove(test)
-                                    passed_tests[test['name']] = old_test
-                except:
-                    print(f'Failed to parse {TEST_DATA_FILENAME}')
-
-            while len(test_queue) > 0 or len(running_test_list) > 0:
-
-                for test in running_test_list:
-                    result = test['process'].poll()
-                    if result is not None:
-                        running_test_list.remove(test)
-
-                        delta_time = datetime.now() - test['start']
-                        delta_time = delta_time.total_seconds()
-                        total_time_test += delta_time
-
-                        passed = (result == 0)
-
-                        result_message = 'Success' if passed else 'Failed'
-                        print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
-                        if result != 0:
-                            print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
-
-                        test_record = {
-                            'index': test['index'],
-                            'log': test['log'],
-                            'time': delta_time,
-                            'passed': passed,
-                        }
-
-                        if result == 0:
-                            passed_tests[test['name']] = test_record
-                        else:
-                            failed_tests[test['name']] = test_record
-
-                while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
-                    test = test_queue.pop(0)
-
-                    log_filename = os.path.join(args['buildroot'], 'testing', test['name'] + '.log')
-                    os.makedirs(os.path.dirname(log_filename), exist_ok=True)
-                    log_file = open(log_filename, 'wb')
-
-                    print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
-
-                    test_start_time = datetime.now()
-
-                    test_env = dict(os.environ)
-                    test_env['mdsevent_port'] = ''
-                    
-                    test_process = subprocess.Popen(
-                        [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
-                        stdout=log_file,
-                        stderr=subprocess.STDOUT,
-                        cwd=args['buildroot'],
-                        env=test_env,
-                    )
-                    
-                    running_test_list.append({
-                        'index': test['index'],
-                        'start': test_start_time,
-                        'name': test['name'],
-                        'process': test_process,
-                        'log': log_filename,
-                    })
-
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-            passed_test_count = len(passed_tests)
-
-            percentage = 0
-            if test_count > 0:
-                percentage = math.floor((passed_test_count / test_count) * 100.0)
-
-            total_time_real = datetime.now() - start_time
-            total_time_real = total_time_real.total_seconds()
-
-            print()
-            print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
-            print()
-            print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
-            print()
-
-            all_tests = dict(passed_tests, **failed_tests)
-
-            with open(TEST_DATA_FILENAME, 'wt') as f:
-                f.write(json.dumps(
-                    all_tests,
-                    indent=2
-                ))
-
-            if len(failed_tests) > 0:
-                print("The following tests failed:")
-
-                for name, test in failed_tests.items():
-                    log_filename_escaped = test['log'].replace(' ', '\\ ')
-                    print(f"    {test['index']} {name} ({log_filename_escaped})")
-
-            if args['output-junit']:
-                import xml.etree.ElementTree as xml
-
-                root = xml.Element('testsuites')
-                root.attrib['time'] = str(total_time_test)
-                root.attrib['tests'] = str(len(all_tests))
-                root.attrib['failures'] = str(len(failed_tests))
-
-                testsuite = xml.SubElement(root, 'testsuite')
-                testsuite.attrib['time'] = str(total_time_test)
-
-                # TODO: Improve
-                testsuite.attrib['name'] = 'mdsplus'
-                if args['junit-suite-name'] is not None:
-                    testsuite.attrib['name'] = args['junit-suite-name']
-
-                for test_name, test in all_tests.items():
-                    testcase = xml.SubElement(testsuite, 'testcase')
-                    testcase.attrib['name'] = test_name
-                    testcase.attrib['time'] = str(test['time'])
-
-                    system_out = xml.SubElement(testcase, 'system-out')
-                    system_out.text = open(test['log']).read()
-
-                    if not test['passed']:
-                        failure = xml.SubElement(testcase, 'failure')
-                        failure.attrib['message'] = 'Failed'
-                
-                print(f'Writing JUnit output to {JUNIT_FILENAME}')
-                with open(JUNIT_FILENAME, 'wb') as f:
-                    f.write(xml.tostring(root))
+        package_contents = glob.glob(os.path.join(dist_dir, 'RPMS/*/*.rpm'))
+        for filename in package_contents:
+            package_file.add(filename, arcname=os.path.basename(filename))
             
-            # Report the failure to Jenkins
-            if len(failed_tests) > 0:
-                exit(1)
+        package_file.close()
+
+    elif args.platform == 'windows':
+
+        result = subprocess.run(
+            [ os.path.join(deploy_dir, 'packaging/windows/create_installer.sh') ],
+            cwd=build_dir,
+            env=package_env,
+        )
+
+        if result.returncode != 0:
+            print('Failed to build windows installer')
+            exit(1)
+
+        exe_list = glob.glob(os.path.join(dist_dir, f'{args.platform}/{flavor}/*.exe'))
+        for filename in exe_list:
+            shutil.copy(filename, packages_dir)
+
+    root_package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}.tgz")
+
+    print(f'Creating {root_package_filename}')
+    root_package_file = tarfile.open(root_package_filename, 'w:gz')
+    root_package_file.add(usr_local_mdsplus_dir, arcname='.')
+    root_package_file.close()
+
+# main
+
+if args.dockerimage is not None:
+    do_docker()
+else:
+        
+    if args.interactive:
+        do_interactive()
+
+    else:
+
+        if args.setup_vscode:
+            do_setup_vscode()
+
+        if args.configure:
+            do_configure()
+
+        if args.build:
+            do_build()
+
+        if args.setup_vscode:
+            do_generate_vscode_launch_json()
+
+        if args.test:
+            do_test()
+
+        if args.install:
+            do_install()
+
+        if args.package:
+            do_package()

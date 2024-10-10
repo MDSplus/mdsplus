@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -167,7 +167,8 @@ Description: %(description)s
                         "__INSTALL_PREFIX__", "/usr/local")))
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info, 0o775)
-            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(bname)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            info['debfile'] = "%(distroot)s/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(bname)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            os.makedirs(os.path.dirname(info['debfile']), exist_ok=True)
             if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s" % info, shell=True).wait() != 0:
                 for k, v in info.items():
                     print("%s=%s" % (k, v))
