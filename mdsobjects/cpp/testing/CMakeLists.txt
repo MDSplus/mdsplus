@@ -60,7 +60,10 @@ set(_test_source_list
     MdsEventTest.cpp
     MdsConnectionTest.cpp
 
+    # SKIP_TEST is not supported
     # MdsCallTest.cpp
+
+    # These tests are't actually written yet
     # MdsActionTest.cpp
     # MdsApdTest.cpp
 )

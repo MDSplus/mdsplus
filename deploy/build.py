@@ -182,6 +182,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--test-regex',
+    '-R',
+    metavar='',
+    help='',
+)
+
+parser.add_argument(
     '--output-junit',
     metavar='',
     help='',
@@ -758,11 +765,17 @@ else:
                             if test['name'] in old_tests.keys():
                                 old_test = old_tests[test['name']]
                                 if old_test['passed']:
-                                    print(f"Skipping: {test['name']}")
+                                    # print(f"Skipping: {test['name']}")
                                     test_queue.remove(test)
                                     passed_tests[test['name']] = old_test
                 except:
                     print(f'Failed to parse {TEST_DATA_FILENAME}')
+
+            test_regex = None
+            if args['test-regex'] is not None:
+                import re
+                test_regex = re.compile(args['test-regex'])
+                # TODO: Error handling
 
             while len(test_queue) > 0 or len(running_test_list) > 0:
 
@@ -796,6 +809,11 @@ else:
 
                 while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
                     test = test_queue.pop(0)
+
+                    if test_regex is not None:
+                        if test_regex.match(test['name']) is None:
+                            print(f"Skipping: {test['name']}, does not match the regex")
+                            continue
 
                     log_filename = os.path.join(args['buildroot'], 'testing', test['name'] + '.log')
                     os.makedirs(os.path.dirname(log_filename), exist_ok=True)
@@ -854,7 +872,10 @@ else:
 
                 for name, test in failed_tests.items():
                     log_filename_escaped = test['log'].replace(' ', '\\ ')
-                    print(f"    {test['index']} {name} ({log_filename_escaped})")
+                    print(f"    #{test['index']} {name} ({log_filename_escaped})")
+
+                print()
+                print('You can run only these tests by passing --rerun-failed')
 
             if args['output-junit']:
                 import xml.etree.ElementTree as xml

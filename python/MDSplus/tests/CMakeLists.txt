@@ -8,7 +8,7 @@ if(ENABLE_SANITIZE STREQUAL "OFF")
         "exception_case.py"
         "segment_case.py"
         # (SLW) Currently broken by a segfault in Release builds
-        # "task_case.py"
+        "task_case.py"
         "tree_case.py"
         "connection_case.py"
         "dcl_case.py"
