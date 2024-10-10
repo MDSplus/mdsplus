@@ -271,6 +271,7 @@ void TestArray2D()
 int main(int argc, char *argv[])
 {
   (void)argv;
+
   int returnlength = 0;
   int status = 0;
   int dsc = descr(&dtype_long, &status, &null);
@@ -282,15 +283,17 @@ int main(int argc, char *argv[])
     socket = MdsConnect("local://0");
     TEST((socket != INVALID_SOCKET));
   }
-  TEST(
-      MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+
+  TEST(MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("{_=-1;TreeAddNode('A',_,'ANY');}", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeWrite('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeClose('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+
   TestTreeOpenClose();
   TestTdi();
   TestArray1D();
   TestArray2D();
+
   printf("TEST OK\n");
   exit(0);
 }

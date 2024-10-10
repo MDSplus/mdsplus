@@ -101,6 +101,7 @@ static const int roprand = 0x8000;
     break;                                                \
   default:                                                \
     return TdiINVCLADSC;                                  \
+  (void)scalars;                                          \
   }
 
 #define Operate(type, dtype, function)                                \

@@ -1,0 +1,303 @@
+#!/bin/bash
+
+echo "###"
+echo "### This script is provided for convenience, we highly recommend you move to calling cmake directly."
+echo "###"
+echo ""
+
+help() {
+    cat <<EOF
+Usage: ./configure [OPTION]... [VAR=VALUE]...
+
+To assign environment variables (e.g., CC, CFLAGS...), specify them as
+VAR=VALUE.  See below for descriptions of some of the useful variables.
+
+Configuration:
+  -h, --help              display this help and exit
+
+Installation directories:
+  --prefix=PREFIX         install files in PREFIX [/usr/local/mdsplus]
+
+For better control, use the options below.
+
+Fine tuning of the installation directories:
+  --bindir=DIR            user executables [PREFIX/bin]
+  --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
+  --libdir=DIR            object code libraries [PREFIX/lib]
+  --includedir=DIR        C header files [PREFIX/include]
+
+Optional Features:
+  --enable-debug=[yes/info/profile/no]
+                          compile with debugging
+  --disable-largefile     omit support for large files
+  --disable-shared        Prevent building shared libraries
+  --enable-perf           enable MDSplus I/O statistics
+  --disable-java          Do not build java libraries and applications
+  --enable-d3d            build d3d ptdata access library
+  --enable-valgrind       Whether to enable Valgrind on the unit tests
+  --enable-sanitize=flavor
+                          Enable compile sanitizer with flavor in 
+                          (memory | address | thread | undefined)
+  --disable-doxygen-doc   don't generate any doxygen documentation
+  --enable-doxygen-dot    generate graphics for doxygen documentation
+  --enable-doxygen-man    generate doxygen manual pages
+  --enable-doxygen-rtf    generate doxygen RTF documentation
+  --enable-doxygen-xml    generate doxygen XML documentation
+  --enable-doxygen-chm    generate doxygen compressed HTML help documentation
+  --enable-doxygen-chi    generate doxygen seperate compressed HTML help index
+                          file
+  --disable-doxygen-html  don't generate doxygen plain HTML documentation
+  --enable-doxygen-ps     generate doxygen PostScript documentation
+  --disable-doxygen-pdf   don't generate doxygen PDF documentation
+  --enable-werror         Treat all warnings as errors
+
+Optional Packages:
+  --with-jdk=JDKDIR       specify location of java jdk
+  --with-java_target=version
+                          specify version of compiled mdsobjects classes (i.e.
+                          6)
+
+                          --with-java_bootclasspath=bootclasspath
+                          specify the bootclasspath option for use with
+                          --with-java_target (i.e.
+                          /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)
+
+  --with-gsi=globus-location:flavor
+                          Use globus gsi for mdsip communications
+  --with-srb=srb-install-dir
+                          Enable srb capabilities
+  --with-labview=labview-top-dir
+                          specify location of labview such as
+                          /usr/local/natinst/Labview
+  --with-idl[=idl-top-dir]
+                          specify location of idl such as /usr/local/itt/idl,
+                          or set IDL_DIR
+  --with-readline=READLINE_DIR
+                          look for the readline library in READLINE_DIR
+  --with-xml-prefix=PFX   Prefix where libxml is installed (optional)
+
+Some influential environment variables:
+  CXX         C++ compiler command
+  CXXFLAGS    C++ compiler flags
+  LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
+              nonstandard directory <lib dir>
+  LIBS        libraries to pass to the linker, e.g. -l<library>
+  CC          C compiler command
+  CFLAGS      C compiler flags
+  FC          Fortran compiler command
+  FCFLAGS     Fortran compiler flags
+  CPP         C preprocessor
+  PYTHON      the Python interpreter
+
+Use these variables to override the choices made by 'configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+
+Report bugs to <mdsplus@lists.psfc.mit.edu>.
+EOF
+}
+
+ENVIRONMENT=
+CMAKE_OPTIONS=
+
+for i in "$@"; do
+
+    on_off=
+    if [[ "$i" == *"enable"* ]]; then
+        on_off=ON
+    elif [[ "$i" == *"disable"* ]]; then
+        on_off=OFF
+    fi
+
+    case $1 in
+    -h|--help)
+        help
+        exit 0
+        ;;
+    --*-shared)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DBUILD_SHARED_LIBS=$on_off"
+        ;;
+    --disable-debug)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=Release -DENABLE_GPROF=OFF"
+        ;;
+    --enable-debug)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=Debug -DENABLE_GPROF=OFF"
+        ;;
+    --enable-debug=*)
+        value="${i#*=}"
+        case $value in
+            no)
+                CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=Release -DENABLE_GPROF=OFF"
+            ;;
+            yes)
+                CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=Debug -DENABLE_GPROF=OFF"
+            ;;
+            info)
+                CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=OFF"
+            ;;
+            profile)
+                CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON"
+            ;;
+        esac
+        ;;
+    --prefix=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_INSTALL_PREFIX=$value"
+        ;;
+    --exec-prefix=*)
+        echo "--exec-prefix is no longer supported"
+        ;;
+    --*-largefile)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LARGEFILE=$on_off"
+        ;;
+    --*-perf)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_TREE_PERF=$on_off"
+        ;;
+    --*-java)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_JAVA=$on_off"
+        ;;
+    --*-d3d)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_D3D=$on_off"
+        ;;
+    --*-valgrind)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_VALGRIND=$on_off"
+        ;;
+    --*-doxygen)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_DOXYGEN=$on_off"
+        ;;
+    --*-werror)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_WERROR=$on_off"
+        ;;
+    --*-wreturns)
+        echo "$i is no longer supported"
+        ;;
+    --*-wconversion)
+        echo "$i is no longer supported"
+        ;;
+    --disable-sanitize)
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DSANITIZE=OFF"
+        ;;
+    --enable-sanitize=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DSANITIZE=$value"
+        ;;
+    --*-silent-rules)
+        echo "$i is no longer supported"
+        ;;
+    --jars)
+        # TODO
+        ;;
+    --with-jdk=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DJDK_DIR=$value"
+        ;;
+    --with-gsi=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DGSI=$value"
+        ;;
+    --with-srb=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DSRB_DIR=$value"
+        ;;
+    --with-labview=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DLABVIEW_DIR=$value"
+        ;;
+    --with-idl=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DIDL_DIR=$value"
+        ;;
+    --with-readline=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DREADLINE_DIR=$value"
+        ;;
+    --with-xml-prefix=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DLIBXML2_DIR=$value"
+        ;;
+    --with-xml-exec-prefix=*)
+        echo "--with-xml-exec-prefix is no longer supported"
+        ;;
+    --program-prefix=*)
+        echo "--program-prefix is no longer supported"
+        ;;
+    --program-suffix=*)
+        echo "--program-suffix is no longer supported"
+        ;;
+    --program-transform-name=*)
+        echo "--program-transform-name is no longer supported"
+        ;;
+    --bindir=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_INSTALL_BINDIR=$value"
+        ;;
+    --libdir=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_INSTALL_LIBDIR=$value"
+        ;;
+    --sysconfdir=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_INSTALL_SYSCONFDIR=$value"
+        ;;
+    --includedir=*)
+        value="${i#*=}"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DCMAKE_INSTALL_INCLUDEDIR=$value"
+        ;;
+    --*)
+        echo "Ignoring option $i"
+        ;;
+    *=*)
+        ENVIRONMENT="$ENVIRONMENT $i"
+        ;;
+    *)
+        ;;
+    esac
+    shift
+done
+
+echo ""
+echo "###"
+echo "### These are the commands to use in place of this script, with the equivalent options set."
+echo "###"
+echo ""
+
+WORKING_DIRECTORY="$(readlink -f "$(pwd)")"
+SOURCE_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+BINARY_DIR="${WORKING_DIRECTORY}"
+
+# in-source builds are no longer supported
+if [[ "$SOURCE_DIR" == "$WORKING_DIRECTORY" ]]; then
+    echo "# Builds within the source directory are no longer supported"
+
+    echo "mkdir build && cd build"
+    mkdir -p build
+    cd build || exit
+
+    SOURCE_DIR=".."
+    BINARY_DIR="build"
+fi
+
+CMAKE_OPTIONS="${CMAKE_OPTIONS} ${SOURCE_DIR}"
+
+# Trim leading and trailing whitespace
+ENVIRONMENT=$(echo "${ENVIRONMENT}" | xargs) 
+CMAKE_OPTIONS=$(echo "${CMAKE_OPTIONS}" | xargs) 
+
+echo "${ENVIRONMENT}cmake -G\"Unix Makefiles\" ${CMAKE_OPTIONS}"
+echo ""
+
+# Force reconfigure
+rm -f CMakeCache.txt
+
+env ${ENVIRONMENT} cmake -G"Unix Makefiles" "${CMAKE_OPTIONS}"
+
+echo ""
+echo "###"
+echo "### Now run the following to build."
+echo "###"
+echo ""
+
+if [[ "$BINARY_DIR" != "$WORKING_DIRECTORY" ]]; then
+    echo "cd ${BINARY_DIR}"
+fi
+
+echo "make -j"

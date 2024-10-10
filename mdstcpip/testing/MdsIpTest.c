@@ -206,11 +206,22 @@ int main(int argc, char **argv)
   }
   else
   {
+    int test_port_offset = 0;
+    char * test_port_offset_env = getenv("TEST_PORT_OFFSET");
+    if (test_port_offset_env) {
+      test_port_offset = atoi(test_port_offset_env);
+    }
+
+	  // See testing/ports.csv
+    int port = 8001 + test_port_offset;
+    char port_str[12];
+    snprintf(port_str, sizeof(port_str), "%d", port);
+
     testio("thread://0");
     testio("local://0");
     char server[32] = "";
     mdsip_t mdsip = {0, NULL, NULL, 0};
-    if (!start_mdsip(&mdsip, "Tcp", MODE_SS, server, "12345"))
+    if (!start_mdsip(&mdsip, "Tcp", MODE_SS, server, port_str))
     {
       sleep(3);
       testio(server);

@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsconfig.h>
 #include <treeshr.h>
 
-#ifdef USE_PERF
+#ifdef USE_TREE_PERF
 
 #include <fcntl.h>
 #include <semaphore.h>

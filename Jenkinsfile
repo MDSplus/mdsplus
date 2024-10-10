@@ -1,23 +1,22 @@
 
 def OSList = [
-    'windows',
-    'ubuntu18',
-    'ubuntu20',
-    'ubuntu22',
-    'ubuntu24',
-    'rhel7',
-    'rhel8',
-    'rhel9',
-    // 'alpine3.9-armhf',
-    // 'alpine3.9-x86_64',
-    // 'alpine3.9-x86',
-    'debian9-64',
-    'debian10-64',
-    'debian11-64',
-    'debian12-64',
     'test-asan',
     'test-tsan',
     'test-ubsan',
+    'test-helgrind',
+    'test-memcheck',
+    'ubuntu-18-x86_64',
+    'ubuntu-20-x86_64',
+    'ubuntu-22-x86_64',
+    // 'rhel-8-x86_64',
+    'rhel-9-x86_64',
+    'alpine-3.14-x86_64',
+    // 'alpine-3.14-arm64',
+    'debian-11-x86_64',
+    'debian-12-x86_64',
+    'amazonlinux-2-x86_64',
+    // 'windows-x86',
+    // 'windows-x86_64',
 ]
 
 def AdminList = [
@@ -123,39 +122,24 @@ pipeline {
                     parallel OSList.collectEntries {
                         OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
+
                                 ws("${WORKSPACE}/${OS}") {
+
                                     stage("${OS} Clone") {
                                         checkout scm;
-
-                                        if (new_tag) {
-                                            sh "git tag ${new_tag} || true"
-                                        }
-                                    }
-
-                                    stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME}"
-
-                                        if (OS.endsWith("armhf")) {
-                                            sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
-                                        }
                                     }
 
                                     stage("${OS} Test") {
-                                        try {
-                                            def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                            sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
-                                        }
-                                        finally {
-                                            sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                                            junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
+                                        def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                        
+                                        sh "./deploy/build.py -j --os=${OS} --test --output-junit --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
 
-                                            echo "Testing complete"
-                                        }
+                                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
                                     }
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs"
+                                            sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Release"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
@@ -167,36 +151,10 @@ pipeline {
                                         }
                                     }
                                 }
+
                             }
+                            
                         }]
-                    }
-                }
-            }
-        }
-
-        stage('Additional Testing') {
-            parallel {
-                stage("Test IDL") {
-                    steps {
-                        // The IDL tests have to be run with the same OS as the builder
-                        ws("${WORKSPACE}/ubuntu22") {
-                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
-                                sh """
-                                    set +x
-                                    . \$MDSPLUS_DIR/setup.sh
-                                    export PYTHONPATH=\$MDSPLUS_DIR/python/
-                                    set -x
-                                    ./idl/testing/run_tests.py
-                                """
-                            }
-                        }
-                    }
-                }
-
-                stage("Test MATLAB") {
-                    steps {
-                        echo "Testing MATLAB"
-                        // TODO
                     }
                 }
             }
@@ -250,7 +208,11 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: "**/test-suite.tap,**/core", followSymlinks: false
+            
+            // junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
+
+            // Collect valgrind core dumps
+            archiveArtifacts artifacts: "**/core", allowEmptyArchive: true
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
