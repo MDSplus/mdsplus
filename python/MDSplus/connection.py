@@ -201,16 +201,25 @@ class _Connection:
                      info['address']))
 
     def get(self, exp, *args, **kwargs):
+        if 'serialized' in kwargs:
+            serialized = kwargs['serialized']
+        else:
+            serialized = True
         if 'arglist' in kwargs:
             args = kwargs['arglist']
         timeout = kwargs.get('timeout', -1)
         num = len(args)+1
+        if serialized:
+            exp = 'serializeout(`(data('+exp+')))'
         exp = _ver.tobytes(exp)
         _exc.checkStatus(_SendArg(self.conid, 0, 14, num,
                                   len(exp), 0, 0, ctypes.c_char_p(exp)))
         for i, arg in enumerate(args):
             self._send_arg(arg, i+1, num)
-        return self._get_answer(timeout)
+        retSerialized = self._get_answer(timeout)
+        if not serialized or isinstance(retSerialized, _sca.Scalar):
+            return retSerialized
+        return retSerialized.deserialize()
 
 
 class Connection(object):
@@ -286,7 +295,7 @@ class Connection(object):
         @type shot: int
         @rtype: None
         """
-        _exc.checkStatus(self.get("TreeOpen($,$)", tree, shot))
+        _exc.checkStatus(self.get("TreeOpen($,$)", tree, shot,serialized=False))
 
     def put(self, node, exp, *args):
         """Put data into a node in an MDSplus tree
@@ -298,9 +307,22 @@ class Connection(object):
         @type args: Data
         @rtype: None
         """
-        pexp = 'TreePut($,$%s)' % (',$'*len(args),)
-        pargs = [node, exp] + list(args)
-        _exc.checkStatus(self.get(pexp, arglist=pargs))
+        #Check is any passed argument is APD
+        anyApd = False
+        for arg in args:
+            if isinstance(arg, Apd):
+                anyApd = True
+
+        if anyApd:
+            pexp = 'TreePutDeserialized($,$%s)' % (',$'*len(args),)
+            pargs = [node, exp] + list(args)
+            for i in range(2, len(pargs)):
+                pargs[i] = _arr.Uint8Array(pargs[i].serialize())
+        else:
+            pexp = 'TreePut($,$%s)' % (',$'*len(args),)
+            pargs = [node, exp] + list(args)
+
+        _exc.checkStatus(self.get(pexp, arglist=pargs, serialized = False))
 
     def putMany(self, value=None):
         """Return an instance of a connection.PutMany class. See the connection.PutMany documentation for further information."""
