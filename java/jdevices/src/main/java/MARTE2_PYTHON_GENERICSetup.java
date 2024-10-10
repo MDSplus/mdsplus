@@ -346,7 +346,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         deviceChoice5.setChoiceItems(new String[] {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
-        deviceChoice5.setOffsetNid(70);
+        deviceChoice5.setOffsetNid(69);
         deviceChoice5.setUpdateIdentifier("");
         jPanel18.add(deviceChoice5);
 
