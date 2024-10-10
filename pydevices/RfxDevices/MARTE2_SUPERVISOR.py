@@ -1377,7 +1377,7 @@ $<APP_NAME> = {
         import subprocess
         import os
 
-        command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
+        command = 'kill -KILL `ps -f | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' 
         os.system(command)
         return 1
 
