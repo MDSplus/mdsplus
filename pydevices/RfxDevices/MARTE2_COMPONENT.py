@@ -1381,10 +1381,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 sigDef['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-#            sigDef['NumberOfDimensions'] = numDims
-#            sigDef['NumberOfElements'] = numEls
- #            if samples > 1:
-#                sigDef['Samples'] = samples
+            sigDef['NumberOfDimensions'] = numDims
+            sigDef['NumberOfElements'] = numEls
+            if samples > 1:
+                sigDef['Samples'] = samples
             inputs.append(sigDef)
         retGam['Inputs'] = inputs
 
@@ -1409,7 +1409,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-            sigDef['NumberOfDimensions'] = numDims
+#            sigDef['NumberOfDimensions'] = numDims  Set to 1 as current MDSWriter does not support matrixes
+            sigDef['NumberOfDimensions'] = 1
             sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()
