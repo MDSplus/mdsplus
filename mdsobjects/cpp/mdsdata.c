@@ -925,7 +925,7 @@ struct descriptor_xd EXPORT *GetManyExecute(char *serializedIn)
   return &xd;
 }
 
-struct descriptor_xd *PutManyExecute(char *serializedIn)
+struct descriptor_xd EXPORT *PutManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor *serResult;
