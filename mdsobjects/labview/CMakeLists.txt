@@ -18,7 +18,14 @@ if(ENABLE_LABVIEW)
             SET(_host_cpu "x86_64")
         endif()
 
-        set(LIBLV ${_3rd_party_apis}/labview/cintools/labview-${_host_cpu}.lib)
+        add_library(LV INTERFACE IMPORTED)
+
+        set_target_properties(
+            LV
+            PROPERTIES
+                INTERFACE_LINK_LIBRARIES "${_3rd_party_apis}/labview/cintools/labview-${_host_cpu}.lib"
+                INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/labview/cintools"
+        )
 
     else()
 
@@ -57,8 +64,6 @@ if(ENABLE_LABVIEW)
 
         install(TARGETS LV)
 
-        set(LIBLV LV)
-
     endif()
 
     ###
@@ -78,7 +83,7 @@ if(ENABLE_LABVIEW)
         PUBLIC
             MdsIpShr
             MdsObjectsCppShr
-            ${LIBLV}
+            LV
     )
 
     install(TARGETS MDSobjectsLVShr)

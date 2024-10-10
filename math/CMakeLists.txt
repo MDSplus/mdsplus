@@ -35,7 +35,7 @@ add_library(
     zmul.f
 )
 
-if(NO_SYSTEM_BLAS)
+if(NOT USE_SYSTEM_BLAS)
 
     message(STATUS "Using local copy of blas")
 

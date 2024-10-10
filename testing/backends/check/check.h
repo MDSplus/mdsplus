@@ -415,7 +415,7 @@ CK_DLL_EXP void CK_EXPORT tcase_fn_start(const char *fname, const char *file,
  * the function as noreturn causes gcc to make assumptions
  * which are not valid, as longjmp() is like a return.
  */
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
 CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
                                             const char *expr,
                                             ...) CK_ATTRIBUTE_NORETURN;

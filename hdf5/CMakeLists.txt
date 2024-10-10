@@ -2,7 +2,7 @@
 if(TARGET HDF5::HDF5)
 
     # We are currently locked into the 1.6 API
-    compile_definitions(
+    add_compile_definitions(
         -DH5_USE_16_API
     )
 

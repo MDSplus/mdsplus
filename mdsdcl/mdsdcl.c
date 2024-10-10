@@ -79,7 +79,7 @@ static inline void set_execute_handlers()
 {
   signal(SIGINT, keyboard_interrupt);
 }
-#else // _WIN32
+#else // !defined(_WIN32)
 static struct sigaction act;
 #ifdef HAVE_RL_SET_SIGNALS
 static inline void set_readline_handlers()
@@ -88,7 +88,7 @@ static inline void set_readline_handlers()
   rl_set_signals();
 }
 static inline void set_execute_handlers() { rl_clear_signals(); }
-#else // HAVE_RL_SET_SIGNALS
+#else // !defined(HAVE_RL_SET_SIGNALS)
 #ifdef _MACOSX
 #define _rl_sigint SIG_IGN
 #else  // _MACOSX
@@ -113,8 +113,8 @@ static inline void set_execute_handlers()
   act.sa_handler = keyboard_interrupt;
   sigaction(SIGINT, &act, NULL);
 }
-#endif // !HAVE_RL_SET_SIGNALS
-#endif // !_WIN32
+#endif // HAVE_RL_SET_SIGNALS
+#endif // _WIN32
 
 int main(int argc, char const *argv[])
 {

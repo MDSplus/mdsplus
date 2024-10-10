@@ -1,5 +1,5 @@
 
-# TODO: Investigate
+# TODO: Investigate sanitizer
 if(ENABLE_SANITIZE STREQUAL "OFF")
 
     set(_test_case_list
@@ -8,7 +8,7 @@ if(ENABLE_SANITIZE STREQUAL "OFF")
         "exception_case.py"
         "segment_case.py"
         # (SLW) Currently broken by a segfault in Release builds
-        # "task_case.py"
+        "task_case.py"
         "tree_case.py"
         "connection_case.py"
         "dcl_case.py"
@@ -43,7 +43,7 @@ if(ENABLE_SANITIZE STREQUAL "OFF")
 
             mdsplus_add_test(
                 NAME "${_target}"
-                COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_test_case} ${_test}
+                COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/${_test_case} ${_test}
                 ${_no_valgrind}
             )
         endforeach()

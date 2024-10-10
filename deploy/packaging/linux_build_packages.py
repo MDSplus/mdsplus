@@ -18,6 +18,7 @@ else:
 def get_info():
     info = dict()
     info['buildroot'] = os.environ['BUILDROOT']
+    info['distroot'] = os.environ['DISTROOT']
     info['branch'] = os.environ['BRANCH']
     info['flavor'] = os.environ['FLAVOR']
     info['bname'] = os.environ['BNAME']

@@ -37,7 +37,7 @@ function(mdsplus_check_flags _prefix)
                 elseif(_lang STREQUAL "CXX")
                     set(_compiler_flags_message "CXXFLAGS=${_compiler_flags_message}")
                 elseif(_lang STREQUAL "Fortran")
-                    set(_compiler_flags_message "FCFLAGS=${_compiler_flags_message}")
+                    set(_compiler_flags_message "FCFLAGS=${_compiler_flags_message}") # TODO: Use FFLAGS instead?
                 endif()
 
                 message(STATUS "    ${_compiler_flags_message}")

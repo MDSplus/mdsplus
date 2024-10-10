@@ -252,7 +252,7 @@ FILE *open_tmp_file(char **name)
 
   *name = NULL;
 
-#if !HAVE_MKSTEMP
+#ifndef HAVE_MKSTEMP
   /* Windows does not like tmpfile(). This is likely because tmpfile()
    * call unlink() on the file before returning it, to make sure the
    * file is deleted when it is closed. The unlink() call also fails

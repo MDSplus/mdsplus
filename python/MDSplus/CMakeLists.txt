@@ -19,4 +19,5 @@ install(
         PATTERN "*.html"
         PATTERN "*.js"
         PATTERN "*.tbl"
+        PATTERN "*.toml"
 )

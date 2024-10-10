@@ -26,12 +26,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--bin',
-    required=True,
-    help='The path to prepend to relative targets.'
-)
-
-parser.add_argument(
     '--cwd',
     required=True,
     help='The working directory of the target.'
@@ -42,7 +36,6 @@ args = parser.parse_args()
 target_name = args.name
 command = args.command.split(';')
 environment_modifications = args.environment.split(';')
-bin_directory = args.bin
 cwd = args.cwd
 
 def add_or_update_config(data, configurations):
@@ -117,14 +110,9 @@ data = {
     'environment': [ { 'name': name, 'value': value } for name, value in env.items() ]
 }
 
-if not os.path.isabs(data['program']):
-        data['program'] = os.path.join(bin_directory, data['program'])
-
 if platform.system() == 'Windows':
     data['type'] = 'cppvsdbg'
     data['console'] = 'integratedTerminal'
-
-    # TODO: append .exe?
 else:
     data['externalConsole'] = False
 

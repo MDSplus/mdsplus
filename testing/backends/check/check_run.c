@@ -112,7 +112,7 @@ static TestResult *receive_result_info_nofork(const char *tcname,
 static void set_nofork_info(TestResult *tr);
 static char *pass_msg(void);
 
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
 static TestResult *tcase_run_tfun_fork(SRunner *sr, TCase *tc, TF *tf, int i);
 static TestResult *receive_result_info_fork(const char *tcname,
                                             const char *tname, int iter,
@@ -251,7 +251,7 @@ static void srunner_iterate_tcase_tfuns(SRunner *sr, TCase *tc)
       switch (srunner_fork_status(sr))
       {
       case CK_FORK:
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
         tr = tcase_run_tfun_fork(sr, tc, tfun, i);
 #else  /* HAVE_FORK */
         eprintf("This version does not support fork", __FILE__, __LINE__);
@@ -469,7 +469,7 @@ static void set_nofork_info(TestResult *tr)
 
 static char *pass_msg(void) { return strdup("Passed"); }
 
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
 static TestResult *tcase_run_tfun_fork(SRunner *sr, TCase *tc, TF *tfun,
                                        int i)
 {
@@ -725,7 +725,7 @@ enum fork_status srunner_fork_status(SRunner *sr)
     char *env = getenv("CK_FORK");
 
     if (env == NULL)
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
       return CK_FORK;
 #else
       return CK_NOFORK;
@@ -734,7 +734,7 @@ enum fork_status srunner_fork_status(SRunner *sr)
       return CK_NOFORK;
     else
     {
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
       return CK_FORK;
 #else  /* HAVE_FORK */
       /* Ignoring, as Check is not compiled with fork support. */
@@ -748,7 +748,7 @@ enum fork_status srunner_fork_status(SRunner *sr)
 
 void srunner_set_fork_status(SRunner *sr, enum fork_status fstat)
 {
-#if !defined(HAVE_FORK) || HAVE_FORK == 0
+#ifndef HAVE_FORK
   /* If fork() is unavailable, do not allow a fork mode to be set */
   if (fstat != CK_NOFORK)
   {
@@ -815,7 +815,7 @@ void srunner_run(SRunner *sr, const char *sname, const char *tcname,
 
 pid_t check_fork(void)
 {
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
   pid_t pid = fork();
 
   /* Set the process to a process group to be able to kill it easily. */
@@ -832,7 +832,7 @@ pid_t check_fork(void)
 
 void check_waitpid_and_exit(pid_t pid CK_ATTRIBUTE_UNUSED)
 {
-#if defined(HAVE_FORK) && HAVE_FORK == 1
+#ifdef HAVE_FORK
   pid_t pid_w;
   int status;
 
