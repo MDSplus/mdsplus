@@ -920,6 +920,12 @@ mdsplus_generate_files(
 )
 
 mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-include-tdishr.py
+    GENERATED_FILES
+    include/tdishr.h
+)
+
+mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-python-compound.py
     GENERATED_FILES
     python/MDSplus/compound.py

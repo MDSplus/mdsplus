@@ -9,7 +9,7 @@ mdsdcl/mdsdclVersionInfo.c
 pydevices/*/_version.py
 python/MDSplus/_version.py
 
-# deploy/gen-messages.py
+# deploy/gen-messages-exceptions.py
 include/treeshr_messages.h
 include/tdishr_messages.h
 include/mdsshr_messages.h
@@ -22,7 +22,10 @@ python/MDSplus/mdsExceptions.py
 mdsshr/MdsGetStdMsg.c
 java/mdsplus-api/src/main/java/mds/MdsException.java
 
-# deploy/gen-opcbuiltins.py
+# deploy/gen-include-tdishr.py
+include/tdishr.h
+
+# deploy/gen-include-opcbuiltins.py
 include/opcbuiltins.h
 
 # deploy/gen-python-compound.py
