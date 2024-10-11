@@ -351,7 +351,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             refDimNode = refSigNode.getNode('DIMENSIONS')
         except:
             raise Exception ('Not a valid MARTE2 device reference for '+ sigNode + ' of '+self.getPath()) 
-        if refDimNode.data() != sigNode.getNode('DIMENSIONS').data():
+        if not (refDimNode.data() == sigNode.getNode('DIMENSIONS').data()).all():
             raise Exception ('Invalid dimension for signal '+ sigNode.getPath()+ ' of '+self.getPath() ) 
         return True
 
@@ -1091,7 +1091,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currDimension = sigNode.getNode('DIMENSIONS').data()
             except:
                 currDimension = -1
-            if currDimension == -1:
+            if not hasattr(currDimension, '__len__') and currDimension == -1:
                 continue
 
             currName = self.getSignalName(sigNode)
@@ -1381,10 +1381,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 sigDef['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-#            sigDef['NumberOfDimensions'] = numDims
-#            sigDef['NumberOfElements'] = numEls
- #            if samples > 1:
-#                sigDef['Samples'] = samples
+            sigDef['NumberOfDimensions'] = numDims
+            sigDef['NumberOfElements'] = numEls
+            if samples > 1:
+                sigDef['Samples'] = samples
             inputs.append(sigDef)
         retGam['Inputs'] = inputs
 
@@ -1409,7 +1409,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-            sigDef['NumberOfDimensions'] = numDims
+#            sigDef['NumberOfDimensions'] = numDims  Set to 1 as current MDSWriter does not support matrixes
+            sigDef['NumberOfDimensions'] = 1
             sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()

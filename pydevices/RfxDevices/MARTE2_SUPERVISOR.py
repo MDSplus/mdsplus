@@ -123,7 +123,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         #Check
         for currGamNode in gamNodes:
             if not isinstance(currGamNode, RfxDevices.MARTE2_COMPONENT):
-                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode(getPath()))
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode)
             gamMode = currGamNode.getNode('MODE').data()
             if not (gamMode == MARTE2_SUPERVISOR.MODE_GAM or gamMode ==MARTE2_SUPERVISOR. MODE_INPUT 
                 or gamMode == MARTE2_SUPERVISOR.MODE_SYNC_INPUT or gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT):
@@ -996,6 +996,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             if 'Parameters' in gam:
                 gamConf += self.expandParameters(gam['Parameters'], 4)
             if 'Inputs' in gam:
+                if len(gam['Inputs']) == 0:
+                      raise Exception('Empty Input list for GAM  '+gam['Name']+'. This will raise a syntax error then parsing MARTe2 configuration file')   
                 gamConf += '\t\t\t\tInputSignals = {\n'
                 for inSig in gam['Inputs']:
                     gamConf += '\t\t\t\t\t'+inSig['Name']+ ' = {\n'
@@ -1010,6 +1012,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 gamConf += '\t\t\t\t}\n'
             if 'Outputs' in gam:
                 gamConf += '\t\t\t\tOutputSignals = {\n'
+                if len(gam['Outputs']) == 0:
+                      raise Exception('Empty Output list for GAM  '+gam['Name']+'. This will raise a syntax error then parsing MARTe2 configuration file')   
                 for outSig in gam['Outputs']:
                     gamConf += '\t\t\t\t\t'+outSig['Name']+ ' = {\n'
                     for outSigKey in outSig:

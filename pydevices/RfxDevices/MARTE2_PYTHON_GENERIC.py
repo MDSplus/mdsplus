@@ -24,6 +24,7 @@
 #
 import ctypes
 import numpy as np
+import MDSplus
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
@@ -84,9 +85,14 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
         types = {
             int: 'int32',
             float: 'float64',
+            np.int8: 'int8',
             np.int16: 'int16',
             np.int32: 'int32',
             np.int64: 'int64',
+            np.uint8: 'uint8',
+            np.uint16: 'uint16',
+            np.uint32: 'uint32',
+            np.uint64: 'uint64',
             np.float32: 'float32',
             np.float64: 'float64',
         }
@@ -190,16 +196,32 @@ class MARTE2_PYTHON_GENERIC(MC.MARTE2_COMPONENT):
                          ':name').putData(inputDict['name'])
             self.getNode('inputs.in'+str(inputIdx) +
                          ':type').putData(inputDict['type'])
-            self.getNode('inputs.in'+str(inputIdx) +
-                         ':dimensions').putData(inputDict['dimensions'])
+            if hasattr(inputDict['dimensions'], '__len__'):
+                if inputDict['dimensions'][-1] == 1: 
+                    self.getNode('inputs.in'+str(inputIdx) +
+                            ':dimensions').putData(MDSplus.Int32Array(inputDict['dimensions'][:-1]))
+                else:
+                    self.getNode('inputs.in'+str(inputIdx) +
+                            ':dimensions').putData(MDSplus.Int32Array(inputDict['dimensions']))
+            else:
+                print('SCRIVO INPUT SCALARE: ', inputDict['dimensions'])
+                self.getNode('inputs.in'+str(inputIdx) +
+                         ':dimensions').putData(MDSplus.Int32(inputDict['dimensions']))
             inputIdx += 1
-
         outputIdx = 1
         for outputDict in outputDicts:
             self.getNode('outputs.out'+str(outputIdx) +
                          ':name').putData(outputDict['name'])
             self.getNode('outputs.out'+str(outputIdx) +
                          ':type').putData(outputDict['type'])
-            self.getNode('outputs.out'+str(outputIdx) +
-                         ':dimensions').putData(outputDict['dimensions'])
+            if hasattr(outputDict['dimensions'], '__len__'):
+                if outputDict['dimensions'][-1] == 1:
+                    self.getNode('outputs.out'+str(outputIdx) +
+                         ':dimensions').putData(MDSplus.Int32Array(outputDict['dimensions'][:-1]))
+                else:
+                    self.getNode('outputs.out'+str(outputIdx) +
+                         ':dimensions').putData(MDSplus.Int32Array(outputDict['dimensions']))
+            else:
+                self.getNode('outputs.out'+str(outputIdx) +
+                         ':dimensions').putData(MDSplus.Int32(outputDict['dimensions']))
             outputIdx += 1
