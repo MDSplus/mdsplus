@@ -220,7 +220,7 @@ class MARTE2_ELAD(MC.MARTE2_COMPONENT):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            recPort = self.getNode('parameters.par_2:value').data()
+            recPort = self.getNode('parameters.par_1:value').data()
         except:
             print("Missing Receive port")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL

@@ -1059,6 +1059,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 stateConf += '\t\t\t\t\t+'+threadKey+' = {\n'
                 stateConf += '\t\t\t\t\t\tClass = RealTimeThread\n'
                 stateConf += '\t\t\t\t\t\tCPUs = '+str(statesDict[stateKey][threadKey]['CpuMask'])+'\n'
+                stateConf += '\t\t\t\t\t\tPriority=99\n'
                 stateConf += '\t\t\t\t\t\tFunctions = {'
                 for gamName in statesDict[stateKey][threadKey]['GamNames']:
                     stateConf += ' '+gamName+' '
