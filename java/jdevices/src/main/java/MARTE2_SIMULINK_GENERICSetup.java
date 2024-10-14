@@ -84,7 +84,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Write CPU Mask: ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(128);
+        deviceField4.setOffsetNid(136);
         jPanel3.add(deviceField4);
 
         jButton1.setText("Fill fields");
