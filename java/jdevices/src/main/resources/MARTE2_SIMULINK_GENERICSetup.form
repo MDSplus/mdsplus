@@ -135,7 +135,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="128"/>
+                <Property name="offsetNid" type="int" value="136"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton1">
