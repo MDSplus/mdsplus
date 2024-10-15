@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PI 3.14159265358
 static int totSamples = 65536;
 static double frequency;
-static int pts;
+// static int pts;
 static int confOk;
 // Return 0 if succesful, -1 if any argument is not correct
 int initialize(char *name, int clockFreq, int postTriggerSamples)
@@ -89,7 +89,7 @@ int initialize(char *name, int clockFreq, int postTriggerSamples)
   return 1;
 }
 
-int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
+int acquire(char *name __attribute__((unused)), short *c1, short *c2, short *c3, short *c4)
 {
   int i;
   printf("ACQUIRE\n");
@@ -109,7 +109,7 @@ int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
 static long currSamples;
 static double currPeriod;
 static double trigger;
-int initializeStream(char *name, float clockFreq, float trigTime)
+int initializeStream(char *name __attribute__((unused)), float clockFreq, float trigTime)
 {
     printf("INITIALIZE STREAM: %s, %f, %f\n", name, clockFreq, trigTime);
     currPeriod = 1./clockFreq;

@@ -79,7 +79,7 @@ union semun {
 int check_sema4()
 {
   int count;
-  union semun u;
+  union semun u = {};
 
   extern int semid;
 

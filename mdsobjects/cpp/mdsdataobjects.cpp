@@ -1880,7 +1880,7 @@ Data *Uint8Array::deserialize() { return (Data *)deserializeData(ptr); }
 void Scope::show()
 {
   char expr[256];
-  std::sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width,
+  std::snprintf(expr, sizeof(expr), "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width,
                height);
   Data *ris = execute(expr);
   deleteData(ris);
@@ -1900,7 +1900,7 @@ Scope::Scope(const char *name, int x, int y, int width, int height)
 void Scope::plot(Data *x, Data *y, int row, int col, const char *color)
 {
   char expr[256];
-  std::sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row,
+  std::snprintf(expr, sizeof(expr), "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row,
                col, color);
   Data *ris = executeWithArgs(expr, 2, x, y);
   deleteData(ris);
@@ -1908,7 +1908,7 @@ void Scope::plot(Data *x, Data *y, int row, int col, const char *color)
 void Scope::oplot(Data *x, Data *y, int row, int col, const char *color)
 {
   char expr[256];
-  std::sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col,
+  std::snprintf(expr, sizeof(expr), "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col,
                color);
   Data *ris = executeWithArgs(expr, 2, x, y);
   deleteData(ris);

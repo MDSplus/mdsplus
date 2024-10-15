@@ -567,8 +567,10 @@ static void InitializeGeometry(ListTreeWidget w)
          w->list.preferredHeight);
 }
 
-static void Initialize(Widget request, Widget tnew, ArgList args,
-                       Cardinal *num)
+static void Initialize(Widget request __attribute__((unused)),
+                       Widget tnew,
+                       ArgList args __attribute__((unused)),
+                       Cardinal *num __attribute__((unused)))
 {
   ListTreeWidget w;
 
@@ -624,7 +626,9 @@ static void Destroy(ListTreeWidget w)
   FreePixmap(w, &w->list.LeafOpen);
 }
 
-static void Redisplay(Widget aw, XExposeEvent *event, Region region)
+static void Redisplay(Widget aw,
+                      XExposeEvent *event,
+                      Region region __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
@@ -648,8 +652,11 @@ static void Redisplay(Widget aw, XExposeEvent *event, Region region)
                  Prim_ShadowThickness(w), XmSHADOW_IN);
 }
 
-static Boolean SetValues(Widget current, Widget request, Widget reply,
-                         ArgList args, Cardinal *nargs)
+static Boolean SetValues(Widget current,
+                         Widget request __attribute__((unused)),
+                         Widget reply __attribute__((unused)),
+                         ArgList args __attribute__((unused)),
+                         Cardinal *nargs __attribute__((unused)))
 {
   if (!XtIsRealized(current))
     return False;
@@ -759,7 +766,8 @@ static void SetScrollbars(ListTreeWidget w)
   MDSDBG("item=%d visible=%d\n", w->list.itemCount, w->list.visibleCount);
 }
 
-static void VSBCallback(Widget scrollbar, XtPointer client_data,
+static void VSBCallback(Widget scrollbar __attribute__((unused)),
+                        XtPointer client_data,
                         XtPointer call_data)
 {
   ListTreeWidget w = (ListTreeWidget)client_data;
@@ -788,7 +796,8 @@ static void VSBCallback(Widget scrollbar, XtPointer client_data,
 #endif
 }
 
-static void HSBCallback(Widget scrollbar, XtPointer client_data,
+static void HSBCallback(Widget scrollbar __attribute__((unused)),
+                        XtPointer client_data,
                         XtPointer call_data)
 {
   ListTreeWidget w = (ListTreeWidget)client_data;
@@ -1120,7 +1129,8 @@ static void SelectDouble(ListTreeWidget w)
 }
 
 /* ARGSUSED */
-static void SelectSingle(XtPointer client_data, XtIntervalId *idp)
+static void SelectSingle(XtPointer client_data,
+                         XtIntervalId *idp __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)client_data;
 
@@ -1144,8 +1154,10 @@ static void SelectSingle(XtPointer client_data, XtIntervalId *idp)
 }
 
 /* ARGSUSED */
-static void select_start(Widget aw, XEvent *event, String *params,
-                         Cardinal *num_params)
+static void select_start(Widget aw,
+                         XEvent *event,
+                         String *params __attribute__((unused)),
+                         Cardinal *num_params __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
@@ -1181,8 +1193,10 @@ static void select_start(Widget aw, XEvent *event, String *params,
 }
 
 /* ARGSUSED */
-static void extend_select_start(Widget aw, XEvent *event, String *params,
-                                Cardinal *num_params)
+static void extend_select_start(Widget aw,
+                                XEvent *event,
+                                String *params __attribute__((unused)),
+                                Cardinal *num_params __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
@@ -1199,8 +1213,10 @@ static void extend_select_start(Widget aw, XEvent *event, String *params,
 }
 
 /* ARGSUSED */
-static void extend_select(Widget aw, XEvent *event, String *params,
-                          Cardinal *num_params)
+static void extend_select(Widget aw,
+                          XEvent *event,
+                          String *params __attribute__((unused)),
+                          Cardinal *num_params __attribute__((unused)))
 {
   ListTreeItem *item;
   ListTreeWidget w = (ListTreeWidget)aw;
@@ -1250,8 +1266,10 @@ static void extend_select(Widget aw, XEvent *event, String *params,
 }
 
 /* ARGSUSED */
-static void unset(Widget aw, XEvent *event, String *params,
-                  Cardinal *num_params)
+static void unset(Widget aw,
+                  XEvent *event,
+                  String *params __attribute__((unused)),
+                  Cardinal *num_params __attribute__((unused)))
 {
   ListTreeItem *item;
   ListTreeWidget w = (ListTreeWidget)aw;
@@ -1267,8 +1285,10 @@ static void unset(Widget aw, XEvent *event, String *params,
 }
 
 /* ARGSUSED */
-static void notify(Widget aw, XEvent *event, String *params,
-                   Cardinal *num_params)
+static void notify(Widget aw,
+                   XEvent *event __attribute__((unused)),
+                   String *params __attribute__((unused)),
+                   Cardinal *num_params __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
@@ -1317,10 +1337,10 @@ static void focus_out(Widget aw, XEvent *event, String *params,
 }
 
 /* ARGSUSED */
-static void menu(aw, event, params, num_params) Widget aw;
-XEvent *event;
-String *params;
-Cardinal *num_params;
+static void menu(Widget aw,
+                 XEvent *event,
+                 String *params __attribute__((unused)),
+                 Cardinal *num_params __attribute__((unused)))
 {
   ListTreeWidget w = (ListTreeWidget)aw;
   ListTreeItem *item;
@@ -1343,10 +1363,10 @@ Cardinal *num_params;
 }
 
 /* ARGSUSED */
-static void keypress(aw, event, params, num_params) Widget aw;
-XEvent *event;
-String *params;
-Cardinal *num_params;
+static void keypress(Widget aw __attribute__((unused)),
+                     XEvent *event __attribute__((unused)),
+                     String *params __attribute__((unused)),
+                     Cardinal *num_params __attribute__((unused)))
 {
   MDSDBG("keypress\n");
 }
@@ -1681,7 +1701,10 @@ static void GotoPosition(ListTreeWidget w)
   GotoPositionChildren(w, w->list.topItem, -1);
 }
 
-static int CountItem(ListTreeWidget w, ListTreeItem *item, int x, int y)
+static int CountItem(ListTreeWidget w,
+                     ListTreeItem *item,
+                     int x,
+                     int y __attribute__((unused)))
 {
   int height;
   int xtext;
@@ -2107,8 +2130,10 @@ ListTreeItem *ListTreeAddLeaf(ListTreeWidget w, ListTreeItem *parent,
   return (AddItem(w, parent, string, ItemLeafType));
 }
 
-void ListTreeSetItemPixmaps(ListTreeWidget w, ListTreeItem *item,
-                            Pixmap openPixmap, Pixmap closedPixmap)
+void ListTreeSetItemPixmaps(ListTreeWidget w __attribute__((unused)),
+                            ListTreeItem *item,
+                            Pixmap openPixmap,
+                            Pixmap closedPixmap)
 {
   item->openPixmap = openPixmap;
   item->closedPixmap = closedPixmap;
@@ -2298,7 +2323,8 @@ int ListTreeOrderChildren(ListTreeWidget w, ListTreeItem *item)
   return 1;
 }
 
-ListTreeItem *ListTreeFindSiblingName(ListTreeWidget w, ListTreeItem *item,
+ListTreeItem *ListTreeFindSiblingName(ListTreeWidget w __attribute__((unused)),
+                                      ListTreeItem *item,
                                       char *name)
 {
   TreeCheck(w, "in ListTreeFindSiblingName");
