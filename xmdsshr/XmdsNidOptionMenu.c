@@ -211,7 +211,9 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   return w;
 }
 
-static void Destroy(Widget w, Resources *info, XtPointer cb)
+static void Destroy(Widget w __attribute__((unused)),
+                    Resources *info,
+                    XtPointer cb __attribute__((unused)))
 {
   int num;
   Widget *labels;
@@ -407,7 +409,8 @@ EXPORT int XmdsNidOptionMenuApply(Widget w)
   return status;
 }
 
-static void MenuChanged(Widget w, Resources *info,
+static void MenuChanged(Widget w __attribute__((unused)),
+                        Resources *info,
                         XmRowColumnCallbackStruct *cb)
 {
   if (cb->reason == XmCR_ACTIVATE)
@@ -429,7 +432,10 @@ static void MenuChanged(Widget w, Resources *info,
   }
 }
 
-static void ButtonPushed(Widget w, int index, XmPushButtonCallbackStruct *cb) {}
+static void ButtonPushed(Widget w __attribute__((unused)),
+                         int index __attribute__((unused)),
+                         XmPushButtonCallbackStruct *cb __attribute__((unused)))
+{ }
 
 EXPORT void XmdsNidOptionMenuSetButton(Widget w, int idx, String text)
 {
