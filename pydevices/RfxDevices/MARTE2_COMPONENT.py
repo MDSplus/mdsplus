@@ -679,7 +679,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                         useColumnOrder = 0
                     treeRefs.append({
                         'Name':currSig['Name'], 
-                        'Expression': value, 
+                        'Expression': value,
+                        'NumberOfElements':  currSig['NumberOfElements'],
+                        'NumberOfDimensions': currSig['NumberOfDimensions'],
                         'UseColumnOrder': useColumnOrder, 
                         'Type': currSig['Type']})
                 else: #It is a constant
@@ -747,7 +749,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         else: #Not a reference to the output of a MARTe2 device
             if isinstance(value.evaluate(), MDSplus.Signal):
-                treeRefs.append({'Name':'OutputTrigger', 'Expression': value, 'UseColumnOrder': 0, 'Type': 'uint8'})
+                treeRefs.append({'Name':'OutputTrigger', 'Expression': value, 'UseColumnOrder': 0, 'Type': 'uint8', 'NumberOfElements':1, 'NumberOfDimensions':0})
                           
     #Return DataSource definition (dictionary) handling the inputs to be received form other supervisors
     def handleInputsToBeReceived(self, inputs, isSync):
@@ -849,8 +851,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         for treeRef in treeRefs:
             outputs.append({
                 'Name': treeRef['Name'], 
-                'NumberOfDimensions': 0, 
-                'NumberOfElements': 1, 
+                'NumberOfDimensions': treeRef['NumberOfDimensions'],
+                'NumberOfElements': treeRef['NumberOfElements'], 
                 'Type': treeRef['Type'],
                 'UseColumnOrder': treeRef['UseColumnOrder'], 
                 'DataExpr': treeRef['Expression'].decompile(), 
