@@ -397,7 +397,7 @@ EXPORT Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args,
   return XtCreateWidget(name, xmdsWavedrawWidgetClass, parent, args, argcount);
 }
 
-static void ClassPartInitialize(XmdsWavedrawWidgetClass class)
+static void ClassPartInitialize(XmdsWavedrawWidgetClass class __attribute__((unused)))
 {
 
 #define initTrans(field, deftrans)             \
@@ -830,8 +830,12 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
   return stat;
 }
 
-static void SlideStretch(XmdsWavedrawWidget w, int idx, float *desired_x,
-                         float *desired_y, float *new_x, float *new_y,
+static void SlideStretch(XmdsWavedrawWidget w,
+                         int idx,
+                         float *desired_x,
+                         float *desired_y,
+                         float *new_x __attribute__((unused)),
+                         float *new_y __attribute__((unused)),
                          Boolean callcallbacks, XEvent *event,
                          Boolean stretch)
 {

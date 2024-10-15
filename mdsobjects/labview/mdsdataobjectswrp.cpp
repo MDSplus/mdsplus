@@ -6500,269 +6500,270 @@ namespace MDSplus
       deleteLvData(lvUint8ArrayPtr);
     }
 
-    ////////////////////////////////TEMPORARY TEST
-    ///ROUTINES///////////////////////////
+    // (SLW) Commented out, they aren't called from anywhere and generate many compiler warnings
 
-    EXPORT void prova1() { std::cout << "CIAO SONO PROVA1\n"; }
+    ////////////////////////////////TEMPORARY TEST ROUTINES///////////////////////////
 
-    EXPORT void prova2()
-    {
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        std::cout << exc.what() << std::endl;
-      }
-      std::cout << "CIAO SONO PROVA2\n";
-    }
+    // EXPORT void prova1() { std::cout << "CIAO SONO PROVA1\n"; }
 
-    EXPORT void prova3(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
+    // EXPORT void prova2()
+    // {
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     std::cout << exc.what() << std::endl;
+    //   }
+    //   std::cout << "CIAO SONO PROVA2\n";
+    // }
 
-    EXPORT void prova4(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        i = 0;
-      }
+    // EXPORT void prova3(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
-    EXPORT void prova41(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        i = 0;
-      }
+    // EXPORT void prova4(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     i = 0;
+    //   }
 
-      *outInt = inInt;
-      errorMessage = (char *)"CAZZACICCIA";
-      errorCode = bogusError;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
-    EXPORT void prova40(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      *outInt = inInt;
-      errorMessage = (char *)"CAZZACICCIA";
-      errorCode = bogusError;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
-    EXPORT void prova42(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        errorMessage = (char *)"CAZZACICCIA";
-        errorCode = bogusError;
-      }
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
+    // EXPORT void prova41(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     i = 0;
+    //   }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
-    EXPORT void prova43(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        char *currErr = (char *)exc.what();
-        errorMessage = (char *)"CAZZACICCIA";
-        errorCode = bogusError;
-      }
+    //   *outInt = inInt;
+    //   errorMessage = (char *)"CAZZACICCIA";
+    //   errorCode = bogusError;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
+    // EXPORT void prova40(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   *outInt = inInt;
+    //   errorMessage = (char *)"CAZZACICCIA";
+    //   errorCode = bogusError;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
+    // EXPORT void prova42(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     errorMessage = (char *)"CAZZACICCIA";
+    //     errorCode = bogusError;
+    //   }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
-    EXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      //
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        //      char *currErr = (char *)exc.what();
-        //      errorMessage = strdup(currErr);
-        errorCode = bogusError;
-      }
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
+    // EXPORT void prova43(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     char *currErr = (char *)exc.what();
+    //     errorMessage = (char *)"CAZZACICCIA";
+    //     errorCode = bogusError;
+    //   }
 
-      *outInt = inInt;
-      //  fillErrorCluster(errorCode, errorSource, errorMessage, error);
-      fillErrorCluster(errorCode, errorSource, "", error);
-    }
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
+    // EXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   //
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     //      char *currErr = (char *)exc.what();
+    //     //      errorMessage = strdup(currErr);
+    //     errorCode = bogusError;
+    //   }
 
-    EXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        char *currErr = (char *)exc.what();
-        errorMessage = strdup(currErr);
-        errorCode = bogusError;
-      }
+    //   *outInt = inInt;
+    //   //  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    //   fillErrorCluster(errorCode, errorSource, "", error);
+    // }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
+    // EXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     char *currErr = (char *)exc.what();
+    //     errorMessage = strdup(currErr);
+    //     errorCode = bogusError;
+    //   }
 
-    EXPORT void prova5(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      int i;
-      try
-      {
-        MDSplus::Tree *tree = new Tree("CACCA", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        fillErrorCluster(bogusError, errorSource, exc.what(), error);
-        return;
-      }
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
+    // EXPORT void prova5(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   int i;
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("CACCA", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     fillErrorCluster(bogusError, errorSource, exc.what(), error);
+    //     return;
+    //   }
 
-    EXPORT void prova6(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      try
-      {
-        MDSplus::Data *d = new Int32(123);
-      }
-      catch (const MdsException &exc)
-      {
-        errorCode = bogusError;
-        errorMessage = const_cast<char *>(exc.what());
-      }
-    }
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
 
-    EXPORT void prova7(int inInt, int *outInt, ErrorCluster *error)
-    {
-      MgErr errorCode = noErr;
-      const char *errorSource = __FUNCTION__;
-      char const *errorMessage = "";
-      try
-      {
-        MDSplus::Tree *tree = new Tree("test", -1);
-      }
-      catch (const MdsException &exc)
-      {
-        errorCode = bogusError;
-        errorMessage = const_cast<char *>(exc.what());
-      }
+    // EXPORT void prova6(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   try
+    //   {
+    //     MDSplus::Data *d = new Int32(123);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     errorCode = bogusError;
+    //     errorMessage = const_cast<char *>(exc.what());
+    //   }
+    // }
 
-      *outInt = inInt;
-      fillErrorCluster(errorCode, errorSource, errorMessage, error);
-    }
+    // EXPORT void prova7(int inInt, int *outInt, ErrorCluster *error)
+    // {
+    //   MgErr errorCode = noErr;
+    //   const char *errorSource = __FUNCTION__;
+    //   char const *errorMessage = "";
+    //   try
+    //   {
+    //     MDSplus::Tree *tree = new Tree("test", -1);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     errorCode = bogusError;
+    //     errorMessage = const_cast<char *>(exc.what());
+    //   }
 
-    EXPORT void prova8()
-    {
-      Int64 *timeInsertedData = new Int64(0);
-      Data *retTimeStr = executeWithArgs("date_time(0)", 0);
-      std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
-      std::cout << "FATTO EXECUTE WITH ARGS" << (void *)retTimeStr << std::endl;
+    //   *outInt = inInt;
+    //   fillErrorCluster(errorCode, errorSource, errorMessage, error);
+    // }
 
-      std::cout << retTimeStr->getString() << std::endl;
-    }
+    // EXPORT void prova8()
+    // {
+    //   Int64 *timeInsertedData = new Int64(0);
+    //   Data *retTimeStr = executeWithArgs("date_time(0)", 0);
+    //   std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
+    //   std::cout << "FATTO EXECUTE WITH ARGS" << (void *)retTimeStr << std::endl;
 
-    EXPORT void prova9()
-    {
-      Int64 *timeInsertedData = new Int64(0);
-      Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
-      std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
+    //   std::cout << retTimeStr->getString() << std::endl;
+    // }
 
-      std::cout << retTimeStr->getString() << std::endl;
-    }
-    EXPORT void prova10()
-    {
-      Int32 *timeInsertedData = new Int32(0);
-      Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
+    // EXPORT void prova9()
+    // {
+    //   Int64 *timeInsertedData = new Int64(0);
+    //   Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
+    //   std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
 
-      std::cout << retTimeStr->getString() << std::endl;
-    }
+    //   std::cout << retTimeStr->getString() << std::endl;
+    // }
+    // EXPORT void prova10()
+    // {
+    //   Int32 *timeInsertedData = new Int32(0);
+    //   Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
 
-    EXPORT void prova11()
-    {
-      try
-      {
-        Tree *tree = new Tree("test", 1);
-        TreeNode *n = tree->getNode("SIG");
-        n->deleteData();
-        Data *start = new Float32(0);
-        Data *end = new Float32(9);
-        Data *delta = new Float32(1);
-        Data *dim = new Range(start, end, delta);
-        float *floatArr = new float[10];
-        for (int i = 0; i < 10; i++)
-          floatArr[i] = i;
-        Data *arrD = new Float32Array(floatArr, 10);
-        n->makeSegment(start, end, dim, (Array *)arrD);
-      }
-      catch (const MdsException &exc)
-      {
-        std::cout << "ERRORE: " << exc.what() << std::endl;
-      }
-      std::cout << "FINITO CACCONA www\n";
-    }
+    //   std::cout << retTimeStr->getString() << std::endl;
+    // }
+
+    // EXPORT void prova11()
+    // {
+    //   try
+    //   {
+    //     Tree *tree = new Tree("test", 1);
+    //     TreeNode *n = tree->getNode("SIG");
+    //     n->deleteData();
+    //     Data *start = new Float32(0);
+    //     Data *end = new Float32(9);
+    //     Data *delta = new Float32(1);
+    //     Data *dim = new Range(start, end, delta);
+    //     float *floatArr = new float[10];
+    //     for (int i = 0; i < 10; i++)
+    //       floatArr[i] = i;
+    //     Data *arrD = new Float32Array(floatArr, 10);
+    //     n->makeSegment(start, end, dim, (Array *)arrD);
+    //   }
+    //   catch (const MdsException &exc)
+    //   {
+    //     std::cout << "ERRORE: " << exc.what() << std::endl;
+    //   }
+    //   std::cout << "FINITO CACCONA www\n";
+    // }
 
   } // End Extern "C"
 } // End Namespace MDSplus

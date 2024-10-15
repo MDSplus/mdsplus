@@ -1,24 +1,21 @@
 /*
  *	atomic data types 0 - 37, 51-55
  */
-DEFINE(MISSING, 0)      /* no data */
-DEFINE(V_deprecated, 1) /* aligned bit string */
-DEFINE(BU, 2)           /* byte (unsigned);  8-bit unsigned quantity */
-DEFINE(WU, 3)           /* word (unsigned);  16-bit unsigned quantity */
-DEFINE(LU, 4)           /* longword (unsigned);  32-bit unsigned quantity */
-DEFINE(QU, 5)           /* quadword (unsigned);  64-bit unsigned quantity */
-DEFINE(B, 6)            /* byte integer (signed);  8-bit signed 2's-complement integer */
-DEFINE(W, 7)            /* word integer (signed);  16-bit signed 2's-complement integer */
-DEFINE(L,
-       8) /* longword integer (signed);  32-bit signed 2's-complement integer */
-DEFINE(Q,
-       9)                  /* quadword integer (signed);  64-bit signed 2's-complement integer */
+DEFINE(MISSING, 0)         /* no data */
+DEFINE(V_deprecated, 1)    /* aligned bit string */
+DEFINE(BU, 2)              /* byte (unsigned);  8-bit unsigned quantity */
+DEFINE(WU, 3)              /* word (unsigned);  16-bit unsigned quantity */
+DEFINE(LU, 4)              /* longword (unsigned);  32-bit unsigned quantity */
+DEFINE(QU, 5)              /* quadword (unsigned);  64-bit unsigned quantity */
+DEFINE(B, 6)               /* byte integer (signed);  8-bit signed 2's-complement integer */
+DEFINE(W, 7)               /* word integer (signed);  16-bit signed 2's-complement integer */
+DEFINE(L, 8)               /* longword integer (signed);  32-bit signed 2's-complement integer */
+DEFINE(Q, 9)               /* quadword integer (signed);  64-bit signed 2's-complement integer */
 DEFINE(F, 10)              /* F_floating;	32-bit single-precision floating point */
 DEFINE(D, 11)              /* D_floating;	64-bit double-precision floating point */
 DEFINE(FC, 12)             /* F_floating complex */
 DEFINE(DC, 13)             /* D_floating complex */
-DEFINE(T, 14)              /* character string;  a single 8-bit character or a sequence of
-                  characters */
+DEFINE(T, 14)              /* character string;  a single 8-bit character or a sequence of characters */
 DEFINE(NU_deprecated, 15)  /* numeric string) unsigned */
 DEFINE(NL_deprecated, 16)  /* numeric string) left separate sign */
 DEFINE(NLO_deprecated, 17) /* numeric string) left overpunched sign */
@@ -30,9 +27,7 @@ DEFINE(ZI_deprecated, 22)  /* sequence of instructions */
 DEFINE(ZEM_deprecated, 23) /* procedure entry mask */
 DEFINE(DSC, 24)            /* descriptor */
 DEFINE(OU, 25)             /* octaword (unsigned);  128-bit unsigned quantity */
-DEFINE(
-    O,
-    26)                    /* octaword integer (signed);  128-bit signed 2's-complement integer */
+DEFINE(O, 26)              /* octaword integer (signed);  128-bit signed 2's-complement integer */
 DEFINE(G, 27)              /* G_floating;	64-bit double-precision floating point */
 DEFINE(H, 28)              /* H_floating;	128-bit quadruple-precision floating point */
 DEFINE(GC, 29)             /* G_floating complex */
@@ -42,8 +37,7 @@ DEFINE(BPV_deprecated, 32) /* bound procedure value */
 DEFINE(BLV_deprecated, 33) /* bound label value */
 DEFINE(VU_deprecated, 34)  /* unaligned bit string */
 DEFINE(ADT_deprecated, 35) /* absolute date and time */
-DEFINE(VT_deprecated,
-       37) /* varying character string;  16-bit count) followed by a string */
+DEFINE(VT_deprecated, 37)  /* varying character string;  16-bit count) followed by a string */
 /*
  *	38 - 50 might have been used for RESERVED purposes
  */
