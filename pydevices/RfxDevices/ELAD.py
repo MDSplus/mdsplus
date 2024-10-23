@@ -105,7 +105,7 @@ class ELAD(MDSplus.Device):
                         sampleBuf = sock.recv(4*(2*activeChans+1))
                         chans[2*activeChans][sampleIdx] = np.frombuffer(sampleBuf[:4], dtype = np.int32)
                         for chanIdx in range(2*activeChans):
-                            print(np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32))
+                            #print(np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32))
                             chans[chanIdx][sampleIdx] = np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32)
                         actSegmentSize = actSegmentSize+1
                         if stopAcq[self.nid]:
@@ -120,7 +120,7 @@ class ELAD(MDSplus.Device):
                         getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
                         getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
-                    MDSplus.Event.setevent(self.jscope_ev.data())
+                    MDSplus.Event.setevent(self.device.jscope_ev.data())
 
 
     class AsynchStoreTcp(Thread):
@@ -185,7 +185,7 @@ class ELAD(MDSplus.Device):
                         getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
                         getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
-                    MDSplus.Event.setevent('ELAD_JSCOPE')
+                    MDSplus.Event.setevent(self.device.jscope_ev.data())
                     prevSamples = actSamples
                 sock.shutdown(socket.SHUT_RDWR)
                 sock.close()
