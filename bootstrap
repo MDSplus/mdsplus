@@ -54,9 +54,9 @@ automake --add-missing
 
 autoconf
 
-$PYTHON deploy/gen_messages.py
-$PYTHON deploy/gen_compound_opcbuiltins.py
-
-deploy/yylex.gen tdishr
-deploy/yylex.gen treeshr
-deploy/yylex.gen mdsdcl
+$PYTHON deploy/gen-include-opcbuiltins.py
+$PYTHON deploy/gen-include-tdishr.py
+$PYTHON deploy/gen-messages-exceptions.py
+$PYTHON deploy/gen-python-compound.py
+$PYTHON deploy/gen-tdishr-TdiHash.py
+$PYTHON deploy/gen-yacc-lex.py
