@@ -328,8 +328,8 @@ severities = ["W", "S", "E", "I", "F", "?", "?", "?"]
 
 def gen_include(root, filename, faclist, f_test):
     pfaclist = ["MDSplus"]
-    include_filename = f'include/{filename[0:-3]}h'
-    print(f"Generating '{include_filename}' from '{filename}'")
+    include_filename = 'include/%sh' % (filename[0:-3],)
+    print("Generating '%s' from '%s'" % (include_filename, filename))
     with open(include_filename, 'w') as f_inc:
         add_c_header(f_inc, filename)
         parts = filename.upper().split('.')
@@ -409,7 +409,7 @@ if f_test:
 
 msglist = sorted(msglist, key=lambda item: item['msgnum'])
 
-print(f"Generating '{PYTHON_EXCEPTIONS_FILENAME}'")
+print("Generating '{}'".format(PYTHON_EXCEPTIONS_FILENAME))
 with open(PYTHON_EXCEPTIONS_FILENAME, 'w') as f_py:
     add_py_header(f_py)
     f_py.write(py_head)
@@ -421,7 +421,7 @@ with open(PYTHON_EXCEPTIONS_FILENAME, 'w') as f_py:
             facs.add(msg['fac'])
         f_py.write(py_exc_class % msg)
 
-print(f"Generating '{GET_STANDARD_MESSAGE_FILENAME}'")
+print("Generating '{}'".format(GET_STANDARD_MESSAGE_FILENAME))
 with open(GET_STANDARD_MESSAGE_FILENAME, 'w') as f_getmsg:
     add_c_header(f_getmsg)
     f_getmsg.write(msg_head)
@@ -432,7 +432,7 @@ with open(GET_STANDARD_MESSAGE_FILENAME, 'w') as f_getmsg:
         f_getmsg.write(msg_case % msg)
     f_getmsg.write(msg_tail)
 
-print(f"Generating '{JAVA_EXCEPTIONS_FILENAME}'")
+print("Generating '{}'".format(JAVA_EXCEPTIONS_FILENAME))
 with open(JAVA_EXCEPTIONS_FILENAME, 'w') as f_jma:
     add_c_header(f_jma)
     f_jma.write(jma_head)

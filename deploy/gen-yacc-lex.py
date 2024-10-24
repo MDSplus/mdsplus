@@ -3,7 +3,18 @@ import os
 import glob
 import shutil
 
-from subprocess import *
+import subprocess
+
+# For compatability with python < 3.3
+if not hasattr(shutil, 'which'):
+    def which(cmd):
+        try:
+            which_result = subprocess.check_output([ 'which', cmd ])
+        except subprocess.CalledProcessError:
+            return None
+        return which_result.strip()
+    
+    shutil.which = which
 
 # Move to the root of the repository
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -45,15 +56,15 @@ yacc_filename_list = glob.glob('**/*.y')
 lex_filename_list = glob.glob('**/*.l')
 
 for yacc_filename in yacc_filename_list:
-    print(f"Running '{yacc} --verbose {yacc_filename}'")
-    status = Popen([yacc, '--verbose', yacc_filename]).wait()
+    print("Running '{} --verbose {}'".format(yacc, yacc_filename))
+    status = subprocess.Popen([yacc, '--verbose', yacc_filename]).wait()
     if status != 0:
-        print(f"Failed to process '{yacc_filename}'")
+        print("Failed to process '{}'".format(yacc_filename))
         exit(1)
 
 for lex_filename in lex_filename_list:
-    print(f"Running '{lex} -p {lex_filename}'")
-    status = Popen([lex, '-p', lex_filename]).wait()
+    print("Running '{} -p {}'".format(lex, lex_filename))
+    status = subprocess.Popen([lex, '-p', lex_filename]).wait()
     if status != 0:
-        print(f"Failed to process '{lex_filename}'")
+        print("Failed to process '{}'".format(lex_filename))
         exit(1)

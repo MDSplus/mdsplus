@@ -3,7 +3,19 @@ import os
 import csv
 import shutil
 
-from subprocess import *
+import subprocess
+
+# For compatability with python < 3.3
+if not hasattr(shutil, 'which'):
+    def which(cmd):
+        try:
+            which_result = subprocess.check_output([ 'which', cmd ])
+        except subprocess.CalledProcessError:
+            return None
+        return which_result.strip()
+    
+    shutil.which = which
+
 
 # Move to the root of the repository
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -22,7 +34,7 @@ if gperf is None:
     exit(1)
 
 # Generate the input file for gperf
-print(f"Generating '{INTERMEDIARY_FILENAME}' from '{OPCODES_FILENAME}'")
+print("Generating '{}' from '{}'".format(INTERMEDIARY_FILENAME, OPCODES_FILENAME))
 intermediary_file = open(INTERMEDIARY_FILENAME, 'wt')
 
 intermediary_file.write('''
@@ -51,7 +63,7 @@ struct fun { int name; int idx; };
 # Generate a list of opcodes for gperf to process
 # Each one must be in the format of `string,index`
 
-opcodes_file = open(OPCODES_FILENAME, newline='')
+opcodes_file = open(OPCODES_FILENAME) # , newline=''
 reader = csv.DictReader(opcodes_file)
 
 opcode_lines = []
@@ -77,10 +89,10 @@ int tdi_hash(const int len, const char *const pstring)
 intermediary_file.close()
 
 # Process the input file with gperf
-proc = Popen(
-    f'{gperf} {INTERMEDIARY_FILENAME}'.split(),
-    stdin=PIPE,
-    stdout=PIPE,
+proc = subprocess.Popen(
+    [ 'gperf', INTERMEDIARY_FILENAME ],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
 )
 
 stdout = proc.communicate()[0].decode()
@@ -95,7 +107,7 @@ for line in lines:
     output_lines.append(line)
 
 # Output the final product
-print(f"Generating '{OUTPUT_FILENAME}' from '{INTERMEDIARY_FILENAME}'")
+print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, INTERMEDIARY_FILENAME))
 output_file = open(OUTPUT_FILENAME, 'wt')
 
 output_file.write('\n'.join(output_lines))

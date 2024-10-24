@@ -11,9 +11,9 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OPCODES_FILENAME = 'tdishr/opcodes.csv'
 OUTPUT_FILENAME = 'include/tdishr.h'
 
-print(f"Generating '{OUTPUT_FILENAME}' from '{OPCODES_FILENAME}'")
+print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, OPCODES_FILENAME))
 
-opcodes_file = open(OPCODES_FILENAME, newline='')
+opcodes_file = open(OPCODES_FILENAME) # , newline=''
 reader = csv.DictReader(opcodes_file)
 
 opcode_names = []
@@ -56,17 +56,17 @@ extern int CvtConvertFloat(
 ''')
 
 for name in opcode_names:
-    output_file.write(f'extern const opcode_t Opc{name};\n')
+    output_file.write('extern const opcode_t Opc{};\n'.format(name))
 
 output_file.write('\n')
 
 for name in opcode_names:
-    output_file.write(f'extern int Tdi{name}(struct descriptor *first, ...);\n')
+    output_file.write('extern int Tdi{}(struct descriptor *first, ...);\n'.format(name))
 
 output_file.write('\n')
 
 for name in opcode_names:
-    output_file.write(f'extern int _Tdi{name}(void **ctx, struct descriptor *first, ...);\n')
+    output_file.write('extern int _Tdi{}(void **ctx, struct descriptor *first, ...);\n'.format(name))
 
 output_file.write('\n')
 output_file.write('#endif\n')

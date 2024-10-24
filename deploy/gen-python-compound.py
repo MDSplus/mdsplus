@@ -19,7 +19,7 @@ FORCEREF_BUILTINS = (
     'COMPILE', 'EXECUTE',
 )
 
-print(f"Generating '{OUTPUT_FILENAME}' from '{INPUT_FILENAME}' and '{OPCODES_FILENAME}'")
+print("Generating '{}' from '{}' and '{}'".format(OUTPUT_FILENAME, INPUT_FILENAME, OPCODES_FILENAME))
 with open(OUTPUT_FILENAME, 'w+') as output_file:
     with open(INPUT_FILENAME, 'r') as input_file:
         for line in input_file:
@@ -28,7 +28,7 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
 
     output_file.write('MAX_DIMS = 8\n')
     
-    with open(OPCODES_FILENAME, newline='') as input_file:
+    with open(OPCODES_FILENAME) as input_file: # , newline=''
         reader = csv.DictReader(input_file)
         
         for line in reader:
