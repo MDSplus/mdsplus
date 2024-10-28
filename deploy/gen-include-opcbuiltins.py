@@ -9,7 +9,7 @@ OPCODES_FILENAME = 'tdishr/opcodes.csv'
 OUTPUT_FILENAME = 'include/opcbuiltins.h'
 
 print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, OPCODES_FILENAME))
-opcodes_file = open(OPCODES_FILENAME) # , newline=''
+opcodes_file = open(OPCODES_FILENAME)  # , newline=''
 output_file = open(OUTPUT_FILENAME, 'wt')
 
 output_file.write('''

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 import os
 import csv
@@ -19,7 +18,8 @@ FORCEREF_BUILTINS = (
     'COMPILE', 'EXECUTE',
 )
 
-print("Generating '{}' from '{}' and '{}'".format(OUTPUT_FILENAME, INPUT_FILENAME, OPCODES_FILENAME))
+print("Generating '{}' from '{}' and '{}'".format(
+    OUTPUT_FILENAME, INPUT_FILENAME, OPCODES_FILENAME))
 with open(OUTPUT_FILENAME, 'w+') as output_file:
     with open(INPUT_FILENAME, 'r') as input_file:
         for line in input_file:
@@ -27,15 +27,16 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
     output_file.write('\n')
 
     output_file.write('MAX_DIMS = 8\n')
-    
-    with open(OPCODES_FILENAME) as input_file: # , newline=''
+
+    with open(OPCODES_FILENAME) as input_file:  # , newline=''
         reader = csv.DictReader(input_file)
-        
+
         for line in reader:
             line['builtin'] = line['builtin'].replace("$", "d")
             has_m2 = int(eval(line['m2'].replace('MAX_DIMS', '8'))) > 0
-            line['min_args_def'] = ('    min_args = %(m1)s\n' % line) if has_m2 else ''
-            
+            line['min_args_def'] = (
+                '    min_args = %(m1)s\n' % line) if has_m2 else ''
+
             if line['builtin'] in FORCEREF_BUILTINS:
                 line['Function'] = '_dat.TreeRef, Function'
             elif has_m2:
@@ -43,14 +44,14 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
                 line['min_args_def'] = '    min_args = %(m1)s\n' % line
             else:
                 line['Function'] = 'Function'
-            
+
             output_file.write((
-                    'class %(builtin)s(%(Function)s):\n'
-                    '    opcode = %(opcode)s\n'
-                    '%(min_args_def)s'
-                    '    max_args = %(m2)s\n'
-                    ) % line)
-            
+                'class %(builtin)s(%(Function)s):\n'
+                '    opcode = %(opcode)s\n'
+                '%(min_args_def)s'
+                '    max_args = %(m2)s\n'
+            ) % line)
+
             if line['builtin'] in ('BUILD_RANGE', 'MAKE_RANGE'):
                 output_file.write((
                     '    def __init__(self, *args):\n'
@@ -69,7 +70,7 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
                 )
             else:
                 output_file.write('\n')
-                
+
     output_file.write(
         '_c = None\n'
         'for _c in globals().values():\n'
@@ -77,4 +78,3 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
         '         Function.opcodeToClass[_c.opcode]=_c\n'
         'del(_c)\n'
     )
-    

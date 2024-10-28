@@ -3,8 +3,6 @@ import os
 import csv
 import shutil
 
-from subprocess import *
-
 # Move to the root of the repository
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -13,7 +11,7 @@ OUTPUT_FILENAME = 'include/tdishr.h'
 
 print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, OPCODES_FILENAME))
 
-opcodes_file = open(OPCODES_FILENAME) # , newline=''
+opcodes_file = open(OPCODES_FILENAME)  # , newline=''
 reader = csv.DictReader(opcodes_file)
 
 opcode_names = []
@@ -61,12 +59,14 @@ for name in opcode_names:
 output_file.write('\n')
 
 for name in opcode_names:
-    output_file.write('extern int Tdi{}(struct descriptor *first, ...);\n'.format(name))
+    output_file.write(
+        'extern int Tdi{}(struct descriptor *first, ...);\n'.format(name))
 
 output_file.write('\n')
 
 for name in opcode_names:
-    output_file.write('extern int _Tdi{}(void **ctx, struct descriptor *first, ...);\n'.format(name))
+    output_file.write(
+        'extern int _Tdi{}(void **ctx, struct descriptor *first, ...);\n'.format(name))
 
 output_file.write('\n')
 output_file.write('#endif\n')

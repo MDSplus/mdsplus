@@ -9,11 +9,11 @@ import subprocess
 if not hasattr(shutil, 'which'):
     def which(cmd):
         try:
-            which_result = subprocess.check_output([ 'which', cmd ])
+            which_result = subprocess.check_output(['which', cmd])
         except subprocess.CalledProcessError:
             return None
         return which_result.strip()
-    
+
     shutil.which = which
 
 
@@ -34,7 +34,8 @@ if gperf is None:
     exit(1)
 
 # Generate the input file for gperf
-print("Generating '{}' from '{}'".format(INTERMEDIARY_FILENAME, OPCODES_FILENAME))
+print("Generating '{}' from '{}'".format(
+    INTERMEDIARY_FILENAME, OPCODES_FILENAME))
 intermediary_file = open(INTERMEDIARY_FILENAME, 'wt')
 
 intermediary_file.write('''
@@ -63,7 +64,7 @@ struct fun { int name; int idx; };
 # Generate a list of opcodes for gperf to process
 # Each one must be in the format of `string,index`
 
-opcodes_file = open(OPCODES_FILENAME) # , newline=''
+opcodes_file = open(OPCODES_FILENAME)  # , newline=''
 reader = csv.DictReader(opcodes_file)
 
 opcode_lines = []
@@ -90,7 +91,7 @@ intermediary_file.close()
 
 # Process the input file with gperf
 proc = subprocess.Popen(
-    [ 'gperf', INTERMEDIARY_FILENAME ],
+    ['gperf', INTERMEDIARY_FILENAME],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
 )
@@ -107,7 +108,8 @@ for line in lines:
     output_lines.append(line)
 
 # Output the final product
-print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, INTERMEDIARY_FILENAME))
+print("Generating '{}' from '{}'".format(
+    OUTPUT_FILENAME, INTERMEDIARY_FILENAME))
 output_file = open(OUTPUT_FILENAME, 'wt')
 
 output_file.write('\n'.join(output_lines))

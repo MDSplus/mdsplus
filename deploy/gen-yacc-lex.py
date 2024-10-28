@@ -9,11 +9,11 @@ import subprocess
 if not hasattr(shutil, 'which'):
     def which(cmd):
         try:
-            which_result = subprocess.check_output([ 'which', cmd ])
+            which_result = subprocess.check_output(['which', cmd])
         except subprocess.CalledProcessError:
             return None
         return which_result.strip()
-    
+
     shutil.which = which
 
 # Move to the root of the repository
@@ -26,7 +26,7 @@ have_tools = True
 if 'YACC' in os.environ:
     yacc = os.environ['YACC']
 else:
-	yacc = shutil.which('bison')
+    yacc = shutil.which('bison')
 
 if yacc is None:
     yacc = shutil.which('yacc')
@@ -40,7 +40,7 @@ if yacc is None:
 if 'LEX' in os.environ:
     lex = os.environ['LEX']
 else:
-	lex = shutil.which('flex')
+    lex = shutil.which('flex')
 
 if lex is None:
     lex = shutil.which('lex')
