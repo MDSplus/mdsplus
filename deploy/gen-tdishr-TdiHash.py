@@ -34,60 +34,57 @@ if gperf is None:
     exit(1)
 
 # Generate the input file for gperf
-print("Generating '{}' from '{}'".format(
-    INTERMEDIARY_FILENAME, OPCODES_FILENAME))
-intermediary_file = open(INTERMEDIARY_FILENAME, 'wt')
+print("Generating '{}' from '{}'".format(INTERMEDIARY_FILENAME, OPCODES_FILENAME))
+with open(INTERMEDIARY_FILENAME, 'wt') as intermediary_file:
 
-intermediary_file.write('''
-%language=C
-%ignore-case
-%compare-strncmp
-%7bit
-%pic
-%includes
-%readonly-tables
-%struct-type
-%define slot-name name
-%define initializer-suffix ,-1
-%{
-#include "tdirefcat.h"
-#include "tdireffunction.h"
-#ifdef _WIN32
-// Windows uses long to cast position and cause a compiler warning
-#define long size_t
-#endif
-%}
-struct fun { int name; int idx; };
-%%
-''')
-
-# Generate a list of opcodes for gperf to process
-# Each one must be in the format of `string,index`
-
-opcodes_file = open(OPCODES_FILENAME)  # , newline=''
-reader = csv.DictReader(opcodes_file)
-
-opcode_lines = []
-for line in reader:
-    opcode_lines.append(
-        '{},{}'.format(
-            line['builtin'],
-            line['opcode']
-        )
+    intermediary_file.write(
+        '%language=C\n'
+        '%ignore-case\n'
+        '%compare-strncmp\n'
+        '%7bit\n'
+        '%pic\n'
+        '%includes\n'
+        '%readonly-tables\n'
+        '%struct-type\n'
+        '%define slot-name name\n'
+        '%define initializer-suffix ,-1\n'
+        '%{\n'
+        '#include "tdirefcat.h"\n'
+        '#include "tdireffunction.h"\n'
+        '#ifdef _WIN32\n'
+        '// Windows uses long to cast position and cause a compiler warning\n'
+        '#define long size_t\n'
+        '#endif\n'
+        '%}\n'
+        'struct fun { int name; int idx; };\n'
+        '%%\n'
     )
 
-intermediary_file.write('\n'.join(opcode_lines))
+    # Generate a list of opcodes for gperf to process
+    # Each one must be in the format of `string,index`
 
-intermediary_file.write('''
-%%
-int tdi_hash(const int len, const char *const pstring)
-{
-	const struct fun *fun = in_word_set(pstring, len);
-	return fun ? fun->idx : -1;
-}
-''')
+    opcode_lines = []
+    with open(OPCODES_FILENAME) as opcodes_file:  # , newline=''
+        reader = csv.DictReader(opcodes_file)
 
-intermediary_file.close()
+        for line in reader:
+            opcode_lines.append(
+                '{},{}'.format(
+                    line['builtin'],
+                    line['opcode']
+                )
+            )
+
+    intermediary_file.write('\n'.join(opcode_lines))
+
+    intermediary_file.write(
+        '%%\n'
+        'int tdi_hash(const int len, const char *const pstring)\n'
+        '{\n'
+        '    const struct fun *fun = in_word_set(pstring, len);\n'
+        '    return fun ? fun->idx : -1;\n'
+        '}\n'
+    )
 
 # Process the input file with gperf
 proc = subprocess.Popen(
@@ -99,6 +96,8 @@ proc = subprocess.Popen(
 stdout = proc.communicate()[0].decode()
 lines = stdout.split('\n')
 
+os.remove(INTERMEDIARY_FILENAME)
+
 # Remove '#line' directives to simplify debugging
 output_lines = []
 for line in lines:
@@ -108,10 +107,6 @@ for line in lines:
     output_lines.append(line)
 
 # Output the final product
-print("Generating '{}' from '{}'".format(
-    OUTPUT_FILENAME, INTERMEDIARY_FILENAME))
-output_file = open(OUTPUT_FILENAME, 'wt')
-
-output_file.write('\n'.join(output_lines))
-
-os.remove(INTERMEDIARY_FILENAME)
+print("Generating '{}' from '{}'".format(OUTPUT_FILENAME, INTERMEDIARY_FILENAME))
+with open(OUTPUT_FILENAME, 'wt') as output_file:
+    output_file.write('\n'.join(output_lines))

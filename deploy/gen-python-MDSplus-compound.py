@@ -18,8 +18,7 @@ FORCEREF_BUILTINS = (
     'COMPILE', 'EXECUTE',
 )
 
-print("Generating '{}' from '{}' and '{}'".format(
-    OUTPUT_FILENAME, INPUT_FILENAME, OPCODES_FILENAME))
+print("Generating '{}' from '{}' and '{}'".format(OUTPUT_FILENAME, INPUT_FILENAME, OPCODES_FILENAME))
 with open(OUTPUT_FILENAME, 'w+') as output_file:
     with open(INPUT_FILENAME, 'r') as input_file:
         for line in input_file:
