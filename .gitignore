@@ -135,14 +135,15 @@ _include/_mdsversion.h
 docs/Makefile.in
 dwscope/Makefile.in
 include/camshr_messages.h
-include/mdsplus/mdsconfig.h
 include/mdsdcl_messages.h
+include/mdsplus/mdsconfig.h
 include/mdsplus/mdsconfig.h.in
 include/mdsshr_messages.h
 include/mitdevices_messages.h
 include/servershr_messages.h
 include/tcl_messages.h
 include/tdishr_messages.h
+include/tdishr.h
 include/treeshr_messages.h
 java/Makefile.in
 java/devicebeans/Makefile.in

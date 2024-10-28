@@ -38,6 +38,7 @@ print("Generating '{}' from '{}'".format(INTERMEDIARY_FILENAME, OPCODES_FILENAME
 with open(INTERMEDIARY_FILENAME, 'wt') as intermediary_file:
 
     intermediary_file.write(
+        '\n'
         '%language=C\n'
         '%ignore-case\n'
         '%compare-strncmp\n'
@@ -78,6 +79,7 @@ with open(INTERMEDIARY_FILENAME, 'wt') as intermediary_file:
     intermediary_file.write('\n'.join(opcode_lines))
 
     intermediary_file.write(
+        '\n'
         '%%\n'
         'int tdi_hash(const int len, const char *const pstring)\n'
         '{\n'
