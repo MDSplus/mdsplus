@@ -53,7 +53,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PI 3.14159265358
 static int totSamples = 65536;
 static double frequency;
-// static int pts;
 static int confOk;
 // Return 0 if succesful, -1 if any argument is not correct
 int initialize(char *name, int clockFreq, int postTriggerSamples)
