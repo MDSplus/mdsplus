@@ -180,7 +180,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   int putnci = 0;
 
   if (!(IS_OPEN(dblist)))
-    return TreeNOTOPEN;
+    return TreeNOT_OPEN;
   if (dblist->open_readonly)
     return TreeREADONLY;
   if (dblist->remote)
@@ -263,7 +263,7 @@ int _TreeFlushOff(void *dbid, int nid)
   NID *nid_ptr = (NID *)&nid;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
-    return TreeNOTOPEN;
+    return TreeNOT_OPEN;
   if (dblist->remote)
     return TreeFlushOffRemote(dbid, nid);
   nid_to_tree(dblist, nid_ptr, tree_info);
@@ -279,7 +279,7 @@ int _TreeFlushReset(void *dbid, int nid)
   NID *nid_ptr = (NID *)&nid;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
-    return TreeNOTOPEN;
+    return TreeNOT_OPEN;
   if (dblist->remote)
     return TreeFlushResetRemote(dbid, nid);
   nid_to_tree(dblist, nid_ptr, tree_info);
