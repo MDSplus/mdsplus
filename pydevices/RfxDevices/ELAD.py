@@ -34,8 +34,11 @@ class ELAD(MDSplus.Device):
         {'path': ':ACT_CHANS', 'type': 'numeric', 'value':2},
         {'path': ':CALIBRATION', 'type': 'text', 'value':"NO"},
         {'path': ':CHOP_ENA', 'type': 'text', 'value':"NO"},
-        {'path': ':STREAM_MODE', 'type': 'text', 'value':'TCP'},
+        {'path': ':STREAM_MODE', 'type': 'text', 'value':'UDP'},
         {'path': ':JSCOPE_EV', 'type': 'text', 'value':'JSCOPE_EVENT'},
+        {'path': ':EXT_CLOCK', 'type': 'numeric', 'value':0},
+        {'path': ':CLOCK_FREQ', 'type': 'numeric', 'value':1000000},
+        {'path': ':HW_STR_TRIG', 'type': 'numeric', 'value':0},
     ]
     for i in range(12):
         parts.extend([
@@ -64,8 +67,14 @@ class ELAD(MDSplus.Device):
         {'path': ':INIT_ACTION', 'type': 'action',
          'valueExpr': "Action(Dispatch('ELAD_SERVER','INIT',50,None),Method(None,'init',head))",
          'options': ('no_write_shot',)},
+        {'path': ':ARM_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('ELAD_SERVER','INIT',55,None),Method(None,'arm',head))",
+         'options': ('no_write_shot',)},
         {'path': ':STORE_ACTION', 'type': 'action',
          'valueExpr': "Action(Dispatch('ELAD_SERVER','STORE',50,None),Method(None,'store',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STR_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('ELAD_SERVER','STORE',60,None),Method(None,'startStream',head))",
          'options': ('no_write_shot',)},
     ])
     del(i)
@@ -80,14 +89,18 @@ class ELAD(MDSplus.Device):
                     self.trigTime = device.trig_time.data()
                 except:
                     self.trigTime = 0.
+                if device.ext_clock.data() == 1:
+                    self.clockFreq = device.clock_freq.data()
+                else:
+                    self.clockFreq = 1E6
+                self.freqDiv = self.device.freq_div.data()
+
 
             def run(self):
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 sock.bind(('',self.device.rec_port.data()))
-                freqDiv = self.device.freq_div.data()
-                actFreq = 1E6/freqDiv
-                segmentSize = int(0.5* 1E6/freqDiv)  #save a segment every 0.5 seconds
+                segmentSize = int(0.5* self.clockFreq/self.freqDiv)  #save a segment every 0.5 seconds
                 print('SEGMENT SIZE: ', segmentSize)
                 activeChans = self.device.act_chans.data()
                 print('ACTIVE CHANS: ', activeChans)
@@ -112,9 +125,10 @@ class ELAD(MDSplus.Device):
                             break
                     if stopAcq[self.nid]:
                         stopped = True
-                    period = freqDiv/1E6
-                    startTime = MDSplus.Float64(chans[2*activeChans][0]*period)
-                    endTime = MDSplus.Float64(chans[2*activeChans][actSegmentSize - 1]*period)
+                        break
+                    period = self.freqDiv/self.clockFreq
+                    startTime = MDSplus.Float64(self.trigTime+chans[2*activeChans][0]*period)
+                    endTime = MDSplus.Float64(self.trigTime+chans[2*activeChans][actSegmentSize - 1]*period)
                     timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
                     for chanIdx in range(activeChans):
                         getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
@@ -132,6 +146,11 @@ class ELAD(MDSplus.Device):
                     self.trigTime = device.trig_time.data()
                 except:
                     self.trigTime = 0.
+                if device.ext_clock.data() == 1:
+                    self.clockFreq = device.clock_freq.data()
+                else:
+                    self.clockFreq = 1E6
+                self.freqDiv = self.device.freq_div.data()
 
             def run(self):
                 serverSocket = socket.socket()
@@ -140,8 +159,6 @@ class ELAD(MDSplus.Device):
                 serverSocket.listen(1)
                 sock, addr = serverSocket.accept()
                 print('TCP Connection established')
-                freqDiv = self.device.freq_div.data()
-                actFreq = 1E6/freqDiv
                 segmentSize = int(1000* (int(1E6/freqDiv)/int(1000)))  #save a segment every second rouded to 1000 samples
                 if segmentSize == 0:
                     print('Invalid frequency division for TCP streaming. It must be less than 1000 (Samplig rate > 1kHz)')
@@ -173,9 +190,9 @@ class ELAD(MDSplus.Device):
                             break
                     if stopAcq[self.nid]:
                         stopped = True
-                    period = freqDiv/1E6
-                    startTime = MDSplus.Float64(prevSamples*period)
-                    endTime = MDSplus.Float64(actSamples*period)
+                    period = self.freqDiv/self.clockFreq
+                    startTime = MDSplus.Float64(self.trigTime+prevSamples*period)
+                    endTime = MDSplus.Float64(self.trigTime+actSamples*period)
                     timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
                     print('segment size: '+str(len(chans[chanIdx])))
                     print('startTime: '+str(startTime))
@@ -231,11 +248,33 @@ class ELAD(MDSplus.Device):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
         try:
+            useHwStreamTrigger = self.hw_str_trig.data()
+        except:
+            print("Missing use Stream HW Trigger flag")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        try:
             useHwAutozeroTrigger = self.hw_auto_trig.data()
         except:
             print("Missing use HW Trigger flag")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
     
+        try:
+            useExtClock = self.ext_clock.data()
+        except:
+            print("Missing use Ext Clock flag")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if useExtClock:
+            try:
+                clockFreq = self.clock_freq.data()
+            except:
+                print("Missing clock frequency for ext clock configuration")
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+            if clockFreq <= 0:
+                print("Clock frequency shall be freater than 0")
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+
         try:
             recPort = self.rec_port.data()
         except:
@@ -308,6 +347,37 @@ class ELAD(MDSplus.Device):
             sock.send(recPort.item().to_bytes(4,'little'))
             print(sock.recv(2))
 
+            sock.send(b'TAU')
+            if useHwAutozeroTrigger:
+                mode = np.int32(1)
+            else:
+                mode = np.int32(0)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            
+            sock.send(b'TEX')
+            if useHwTrigger:
+                mode = np.int32(1)
+            else:
+                mode = np.int32(0)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+
+            sock.send(b'SEX')
+            if useHwStreamTrigger:
+                mode = np.int32(1)
+            else:
+                mode = np.int32(0)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            sock.send(b'CEX')
+            if useExtClock:
+                mode = np.int32(1)
+            else:
+                mode = np.int32(0)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            
             sock.send(b'MOD')
             sock.send(modeReg.to_bytes(4,'little'))
             print(sock.recv(2))
@@ -428,12 +498,12 @@ class ELAD(MDSplus.Device):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
     def stopStream(self):
+        stopAcq[self.getNid()] = True
         try:
             sock = ELAD.socketDict[self.getNid()]
         except:
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        stopAcq[self.getNid()] = True
         try:
             sock.send(b'STO')
             print(sock.recv(2))
