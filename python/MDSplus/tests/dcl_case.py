@@ -23,6 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import os
 import sys
 from MDSplus import Tree, Device, Connection
 from MDSplus import dcl, ccl, tcl, cts, mdsExceptions as Exc
@@ -119,11 +120,17 @@ class Tests(_common.TreeTests, _common.MdsIp):
             Device.PyDevice('TestDevice').Add(
                 pytree, 'TESTDEVICE_S', add_source=True)
             pytree.write()
-        monitor, monitor_port = self._setup_mdsip(
-            'ACTION_MONITOR', 'MONITOR_PORT', 7100+self.index, False)
+
+        test_port_offset = 0
+        if 'TEST_PORT_OFFSET' in os.environ:
+            test_port_offset = int(os.environ['TEST_PORT_OFFSET'])
+
+	    # See testing/ports.csv
+        monitor, monitor_port = self._setup_mdsip('ACTION_MONITOR', 'MONITOR_PORT', 8016 + test_port_offset, False)
         monitor_opt = "/monitor=%s" % monitor if monitor else ""
-        server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7110+self.index, True)
+
+	    # See testing/ports.csv
+        server, server_port = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT', 8017 + test_port_offset, True)
         pytree.normal()
         pytree.TESTDEVICE_I.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE_I.ACTIONSERVER.record = server
@@ -191,8 +198,13 @@ class Tests(_common.TreeTests, _common.MdsIp):
         def test_normal(c, expr, **kv):
             print(expr)
             c.get(expr, **kv)
-        server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7120+self.index, True)
+
+        test_port_offset = 0
+        if 'TEST_PORT_OFFSET' in os.environ:
+            test_port_offset = int(os.environ['TEST_PORT_OFFSET'])
+
+	    # See testing/ports.csv
+        server, server_port = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT', 8018 + test_port_offset, True)
 
         svr, svr_log = self._start_mdsip(server, server_port, 'timeout')
         try:
