@@ -12,38 +12,46 @@ import org.junit.Test;
 
 public class MdsConnectionTest
 {
-	static int port = 8700;
+	// See testing/ports.csv
+	static int port = 8012;
 	static Process mdsip;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
-		for (; port < 8800; port++)
-		{
-			try
-			{
-				new DatagramSocket(port).close();
-				java.lang.String hostspath = System.getenv("MDSPLUS_DIR") + "/testing/mdsip.hosts";
-				if (!new File(hostspath).exists())
-				{
-					hostspath = "/etc/mdsip.hosts";
-					if (!new File(hostspath).exists())
-					{
-						System.exit(5);
-					}
-				}
-				final java.lang.String parts[] =
-				{ "mdsip", "-s", "-p", Integer.toString(port), "-h", hostspath };
-				System.out.println(java.lang.String.join(" ", parts));
-				final ProcessBuilder pb = new ProcessBuilder(parts);
-				mdsip = pb.start();
-				return;
+		int test_port_offset = 0;
+		java.lang.String test_port_offset_env = System.getenv("TEST_PORT_OFFSET");
+		if (test_port_offset_env != null) {
+			try {
+				test_port_offset = Integer.parseInt(test_port_offset_env);
 			}
-			catch (final SocketException exc)
+			catch (final NumberFormatException exc)
 			{}
 		}
-		System.out.println("Cannot find free port!");
-		System.exit(6);
+
+		port += test_port_offset;
+
+		try
+		{
+			new DatagramSocket(port).close();
+			java.lang.String hostspath = System.getenv("MDSPLUS_DIR") + "/testing/mdsip.hosts";
+			if (!new File(hostspath).exists())
+			{
+				hostspath = "/etc/mdsip.hosts";
+				if (!new File(hostspath).exists())
+				{
+					System.exit(5);
+				}
+			}
+			final java.lang.String parts[] =
+			{ "mdsip", "-s", "-p", Integer.toString(port), "-h", hostspath };
+			System.out.println(java.lang.String.join(" ", parts));
+			final ProcessBuilder pb = new ProcessBuilder(parts);
+			mdsip = pb.start();
+			return;
+		}
+		catch (final SocketException exc)
+		{}
 	}
 
 	@AfterClass

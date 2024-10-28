@@ -138,6 +138,12 @@ void test_tree_open(const char *prot, const unsigned short port,
 
 int main(int argc, char *argv[])
 {
+  int test_port_offset = 0;
+  char * test_port_offset_env = getenv("TEST_PORT_OFFSET");
+  if (test_port_offset_env) {
+    test_port_offset = atoi(test_port_offset_env);
+  }
+
   int ipv6 = (argc > 1 && !strcmp(argv[1], "ipv6"));
   // TEST_TIMEOUT(30);
   setenv("t_connect_path", ".", 1);
@@ -184,41 +190,43 @@ int main(int argc, char *argv[])
   test_tree_open("local", 0, NULL);
   END_TESTING;
 
+	// See testing/ports.csv for all port number registrations
+
   // tcp //
   BEGIN_TESTING(Connection tcp - s);
-  test_tree_open("tcp", 8600, "-s");
+  test_tree_open("tcp", 8002 + test_port_offset, "-s");
   END_TESTING;
   BEGIN_TESTING(Connection tcp - m);
-  test_tree_open("tcp", 8601, "-m");
+  test_tree_open("tcp", 8003 + test_port_offset, "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6 - s);
-    test_tree_open("tcpv6", 8602, "-s");
+    test_tree_open("tcpv6", 8004 + test_port_offset, "-s");
     END_TESTING;
     BEGIN_TESTING(Connection tcpv6 - m);
-    test_tree_open("tcpv6", 8603, "-m");
+    test_tree_open("tcpv6", 8005 + test_port_offset, "-m");
     END_TESTING;
   }
 #ifndef _WIN32
   // udt //
   BEGIN_TESTING(Connection udt - s);
-  test_tree_open("udt", 8604, "-s");
+  test_tree_open("udt", 8006 + test_port_offset, "-s");
   END_TESTING;
   BEGIN_TESTING(Connection udt - m);
-  test_tree_open("udt", 8605, "-m");
+  test_tree_open("udt", 8007 + test_port_offset, "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // udtv6 //
     BEGIN_TESTING(Connection udtv6 - s);
-    test_tree_open("udtv6", 8606, "-s");
+    test_tree_open("udtv6", 8008 + test_port_offset, "-s");
     END_TESTING;
     BEGIN_TESTING(Connection udtv6 - m);
-    test_tree_open("udtv6", 8607, "-m");
+    test_tree_open("udtv6", 8009 + test_port_offset, "-m");
     END_TESTING;
   }
 #endif
@@ -233,8 +241,8 @@ int main(int argc, char *argv[])
 
       // gsi //
       BEGIN_TESTING(Connection gsi);
-      test_tree_open("gsi",8608,"-s");
-      test_tree_open("gsi",8608,"-m");
+      test_tree_open("gsi",8010 + test_port_offset,"-s");
+      test_tree_open("gsi",8011 + test_port_offset,"-m");
       END_TESTING;
   */
 }
