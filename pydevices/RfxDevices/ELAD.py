@@ -39,6 +39,7 @@ class ELAD(MDSplus.Device):
         {'path': ':EXT_CLOCK', 'type': 'numeric', 'value':0},
         {'path': ':CLOCK_FREQ', 'type': 'numeric', 'value':1000000},
         {'path': ':HW_STR_TRIG', 'type': 'numeric', 'value':0},
+        {'path': ':FPGA_VER', 'type': 'text'},
     ]
     for i in range(12):
         parts.extend([
@@ -94,6 +95,15 @@ class ELAD(MDSplus.Device):
                 else:
                     self.clockFreq = 1E6
                 self.freqDiv = self.device.freq_div.data()
+                self.lhMode = []
+                for chanIdx in range(12):
+                    self.lhMode.append(getattr(self.device, 'channel_%d_lh_mode' % (chanIdx+1)).data())
+                self.isStreamOn = []
+                for chanIdx in range(12):
+                    self.isStreamOn.append(getattr(self.device, 'stream_%d' % (chanIdx+1)).isOn())
+                self.isStrintOn = []
+                for chanIdx in range(12):
+                    self.isStrintOn.append(getattr(self.device, 'strint_%d' % (chanIdx+1)).isOn())
 
 
             def run(self):
@@ -131,9 +141,23 @@ class ELAD(MDSplus.Device):
                     endTime = MDSplus.Float64(self.trigTime+chans[2*activeChans][actSegmentSize - 1]*period)
                     timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
+                        if not self.isStreamOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                       # getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
+                        if not self.isStrintOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[activeChans + chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                        # getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
                     MDSplus.Event.setevent(self.device.jscope_ev.data())
 
 
@@ -151,6 +175,16 @@ class ELAD(MDSplus.Device):
                 else:
                     self.clockFreq = 1E6
                 self.freqDiv = self.device.freq_div.data()
+                self.lhMode = []
+                for chanIdx in range(12):
+                    self.lhMode.append(getattr(self.device, 'channel_%d_lh_mode' % (chanIdx+1)).data())
+                self.isStreamOn = []
+                for chanIdx in range(12):
+                    self.isStreamOn.append(getattr(self.device, 'stream_%d' % (chanIdx+1)).isOn())
+                self.isStrintOn = []
+                for chanIdx in range(12):
+                    self.isStrintOn.append(getattr(self.device, 'strint_%d' % (chanIdx+1)).isOn())
+              
 
             def run(self):
                 serverSocket = socket.socket()
@@ -159,7 +193,7 @@ class ELAD(MDSplus.Device):
                 serverSocket.listen(1)
                 sock, addr = serverSocket.accept()
                 print('TCP Connection established')
-                segmentSize = int(1000* (int(1E6/freqDiv)/int(1000)))  #save a segment every second rouded to 1000 samples
+                segmentSize = int(1000* (int(1E6/self.freqDiv)/int(1000)))  #save a segment every second rouded to 1000 samples
                 if segmentSize == 0:
                     print('Invalid frequency division for TCP streaming. It must be less than 1000 (Samplig rate > 1kHz)')
                     return
@@ -194,14 +228,24 @@ class ELAD(MDSplus.Device):
                     startTime = MDSplus.Float64(self.trigTime+prevSamples*period)
                     endTime = MDSplus.Float64(self.trigTime+actSamples*period)
                     timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
-                    print('segment size: '+str(len(chans[chanIdx])))
-                    print('startTime: '+str(startTime))
-                    print('endTime: '+str(startTime))
-                    print('dim: '+str(timebase))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
+                        if not self.isStreamOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                       #getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
+                        if not self.isStrintOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[activeChans + chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[activeChans + chanIdx] * 5E-6
+                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+#                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
                     MDSplus.Event.setevent(self.device.jscope_ev.data())
                     prevSamples = actSamples
                 sock.shutdown(socket.SHUT_RDWR)
@@ -383,17 +427,28 @@ class ELAD(MDSplus.Device):
             print(sock.recv(2))
 
             sock.send(b'IDS')
- #           ids = np.frombuffer(recvall(sock, 8 * 12), dtype = np.int8)
 
-            ids = np.frombuffer(recvall(sock, 16 * 12), dtype = np.int8)   
+            #ids = np.frombuffer(recvall(sock, 16 * 12), dtype = np.int8)   
+            ids = np.frombuffer(recvall(sock, 16 * 12+ 32 * 12 + 8), dtype = np.int8)   
  
             for chan in range(12):
                 id = ''
                 for i in range(16):  # era 7
-     #              id += hex(ids[chan*12+i])[2:] #id += hex(ids[chan*8+i])[2:]
-                    id += chr(ids[(chan*16)+i])
+                    id += chr(ids[(chan*(16+32))+i])
+                   # id += chr(ids[(chan*16)+i])
                 print(id)
                 self.__getattr__('channel_%d_id' % (chan+1)).putData(MDSplus.String(id))
+                id = ''
+                for i in range(32):  # era 7
+                    id += chr(ids[(chan*(16+32))+16+i])
+                print(id)
+                self.__getattr__('channel_%d_eprom' % (chan+1)).putData(MDSplus.String(id))
+            
+            id = ''
+            for i in range(8):
+                id += chr(ids[(12*(16+32))+i])
+            self.fpga_ver.putData(MDSplus.String(id))
+                
 
    #         sock.send(b'EPR')
    #         for chan in range(12):
@@ -541,10 +596,21 @@ class ELAD(MDSplus.Device):
             sock.send(b'STR')
             numSamples = int.from_bytes(sock.recv(4),'little')
             print('num Samples: ', numSamples)
-            samples = np.zeros(numSamples, np.int32)
+            dmaSamples = np.zeros(numSamples, np.int32)
             numChanSamples = int(numSamples/activeChans)
             print('num Chan Samples: ', numChanSamples)
-            samples = np.frombuffer(recvall(sock, 4 * numSamples), dtype = np.int32)
+
+            dmaSamples = np.frombuffer(recvall(sock, 4 * numSamples), dtype = np.int32)  
+            print('LETTI SAMPLES')          
+            samples = np.zeros(numSamples, np.int32)
+            outIdx = 0
+            for chanIdx in range(activeChans):
+                samples[chanIdx*numChanSamples:(chanIdx +1) * numChanSamples] = dmaSamples[chanIdx::activeChans]
+
+#               for sampleIdx in range(numChanSamples):
+#                  samples[outIdx] = dmaSamples[sampleIdx * activeChans + chanIdx]
+#                    outIdx += 1
+
             print('Received Samples: ', len(samples))
         except:
             print("Cannot read samples from socket")
@@ -552,10 +618,16 @@ class ELAD(MDSplus.Device):
 
         timebase = MDSplus.Range(trigTime, trigTime + 1E-6 * numChanSamples, 1E-6)            
         for chan in range(activeChans):
-            currSig = MDSplus.Signal(samples[chan * numChanSamples:(chan+1) * numChanSamples], None, timebase)
+            if getattr(self, 'channel_%d_lh_mode' % (chan+1)).data() == 0:
+                convExpr = self.getTree().tdiCompile("1E-5 * $VALUE")
+            else:
+                convExpr = self.getTree().tdiCompile("5E-6 * $VALUE")
+ 
+            rawMdsData = MDSplus.Int32Array(samples[chan * numChanSamples:(chan+1) * numChanSamples])
+            rawMdsData.setUnits("Sec.")
+            convExpr.setUnits("Volt")
+            currSig = MDSplus.Signal(convExpr, rawMdsData, timebase)
             self.__getattr__('channel_%d_data' % (chan+1)).putData(currSig)
-
-        #sock.close()
 
 
     
