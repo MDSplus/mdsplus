@@ -1458,10 +1458,36 @@ public class Signal implements WaveDataListener
 	}
 
 	@Override
-	public void dataRegionUpdated(double[] regX, float[] regY, double resolution)
+	public void dataRegionUpdated(double[] inRegX, float[] inRegY, double resolution)
 	{
+            double[] regX;
+            float[] regY;
+            try {
+                if(inRegX.length == inRegY.length)
+                {
+                    regX = inRegX;
+                    regY = inRegY;
+                }
+                else if (inRegX.length > inRegY.length)
+                {
+                    regY = inRegY;
+                    regX = new double[inRegY.length];
+                    System.arraycopy(inRegX, 0, regX, 0, inRegY.length);
+                }
+                else // inRegX.length < inRegY.length
+                {
+                    regX = inRegX;
+                    regY = new float[inRegX.length];
+                    System.arraycopy(inRegY, 0, regY, 0, inRegX.length);
+                }
+                
 		if (regX == null || regX.length == 0)
 			return;
+                if(regX.length != regY.length)
+                {
+                    System.out.println("INTERNAL ERROR in Signal.dataRegionUpdated: regX.length = "+regX.length+"  regY.length = "+regY.length);
+                    return;
+                }
 		if (debug)
 			System.out.println("dataRegionUpdated " + resolutionManager.lowResRegions.size() + " new data len:"
 					+ regX.length + " XMIN:" + regX[0] + "  XMAX: " + regX[regX.length - 1]);
@@ -1514,6 +1540,11 @@ public class Signal implements WaveDataListener
 			y = newY;
 			fireSignalUpdated(false);
 		}
+            }catch(Exception exc)
+            {
+                System.out.println("Exception in Signal.dataRegionUpdated");
+                exc.printStackTrace();
+            }
 	}
 
 	@Override

@@ -1106,11 +1106,15 @@ public class MdsDataProvider implements DataProvider
 				this.isXLong = isXLong;
 				this.updateTime = updateTime;
 			}
+                        public String toString()
+                        {
+                            return "Lower Bound: "+updateLowerBound+"\nUpper Bound: "+updateUpperBound+"\nupdatePoints: "+updatePoints;
+                        }
 		}
 
 		boolean enabled = true;
 		Vector<UpdateDescriptor> requestsV = new Vector<>();
-
+                UpdateDescriptor currUpdate;
 		boolean stopWorker = false;
 
 		synchronized void enableAsyncUpdate(boolean enabled)
@@ -1153,7 +1157,7 @@ public class MdsDataProvider implements DataProvider
 					if (!enabled)
 						break;
 					// Take most recent request
-					final UpdateDescriptor currUpdate = requestsV.elementAt(requestsV.size() - 1);
+					currUpdate = requestsV.elementAt(requestsV.size() - 1);
 					try
 					{
 						requestsV.removeElementAt(requestsV.size() - 1);
@@ -1179,6 +1183,7 @@ public class MdsDataProvider implements DataProvider
 					{
 						final Date d = new Date();
 						System.out.println(d + " Error in asynchUpdate: " + exc);
+                                                System.out.println(currUpdate);
 					}
 				}
 			}
