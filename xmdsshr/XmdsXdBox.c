@@ -701,7 +701,9 @@ static Boolean SetValues(Widget old, Widget req, Widget new)
   return 0;
 }
 
-static void ActionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+static void ActionCreate(XmdsXdBoxWidget w,
+                         ArgList args __attribute__((unused)),
+                         Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =
@@ -851,7 +853,9 @@ struct descriptor_xd *ActionUnload(Widget w)
 /*
  * Routines for Axis type.
  */
-static void AxisCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+static void AxisCreate(XmdsXdBoxWidget w,
+                       ArgList args __attribute__((unused)),
+                       Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =
@@ -1004,7 +1008,9 @@ struct descriptor_xd *AxisUnload(Widget w)
 /*
  * Routines for Dispatch type.
  */
-static void DispatchCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+static void DispatchCreate(XmdsXdBoxWidget w,
+                           ArgList args __attribute__((unused)),
+                           Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =
@@ -1128,8 +1134,9 @@ EXPORT struct descriptor_xd *DispatchUnload(Widget w)
   return ans;
 }
 
-static void ExpressionCreate(XmdsXdBoxWidget w, ArgList args,
-                             Cardinal argcount)
+static void ExpressionCreate(XmdsXdBoxWidget w,
+                             ArgList args __attribute__((unused)),
+                             Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =
@@ -1249,7 +1256,9 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
 /*
  * Routines for Task type.
  */
-static void TaskCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+static void TaskCreate(XmdsXdBoxWidget w,
+                       ArgList args __attribute__((unused)),
+                       Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =
@@ -1483,7 +1492,9 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w)
   return data;
 }
 
-static void WindowCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+static void WindowCreate(XmdsXdBoxWidget w,
+                         ArgList args __attribute__((unused)),
+                         Cardinal argcount __attribute__((unused)))
 {
   MrmType class;
   XmdsXdUserPart *user_part =

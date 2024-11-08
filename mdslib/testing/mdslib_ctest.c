@@ -282,8 +282,7 @@ int main(int argc, char *argv[])
     socket = MdsConnect("local://0");
     TEST((socket != INVALID_SOCKET));
   }
-  TEST(
-      MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+  TEST(MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("{_=-1;TreeAddNode('A',_,'ANY');}", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeWrite('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeClose('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))

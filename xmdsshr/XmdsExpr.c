@@ -514,8 +514,9 @@ EXPORT void XmdsExprSetXd(Widget w, struct descriptor *dsc)
   Resize((Widget)ew);
 }
 
-static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *desired,
-                                        XtWidgetGeometry *allowed)
+static XtGeometryResult GeometryManager(Widget w __attribute__((unused)),
+                                        XtWidgetGeometry *desired __attribute__((unused)),
+                                        XtWidgetGeometry *allowed __attribute__((unused)))
 {
   return XtGeometryYes;
 }
@@ -683,7 +684,8 @@ static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args,
   return 0;
 }
 
-static void ChangeQuotes(Widget q_w, XmdsExprWidget e_w)
+static void ChangeQuotes(Widget q_w __attribute__((unused)),
+                         XmdsExprWidget e_w)
 {
   char *text = GetString(e_w->expr.text_widget);
   int text_len = strlen(text);
