@@ -950,6 +950,7 @@ def BUILDER(cls):
             {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
             {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []}]+cls.outputs
         cls.parameters = [
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
             {'name': 'Port', 'type': 'int32', 'value': 8123},
             {'name': 'FirstPacketEnabled', 'type': 'int32', 'value': 0}
             ]
