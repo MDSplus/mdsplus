@@ -34,8 +34,7 @@ EXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut,
   char const *errorMessage = (char *)"";
   try
   {
-    MDSplus::Connection *connectionPtrOut =
-        new MDSplus::Connection(const_cast<char *>(ipPortIn));
+    connectionPtrOut = new MDSplus::Connection(const_cast<char *>(ipPortIn));
     *lvConnectionPtrOut = reinterpret_cast<void *>(connectionPtrOut);
   }
   catch (const MDSplus::MdsException &e)
@@ -50,8 +49,7 @@ EXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut,
 
 EXPORT void mdsplus_connection_destructor(void **lvConnectionPtr)
 {
-  MDSplus::Connection *connectionPtr =
-      reinterpret_cast<MDSplus::Connection *>(*lvConnectionPtr);
+  MDSplus::Connection *connectionPtr = reinterpret_cast<MDSplus::Connection *>(*lvConnectionPtr);
   delete connectionPtr;
   *lvConnectionPtr = NULL;
 }

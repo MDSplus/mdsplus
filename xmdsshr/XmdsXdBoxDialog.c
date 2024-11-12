@@ -144,7 +144,8 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
   return widg;
 }
 
-static void LoadDialog(Widget shell, void *xdbw,
+static void LoadDialog(Widget shell __attribute__((unused)),
+                       void *xdbw,
                        void *unused __attribute__((unused)))
 {
   XmdsXdBoxLoad((Widget)xdbw);

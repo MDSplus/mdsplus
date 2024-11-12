@@ -110,16 +110,11 @@ typedef struct descriptor_d
 typedef struct
 {
   unsigned __char_align__ : 3; /* reserved;  must be zero */
-  unsigned __char_align__
-      binscale : 1; /* if set, scale is a power-of-two, otherwise, -ten */
-  unsigned __char_align__
-      redim : 1; /* if set, indicates the array can be redimensioned */
-  unsigned __char_align__
-      column : 1; /* if set, indicates column-major order (FORTRAN) */
-  unsigned __char_align__
-      coeff : 1; /* if set, indicates the multipliers block is present */
-  unsigned __char_align__
-      bounds : 1; /* if set, indicates the bounds block is present */
+  unsigned __char_align__ binscale : 1; /* if set, scale is a power-of-two, otherwise, -ten */
+  unsigned __char_align__ redim : 1; /* if set, indicates the array can be redimensioned */
+  unsigned __char_align__ column : 1; /* if set, indicates column-major order (FORTRAN) */
+  unsigned __char_align__ coeff : 1; /* if set, indicates the multipliers block is present */
+  unsigned __char_align__ bounds : 1; /* if set, indicates the bounds block is present */
 } aflags_t;       /* array flag bits */
 
 typedef int8_t scale_t;

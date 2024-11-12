@@ -122,9 +122,9 @@ namespace testing
 
     // TODO: check limits for arrays //
     template <typename _MdsT>
-    static void test_type_conversion_array(const std::string &tmin = "",
-                                           const std::string &teps = "",
-                                           const std::string &tmax = "") {}
+    static void test_type_conversion_array(const std::string &tmin __attribute__((unused)) = "",
+                                           const std::string &teps __attribute__((unused)) = "",
+                                           const std::string &tmax __attribute__((unused)) = "") {}
   };
 
   // SPECIAL TRAIT FOR FLOAT  ..  //
