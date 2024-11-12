@@ -226,6 +226,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
             parts.append(
                 {'path': ':JSCOPE_EV', 'type': 'text', 'value': 'updatejScope'})
+            parts.append(
+               {'path': ':ALIAS', 'type': 'numeric'})
+                
 
 
     @classmethod
@@ -1473,6 +1476,31 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         return retDataSource, retGam
 
+#Get Alisa: valid for Input and Output MARTE2 devices. When defined it must refer to an Input or Output device, respectively and
+#and it will share the same DataSource instance
+
+    def getAlias(self):
+        try:
+            mode = self.getNode('MODE').data()
+        except:
+            raise Exception('No mode field defined for '+self.getPath())
+        if mode == MARTE2_COMPONENT.MODE_GAM:
+            raise Exception('Internal error: getAlias() called for non Input or Output device '+self.getPath())
+        try:
+            aliasDevice = self.getNode(':ALIAS').getData()
+        except:
+            return None
+        if not self.isMarteDeviceRef(aliasDevice):
+            raise Exception('Wrong ALIAS reference for '+self.getPath())
+        try:
+            aliasMode = aliasDevice.getNode('MODE').data()
+        except:
+            raise Exception('No mode field defined for '+aliasDevice.getPath())
+        if aliasMode != mode:
+            raise Exception('Wrong device type ALIAS reference for '+self.getPath())
+        return aliasDevice
+
+
 
  ###########Overall Generation
 
@@ -1481,7 +1509,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
-
+        
         retGams = []
         retDataSources = []
 
@@ -1600,6 +1628,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
+        alias = self.getAlias()
 
         retGams = []
         retDataSources = []
@@ -1639,13 +1668,19 @@ class MARTE2_COMPONENT(MDSplus.Device):
             currSignal.pop('DataSource')
 
         retDataSource['Signals'] = signals
-        retDataSources.append(retDataSource)
+
+        if alias == None:
+            retDataSources.append(retDataSource)
 
         retGam = {}
         retGam['Name'] = self.getMarteDeviceName(self)+'_IOGAM'
         retGam['Class'] = 'IOGAM'
         for currInput in inputs:
-            currInput['DataSource'] = self.getMarteDeviceName(self)
+            if alias == None:
+                currInput['DataSource'] = self.getMarteDeviceName(self)
+            else:
+                currInput['DataSource'] = self.getMarteDeviceName(alias)
+
         retGam['Inputs'] = self.removeParametersFromList(inputs)
         for currOutput in outputs:
             try:
@@ -1704,6 +1739,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
+        alias = self.getAlias()
 
         retGams = []
         retDataSources = []
@@ -1748,10 +1784,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
             except:
                 pass
         retDataSource['Signals'] = signals
-        retDataSources.append(retDataSource)
+        if alias == None:
+            retDataSources.append(retDataSource)
 
         for currOutput in outputs:
-            currOutput['DataSource'] = self.getMarteDeviceName(self)
+            if alias == None:
+                currOutput['DataSource'] = self.getMarteDeviceName(self)
+            else:
+                 currOutput['DataSource'] = self.getMarteDeviceName(alias)
             try:
                 currOutput.pop('Alias')
             except:
