@@ -156,7 +156,7 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])]
 )
-AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+AM_CONDITIONAL([ENABLE_JAVA],[test x"$enable_java" = xyes])
 AC_MSG_RESULT([$enable_java])
 
 AS_CASE([$enable_java], [yes], [
@@ -1448,7 +1448,7 @@ AC_OUTPUT(
 
 
 AC_OUTPUT_COMMANDS(make depend)
-if test "$JAVA_APS" = ""
+if test "$JAVA_APS" = "" -a "$enable_java" = "yes"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
