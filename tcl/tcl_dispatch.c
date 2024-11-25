@@ -436,7 +436,7 @@ typedef struct
   char *command;
 } DispatchedCommand;
 
-static void CommandDone(DispatchedCommand *command)
+static void CommandDone(DispatchedCommand *command, char *dummy __attribute__((unused)))
 {
   if (IS_NOT_OK(command->status))
   {

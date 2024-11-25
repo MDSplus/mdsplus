@@ -66,7 +66,6 @@ $ MCR ACTMON -monitor monitor-name
 #include <ctype.h>
 #include <mdsplus/mdsplus.h>
 static void Exit(Widget w, int *tag, XtPointer callback_data);
-static void MessageAst();
 static void EventUpdate();
 static void Phase(LinkedEvent *event);
 static void Dispatched(LinkedEvent *event);

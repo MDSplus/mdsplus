@@ -86,7 +86,7 @@ extern int ProgLoc;
 
 static void dispatch(int idx);
 static void send_monitor(int mode, int idx);
-static void action_done(intptr_t idx);
+static void action_done();
 static void action_done_action_locked(int idx);
 static void action_done_action_unlocked(int idx);
 static void before(int idx);
@@ -723,7 +723,7 @@ static void action_done_action_unlocked(int idx)
         UNLOCK_ACTION(cidx, ad_fte);
         WRLOCK_ACTION(cidx, ad_fte);
         actions[cidx].status = ServerINVALID_DEPENDENCY;
-        action_done(cidx);
+        action_done(cidx, NULL);
         UNLOCK_ACTION(cidx, ad_fte);
         action_done_action_unlocked(cidx);
       }
@@ -836,7 +836,7 @@ static void action_done_thread()
   pthread_cleanup_pop(1);
 }
 
-static void action_done(intptr_t i)
+static void action_done(intptr_t i, char *dummy __attribute__((unused)))
 {
   INIT_STATUS;
   static pthread_t thread;
@@ -846,7 +846,7 @@ static void action_done(intptr_t i)
     perror("action_done: pthread creation failed");
 }
 #else
-static inline void action_done(intptr_t i)
+static inline void action_done(intptr_t i, char *dummy __attribute__((unused)))
 {
   return action_done_do(i);
 }
