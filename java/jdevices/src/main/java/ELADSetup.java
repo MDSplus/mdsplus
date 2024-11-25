@@ -38,6 +38,7 @@ public class ELADSetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField10 = new DeviceField();
         deviceField7 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
@@ -93,14 +94,21 @@ public class ELADSetup extends DeviceSetup {
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("PTS: ");
+        deviceField4.setNumCols(6);
         deviceField4.setOffsetNid(7);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Input Stream Port: ");
+        deviceField5.setLabelString("Stream Port: ");
         deviceField5.setNumCols(6);
         deviceField5.setOffsetNid(10);
         jPanel4.add(deviceField5);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Stream IP: ");
+        deviceField10.setOffsetNid(20);
+        deviceField10.setTextOnly(true);
+        jPanel4.add(deviceField10);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Stream freq div.: ");
@@ -169,6 +177,7 @@ public class ELADSetup extends DeviceSetup {
     private DeviceChoice deviceChoice4;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
