@@ -40,6 +40,8 @@ class ELAD(MDSplus.Device):
         {'path': ':CLOCK_FREQ', 'type': 'numeric', 'value':1000000},
         {'path': ':HW_STR_TRIG', 'type': 'numeric', 'value':0},
         {'path': ':FPGA_VER', 'type': 'text'},
+        {'path': ':STREAM_IP', 'type': 'text', 'value':'localhost'},
+        
     ]
     for i in range(12):
         parts.extend([
@@ -349,7 +351,10 @@ class ELAD(MDSplus.Device):
             modeReg |= (1 << 30)
         #globalChopEnable = self.chop_ena.data() == 'YES'
 
-        localIp = socket.gethostbyname(socket.gethostname())
+        try:
+            streamIp = self.stream_ip.data()
+        except:
+            streamIp = socket.gethostbyname(socket.gethostname())
 
         try:
             sock = ELAD.socketDict[self.getNid()]
@@ -385,9 +390,9 @@ class ELAD(MDSplus.Device):
             print(sock.recv(2))
 
             sock.send(b'IPP')
-            ipLen = np.int32(len(localIp))
+            ipLen = np.int32(len(streamIp))
             sock.send(ipLen.item().to_bytes(4,'little'))
-            sock.send(bytes(localIp, 'utf-8'))
+            sock.send(bytes(streamIp, 'utf-8'))
             sock.send(recPort.item().to_bytes(4,'little'))
             print(sock.recv(2))
 
@@ -528,22 +533,7 @@ class ELAD(MDSplus.Device):
         stopAcq[self.getNid()] = False
         self.worker.start()
 
-        time.sleep(1)
-
-        localIp = socket.gethostbyname(socket.gethostname())
-        try:
-            recPort = self.rec_port.data()
-        except:
-            print("Missing Receive port")
-            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        
-
-        sock.send(b'IPP')
-        ipLen = np.int32(len(localIp))
-        sock.send(ipLen.item().to_bytes(4,'little'))
-        sock.send(bytes(localIp, 'utf-8'))
-        sock.send(recPort.item().to_bytes(4,'little'))
-        print(sock.recv(2))
+        time.sleep(0.5)
 
         try:
             sock.send(b'STS')

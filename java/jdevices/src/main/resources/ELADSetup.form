@@ -111,15 +111,24 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="PTS: "/>
+                <Property name="numCols" type="int" value="6"/>
                 <Property name="offsetNid" type="int" value="7"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Input Stream Port: "/>
+                <Property name="labelString" type="java.lang.String" value="Stream Port: "/>
                 <Property name="numCols" type="int" value="6"/>
                 <Property name="offsetNid" type="int" value="10"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField10">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream IP: "/>
+                <Property name="offsetNid" type="int" value="20"/>
+                <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField7">
