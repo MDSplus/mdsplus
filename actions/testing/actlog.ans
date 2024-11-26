@@ -1,0 +1,5 @@
+           1 NEW SHOT   ******************************************** ******************** DISTEST
+           1 PHASE      ******************************************** ******************** INITIALIZATION            
+           1 DISPATCHED                                              ACTION_SERVER        \DISTEST::TOP:ACT01
+           1 DOING                                                   ACTION_SERVER        \DISTEST::TOP:ACT01
+           1 DONE                                                    ACTION_SERVER        \DISTEST::TOP:ACT01

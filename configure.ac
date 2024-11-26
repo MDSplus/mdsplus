@@ -1375,6 +1375,7 @@ AC_OUTPUT(
   Makefile.inc
   _include/_mdsversion.h
   actions/Makefile
+  actions/testing/Makefile
   camshr/Makefile
   ccl/Makefile
   d3dshr/Makefile
