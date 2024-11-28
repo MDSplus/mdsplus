@@ -38,7 +38,7 @@ public class MARTE2_SIMULINK_DTT_PROXY_IN_SERVERSetup extends DeviceSetup {
         setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        deviceParameters1.setNumParameters(2);
+        deviceParameters1.setNumParameters(4);
         deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
