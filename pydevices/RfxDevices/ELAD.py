@@ -88,6 +88,8 @@ class ELAD(MDSplus.Device):
             def configure(self, device):
                 self.device = device
                 self.nid = device.getNid()
+                self.shot = device.getTree().shot
+                self.experiment = device.getTree().name
                 try:
                     self.trigTime = device.trig_time.data()
                 except:
@@ -109,9 +111,14 @@ class ELAD(MDSplus.Device):
 
 
             def run(self):
+                self.device.tree = MDSplus.Tree(self.experiment, self.shot)
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.bind(('',self.device.rec_port.data()))
+                try:
+                    sock.bind(('',self.device.rec_port.data()))
+                except:
+                    print('Cannot bind to port: '+ str(self.device.rec_port.data()))
+                    print('Listener thread exited')
                 segmentSize = int(0.5* self.clockFreq/self.freqDiv)  #save a segment every 0.5 seconds
                 print('SEGMENT SIZE: ', segmentSize)
                 activeChans = self.device.act_chans.data()
@@ -355,6 +362,7 @@ class ELAD(MDSplus.Device):
             streamIp = self.stream_ip.data()
         except:
             streamIp = socket.gethostbyname(socket.gethostname())
+            print('StreamIp non defined, assumed '+streamIp)
 
         try:
             sock = ELAD.socketDict[self.getNid()]

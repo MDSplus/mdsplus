@@ -951,7 +951,8 @@ def BUILDER(cls):
             {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []}]+cls.outputs
         cls.parameters = [
             {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
-            {'name': 'Port', 'type': 'int32', 'value': 8123},
+            {'name': 'Port', 'type': 'int32', 'value': 3},
+            {'name': 'InPort', 'type': 'int32', 'value': 8123},
             {'name': 'FirstPacketEnabled', 'type': 'int32', 'value': 0}
             ]
         cls.buildGam(cls.parts, 'SimulinkProxyIn', cls.MODE_SYNCH_INPUT)
@@ -962,7 +963,9 @@ def BUILDER(cls):
         cls.buildGam(cls.parts, 'SimulinkProxyOut', cls.MODE_OUTPUT)
     elif cls.proxyMode == MARTE2_SIMULINK.PROXY_IN_SERVER:
         cls.parameters = [
-            {'name': 'Port', 'type': 'int32', 'value': 8122},
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
+            {'name': 'Port', 'type': 'int32', 'value': 3},
+            {'name': 'InPort', 'type': 'int32', 'value': 8122},
             {'name': 'FirstPacketEnabled', 'type': 'int32', 'value': 0}]
         cls.outputs = [
             {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
