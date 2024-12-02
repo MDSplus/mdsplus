@@ -1328,6 +1328,15 @@ $<APP_NAME> = {
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
+    def sendMessage(self, dest, msg, arg = None):
+        marteName = self.getNode('name').data()
+        if arg != None:
+            eventString = dest+':'+msg
+        else:
+            eventString = dest+':'+msg+':'+arg
+        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+            eventString.encode(), dtype=np.uint8))
+
     def doState(self, state):
         marteName = self.getNode('name').data()
         stateName = getattr(self, 'state_%d_name' % (state)).data()
