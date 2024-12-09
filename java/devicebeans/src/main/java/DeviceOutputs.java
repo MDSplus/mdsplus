@@ -191,7 +191,7 @@ public class DeviceOutputs extends DeviceComponent
                     jp1.add(dimensionsTF[currItem] = new JTextField(4));
                     dimensionNids[currItem] = currOutNid + 4;
                     jp1.add(new JLabel("Type: "));
-                    jp1.add(typesTF[currItem] = new JTextField(10));
+                    jp1.add(typesTF[currItem] = new JTextField(5));
                     typeNids[currItem] = currOutNid + 2;
                     jp1.add(new JLabel("Segment len.: "));
                     jp1.add(segLensTF[currItem] = new JTextField(4));
@@ -205,7 +205,7 @@ public class DeviceOutputs extends DeviceComponent
                             parName = subtree.getString(subtree.getDataExpr(nameNid));
                         }catch(Exception exc){parName = "";}
                         jp1.add(new JLabel(parName+":"));
-                        jp1.add(parametersTF[numParItems] = new JTextField(10));
+                        jp1.add(parametersTF[numParItems] = new JTextField(30));
                         try {
                             parametersIsText[numParItems] = subtree.getUsage(currOutNid + 11 + 3 * parIdx).equals("TEXT");
                         }catch(Exception exc)
