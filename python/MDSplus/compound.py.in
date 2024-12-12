@@ -28,7 +28,10 @@ import ctypes as _C
 import numpy as _N
 
 try:
-    import imp
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        import imp
 except:
     # imp was removed in 3.12
     from types import ModuleType
