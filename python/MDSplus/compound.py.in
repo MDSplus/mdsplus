@@ -32,7 +32,7 @@ try:
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         import imp
-except:
+except ModuleNotFoundError:
     # imp was removed in 3.12
     from types import ModuleType
 
