@@ -22,6 +22,14 @@ public class DeviceParameters extends DeviceComponent
  	@Override
 	protected void initializeData(String data, boolean is_on)
         {
+            try {
+                offsetNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".PARAMETERS"+",\'NID_NUMBER\')") - baseNid;
+                numParameters = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".PARAMETERS"+",\'NUMBER_OF_CHILDREN\')");
+            }catch(Exception exc)
+            {
+                {System.out.println("Internal error in DeviceParameters.initialize, cannot get parameterOffset");}
+            }
+            
             mode = STRUCTURE;
             valuesTF = new JTextField[numParameters];
             labels = new JLabel[numParameters];
@@ -34,7 +42,7 @@ public class DeviceParameters extends DeviceComponent
                 int numChildren = 0;
                 try {
                     numChildren = subtree.getInt("GETNCI("+subtree.getFullPath(currNid+1)+",\'NUMBER_OF_CHILDREN\')");
-                }catch(Exception exc){System.out.println("Internal error in DeviceParameters.initialize)");}
+                }catch(Exception exc){System.out.println("Internal error in DeviceParameters.initialize");}
                 if(numChildren > 0)
                 {
                     currNid += 3;
