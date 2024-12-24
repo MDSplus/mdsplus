@@ -8,3 +8,5 @@ Type=simple
 ExecStart=/usr/local/mdsplus/bin/mdsipd mdsip /var/log/mdsplus/mdsipd
 # This spawns the process inetd-style with the incoming socket bound to stdin
 StandardInput=socket
+# Regardless of success or failure, mdsip always returns 255 
+SuccessExitStatus=255
