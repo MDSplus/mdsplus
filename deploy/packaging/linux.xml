@@ -270,7 +270,6 @@ fi
 
   <package name="motif_bin" arch="bin" summary="Libraries, UIDS and binary applications required for Motif APS" description="Libraries, UIDS and binary applications required for Motif APS">
     <requires package="libmotif" external=""/>
-    <requires package="libmrm" external=""/>
     <include file="/usr/local/mdsplus/bin/dw*"/>
     <include file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <include file="/usr/local/mdsplus/bin/actmon"/>
