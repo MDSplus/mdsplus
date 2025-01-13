@@ -145,6 +145,7 @@ include/tcl_messages.h
 include/tdishr_messages.h
 include/tdishr.h
 include/treeshr_messages.h
+include/opcbuiltins.h
 java/Makefile.in
 java/devicebeans/Makefile.in
 java/jdevices/Makefile.in
