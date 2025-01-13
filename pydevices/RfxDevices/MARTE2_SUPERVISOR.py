@@ -6,6 +6,9 @@ import numpy as np
 import time
 import traceback
 import os
+import glob
+from pathlib import Path
+import stat
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
@@ -77,6 +80,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
+    parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
 
 
     parts.append({'path': ':INIT', 'type': 'action',
@@ -217,8 +221,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             try:
                 refTimebaseNode =  self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1))
                 refThreadInfo = refTimebaseNode.data()
-                print('REF RTHREAD INFO')
-                print(refThreadInfo)
                 supervisorNode = supervisors[refThreadInfo[0]]
                 refThreadIdx = refThreadInfo[1]
             except:
@@ -246,14 +248,9 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         threadMap = {}
         threadInfo = {}
         deviceInfo = {}
-        print('GET THERAD MAP')
         supervisors = self.getSupervisorNodes()
-        print('SUPERVISORS')
-        print(supervisors)
         supervisors.append(self)
         for supervisorNode in supervisors:
-            print('CHECK')
-            print(supervisorNode)
             try: 
                 supervisorIp = supervisorNode.getNode('IP_ADDRESS').data()
             except:
@@ -293,9 +290,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     } 
                     deviceInfo[deviceNid] = supervInfo
 
-        print('\nDEVICE INFO')
-        print(deviceInfo)
-        print('*****************************')
         threadMap['DeviceInfo'] = deviceInfo
             
         for threadIdx in range(numThreads):
@@ -494,7 +488,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 refThreadName = refTimebaseDef.getParent().getNode('NAME').data()
             except:
                 raise Exception('Cannot retrieve the name of the synchronizing thread r thread '+threadName+' supervisor '+self.getPath())
-            print(refTimebaseDef)
             timerType, timerPeriod = self.getSynchonizationTimeTypePeriod(refTimebaseDef)
             if refSupervisor.getNid() == self.getNid(): #Thread synchronized by another thread of the same supervisor
                 retDataSources.append({
@@ -1033,6 +1026,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         for dataSource in dataSources:
             dsConf += '\t\t\t+'+dataSource['Name']+' = {\n'
             dsConf += '\t\t\t\tClass = '+dataSource['Class']+'\n'
+            if dataSource['Class'] == 'GAMDataSource':
+                dsConf += '\t\t\t\tAllowMultipleSamples = 1\n' 
             if 'Parameters' in dataSource:
                 dsConf += self.expandParameters(dataSource['Parameters'], 4)
             if 'Signals' in dataSource and len(dataSource['Signals']) >  0:
@@ -1090,28 +1085,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     CPUs = 0x1
     Name = <APP_NAME>
 }
-/* +WebRoot = {
-    Class = HttpObjectBrowser
-    Root = "."
-    +ObjectBrowse = {
-        Class = HttpObjectBrowser
-        Root = "/"
-    }
-    +ResourcesHtml = {
-        Class = HttpDirectoryResource
-        BaseDir = "/opt/MARTe2/MARTe2/Resources/HTTP/"
-    } 
-}
-+WebServer = {
-    Class = HttpService
-    Port = 8085
-    WebRoot = WebRoot
-    Timeout = 0
-    ListenMaxConnections = 255
-    AcceptTimeout = 1000
-    MaxNumberOfThreads = 8
-    MinNumberOfThreads = 1
-} */
 <INTERFACE_LIST>    
 +StateMachine = {
     Class = StateMachine
@@ -1122,11 +1095,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             NextState = "IDLE"
             NextStateError = "IDLE"
             Timeout = 0
-            +StartHttpServer = {
-                Class = Message
-                Destination = "WebServer"
-                Function = "Start"
-            }            
             +ChangeToStateIdleMsg = {
                 Class = Message
                 Destination = <APP_NAME>
@@ -1303,16 +1271,114 @@ $<APP_NAME> = {
         self.getNode('MARTE_CONFIG').putData(MDSplus.Int8Array(np.fromstring(config, dtype=np.int8)))
 
 
+
+    def getInvolvedGamClasses(self):
+        gamClasses = []
+        gamLists = []
+        try:
+            numStates = self.getNode('NUM_STATES')
+        except:
+            raise Exception("Missing NUM STATES definition for supervisor "+self.getPath())
+        for stateIdx in range(numStates):
+            try:
+                numThreads = self.getNode('STATE_'+str(stateIdx+1)+':NUM_THREADS')
+            except:
+                raise Exception("Missing NUM THREADS definition for supervisor "+supervisorNode.getPath()+'  STATE '+str(stateIdx+1))
+            for threadIdx in range(numThreads):
+                gamLists.append(self.getNode('STATE_'+str(stateIdx+1)+'.THREAD_'+ str(threadIdx+1)+':GAMS').getData())
+        try:
+            gamLists.append(self.getNode(':SUPERVISORS').getData())
+        except:
+                pass
+
+        for gams in gamLists:
+            if isinstance(gams, MDSplus.VECTOR):
+                for i in range(gams.getNumDescs()):
+                    currGamNode = gams.getDescAt(i)
+                    gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
+            else:
+                for gam1 in gams.data():
+                    if isinstance(gam1, str):
+                        gam = gam1
+                    else:
+                        gam = str(gam1, 'utf_8')
+                    currGamNode = self.getNode(gam)
+                    gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
+        gamClasses.append('IOGAM')
+        gamClasses.append('LinuxTimer')
+        gamClasses.append('ConstantGAM')
+        gamClasses.append('PickSampleGAM')
+        gamClasses.append('MDSEventManager')
+        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSReaderNS')
+        return gamClasses
+    
+    def buildStartScript(self):
+        gamClasses = self.getInvolvedGamClasses()
+        fileContent = ''
+        try:
+            marte2Components = os.environ['MARTe2_Components_DIR']
+        except:
+            marte2Components = '/opt/MARTe2/MARTe2-components'
+        try:
+            marte2MdsComponents = os.environ['MARTE_DIR']
+        except:
+            marte2MdsComponents = '/opt/MARTe2/MARTe2-MDSplus'
+        for gamClass in gamClasses:
+            dirs = glob.glob(marte2Components+'/Build/x86-linux/Components/*/'+gamClass)
+            if(len(dirs) == 0):
+                dirs = glob.glob(marte2MdsComponents+'/Build/x86-linux/Components/*/'+gamClass)
+            if len(dirs) != 1:
+                print('Internal error: cannor resolve '+ gamClass)
+            fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+dirs[0]+'\n'
+        fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+ os.environ['MARTe2_DIR'] +'/Build/x86-linux/Core\n'
+
+        verbosity = self.getNode(':VERBOSITY').data()
+        if verbosity.upper() == 'VERBOSE':
+            verb = -1
+        else:
+            verb = 8191 #Remove three most significant bits in error mask
+        fileName = '/tmp/'+self.getNode('name').data()+'_start.sh'
+        fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
+        print(fileContent)
+        commandFile = open(fileName, 'w')  
+        commandFile.write(fileContent)
+        commandFile.close()
+        f = Path(fileName)
+        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
+        return fileName    
+ 
+    def convertGamNodes(self, gams):
+        gamNodes = []
+        if isinstance(gams, MDSplus.VECTOR):
+            for i in range(gams.getNumDescs()):
+                currGamNode = gams.getDescAt(i)
+                gamNodes.append(currGamNode)
+        else:
+            for gam1 in gams.data():
+                if isinstance(gam1, str):
+                    gam = gam1
+                else:
+                    gam = str(gam1, 'utf_8')
+                currGamNode = self.getTree().getNode(gam)
+                gamNodes.append(currGamNode)
+        return gamNodes
+
+
+
     def startMarteIdle(self):
         self.buildConfiguration()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
-            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
+#        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
+#            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
+        subprocess.Popen([self.buildStartScript()], shell=True)
 
     def startMarte(self):
         self.buildConfiguration()
         stateName = self.state_1_name.data()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
-            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
+#        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
+#            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
+        subprocess.Popen([self.buildStartScript()], shell=True)
         time.sleep(4)
         self.gotorun()
 
