@@ -288,12 +288,12 @@ class Nci(object):
     MEMBER = (18, _C.c_int32, 4, None)
     CHILD = (19, _C.c_int32, 4, None)
     PARENT_RELATIONSHIP = (20, _C.c_uint32, 4, int)
-    CONGLOMERATE_NIDS = (21, _C.c_int32*1024, 1024*4, None)
+    CONGLOMERATE_NIDS = (21, _C.c_int32, None, None)
     ORIGINAL_PART_NAME = (22, _C.c_char_p, 1024, str)
     NUMBER_OF_MEMBERS = (23, _C.c_uint32, 4, int)
     NUMBER_OF_CHILDREN = (24, _C.c_uint32, 4, int)
-    MEMBER_NIDS = (25, _C.c_int32*4096, 4096*4, None)
-    CHILDREN_NIDS = (26, _C.c_int32*4096, 4096*4, None)
+    MEMBER_NIDS = (25, _C.c_int32, None, None)
+    CHILDREN_NIDS = (26, _C.c_int32, None, None)
     FULLPATH = (27, _C.c_char_p, 1024, str)
     MINPATH = (28, _C.c_char_p, 1024, str)
     USAGE = (29, _C.c_uint8, 1, int)
@@ -1317,6 +1317,18 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     def _getNci(self, info):
         """Return nci data"""
         code, ctype, buflen, rtype = info
+        
+        if buflen is None:
+            count = 0
+            if code == 25: # MEMBER_NIDS
+                count = self.number_of_members
+            elif code == 26: # CHILDREN_NIDS
+                count = self.number_of_children
+            elif code == 21: # CONGLOMERATE_NIDS
+                count = self.number_of_elts
+            buflen = _C.sizeof(ctype) * count
+            ctype = ctype * count
+
         if ctype is _C.c_char_p:
             ans = ctype((b' ')*buflen)
             pointer = ans
