@@ -1322,7 +1322,7 @@ $<APP_NAME> = {
         except:
             marte2Components = '/opt/MARTe2/MARTe2-components'
         try:
-            marte2MdsComponents = os.environ['MARTE_DIR']
+            marte2MdsComponents = os.environ['MARTe2_MDSplus_DIR']
         except:
             marte2MdsComponents = '/opt/MARTe2/MARTe2-MDSplus'
         for gamClass in gamClasses:
