@@ -125,6 +125,8 @@ pipeline {
                         OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
                                 ws("${WORKSPACE}/${OS}") {
+                                    def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+
                                     stage("${OS} Clone") {
                                         checkout scm;
 
@@ -134,7 +136,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME}"
+                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --dockernetwork=${network}"
 
                                         if (OS.endsWith("armhf")) {
                                             sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
@@ -143,7 +145,6 @@ pipeline {
 
                                     stage("${OS} Test") {
                                         try {
-                                            def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
                                             sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
                                         }
                                         finally {
@@ -156,7 +157,7 @@ pipeline {
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs"
+                                            sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version} --dockernetwork=${network} --keys=/mdsplus/certs"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
