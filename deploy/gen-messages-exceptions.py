@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 gen_header = """ This module was generated, do not modify it
  To add new status messages modify '%s' and then do:
-     python3 bootstrap.py"""
+     python3 deploy/gen-messages-exceptions.py"""
 anyfile = 'one of the "*_messages.xml" files'
 
 PYTHON_EXCEPTIONS_FILENAME = "python/MDSplus/mdsExceptions.py"

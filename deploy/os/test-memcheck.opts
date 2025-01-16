@@ -1,1 +1,1 @@
---dockerimage=mdsplus/builder:ubuntu-22.04-x86_64 --valgrind=memcheck
+--dockerimage=mdsplus/builder:ubuntu-22.04-amd64 --valgrind=memcheck
