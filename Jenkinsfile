@@ -5,18 +5,16 @@ def OSList = [
     'test-ubsan',
     'test-helgrind',
     'test-memcheck',
-    'ubuntu-18-x86_64',
-    'ubuntu-20-x86_64',
-    'ubuntu-22-x86_64',
-    // 'rhel-8-x86_64',
+    'ubuntu-18-amd64',
+    'ubuntu-20-amd64',
+    'ubuntu-22-amd64',
+    'rhel-8-x86_64',
     'rhel-9-x86_64',
-    'alpine-3.14-x86_64',
-    // 'alpine-3.14-arm64',
-    'debian-11-x86_64',
-    'debian-12-x86_64',
+    'debian-11-amd64',
+    'debian-12-amd64',
     'amazonlinux-2-x86_64',
-    // 'windows-x86',
-    // 'windows-x86_64',
+    'windows-x86',
+    'windows-x64',
 ]
 
 def AdminList = [
@@ -131,14 +129,6 @@ pipeline {
                                         checkout scm;
                                     }
 
-                                    stage("${OS} Bootstrap") {
-                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --dockernetwork=${network}"
-
-                                        if (OS.endsWith("armhf")) {
-                                            sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
-                                        }
-                                    }
-
                                     stage("${OS} Test") {
                                         def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
                                         
@@ -149,7 +139,7 @@ pipeline {
 
                                     if (!OS.startsWith("test-")) {
                                         stage("${OS} Release") {
-                                            sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Release"
+                                            sh "./deploy/build.py -j --os=${OS} --package -DCMAKE_BUILD_TYPE=Release"
                                             
                                             findFiles(glob: "packages/*.tgz").each {
                                                 file -> release_file_list.add(WORKSPACE + "/" + file.path)
@@ -175,8 +165,8 @@ pipeline {
                 stage("Test IDL") {
                     steps {
                         // The IDL tests have to be run with the same OS as the builder
-                        ws("${WORKSPACE}/ubuntu22") {
-                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
+                        ws("${WORKSPACE}/ubuntu-22-amd64") {
+                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace-ubuntu-22-amd64/install/usr/local/mdsplus"]) {
                                 sh """
                                     set +x
                                     . \$MDSPLUS_DIR/setup.sh
@@ -198,51 +188,51 @@ pipeline {
             }
         }
 
-        stage('Publish') {
-            when {
-                allOf {
-                    anyOf {
-                        branch 'alpha';
-                        branch 'stable';
-                    }
+        // stage('Publish') {
+        //     when {
+        //         allOf {
+        //             anyOf {
+        //                 branch 'alpha';
+        //                 branch 'stable';
+        //             }
 
-                    triggeredBy 'TimerTrigger'
-                }
-            }
-            steps {
-                script {
+        //             triggeredBy 'TimerTrigger'
+        //         }
+        //     }
+        //     steps {
+        //         script {
 
 
-                    parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
-                        OS -> [ "${OS} Publish": {
-                            stage("${OS} Publish") {
-                                ws("${WORKSPACE}/${OS}") {
-                                    sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
-                                }
-                            }
-                        }]
-                    }
+        //             parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
+        //                 OS -> [ "${OS} Publish": {
+        //                     stage("${OS} Publish") {
+        //                         ws("${WORKSPACE}/${OS}") {
+        //                             sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
+        //                         }
+        //                     }
+        //                 }]
+        //             }
 
-                    stage("Publish to GitHub") {
-                        ws("${WORKSPACE}/publish") {
-                            echo "Creating GitHub Release and Tag for ${new_tag}"
-                            withCredentials([
-                                usernamePassword(
-                                    credentialsId: 'MDSplusJenkins',
-                                    usernameVariable: 'GITHUB_APP',
-                                    passwordVariable: 'GITHUB_ACCESS_TOKEN'
-                                )]) {
+        //             stage("Publish to GitHub") {
+        //                 ws("${WORKSPACE}/publish") {
+        //                     echo "Creating GitHub Release and Tag for ${new_tag}"
+        //                     withCredentials([
+        //                         usernamePassword(
+        //                             credentialsId: 'MDSplusJenkins',
+        //                             usernameVariable: 'GITHUB_APP',
+        //                             passwordVariable: 'GITHUB_ACCESS_TOKEN'
+        //                         )]) {
 
-                                // TODO: Protect against spaces in filenames
-                                def release_file_list_arg = release_file_list.join(" ")
-                                sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
-                            }
+        //                         // TODO: Protect against spaces in filenames
+        //                         def release_file_list_arg = release_file_list.join(" ")
+        //                         sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
+        //                     }
 
-                        }
-                    }
-                }
-            }
-        }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
     post {
         always {
