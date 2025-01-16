@@ -1,5 +1,5 @@
 
-if(ENABLE_JAVA)
+if(ENABLE_JAVA AND NOT TEST_WITH_WINE)
 
     file(GLOB_RECURSE
         _source_list

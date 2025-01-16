@@ -1,0 +1,1 @@
+--dockerimage=mdsplus/builder:bootstrap --bootstrap

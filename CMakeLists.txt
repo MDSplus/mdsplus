@@ -467,6 +467,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/mdsplus
     # For mdsplus/mdsconfig.h
+    ${CMAKE_BINARY_DIR}/_include
     ${CMAKE_BINARY_DIR}/include
     ${CMAKE_BINARY_DIR}/include/mdsplus
 )
@@ -1010,7 +1011,7 @@ check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h.in
-    ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h
+    ${CMAKE_BINARY_DIR}/_include/_mdsversion.h
 )
 
 ###

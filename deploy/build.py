@@ -103,6 +103,13 @@ except:
     boolean_action = 'store_true'
 
 parser.add_argument(
+    '--bootstrap',
+    action=boolean_action,
+    default=False,
+    help='Run the bootstrap scripts, will disable all other stages.'
+)
+
+parser.add_argument(
     '--configure',
     action=boolean_action,
     default=False,
@@ -132,13 +139,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--test',
-    action=boolean_action,
-    default=False,
-    help='Run all tests and report the results. Use -j/--parallel to run tests in parallel. Use -R/--test-regex or --rerun-failed to control which tests are run.',
-)
-
-parser.add_argument(
     '--install',
     action=boolean_action,
     default=False,
@@ -151,6 +151,15 @@ parser.add_argument(
     default=False,
     help='Generates packages in `{--workspace}/package`.'
 )
+
+parser.add_argument(
+    '--test',
+    action=boolean_action,
+    default=False,
+    help='Run all tests and report the results. Use -j/--parallel to run tests in parallel. Use -R/--test-regex or --rerun-failed to control which tests are run.',
+)
+
+# TODO: Add fallback --no-* options for python < 3.9
 
 # Testing
 
@@ -295,9 +304,10 @@ if args.platform is None and args.dockerimage is None:
         with open('/etc/os-release', 'rt') as file:
             lines = file.readlines()
             for line in lines:
-                key, value = line.replace('"', '').split('=', maxsplit=1)
-                if key in [ 'ID', 'ID_LIKE' ]:
-                    id_list.extend(value.split())
+                if '=' in line:
+                    key, value = line.replace('"', '').split('=', maxsplit=1)
+                    if key in [ 'ID', 'ID_LIKE' ]:
+                        id_list.extend(value.split())
 
         if 'debian' in id_list:
             args.platform = 'debian'
@@ -309,24 +319,11 @@ if args.platform is None and args.dockerimage is None:
 # Directories
 
 build_dir = os.path.join(args.workspace, 'build')
-if args.build:
-    os.makedirs(build_dir, exist_ok=True)
-
 install_dir = os.path.join(args.workspace, 'install')
 usr_local_mdsplus_dir = os.path.join(install_dir, 'usr/local/mdsplus')
-if args.install:
-    os.makedirs(install_dir, exist_ok=True)
-    os.makedirs(usr_local_mdsplus_dir, exist_ok=True)
-
 testing_dir = os.path.join(args.workspace, 'testing')
-if args.test:
-    os.makedirs(testing_dir, exist_ok=True)
-
 packages_dir = os.path.join(args.workspace, 'packages')
 dist_dir = os.path.join(args.workspace, 'dist')
-if args.package:
-    os.makedirs(packages_dir, exist_ok=True)
-    os.makedirs(dist_dir, exist_ok=True)
 
 # System Configuration
 
@@ -520,8 +517,22 @@ def do_setup_vscode():
     import atexit
     atexit.register(print, '\nVisual Studio Code Settings Configured, Run "clangd: Restart language server" to apply')
 
+def do_bootstrap():
+    global source_dir
+
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-include-opcbuiltins.py') ])
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-include-tdishr.py') ])
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-messages-exceptions.py') ])
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-python-MDSplus-compound.py') ])
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-tdishr-TdiHash.py') ])
+    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-yacc-lex.py') ])
+
+    exit(0)
+
 def do_interactive():
     global args, cmake_args
+
+    os.makedirs(args.workspace, exist_ok=True)
 
     do_install_filename = os.path.join(args.workspace, 'do-configure.sh')
     with open(do_install_filename, 'wt') as file:
@@ -593,6 +604,8 @@ def do_docker():
 
         subprocess.run([ docker, 'pull', args.dockerimage ])
     
+    os.makedirs(args.workspace, exist_ok=True)
+
     docker_args = [
         # Enable colors
         '--tty',
@@ -728,6 +741,8 @@ def do_docker():
 def do_configure():
     global cmake_args, cmake_cache, cmake, source_dir, build_dir
 
+    os.makedirs(build_dir, exist_ok=True)
+
     # If we have not already configured
     if 'CMAKE_GENERATOR' not in cmake_cache:
         # And the user has not specified a generator
@@ -762,6 +777,8 @@ def do_configure():
 
 def do_build():
     global args, cmake_cache, build_dir
+
+    os.makedirs(build_dir, exist_ok=True)
 
     # This will work everywhere, but we can't inform the number of concurrent jobs
     build_command = [ cmake, '--build', build_dir ]
@@ -814,8 +831,163 @@ def do_generate_vscode_launch_json():
         print('--setup-vscode failed')
         exit(1)
 
+def do_install():
+    global args, cmake, build_dir, install_dir, usr_local_mdsplus_dir
+
+    os.makedirs(usr_local_mdsplus_dir, exist_ok=True)
+    
+    # TODO: Add parallel?
+    print('Installing')
+    result = subprocess.run(
+        [ cmake, '--install', '.' ],
+        cwd=build_dir,
+    )
+
+    if result.returncode != 0:
+        print('--install failed')
+        exit(1)
+
+def do_package():
+    global args, packages_dir, dist_dir
+
+    os.makedirs(packages_dir, exist_ok=True)
+    os.makedirs(dist_dir, exist_ok=True)
+    
+    print('Packaging')
+
+    if args.distname is None:
+        print('You must specify --distname when using --package')
+        exit(1)
+    
+    if args.platform is None:
+        print('Unable to autodetect --platform, manually specify --platform to use --package')
+        exit(1)
+
+    # TODO: Improve
+    release_version = git('describe --tag')
+
+    # TODO: Harden
+    branch, major, minor, patch, hash = release_version.split('-', maxsplit=4)
+    branch = branch.replace('_release', '')
+
+    release_version = f'{major}.{minor}.{patch}'
+
+    # Consider using the actual branch name for flavor instead of "alpha", "stable", or "other"
+    if branch in ['alpha', 'stable']:
+        flavor = branch
+    else:
+        flavor = 'other'
+
+    if args.arch is None:
+        if args.platform == 'debian':
+            result = subprocess.run(
+                [ '/usr/bin/dpkg', '--print-architecture' ],
+                stdout=subprocess.PIPE
+            )
+            args.arch = result.stdout.decode().strip()
+
+        if args.platform == 'redhat':
+            result = subprocess.run(
+                [ '/usr/bin/rpm', '-E', '%{_arch}' ],
+                stdout=subprocess.PIPE
+            )
+            args.arch = result.stdout.decode().strip()
+
+    if args.arch is None:
+        print('Unable to autodetect --arch, manually specify --arch to use --package')
+        exit(1)
+
+    # Replace these with standard arguments when the packaging scripts are rewritten
+    package_env = dict(os.environ)
+    package_env['srcdir'] = source_dir
+    package_env['ARCH'] = args.arch
+    package_env['DISTNAME'] = args.distname
+    package_env['PLATFORM'] = args.platform
+    package_env['BRANCH'] = branch
+    package_env['FLAVOR'] = flavor
+    package_env['BNAME'] = f'-{branch}'
+    package_env['RELEASE_VERSION'] = release_version
+    package_env['BUILDROOT'] = install_dir
+    package_env['DISTROOT'] = dist_dir
+
+    # TODO: Move
+    import tarfile
+
+    if args.platform == 'alpine':
+        pass
+    elif args.platform == 'debian':
+
+        result = subprocess.run(
+            [ sys.executable, os.path.join(deploy_dir, 'packaging/debian/debian_build_debs.py') ],
+            cwd=build_dir,
+            env=package_env,
+        )
+
+        if result.returncode != 0:
+            print('Failed to build debian packages')
+            exit(1)
+
+        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_debs.tgz")
+        print(f'Creating {package_filename}')
+        
+        package_file = tarfile.open(package_filename, 'w:gz')
+
+        package_contents = glob.glob(os.path.join(dist_dir, 'DEBS/*/*.deb'))
+        for filename in package_contents:
+            package_file.add(filename, arcname=os.path.basename(filename))
+            
+        package_file.close()
+
+    elif args.platform == 'redhat':
+
+        result = subprocess.run(
+            [ sys.executable, os.path.join(deploy_dir, 'packaging/redhat/redhat_build_rpms.py') ],
+            cwd=build_dir,
+            env=package_env,
+        )
+
+        if result.returncode != 0:
+            print('Failed to build redhat packages')
+            exit(1)
+
+        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_rpms.tgz")
+        print(f'Creating {package_filename}')
+
+        package_file = tarfile.open(package_filename, 'w:gz')
+
+        package_contents = glob.glob(os.path.join(dist_dir, 'RPMS/*/*.rpm'))
+        for filename in package_contents:
+            package_file.add(filename, arcname=os.path.basename(filename))
+            
+        package_file.close()
+
+    elif args.platform == 'windows':
+
+        result = subprocess.run(
+            [ os.path.join(deploy_dir, 'packaging/windows/create_installer.sh') ],
+            cwd=build_dir,
+            env=package_env,
+        )
+
+        if result.returncode != 0:
+            print('Failed to build windows installer')
+            exit(1)
+
+        exe_list = glob.glob(os.path.join(dist_dir, f'{args.platform}/{flavor}/*.exe'))
+        for filename in exe_list:
+            shutil.copy(filename, packages_dir)
+
+    root_package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}.tgz")
+
+    print(f'Creating {root_package_filename}')
+    root_package_file = tarfile.open(root_package_filename, 'w:gz')
+    root_package_file.add(usr_local_mdsplus_dir, arcname='.')
+    root_package_file.close()
+
 def do_test():
     global args, build_dir, testing_dir
+
+    os.makedirs(testing_dir, exist_ok=True)
 
     print('Testing')
 
@@ -1011,153 +1183,8 @@ def do_test():
         with open(junit_filename, 'wb') as file:
             file.write(xml.tostring(root))
 
-def do_install():
-    global args, cmake, build_dir
-
-    # TODO: Add parallel?
-    print('Installing')
-    result = subprocess.run(
-        [ cmake, '--install', '.' ],
-        cwd=build_dir,
-    )
-
-    if result.returncode != 0:
-        print('--install failed')
+    if len(failed_tests) > 0:
         exit(1)
-
-def do_package():
-    global args
-
-    print('Packaging')
-
-    if args.distname is None:
-        print('You must specify --distname when using --package')
-        exit(1)
-    
-    if args.platform is None:
-        print('Unable to autodetect --platform, manually specify --platform to use --package')
-        exit(1)
-
-    # TODO: Improve
-    release_version = git('describe --tag')
-
-    # TODO: Harden
-    branch, major, minor, patch, hash = release_version.split('-', maxsplit=4)
-    branch = branch.removesuffix('_release')
-
-    release_version = f'{major}.{minor}.{patch}'
-
-    # Consider using the actual branch name for flavor instead of "alpha", "stable", or "other"
-    if branch in ['alpha', 'stable']:
-        flavor = branch
-    else:
-        flavor = 'other'
-
-    if args.arch is None:
-        if args.platform == 'debian':
-            result = subprocess.run(
-                [ '/usr/bin/dpkg', '--print-architecture' ],
-                stdout=subprocess.PIPE
-            )
-            args.arch = result.stdout.decode().strip()
-
-        if args.platform == 'redhat':
-            result = subprocess.run(
-                [ '/usr/bin/rpm', '-E', '%{_arch}' ],
-                stdout=subprocess.PIPE
-            )
-            args.arch = result.stdout.decode().strip()
-
-    if args.arch is None:
-        print('Unable to autodetect --arch, manually specify --arch to use --package')
-        exit(1)
-
-    # Replace these with standard arguments when the packaging scripts are rewritten
-    package_env = dict(os.environ)
-    package_env['srcdir'] = source_dir
-    package_env['ARCH'] = args.arch
-    package_env['DISTNAME'] = args.distname
-    package_env['PLATFORM'] = args.platform
-    package_env['BRANCH'] = branch
-    package_env['FLAVOR'] = flavor
-    package_env['BNAME'] = f'-{branch}'
-    package_env['RELEASE_VERSION'] = release_version
-    package_env['BUILDROOT'] = install_dir
-    package_env['DISTROOT'] = dist_dir
-
-    # TODO: Move
-    import tarfile
-
-    if args.platform == 'alpine':
-        pass
-    elif args.platform == 'debian':
-
-        result = subprocess.run(
-            [ sys.executable, os.path.join(deploy_dir, 'packaging/debian/debian_build_debs.py') ],
-            cwd=build_dir,
-            env=package_env,
-        )
-
-        if result.returncode != 0:
-            print('Failed to build debian packages')
-            exit(1)
-
-        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_debs.tgz")
-        print(f'Creating {package_filename}')
-        
-        package_file = tarfile.open(package_filename, 'w:gz')
-
-        package_contents = glob.glob(os.path.join(dist_dir, 'DEBS/*/*.deb'))
-        for filename in package_contents:
-            package_file.add(filename, arcname=os.path.basename(filename))
-            
-        package_file.close()
-
-    elif args.platform == 'redhat':
-
-        result = subprocess.run(
-            [ sys.executable, os.path.join(deploy_dir, 'packaging/redhat/redhat_build_rpms.py') ],
-            cwd=build_dir,
-            env=package_env,
-        )
-
-        if result.returncode != 0:
-            print('Failed to build redhat packages')
-            exit(1)
-
-        package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_rpms.tgz")
-        print(f'Creating {package_filename}')
-
-        package_file = tarfile.open(package_filename, 'w:gz')
-
-        package_contents = glob.glob(os.path.join(dist_dir, 'RPMS/*/*.rpm'))
-        for filename in package_contents:
-            package_file.add(filename, arcname=os.path.basename(filename))
-            
-        package_file.close()
-
-    elif args.platform == 'windows':
-
-        result = subprocess.run(
-            [ os.path.join(deploy_dir, 'packaging/windows/create_installer.sh') ],
-            cwd=build_dir,
-            env=package_env,
-        )
-
-        if result.returncode != 0:
-            print('Failed to build windows installer')
-            exit(1)
-
-        exe_list = glob.glob(os.path.join(dist_dir, f'{args.platform}/{flavor}/*.exe'))
-        for filename in exe_list:
-            shutil.copy(filename, packages_dir)
-
-    root_package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}.tgz")
-
-    print(f'Creating {root_package_filename}')
-    root_package_file = tarfile.open(root_package_filename, 'w:gz')
-    root_package_file.add(usr_local_mdsplus_dir, arcname='.')
-    root_package_file.close()
 
 # main
 
@@ -1173,6 +1200,9 @@ else:
         if args.setup_vscode:
             do_setup_vscode()
 
+        if args.bootstrap:
+            do_bootstrap()
+
         if args.configure:
             do_configure()
 
@@ -1182,11 +1212,11 @@ else:
         if args.setup_vscode:
             do_generate_vscode_launch_json()
 
-        if args.test:
-            do_test()
-
         if args.install:
             do_install()
 
         if args.package:
             do_package()
+
+        if args.test:
+            do_test()
