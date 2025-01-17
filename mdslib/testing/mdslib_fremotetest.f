@@ -49,12 +49,7 @@
       end if
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      sts= MdsValueR(con,"_=SetEnv('test_path=.')"//CHAR(0),dsc,0,size)
-      if (and(and(sts, iresult), 1) .ne. 1) then
-        write (6,*) "setenv(): ",iresult,sts,size
-        stop 1
-      end if
-      sts= MdsValueR(con,"TreeOpenNew('test',1)"//CHAR(0),dsc,0,size)
+      sts= MdsValueR(con,"TreeOpenNew('remtest',1)"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeOpenNew(): ",iresult,sts,size
         stop 1
@@ -82,9 +77,9 @@
         stop 1
       end if
 
-      sts= MdsOpenR(con,"test"//CHAR(0),1)
+      sts= MdsOpenR(con,"remtest"//CHAR(0),1)
       if (and(sts, 1) .ne. 1) then
-        write (6,*) "MdsOpen('test',1) :", sts
+        write (6,*) "MdsOpen('remtest',1) :", sts
         stop 1
       end if
 

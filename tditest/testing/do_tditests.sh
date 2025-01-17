@@ -48,8 +48,8 @@ if [ ! -z $1 ]; then
   # use tmpdir to isolate shotdb.sys
   tmpdir=$(mktemp -d)
   trap 'rm -Rf ${tmpdir}' EXIT
-  export MDS_PATH=".;${MDSPLUS_DIR}/tdi"
-  export MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/python/MDSplus/tests/devices"
+  export MDS_PATH=".;${MDS_PATH}"
+  export MDS_PYDEVICE_PATH="${MDS_PYDEVICE_PATH}${MDSPLUS_DIR}/python/MDSplus/tests/devices"
   export subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
   export main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 

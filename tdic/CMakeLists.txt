@@ -30,17 +30,8 @@ add_executable(
 target_link_libraries(
     tdic
     PUBLIC
-        ${CMAKE_DL_LIBS}
+        MdsIpShr
+        Readline::Readline
 )
-
-if(WIN32 OR APPLE)
-    # We use dlopen() for linux, but other systems need to be linked directly
-    target_link_libraries(
-        tdic
-        PUBLIC
-            MdsIpShr
-            Readline::Readline
-    )
-endif()
 
 install(TARGETS tdic)

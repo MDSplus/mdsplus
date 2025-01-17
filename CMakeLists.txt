@@ -1003,7 +1003,8 @@ check_include_files("stdio.h;readline/readline.h" HAVE_READLINE_READLINE_H)
 check_symbol_exists("rl_set_signals" "stdio.h;readline/readline.h" HAVE_RL_SET_SIGNALS)
 
 # Linux Kernel
-check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
+# We need to include <stddef.h> for <scsi/sg.h> to work on some systems
+check_include_files("stddef.h;scsi/sg.h" HAVE_SCSI_SG_H)
 
 ###
 ### Generate _include/_mdsversion.h
@@ -1069,7 +1070,7 @@ mdsplus_generate_files(
 )
 
 mdsplus_generate_files(
-    COMMAND ${Python_EXECUTABLE} deploy/gen-python-compound.py
+    COMMAND ${Python_EXECUTABLE} deploy/gen-python-MDSplus-compound.py
     GENERATED_FILES
     python/MDSplus/compound.py
 )

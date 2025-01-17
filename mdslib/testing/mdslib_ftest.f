@@ -41,11 +41,6 @@
       end if
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      sts = MdsValue("_=SetEnv('test_path=.')"//CHAR(0),dsc,0,size)
-      if (and(and(sts, iresult), 1) .ne. 1) then
-        write (6,*) "setenv(): ",iresult,sts,size
-        stop 1
-      end if
       sts = MdsValue("TreeOpenNew('test',1)"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeOpenNew(): ",iresult,sts,size

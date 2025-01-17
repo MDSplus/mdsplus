@@ -8,8 +8,11 @@ def OSList = [
     'ubuntu-18-amd64',
     'ubuntu-20-amd64',
     'ubuntu-22-amd64',
+    'ubuntu-24-amd64',
+    'rhel-7-x86_64',
     'rhel-8-x86_64',
     'rhel-9-x86_64',
+    'debian-10-amd64',
     'debian-11-amd64',
     'debian-12-amd64',
     'windows-x86',
@@ -85,12 +88,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage("Calculate Version") {
             when {
                 anyOf {
@@ -100,25 +97,23 @@ pipeline {
             }
             steps {
                 script {
-                    new_version = sh(
-                        script: "./deploy/get_new_version.py",
-                        returnStdout: true
-                    ).trim()
+                    ws("${WORKSPACE}/publish") {
+                        checkout scm;
 
-                    if (new_version == '0.0.0') {
-                        error "Failed to calculate new version"
+                        new_version = sh(
+                            script: "./deploy/get_new_version.py",
+                            returnStdout: true
+                        ).trim()
+
+                        if (new_version == '0.0.0') {
+                            error "Failed to calculate new version"
+                        }
+                        
+                        new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
+
+                        echo "Calculated new version to be ${new_version}"
                     }
-                    
-                    new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
-
-                    echo "Calculated new version to be ${new_version}"
                 }
-            }
-        }
-
-        stage('Bootstrap') {
-            steps {
-                sh "./deploy/build.py --os=bootstrap --dockerpull"
             }
         }
 
@@ -128,38 +123,44 @@ pipeline {
                     parallel OSList.collectEntries {
                         OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
+                                ws("${WORKSPACE}/${OS}") {
+                                    def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
 
-                                def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-
-                                stage("${OS} Build") {
-                                    sh "./deploy/build.py -j --os=${OS} --build --dockerpull --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
-                                }
-
-                                stage("${OS} Test") {
-                                    try {
-                                        sh "./deploy/build.py -j --os=${OS} --no-build --test --output-junit --dockernetwork=${network}"
-                                    }
-                                    finally {
-                                        junit skipPublishingChecks: true, testResults: "workspace-${OS}/mdsplus-junit.xml", keepLongStdio: true
-                                    }
-                                }
-
-                                if (!OS.startsWith("test-")) {
-                                    stage("${OS} Release") {
-                                        sh "./deploy/build.py -j --os=${OS} --package -DCMAKE_BUILD_TYPE=Release"
-                                        
-                                        findFiles(glob: "packages/*.tgz").each {
-                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
-                                        }
-
-                                        findFiles(glob: "packages/*.exe").each {
-                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                    stage("${OS} Clone") {
+                                        retry(3) {
+                                            checkout scm
                                         }
                                     }
-                                }
 
+                                    stage("${OS} Build") {
+                                        sh "./deploy/build.py -j --os=${OS} --build --dockerpull --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
+                                    }
+
+                                    stage("${OS} Test") {
+                                        try {
+                                            sh "./deploy/build.py -j --os=${OS} --no-build --test --output-junit --dockernetwork=${network}"
+                                        }
+                                        finally {
+                                            junit skipPublishingChecks: true, testResults: "workspace-${OS}/mdsplus-junit.xml", keepLongStdio: true
+                                        }
+                                    }
+
+                                    if (!OS.startsWith("test-")) {
+                                        stage("${OS} Release") {
+                                            sh "./deploy/build.py -j --os=${OS} --package -DCMAKE_BUILD_TYPE=Release"
+                                            
+                                            findFiles(glob: "packages/*.tgz").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
+
+                                            findFiles(glob: "packages/*.exe").each {
+                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                            }
+                                        }
+                                    }
+
+                                }
                             }
-                            
                         }]
                     }
                 }
@@ -171,14 +172,16 @@ pipeline {
                 stage("Test IDL") {
                     steps {
                         // The IDL tests have to be run with the same OS as the builder
-                        withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace-ubuntu-22-amd64/install/usr/local/mdsplus"]) {
-                            sh """
-                                set +x
-                                . \$MDSPLUS_DIR/setup.sh
-                                export PYTHONPATH=\$MDSPLUS_DIR/python/
-                                set -x
-                                ./idl/testing/run_tests.py
-                            """
+                        ws("${WORKSPACE}/ubuntu22") {
+                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace-ubuntu-22-amd64/install/usr/local/mdsplus"]) {
+                                sh """
+                                    set +x
+                                    . \$MDSPLUS_DIR/setup.sh
+                                    export PYTHONPATH=\$MDSPLUS_DIR/python/
+                                    set -x
+                                    ./idl/testing/run_tests.py
+                                """
+                            }
                         }
                     }
                 }
