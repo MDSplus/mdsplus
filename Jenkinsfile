@@ -136,9 +136,12 @@ pipeline {
                                 }
 
                                 stage("${OS} Test") {
-                                    sh "./deploy/build.py -j --os=${OS} --no-build --test --output-junit --dockernetwork=${network}"
-
-                                    junit skipPublishingChecks: true, testResults: "workspace-${OS}/mdsplus-junit.xml", keepLongStdio: true
+                                    try {
+                                        sh "./deploy/build.py -j --os=${OS} --no-build --test --output-junit --dockernetwork=${network}"
+                                    }
+                                    finally {
+                                        junit skipPublishingChecks: true, testResults: "workspace-${OS}/mdsplus-junit.xml", keepLongStdio: true
+                                    }
                                 }
 
                                 if (!OS.startsWith("test-")) {
