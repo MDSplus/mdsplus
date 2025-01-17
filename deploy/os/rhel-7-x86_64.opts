@@ -1,0 +1,2 @@
+--dockerimage=mdsplus/builder:centos-7-x86_64 --distname=el7
+-DGSI=gcc -DENABLE_HDF5=ON -DENABLE_SYBASE=ON

@@ -109,9 +109,6 @@ def build():
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
                       "bits": 64, "arch_t": ".x86_64"}]
-    if info['dist'] != 'el8' and info['dist'] != 'el9':
-        architectures.append(
-            {"target": "i686-linux", "bits": 32, "arch_t": ".i686"})
 
     for arch in architectures:
         info['target'] = arch['target']
