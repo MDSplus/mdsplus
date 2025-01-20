@@ -24,7 +24,8 @@ public class DeviceParameters extends DeviceComponent
         {
             try {
                 offsetNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".PARAMETERS"+",\'NID_NUMBER\')") - baseNid;
-                numParameters = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".PARAMETERS"+",\'NUMBER_OF_CHILDREN\')");
+                if(numParameters == 0) //If the number of parameters has not been fotche in bean customizer
+                    numParameters = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".PARAMETERS"+",\'NUMBER_OF_CHILDREN\')");
             }catch(Exception exc)
             {
                 {System.out.println("Internal error in DeviceParameters.initialize, cannot get parameterOffset");}
