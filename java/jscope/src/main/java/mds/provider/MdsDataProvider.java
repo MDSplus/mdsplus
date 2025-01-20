@@ -271,7 +271,6 @@ public class MdsDataProvider implements DataProvider
 		private float times[] = null;
 		private Dimension dim = null;
 		private int header_size = 0;
-
 		public SimpleFrameData(String in_y, String in_x, float time_min, float time_max) throws Exception
 		{
 			int i;
@@ -795,7 +794,7 @@ public class MdsDataProvider implements DataProvider
 		@Override
 		public int getNumDimension() throws IOException
 		{
-			if (numDimensions != UNKNOWN)
+                   			if (numDimensions != UNKNOWN)
 				return numDimensions;
 			String expr;
 			if (_jscope_set)
@@ -803,9 +802,11 @@ public class MdsDataProvider implements DataProvider
 			else
 			{
 				if (segmentMode == SEGMENTED_YES)
-					expr = "shape(GetSegment(" + segmentNodeName + ",0))";
-//	            expr = "shape(GetSegment(" + in_y +",0))";
-				else
+                                {
+                                    expr = "shape("+in_y.replace(segmentNodeName, "GetSegment("+segmentNodeName+",0)")+")";
+//	expr = "shape(GetSegment(" + segmentNodeName + ",0))";
+                                }
+	        		else
 				{
 					_jscope_set = true;
 					expr = "( _jscope_" + v_idx + " = (" + in_y + ";), shape(_jscope_" + v_idx + "))";
