@@ -1311,7 +1311,7 @@ $<APP_NAME> = {
         gamClasses.append('MDSEventManager')
         gamClasses.append('MDSWriter')
         gamClasses.append('MDSWriter')
-        gamClasses.append('MDSReaderNS')
+        gamClasses.append('MDSReaderGAM')
         return gamClasses
     
     def buildStartScript(self):
