@@ -269,6 +269,7 @@ fi
   </package>
 
   <package name="motif_bin" arch="bin" summary="Libraries, UIDS and binary applications required for Motif APS" description="Libraries, UIDS and binary applications required for Motif APS">
+    <requires package="libmotif" external=""/>
     <include file="/usr/local/mdsplus/bin/dw*"/>
     <include file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <include file="/usr/local/mdsplus/bin/actmon"/>
@@ -567,6 +568,7 @@ rm -f /etc/profile.d/mdsplus.csh
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
     <requires package="readline" external=""/>
+    <requires package="libxml" external=""/>
     <include dir="/usr/local/mdsplus/bin"/>
     <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
@@ -840,37 +842,41 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  <!-- dist first -->
   <external_packages dist="Ubuntu24">
    <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu22">
    <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu20">
    <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
-   <readline package="libreadline8"/>
- </external_packages>
-
- <external_packages dist="DebianBookworm">
-   <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
-   <readline package="libreadline8"/>
- </external_packages>
-
- <external_packages dist="DebianBullseye">
-   <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
    <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu18">
    <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
+   <readline package="libreadline7"/>
+ </external_packages>
+
+ <external_packages dist="DebianBookworm">
+   <numpy package="python3-numpy"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="DebianBullseye">
+   <numpy package="python3-numpy"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="DebianBuster">
+   <numpy package="python3-numpy"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="DebianStretch">
+   <numpy package="python3-numpy"/>
    <readline package="libreadline7"/>
  </external_packages>
 
@@ -897,17 +903,23 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
    <numpy/>
    <java/>
    <readline/>
+   <libmotif package="motif"/>
+   <libxml package="libxml2"/>
  </external_packages>
 
  <external_packages platform="alpine">
    <numpy package="py-numpy"/>
    <java package="openjdk8-jre"/>
    <readline/>
+   <libmotif package="motif"/>
+   <libxml package="libxml2"/>
  </external_packages>
 
  <external_packages platform="debian">
    <numpy package="python-numpy"/>
    <java package="java-runtime"/>
+   <libmotif package="libmrm4"/>
+   <libxml package="libxml2"/>
  </external_packages>
 
 </deploy>
