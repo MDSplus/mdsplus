@@ -1310,7 +1310,6 @@ $<APP_NAME> = {
         gamClasses.append('PickSampleGAM')
         gamClasses.append('MDSEventManager')
         gamClasses.append('MDSWriter')
-        gamClasses.append('MDSWriter')
         gamClasses.append('MDSReaderGAM')
         return gamClasses
     
