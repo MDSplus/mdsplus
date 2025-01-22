@@ -595,6 +595,7 @@ def do_docker():
         f'--volume={source_dir}:{source_dir}',
         # Working directory
         f'--workdir={args.workspace}',
+        f'--env=HOME={args.workspace}',
     ]
 
     if args.dockernetwork is not None:
