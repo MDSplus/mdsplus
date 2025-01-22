@@ -126,11 +126,9 @@ pipeline {
                                 ws("${WORKSPACE}/${OS}") {
                                     def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
 
-                                    stage('${OS} Clone') {
-                                        steps {
-                                            retry(3) {
-                                                checkout scm
-                                            }
+                                    stage("${OS} Clone") {
+                                        retry(3) {
+                                            checkout scm
                                         }
                                     }
 
