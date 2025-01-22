@@ -1,6 +1,6 @@
 
 # TODO: Investigate sanitizer
-if(ENABLE_SANITIZE STREQUAL "OFF")
+if(NOT ENABLE_SANITIZE)
 
     set(_test_case_list
         "data_case.py"
@@ -38,6 +38,11 @@ if(ENABLE_SANITIZE STREQUAL "OFF")
 
             # Currently (correctly) failing, will need to be fixed
             if(_target STREQUAL "task-do")
+                continue()
+            endif()
+
+            # 32-bit tests with windows require a 32-bit python.exe
+            if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
                 continue()
             endif()
             

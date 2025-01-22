@@ -335,6 +335,10 @@ if git_executable is None and args.dockerimage is not None:
     print('Unable to find `git`')
     exit(1)
 
+# Causes readline to segfault when run through wine
+if 'LC_CTYPE' in os.environ:
+    del os.environ['LC_CTYPE']
+
 # Utilities
 
 def git(command):

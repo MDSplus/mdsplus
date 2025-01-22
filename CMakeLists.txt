@@ -576,18 +576,22 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     set(_prefix "_sanitize_${ENABLE_SANITIZE}")
 
     mdsplus_check_flags(${_prefix}
-        COMPILER -fsanitize=${ENABLE_SANITIZE} -O3
+        COMPILER -fsanitize=${ENABLE_SANITIZE}
         LINKER   -fsanitize=${ENABLE_SANITIZE}
     )
 
     foreach(_lang IN ITEMS C CXX)
         if(${_prefix}_${_lang})
-            set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -fsanitize=${ENABLE_SANITIZE} -O3")
+            set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -fsanitize=${ENABLE_SANITIZE}")
         endif()
     endforeach()
 
     # TODO: Improve
     add_link_options(-fsanitize=${ENABLE_SANITIZE})
+
+    set(SANITIZER_ENV_MODS
+        "LSAN_OPTIONS=set:G_SLICE=always-malloc:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/leak.supp"
+    )
 
     if(ENABLE_SANITIZE STREQUAL "memory")
         # 
@@ -597,17 +601,26 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        list(APPEND SANITIZER_ENV_MODS
+            "ASAN_OPTIONS=set:start_deactivated=1:exitcode=1:use_sigaltstack=0:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/address.supp"
+        )
     elseif(ENABLE_SANITIZE STREQUAL "thread")
         execute_process(
             COMMAND ${CMAKE_C_COMPILER} -print-file-name=libtsan.so
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        list(APPEND SANITIZER_ENV_MODS
+            "TSAN_OPTIONS=set:start_deactivated=1:exitcode=1:second_deadlock_stack=1:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/thread.supp"
+        )
     elseif(ENABLE_SANITIZE STREQUAL "undefined")
         execute_process(
             COMMAND ${CMAKE_C_COMPILER} -print-file-name=libubsan.so
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        list(APPEND SANITIZER_ENV_MODS
+            "UBSAN_OPTIONS=set:start_deactivated=1:exitcode=1:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/undefined.supp"
         )
     endif()
 
