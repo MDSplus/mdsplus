@@ -1070,7 +1070,7 @@ mdsplus_generate_files(
 )
 
 mdsplus_generate_files(
-    COMMAND ${Python_EXECUTABLE} deploy/gen-python-compound.py
+    COMMAND ${Python_EXECUTABLE} deploy/gen-python-MDSplus-compound.py
     GENERATED_FILES
     python/MDSplus/compound.py
 )
