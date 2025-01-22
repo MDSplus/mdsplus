@@ -18,11 +18,6 @@ foreach(_test_script IN LISTS _test_script_list)
         continue()
     endif()
 
-    # Disabled until the wine/libreadline crash can be fixed
-    if(WIN32 AND _target STREQUAL "test-tab")
-        continue()
-    endif()
-
     mdsplus_add_test(
         NAME "${_target}"
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_tditests.sh ${_test_script}
