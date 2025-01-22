@@ -13,7 +13,13 @@ foreach(_test_script IN LISTS _test_script_list)
 
     cmake_path(GET _test_script STEM _target)
 
+    # Not supported on windows
     if(WIN32 AND _target STREQUAL "test-dev-py")
+        continue()
+    endif()
+
+    # Disabled until the wine/libreadline crash can be fixed
+    if(WIN32 AND _target STREQUAL "test-tab")
         continue()
     endif()
 

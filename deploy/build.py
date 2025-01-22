@@ -103,13 +103,6 @@ except:
     boolean_action = 'store_true'
 
 parser.add_argument(
-    '--bootstrap',
-    action=boolean_action,
-    default=False,
-    help='Run the bootstrap scripts, will disable all other stages.'
-)
-
-parser.add_argument(
     '--configure',
     action=boolean_action,
     default=False,
@@ -516,18 +509,6 @@ def do_setup_vscode():
     
     import atexit
     atexit.register(print, '\nVisual Studio Code Settings Configured, Run "clangd: Restart language server" to apply')
-
-def do_bootstrap():
-    global source_dir
-
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-include-opcbuiltins.py') ])
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-include-tdishr.py') ])
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-messages-exceptions.py') ])
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-python-MDSplus-compound.py') ])
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-tdishr-TdiHash.py') ])
-    subprocess.run([ sys.executable, os.path.join(source_dir, 'deploy/gen-yacc-lex.py') ])
-
-    exit(0)
 
 def do_interactive():
     global args, cmake_args
@@ -1173,6 +1154,9 @@ def do_test():
 
             system_out = xml.SubElement(testcase, 'system-out')
             system_out.text = open(test['log'], 'rt').read()
+            
+            # The BEL character causes issues when loaded into Jenkins
+            system_out.text = system_out.text.replace('\x07', '')
 
             if not test['passed']:
                 failure = xml.SubElement(testcase, 'failure')
@@ -1199,9 +1183,6 @@ else:
 
         if args.setup_vscode:
             do_setup_vscode()
-
-        if args.bootstrap:
-            do_bootstrap()
 
         if args.configure:
             do_configure()

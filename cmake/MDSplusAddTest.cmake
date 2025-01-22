@@ -87,6 +87,8 @@ function(mdsplus_add_test)
                 "WINEARCH=set:${WINEARCH}"
                 "WINEPREFIX=set:${WINEPREFIX}"
                 "WINEPATH=cmake_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                # https://askubuntu.com/questions/323437/how-to-prevent-wine-from-adding-file-associations
+                "WINEDLLOVERRIDES=set:winemenubuilder.exe=d,explorer.exe=d"
 
                 # Don't inherit the system python environment
                 "PYTHONHOME=unset:"
