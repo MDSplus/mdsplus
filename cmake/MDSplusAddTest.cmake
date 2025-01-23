@@ -72,6 +72,8 @@ function(mdsplus_add_test)
 
         # Write all new tree files into the current directory
         "default_tree_path=set:."
+
+        ${SANITIZER_ENV_MODS}
     )
 
     if(WIN32)
