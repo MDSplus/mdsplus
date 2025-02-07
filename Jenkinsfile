@@ -9,6 +9,7 @@ def OSList = [
     'ubuntu-20-amd64',
     'ubuntu-22-amd64',
     'ubuntu-24-amd64',
+    'ubuntu-24-arm64',
     'rhel-7-x86_64',
     'rhel-8-x86_64',
     'rhel-9-x86_64',
