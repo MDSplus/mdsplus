@@ -510,6 +510,10 @@ else()
     mdsplus_add_compiler_flags(-Wall)
     mdsplus_add_compiler_flags(-Wextra)
 
+    # We assume signed char everywhere
+    # TODO: Remove once all char's have been updated
+    mdsplus_add_compiler_flags(-fsigned-char)
+
     # Disable warnings for argument type mismatches in Fortran
     # TODO: Investigate why both are needed
     mdsplus_add_compiler_flags(-fallow-argument-mismatch)

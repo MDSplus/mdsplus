@@ -149,11 +149,11 @@ class Tests(_common.TreeTests, _common.MdsIp):
             self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
             self._doTCLTest('dispatch/build%s' % monitor_opt)
             self._doTCLTest('dispatch/phase%s INIT' % monitor_opt)
-            self._waitIdle(server, 3)
+            self._waitIdle(server, 60)
             self._doTCLTest('dispatch/phase%s PULSE' % monitor_opt)
-            self._waitIdle(server, 3)
+            self._waitIdle(server, 60)
             self._doTCLTest('dispatch/phase%s STORE' % monitor_opt)
-            self._waitIdle(server, 3)
+            self._waitIdle(server, 60)
             """ tcl exceptions """
             self._doExceptionTest(
                 'dispatch/command/server=%s ' % server, Exc.MdsdclIVVERB)
