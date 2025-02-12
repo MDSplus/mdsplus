@@ -3137,7 +3137,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         if type(dst) == Tree:
             dst = dst.top
 
-        print(f'Copying from {src.fullpath} to {dst.fullpath}')
+        print('Copying from {} to {}'.format(src.fullpath, dst.fullpath))
 
         if not dst.tree.open_for_edit:
             print('Destination tree must be open for edit')
@@ -3164,6 +3164,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                 return 1
             return 0
 
+        import functools
         src_nodes = sorted(list(src.getNodeWild('***')), key=functools.cmp_to_key(compare_nodes))
         skip_nodes = []
 
@@ -3188,17 +3189,17 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                 dst_node = dst.getNode(dst_path)
 
                 if dst_node.usage != src_node.usage:
-                    print(f'Node {dst_node.fullpath} already exists but with a different usage, updating')
+                    print('Node {} already exists but with a different usage, updating'.format(dst_node.fullpath))
                     dst_node.usage = src_node.usage
 
                 if dst_node.conglomerate_elt != src_node.conglomerate_elt:
-                    print(f'Node {dst_node.fullpath} already exists would conflict with the conglomerate, removing it and all children')
+                    print('Node {} already exists would conflict with the conglomerate, removing it and all children'.format(dst_node.fullpath))
 
                     # Skip this node and all children
                     skip_nodes.extend(list(src_node.getNodeWild('***')))
 
                 continue
-            except mdsExceptions.TreeNNF:
+            except _exc.TreeNNF:
                 pass
 
         # Remove nodes that shouldn't be copied
@@ -3220,7 +3221,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
 
             try:
                 dst.addNode(dst_path, src_node.usage)
-            except mdsExceptions.TreeALREADY_THERE:
+            except _exc.TreeALREADY_THERE:
                 pass
 
             if remaining_conglomerate_nodes > 0:
@@ -3240,10 +3241,10 @@ class TreeNode(_dat.TreeRef, _dat.Data):
 
                     # Ensure that we don't overwrite existing tags
                     try:
-                        existing_node = dst.tree.getNode(f'\\{tag}')
-                        print(f'Warning: Tag "{tag}" already exists and points to {existing_node.fullpath}')
+                        existing_node = dst.tree.getNode('\\{}'.format(tag))
+                        print('Warning: Tag "{}" already exists and points to {}'.foramt(tag, existing_node.fullpath))
                         continue
-                    except mdsExceptions.TreeNNF:
+                    except _exc.TreeNNF:
                         pass
 
                     dst_node.addTags(tag, replace=False)
@@ -3280,7 +3281,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                     try:
                         deco = src_node.record.decompile()
                         dst_node.record = dst.tree.tdiCompile(deco)
-                    except mdsExceptions.TreeNODATA:
+                    except _exc.TreeNODATA:
                         pass
                     except Exception as e:
                         print(e)
