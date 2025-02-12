@@ -1196,7 +1196,7 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg, **kwargs)
 
-    def copyTo(src, dst, **kwargs):
+    def copyTo(self, src, dst, **kwargs):
         """Alias for self.top.copyTo(dst, **kwargs), see TreeNode.copyTo for details"""
         return self.top.copyTo(dst, **kwargs)
 
@@ -3124,7 +3124,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         """Recursively copy a portion of one tree to another.
         @param src: The source TreeNode to copy nodes from
         @param dst: The destination TreeNode to copy nodes to
-        @param node_filter: An optional function that takes a source node and returns True if it should be included in the copy, or false otherwise.
+        @param node_filter: An optional function that takes a source node and returns True if it should be included in the copy, or False otherwise.
         @param copy_tags: True if tags should be copied as well. Existing tags will not be overwritten.
         @param copy_data: True if the data for nodes should be copied as well.
         @param copy_nci: True if NCI properties should be copied as well.
