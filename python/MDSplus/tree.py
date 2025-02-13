@@ -1196,7 +1196,7 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg, **kwargs)
 
-    def copyTo(self, src, dst, **kwargs):
+    def copyTo(self, dst, **kwargs):
         """Alias for self.top.copyTo(dst, **kwargs), see TreeNode.copyTo for details"""
         return self.top.copyTo(dst, **kwargs)
 
