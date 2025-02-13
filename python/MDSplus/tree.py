@@ -3121,8 +3121,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                         _C.c_int32(int(idx))))
 
     def copyTo(self, dst, node_filter=None, copy_tags=True, copy_data=True, copy_nci=True, copy_xnci=True):
-        """Recursively copy a portion of one tree to another.
-        @param src: The source TreeNode to copy nodes from
+        """Recursively copy a portion of one tree to another from this node to the dst node.
         @param dst: The destination TreeNode to copy nodes to
         @param node_filter: An optional function that takes a source node and returns True if it should be included in the copy, or False otherwise.
         @param copy_tags: True if tags should be copied as well. Existing tags will not be overwritten.
