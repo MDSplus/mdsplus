@@ -3238,7 +3238,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             if copy_tags:
                 tags = src_node.getTags()
                 for tag in tags:
-                    tag = str(tag)
+                    tag = str(tag).strip()
 
                     # Ensure that we don't overwrite existing tags
                     try:
