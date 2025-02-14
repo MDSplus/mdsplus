@@ -1311,6 +1311,8 @@ $<APP_NAME> = {
         gamClasses.append('MDSEventManager')
         gamClasses.append('MDSWriter')
         gamClasses.append('MDSReaderGAM')
+        gamClasses.append('RealTimeThreadSynchronisation')
+        gamClasses.append('RealTimeThreadAsyncBridge')
         return gamClasses
     
     def buildStartScript(self):
@@ -1329,7 +1331,7 @@ $<APP_NAME> = {
             if(len(dirs) == 0):
                 dirs = glob.glob(marte2MdsComponents+'/Build/x86-linux/Components/*/'+gamClass)
             if len(dirs) != 1:
-                print('Internal error: cannor resolve '+ gamClass)
+                print('Internal error: cannot resolve '+ gamClass)
             fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+dirs[0]+'\n'
         fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+ os.environ['MARTe2_DIR'] +'/Build/x86-linux/Core\n'
 
