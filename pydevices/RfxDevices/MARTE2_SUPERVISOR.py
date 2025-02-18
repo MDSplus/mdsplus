@@ -1313,6 +1313,7 @@ $<APP_NAME> = {
         gamClasses.append('MDSReaderGAM')
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')
+        gamClasses.append('ConversionGAM')
         return gamClasses
     
     def buildStartScript(self):
