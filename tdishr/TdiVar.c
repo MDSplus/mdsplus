@@ -688,6 +688,9 @@ static inline ext_t matchext(const mdsdsc_d_t *const file)
     return EXT_PY;
   return EXT_NONE;
 }
+
+// If successful, will have either a *.fun or *.py file, and also compiles.
+// On error, must return TdiUNKOWN_VAR so that _TreeAddConglom() works correctly.
 static inline int findfile_fun(const mdsdsc_t *const entry,
                                char **const funfile, char **const pyfile)
 {
@@ -717,33 +720,19 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
   {
     char *file = memcpy(malloc(bufd.length + 1), bufd.pointer, bufd.length);
     file[bufd.length] = '\0';
-    if (isext == EXT_PY)
-    {
-      *pyfile = file;
-      isext = EXT_FUN;
-      bufd.pointer = realloc(bufd.pointer, ++bufd.length);
-      memcpy(bufd.pointer + bufd.length - 4, ".FUN", 4);
-    }
-    else
+    if (isext == EXT_FUN)
     {
       *funfile = file;
-      isext = EXT_PY;
-      bufd.pointer = realloc(bufd.pointer, --bufd.length);
-      memcpy(bufd.pointer + bufd.length - 3, ".PY", 3);
     }
-    if (IS_OK(
-            LibFindFileCaseBlind((mdsdsc_t *)&bufd, (mdsdsc_t *)&bufd, &ctx)))
+    else if (isext == EXT_PY)
     {
-      file = memcpy(malloc(bufd.length + 1), bufd.pointer, bufd.length);
-      file[bufd.length] = '\0';
-      if (isext == EXT_PY)
-        *pyfile = file;
-      else
-        *funfile = file;
+      *pyfile = file;  //XMW was funfile
+    } else {
+      status = TdiUNKNOWN_VAR;
     }
-    LibFindFileEnd(&ctx);
   }
   FREED_NOW(bufd);
+  if (STATUS_NOT_OK) status = TdiUNKNOWN_VAR;
   return status;
 }
 
@@ -821,29 +810,31 @@ static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,
     INIT_AND_FREE_ON_EXIT(char *, funfile);
     // check if we can find method as either .py or .fun
     status = findfile_fun(ident_ptr, &funfile, &pyfile);
-    if (pyfile)
-    {
-      char *funname;
-      status = tdi_load_python_fun(pyfile, &funname);
-      if (STATUS_OK)
+    if (STATUS_OK) {
+      if (pyfile)
       {
-        mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
-        mdsdsc_xd_t tmp = EMPTY_XD;
-        status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
-        free(funname);
+        char *funname;
+        status = tdi_load_python_fun(pyfile, &funname);
         if (STATUS_OK)
         {
-          status =
-              put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
-          MdsFree1Dx(&tmp, NULL);
+          mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
+          mdsdsc_xd_t tmp = EMPTY_XD;
+          status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
+          free(funname);
+          if (STATUS_OK)
+          {
+            status =
+                put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
+            MdsFree1Dx(&tmp, NULL);
+          }
         }
+        if (STATUS_NOT_OK)
+          // unable to load python method try tdi alternative
+          status = compile_fun(ident_ptr, funfile);
       }
-      if (STATUS_NOT_OK)
-        // unable to load python method try tdi alternative
+      else // not a python method, load tdi fun
         status = compile_fun(ident_ptr, funfile);
     }
-    else // not a python method, load tdi fun
-      status = compile_fun(ident_ptr, funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
     if (STATUS_OK)
