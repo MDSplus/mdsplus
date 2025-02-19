@@ -726,7 +726,7 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
     }
     else if (isext == EXT_PY)
     {
-      *pyfile = file;  //XMW was funfile
+      *pyfile = file;
     } else {
       status = TdiUNKNOWN_VAR;
     }
