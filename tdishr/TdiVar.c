@@ -689,8 +689,8 @@ static inline ext_t matchext(const mdsdsc_d_t *const file)
   return EXT_NONE;
 }
 
-// If successful, will have either a *.fun or *.py file, and also compiles.
-// On error, must return TdiUNKOWN_VAR so that _TreeAddConglom() works correctly.
+// For TDI function <name>, search for <name>.fun and <name>.py.
+// If a directory contains both files, both will be returned.
 static inline int findfile_fun(const mdsdsc_t *const entry,
                                char **const funfile, char **const pyfile)
 {
@@ -720,19 +720,33 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
   {
     char *file = memcpy(malloc(bufd.length + 1), bufd.pointer, bufd.length);
     file[bufd.length] = '\0';
-    if (isext == EXT_FUN)
-    {
-      *funfile = file;
-    }
-    else if (isext == EXT_PY)
+    if (isext == EXT_PY)
     {
       *pyfile = file;
-    } else {
-      status = TdiUNKNOWN_VAR;
+      isext = EXT_FUN;
+      bufd.pointer = realloc(bufd.pointer, ++bufd.length);
+      memcpy(bufd.pointer + bufd.length - 4, ".FUN", 4);
     }
+    else
+    {
+      *funfile = file;
+      isext = EXT_PY;
+      bufd.pointer = realloc(bufd.pointer, --bufd.length);
+      memcpy(bufd.pointer + bufd.length - 3, ".PY", 3);
+    }
+    if (IS_OK(
+            LibFindFileCaseBlind((mdsdsc_t *)&bufd, (mdsdsc_t *)&bufd, &ctx)))
+    {
+      file = memcpy(malloc(bufd.length + 1), bufd.pointer, bufd.length);
+      file[bufd.length] = '\0';
+      if (isext == EXT_PY)
+        *pyfile = file;
+      else
+        *funfile = file;
+    }
+    LibFindFileEnd(&ctx);
   }
   FREED_NOW(bufd);
-  if (STATUS_NOT_OK) status = TdiUNKNOWN_VAR;
   return status;
 }
 
@@ -809,7 +823,9 @@ static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,
     INIT_AND_FREE_ON_EXIT(char *, pyfile);
     INIT_AND_FREE_ON_EXIT(char *, funfile);
     // check if we can find method as either .py or .fun
+    // An error status must be remapped so that _TreeAddConglom() works OK.
     status = findfile_fun(ident_ptr, &funfile, &pyfile);
+    if (STATUS_NOT_OK) status = TdiUNKNOWN_VAR;
     if (STATUS_OK) {
       if (pyfile)
       {
