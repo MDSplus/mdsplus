@@ -191,13 +191,16 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 currSupervisor = supervisors.getDescAt(i)
                 supervisorNodes.append(currSupervisor)
         else:
-            for superv1 in supervisors.data():
-                if isinstance(superv1, str):
-                    superv = superv1
-                else:
-                    superv = str(superv1, 'utf_8')
-                currSupervisor = t.getNode(superv)
-                supervisorNodes.append(currSupervisor)
+            try:
+                for superv1 in supervisors.data():
+                    if isinstance(superv1, str):
+                        superv = superv1
+                    else:
+                        superv = str(superv1, 'utf_8')
+                    currSupervisor = t.getNode(superv)
+                    supervisorNodes.append(currSupervisor)
+            except:
+                raise Exception('Invalid supervisor list. It must be an array of devices')
         #Check
         for currSupervisor in supervisorNodes:
             if not isinstance(currSupervisor, MARTE2_SUPERVISOR):
@@ -254,7 +257,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             try: 
                 supervisorIp = supervisorNode.getNode('IP_ADDRESS').data()
             except:
-                raise Exception('IP ADDRESS not defined foir supervisor '+ supervisorNode.getPath())
+                raise Exception('IP ADDRESS not defined for supervisor '+ supervisorNode.getPath())
             
             threadNames = []
             try:
@@ -266,7 +269,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 if len(threadDevices) == 0: #if no components defined for this thread
                     continue
                 try:
-                    threadName = self.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
+                    threadName = supervisorNode.getNode('STATE_%d.THREAD_%d:NAME' % (stateIdx+1, threadIdx+1)).data()
                 except:
                     raise Exception('Missing NAME for thread '+str(threadIdx)+' in state '+str(stateIdx))
                 if threadName in threadNames:
@@ -1286,15 +1289,16 @@ $<APP_NAME> = {
                 raise Exception("Missing NUM THREADS definition for supervisor "+supervisorNode.getPath()+'  STATE '+str(stateIdx+1))
             for threadIdx in range(numThreads):
                 gamLists.append(self.getNode('STATE_'+str(stateIdx+1)+'.THREAD_'+ str(threadIdx+1)+':GAMS').getData())
-        try:
-            gamLists.append(self.getNode(':SUPERVISORS').getData())
-        except:
-                pass
+#        try:
+#            gamLists.append(self.getNode(':SUPERVISORS').getData())
+#        except:
+#                pass
 
         for gams in gamLists:
             if isinstance(gams, MDSplus.VECTOR):
                 for i in range(gams.getNumDescs()):
                     currGamNode = gams.getDescAt(i)
+                    print(currGamNode)
                     gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
             else:
                 for gam1 in gams.data():
@@ -1314,6 +1318,8 @@ $<APP_NAME> = {
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')
         gamClasses.append('ConversionGAM')
+        gamClasses.append('RTNIn')
+        gamClasses.append('RTNOut')
         return gamClasses
     
     def buildStartScript(self):
