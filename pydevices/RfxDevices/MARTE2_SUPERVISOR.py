@@ -204,7 +204,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         #Check
         for currSupervisor in supervisorNodes:
             if not isinstance(currSupervisor, MARTE2_SUPERVISOR):
-                raise Exception('Declared node is not a MARTE2_SUPERVISOR: '+ currSupervisor(self.getPath()))
+                raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
     #Return the target timebase reference dor DERIVED and EXT_DERIVED mode
