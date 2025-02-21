@@ -328,6 +328,7 @@ void *Tree::getCtx()
             return threadContextV[i].ctx;
         }
     }
+    printf("NEW CONTEXT ALLOCATED\n");
     //If we arrive here this is the first tree operation in a new thread and the tree must be opened again
     void *ctx = 0;
     int status = isEdit ? _TreeOpenEdit(&ctx, name.c_str(), shot)
@@ -1038,7 +1039,8 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
     throw MdsException(
         "A Tree instance must be defined when ceating TreeNode instances");
   this->nid = nid;
-  this->tree = new Tree(tree);
+  //straight copy of the Tree object in order to avoid recreating useless contextes
+  this->tree = tree;
   clazz = CLASS_S;
   dtype = DTYPE_NID;
   setAccessory(units, error, help, validation);
@@ -1046,9 +1048,8 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
 
 void TreeNode::setTree(Tree *tree)
 {
-  if (this->tree)
-    delete this->tree;
-  this->tree = new Tree(tree);
+  //As for constructor, ther tree instance is reused
+  this->tree = tree;
 }
 
 EXPORT void *TreeNode::operator new(size_t sz) { return ::operator new(sz); }
@@ -1056,8 +1057,8 @@ EXPORT void TreeNode::operator delete(void *p) { ::operator delete(p); }
 
 TreeNode::~TreeNode()
 {
-  if (tree)
-    delete tree;
+//The Tree instance is not dallocated since it may be shared with other TreeNode objects. 
+//It is responsibilitu of the user program deallocate the tree object when it is no more required.
 }
 
 std::string TreeNode::getNciString(int itm)
