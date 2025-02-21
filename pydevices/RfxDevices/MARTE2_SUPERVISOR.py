@@ -203,7 +203,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Invalid supervisor list. It must be an array of devices')
         #Check
         for currSupervisor in supervisorNodes:
-            if not isinstance(currSupervisor, MARTE2_SUPERVISOR):
+            if not isinstance(currSupervisor, RfxDevices.MARTE2_SUPERVISOR):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
