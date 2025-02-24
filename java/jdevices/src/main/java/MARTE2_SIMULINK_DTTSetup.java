@@ -27,9 +27,6 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
-        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
@@ -45,23 +42,9 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Write CPU Mask: ");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(154);
-        jPanel2.add(deviceField3);
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Port: ");
-        deviceField1.setNumCols(6);
-        deviceField1.setOffsetNid(315);
-        jPanel2.add(deviceField1);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
-
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        deviceInputs1.setOffsetNid(26);
+        deviceInputs1.setOffsetNid(35);
         jPanel1.add(deviceInputs1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Inputs", jPanel1);
@@ -76,8 +59,8 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         deviceParameters1.setNumParameters(3);
-        deviceParameters1.setOffsetNid(4);
-        deviceParameters1.setParameterOffset(4);
+        deviceParameters1.setOffsetNid(19);
+        deviceParameters1.setParameterOffset(5);
         jPanel4.add(deviceParameters1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Parameters", jPanel4);
@@ -88,13 +71,10 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceField deviceField1;
-    private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
     private DeviceParameters deviceParameters1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JTabbedPane jTabbedPane1;

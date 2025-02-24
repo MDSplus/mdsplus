@@ -33,33 +33,6 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Container class="javax.swing.JPanel" name="jPanel2">
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-          <BorderConstraints direction="First"/>
-        </Constraint>
-      </Constraints>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-      <SubComponents>
-        <Component class="DeviceField" name="deviceField3">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
-            <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="154"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField1">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Port: "/>
-            <Property name="numCols" type="int" value="6"/>
-            <Property name="offsetNid" type="int" value="315"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -82,7 +55,7 @@
           <SubComponents>
             <Container class="DeviceInputs" name="deviceInputs1">
               <Properties>
-                <Property name="offsetNid" type="int" value="26"/>
+                <Property name="offsetNid" type="int" value="35"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -133,8 +106,8 @@
             <Container class="DeviceParameters" name="deviceParameters1">
               <Properties>
                 <Property name="numParameters" type="int" value="3"/>
-                <Property name="offsetNid" type="int" value="4"/>
-                <Property name="parameterOffset" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="19"/>
+                <Property name="parameterOffset" type="int" value="5"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

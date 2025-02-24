@@ -1,6 +1,9 @@
 import  MDSplus
 import threading
-from Queue import  *
+try:
+    from Queue import  *
+except:
+    pass
 import time
 from ctypes import CDLL, c_int, c_double, c_char_p, byref, c_byte
 

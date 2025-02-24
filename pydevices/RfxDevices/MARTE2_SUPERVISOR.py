@@ -115,6 +115,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
+                if isinstance(currGamNode, MDSplus.TreePath):
+                    currGamNode = self.getTree().getNode(currGamNode)
                 gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
@@ -126,8 +128,10 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 gamNodes.append(currGamNode)
         #Check
         for currGamNode in gamNodes:
+            if isinstance(currGamNode, MDSplus.TreePath):
+                currGamNode = self.getTree().getNode(currGamNode)
             if not isinstance(currGamNode, RfxDevices.MARTE2_COMPONENT):
-                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode)
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currGamNode.getPath())
             gamMode = currGamNode.getNode('MODE').data()
             if not (gamMode == MARTE2_SUPERVISOR.MODE_GAM or gamMode ==MARTE2_SUPERVISOR. MODE_INPUT 
                 or gamMode == MARTE2_SUPERVISOR.MODE_SYNC_INPUT or gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT):
@@ -159,6 +163,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         if isinstance(interfaces, MDSplus.VECTOR):
             for i in range(interfaces.getNumDescs()):
                 currInterface = interfaces.getDescAt(i)
+                if isinstance(currInterface, MDSplus.TreePath):
+                    currInterface = self.getTree().getNode(currInterface)
                 interfaceNodes.append(currInterface)
         else:
             for interf1 in interfaces.data():
@@ -170,8 +176,10 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 interfaceNodes.append(currInterface)
         #Check
         for currInterface in interfaceNodes:
+            if isinstance(currInterface, MDSplus.TreePath):
+                currInterface = self.getTree().getNode(currInterface)
             if not isinstance(currInterface, RfxDevices.MARTE2_COMPONENT):
-                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currInterface(getPath()))
+                raise Exception('Declared node is not a MARTE2_COMPONENT: '+ currInterface.getPath())
             gamMode = currInterface.getNode('MODE').data()
             if not (gamMode == MARTE2_SUPERVISOR.MODE_INTERFACE):
                 raise Exception('Declared MARTE2 device can only be Interface: '+ currInterface.getPath())
@@ -189,6 +197,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         if isinstance(supervisors, MDSplus.VECTOR):
             for i in range(supervisors.getNumDescs()):
                 currSupervisor = supervisors.getDescAt(i)
+                if isinstance(currSupervisor, MDSplus.TreePath):
+                    currSupervisor = self.getTree().getNode(currSupervisor)
                 supervisorNodes.append(currSupervisor)
         else:
             try:
@@ -203,7 +213,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Invalid supervisor list. It must be an array of devices')
         #Check
         for currSupervisor in supervisorNodes:
-            if not isinstance(currSupervisor, RfxDevices.MARTE2_SUPERVISOR):
+            if not isinstance(currSupervisor, MARTE2_SUPERVISOR):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
@@ -276,6 +286,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     raise Exception('Duplicated thread name: '+threadName)
                 threadNames.append(threadName)
                 for currDevice in threadDevices:
+                    if isinstance(currDevice, MDSplus.TreePath):
+                        currDevice = self.getTree().getNode(currDevice)
                     if not isinstance(currDevice, RfxDevices.MARTE2_COMPONENT):
                         raise Exception('Only MARTE2 devices can be declared in e thread list for supervospr '+self.getPath())
                     try:
@@ -318,6 +330,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     }
             else:
                 timebaseDef = self.getExtTimebaseRef(timebaseMode, stateIdx, threadIdx)
+                if isinstance(timebaseDef, MDSplus.TreePath):
+                    timebaseDef = self.getTree().getNode(timebaseDef)
                 if not isinstance(timebaseDef, MDSplus.TreeNode):
                     raise Exception('Invalid thread reference for thread '+threadName+ ' in supervisor '+self.getPath())
                 supervisorNode = timebaseDef.getParent().getParent().getParent()
@@ -376,7 +390,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             except:
                 raise Exception('Cannot get referenced timebase in derived synchronization '+self.getPath())
             syncSupervisor = timebaseRef.getParent().getParent().getParent()
-            if not isinstance(syncSupervisor, MARTE2_SUPERVISOR):
+            if not isinstance(syncSupervisor, RfxDevices.MARTE2_SUPERVISOR):
                 raise Exception('Wrongly referenced timebase in derived synchronization '+self.getPath())
 
             return syncSupervisor.getSynchonizationTimeTypePeriod(timebaseRef)
@@ -477,6 +491,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
         if timebaseMode == 'DERIVED' or timebaseMode == 'EXT_DERIVED':
             refTimebaseDef = self.getExtTimebaseRef(timebaseMode, stateIdx, threadIdx)
+            if isinstance(refTimebaseDef, MDSplus.TreePath):
+                refTimebaseDef = self.getTree().getNode(refTimebaseDef)
             if not isinstance(refTimebaseDef, MDSplus.TreeNode):
                 raise Exception('Invalid timebase reference for thread '+threadName+' supervisor '+self.getPath())
             if not isinstance(refTimebaseDef.getParent().getParent().getParent(), MARTE2_SUPERVISOR):
@@ -590,6 +606,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         raise Exception('Invalid timebase mode for supervisor '+ extSupervisor.getPath())
                     if extTimebaseMode == 'DERIVED' or extTimebaseMode == 'EXT_DERIVED':
                         extTimebaseRef = extSupervisor.getExtTimebaseRef(extTimebaseMode, stateIdx, threadIdx)
+                        if isinstance(extTimebaseRef, MDSplus.TreePath):
+                            extTimebaseRef = self.getTree().getNode(extTimebaseRef)
                         if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
                             try:
                                 threadPort = extSupervisor.getNode('STATE_%d.THREAD_%d:TIME_PORT' % (stateIdx+1, threadIdx+1)).data()
@@ -628,6 +646,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     raise Exception('Invalid timebase mode for supervisor '+ self.getPath())
                 if extTimebaseMode == 'DERIVED' or extTimebaseMode == 'EXT_DERIVED':
                     extTimebaseRef = self.getExtTimebaseRef(extTimebaseMode, stateIdx, threadIdx)
+                    if isinstance(extTimebaseRef, MDSplus.TreePath):
+                        extTimebaseRef = self.getTree().getNode(extTimebaseRef)
                     if isinstance(extTimebaseRef, MDSplus.TreeNode) and extTimebaseRef.getNid() == timebaseDefNode.getNid():
                         return True
         return False
@@ -1299,6 +1319,8 @@ $<APP_NAME> = {
                 for i in range(gams.getNumDescs()):
                     currGamNode = gams.getDescAt(i)
                     print(currGamNode)
+                    if isinstance(currGamNode, MDSplus.TreePath):
+                        currGamNode = self.getTree().getNode(currGamNode)
                     gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
             else:
                 for gam1 in gams.data():
@@ -1306,7 +1328,7 @@ $<APP_NAME> = {
                         gam = gam1
                     else:
                         gam = str(gam1, 'utf_8')
-                    currGamNode = self.getNode(gam)
+                    currGamNode = self.getTree().getNode(gam)
                     gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
         gamClasses.append('IOGAM')
         gamClasses.append('LinuxTimer')
@@ -1362,6 +1384,8 @@ $<APP_NAME> = {
         if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
+                if isinstance(currGamNode, MDSplus.TreePath):
+                    currGamNode = self.getTree().getNode(currGamNode)
                 gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
