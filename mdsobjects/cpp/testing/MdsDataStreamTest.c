@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 EXPORT int registerListener(char *experiment, char *tree, int shot);
 EXPORT void unregisterListener(int listenerId);
 EXPORT struct descriptor_xd *getNewSamplesSerializedXd();
-extern int TdiDecompile();
+extern int TdiDecompile(struct descriptor *, ...);
 
 static void printDecompiled(struct descriptor *inD)
 {

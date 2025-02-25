@@ -66,12 +66,12 @@ int ServerBuildDispatchTable( )
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include "servershrp.h"
-extern int TdiDeallocate();
-extern int TdiDispatchOf();
-extern int TdiExecute();
+extern int TdiDeallocate(struct descriptor *, ...);
+extern int TdiDispatchOf(struct descriptor *, ...);
+extern int TdiExecute(struct descriptor *, ...);
 extern int TdiGetLong();
-extern int TdiData();
-extern int TdiGetNci();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiGetNci(struct descriptor *, ...);
 
 static int compare_actions(ActionInfo *a, ActionInfo *b)
 {

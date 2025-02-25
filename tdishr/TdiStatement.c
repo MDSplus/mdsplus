@@ -38,11 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 extern int TdiIntrinsic();
-extern int TdiEvaluate();
+extern int TdiEvaluate(struct descriptor *, ...);
 extern int TdiGetLong();
-extern int TdiGe();
-extern int TdiLe();
-extern int TdiEq();
+extern int TdiGe(struct descriptor *, ...);
+extern int TdiLe(struct descriptor *, ...);
+extern int TdiEq(struct descriptor *, ...);
 
 static int goto1(int, mdsdsc_t *[], mdsdsc_xd_t *);
 

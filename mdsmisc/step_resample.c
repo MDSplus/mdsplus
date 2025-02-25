@@ -59,10 +59,10 @@ struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 
-extern int TdiData();
-extern int TdiByte();
-extern int TdiDimOf();
-extern int TdiCvt();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiByte(struct descriptor *, ...);
+extern int TdiDimOf(struct descriptor *, ...);
+extern int TdiCvt(struct descriptor *, ...);
 
 EXPORT struct descriptor *StepResample(struct descriptor *in_sig,
                                        struct descriptor *in_x)

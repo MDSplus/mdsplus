@@ -29,9 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-extern int TdiCompile();
-extern int TdiEvaluate();
-extern int TdiExecute();
+extern int TdiCompile(struct descriptor *, ...);
+extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiExecute(struct descriptor *, ...);
 
 int ReadInt(char *expr, ...)
 {

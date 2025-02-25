@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static char *tree;
 static int shot;
 
-// extern int TdiExecute();
+extern int TdiExecute(struct descriptor *, ...);
 
 /*
   Routine MemberMangle - return a new name for a member with an '_' in the

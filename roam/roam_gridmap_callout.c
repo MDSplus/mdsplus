@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 
-extern int TdiExecute();
+extern int TdiExecute(struct descriptor *, ...);
 extern int MdsFree1Dx();
 
 /**

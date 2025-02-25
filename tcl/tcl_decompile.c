@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ************************************************************************/
 
-extern int TdiDecompile();
+extern int TdiDecompile(struct descriptor *, ...);
 
 extern int StrFree1Dx();
 

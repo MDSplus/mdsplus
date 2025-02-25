@@ -62,7 +62,7 @@ ldconfig COMPILE*/
 #include <string.h>
 extern int MdsOpen(int conid, char *tree, int shot);
 extern int MdsClose(int conid);
-extern int TdiCvt();
+extern int TdiCvt(struct descriptor *, ...);
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
 extern int ReuseCheck(char *hostin, char *unique, size_t buflen);

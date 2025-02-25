@@ -30,9 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-extern int TdiData();
-extern int TdiCompile();
-extern int TdiExecute();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiCompile(struct descriptor *, ...);
+extern int TdiExecute(struct descriptor *, ...);
 char *ReadString(char *expr, ...)
 {
   INIT_STATUS;

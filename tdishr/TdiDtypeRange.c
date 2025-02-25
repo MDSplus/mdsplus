@@ -51,20 +51,20 @@ static const struct descriptor minus_one = {sizeof(int), DTYPE_L, CLASS_S,
 
 extern struct descriptor *TdiItoXSpecial;
 
-extern int TdiItoX();
-extern int TdiXtoI();
+extern int TdiItoX(struct descriptor *, ...);
+extern int TdiXtoI(struct descriptor *, ...);
 extern int TdiCvtArgs();
 extern int TdiGetArgs();
-extern int TdiDivide();
-extern int TdiSubtract();
-extern int TdiDim();
-extern int TdiLong();
+extern int TdiDivide(struct descriptor *, ...);
+extern int TdiSubtract(struct descriptor *, ...);
+extern int TdiDim(struct descriptor *, ...);
+extern int TdiLong(struct descriptor *, ...);
 extern int Tdi2Range();
 extern int Tdi3Ramp();
 extern int Tdi3Multiply();
 extern int Tdi3Add();
 extern int TdiMasterData();
-extern int TdiNint();
+extern int TdiNint(struct descriptor *, ...);
 
 extern struct descriptor *TdiItoXSpecial;
 

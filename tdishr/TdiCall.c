@@ -53,9 +53,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-extern int TdiConcat();
-extern int TdiData();
-extern int TdiEvaluate();
+extern int TdiConcat(struct descriptor *, ...);
+extern int TdiData(struct descriptor *, ...);
+extern int TdiEvaluate(struct descriptor *, ...);
 extern int TdiFaultHandler();
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();

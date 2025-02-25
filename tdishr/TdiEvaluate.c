@@ -50,7 +50,7 @@ RULES OF THE GAME:
 static const struct descriptor missing = {0, DTYPE_MISSING, CLASS_S, 0};
 
 extern int tdi_get_ident();
-extern int TdiEvaluate();
+extern int TdiEvaluate(struct descriptor *, ...);
 extern int TdiIntrinsic();
 extern int TdiCall();
 extern int TdiImpose();

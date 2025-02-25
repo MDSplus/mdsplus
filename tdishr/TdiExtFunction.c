@@ -56,13 +56,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 extern int TdiFaultHandler();
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 extern int TdiDoFun();
 extern int TdiGetLong();
-extern int TdiAllocated();
+extern int TdiAllocated(struct descriptor *, ...);
 extern int tdi_put_ident();
-extern int TdiCompile();
-extern int TdiEvaluate();
+extern int TdiCompile(struct descriptor *, ...);
+extern int TdiEvaluate(struct descriptor *, ...);
 
 static const struct descriptor_d EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 

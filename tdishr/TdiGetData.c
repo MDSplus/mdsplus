@@ -60,14 +60,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int TdiGetRecord(int nid, mdsdsc_xd_t *out);
 
-extern int TdiEvaluate();
+extern int TdiEvaluate(struct descriptor *, ...);
 extern int tdi_get_ident();
-extern int TdiItoX();
+extern int TdiItoX(struct descriptor *, ...);
 extern int TdiIntrinsic();
 extern int TdiCall();
 extern int TdiConvert();
-extern int TdiData();
-extern int TdiUnits();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiUnits(struct descriptor *, ...);
 extern int Tdi2Add();
 
 static void fixup_dollar_nodes(int nid, mdsdsc_t *out_ptr)

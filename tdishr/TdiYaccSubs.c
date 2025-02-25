@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsmsg.h>
 
 extern int Tdi1Build();
-extern int TdiEvaluate();
+extern int TdiEvaluate(struct descriptor *, ...);
 
 int tdi_yacc_IMMEDIATE();
 int tdi_yacc_RESOLVE();

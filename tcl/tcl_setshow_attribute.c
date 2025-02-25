@@ -40,8 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-extern int TdiDecompile();
-extern int TdiSortVal();
+extern int TdiDecompile(struct descriptor *, ...);
+extern int TdiSortVal(struct descriptor *, ...);
 
 /**********************************************************************
  * TCL_SHOW_ATTRIBUTE.C --
@@ -130,7 +130,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
   return status;
 }
 
-extern int TdiCompile();
+extern int TdiCompile(struct descriptor *, ...);
 
 EXPORT int TclSetAttribute(void *ctx, char **error,
                            char **output __attribute__((unused)),

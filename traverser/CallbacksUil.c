@@ -78,7 +78,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     /*
      *  MDS routines not in any includes
      */
-    extern int TdiModelOf();
+    extern int TdiModelOf(struct descriptor *, ...);
 /*
  * Macros to make code look nicer between ANSI and K&R.
  */

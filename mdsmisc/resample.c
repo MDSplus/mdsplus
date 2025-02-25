@@ -59,9 +59,9 @@ dsc$descriptor *x);
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 
-extern int TdiData();
-extern int TdiCvt();
-extern int TdiDimOf();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiCvt(struct descriptor *, ...);
+extern int TdiDimOf(struct descriptor *, ...);
 struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x);
 
 EXPORT struct descriptor *resample(struct descriptor *in_sig,

@@ -45,21 +45,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 extern int TdiGetLong();
-extern int TdiRange();
-extern int TdiAdd();
-extern int TdiSubtract();
-extern int TdiMultiply();
-extern int TdiDivide();
-extern int TdiEvaluate();
-extern int TdiFloat();
-extern int TdiFloor();
-extern int TdiNint();
-extern int TdiLe();
-extern int TdiLt();
+extern int TdiRange(struct descriptor *, ...);
+extern int TdiAdd(struct descriptor *, ...);
+extern int TdiSubtract(struct descriptor *, ...);
+extern int TdiMultiply(struct descriptor *, ...);
+extern int TdiDivide(struct descriptor *, ...);
+extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiFloat(struct descriptor *, ...);
+extern int TdiFloor(struct descriptor *, ...);
+extern int TdiNint(struct descriptor *, ...);
+extern int TdiLe(struct descriptor *, ...);
+extern int TdiLt(struct descriptor *, ...);
 extern int Tdi1Vector();
-extern int TdiSetRange();
+extern int TdiSetRange(struct descriptor *, ...);
 
 int TdiGetSlope(struct descriptor_window *window_ptr,
                 struct descriptor_slope *slope_ptr,

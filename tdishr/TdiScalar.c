@@ -49,10 +49,10 @@ extern int TdiGetShape();
 extern int TdiGetLong();
 extern int Tdi3Conjg();
 extern int Tdi3Multiply();
-extern int TdiSum();
+extern int TdiSum(struct descriptor *, ...);
 extern int TdiMasterData();
-extern int TdiDigits();
-extern int TdiPower();
+extern int TdiDigits(struct descriptor *, ...);
+extern int TdiPower(struct descriptor *, ...);
 
 #define _factor ((float).30103)
 

@@ -33,9 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <stdlib.h>
 
-extern int TdiEvaluate();
+extern int TdiEvaluate(struct descriptor *, ...);
 extern int Tdi1Same();
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 extern int TdiGetLong();
 
 int Tdi1MinMax(opcode_t opcode, int narg, struct descriptor *list[],

@@ -34,8 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-extern int TdiConcat();
-extern int TdiTranslate();
+extern int TdiConcat(struct descriptor *, ...);
+extern int TdiTranslate(struct descriptor *, ...);
 extern int TdiGetLong();
 
 static const DESCRIPTOR(asterisk, "*");

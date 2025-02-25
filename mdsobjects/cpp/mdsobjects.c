@@ -38,7 +38,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <usagedef.h>
 
-extern int TdiData(), TdiDecompile(), TdiCompile();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiDecompile(struct descriptor *, ...); 
+extern int TdiCompile(struct descriptor *, ...);
 extern int CvtConvertFloat();
 extern int TreeBeginSegment(int nid, struct descriptor *start,
                             struct descriptor *end, struct descriptor *dim,

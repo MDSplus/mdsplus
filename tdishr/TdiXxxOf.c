@@ -35,12 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int tdi_get_data();
 extern int TdiGetLong();
 extern int tdi_put_logical();
-extern int TdiEvaluate();
-extern int TdiDispatchOf();
-extern int TdiBuildRange();
-extern int TdiDimOf();
-extern int TdiValueOf();
-extern int TdiTaskOf();
+extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiDispatchOf(struct descriptor *, ...);
+extern int TdiBuildRange(struct descriptor *, ...);
+extern int TdiDimOf(struct descriptor *, ...);
+extern int TdiValueOf(struct descriptor *, ...);
+extern int TdiTaskOf(struct descriptor *, ...);
 
 /*--------------------------------------------------------------
         Return one of the class-R descriptor arguments.

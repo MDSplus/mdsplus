@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 
 /**********************************************************************
  * TCL_DISPATCH.C --
@@ -64,7 +64,7 @@ extern int TdiData();
 
 extern int ServerFailedEssential();
 
-extern int TdiIdentOf();
+extern int TdiIdentOf(struct descriptor *, ...);
 #include "../treeshr/treeshrp.h"
 #define DBID_TABLE (((PINO_DATABASE *)TreeDbid())->dispatch_table)
 /****************************************************************

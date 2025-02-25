@@ -62,10 +62,10 @@ MCR ACTIONS -TREE treename
 #include <usagedef.h>
 #include <xmdsshr.h>
 
-extern int TdiDispatchOf();
-extern int TdiExecute();
+extern int TdiDispatchOf(struct descriptor *, ...);
+extern int TdiExecute(struct descriptor *, ...);
 extern int TdiGetLong();
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 
 static void Modify();
 static void ToggleEssential();

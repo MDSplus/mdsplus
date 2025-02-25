@@ -51,12 +51,12 @@ static const DESCRIPTOR(dBAD, "/*bad*/");
 #define kprintf2(unit, ctrl, a1, a2) \
   (unit ? fprintf(unit, ctrl, a1, a2) : printf(ctrl, a1, a2));
 
-extern int TdiData();
+extern int TdiData(struct descriptor *, ...);
 extern int TdiGetLong();
 extern int TdiGetFloat();
-extern int TdiText();
-extern int TdiEvaluate();
-extern int TdiDecompile();
+extern int TdiText(struct descriptor *, ...);
+extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiDecompile(struct descriptor *, ...);
 
 /*----------------------------------------------
         Internal routine to output a long.

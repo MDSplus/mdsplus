@@ -73,10 +73,10 @@ elements)
 #include <string.h>
 #include <treeshr.h>
 
-extern int TdiData();
-extern int TdiFloat();
-extern int TdiDimOf();
-extern int TdiCompile();
+extern int TdiData(struct descriptor *, ...);
+extern int TdiFloat(struct descriptor *, ...);
+extern int TdiDimOf(struct descriptor *, ...);
+extern int TdiCompile(struct descriptor *, ...);
 #define MAX_POINTS 1000
 
 EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
