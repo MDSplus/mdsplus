@@ -803,32 +803,33 @@ static void bTest(struct descriptor *desc)
       break;
     case DTYPE_HC: /*      30              H_floating complex */
       break;
-    case DTYPE_CIT: /*      31              COBOL Intermediate Temporary */
-      break;
-    case DTYPE_VT: /*      37              varying character string;  16-bit
-                      count, followed by a string */
-      break;
-    case DTYPE_NU: /*      15              numeric string, unsigned */
-      break;
-    case DTYPE_NL: /*      16              numeric string, left separate sign */
-      break;
-    case DTYPE_NLO: /*      17              numeric string, left overpunched
-                       sign */
-      break;
-    case DTYPE_NR: /*      18              numeric string, right separate sign
-                    */
-      break;
-    case DTYPE_NRO: /*      19              numeric string, right overpunched
-                       sign */
-      break;
-    case DTYPE_NZ: /*      20              numeric string, zoned sign */
-      break;
-    case DTYPE_P: /*      21              packed decimal string */
-      break;
-    case DTYPE_V: /*      1               aligned bit string */
-      break;
-    case DTYPE_VU: /*      34              unaligned bit string */
-      break;
+    // These are deprecated data types, see dtypedef.h
+    // case DTYPE_CIT: /*      31              COBOL Intermediate Temporary */
+    //   break;
+    // case DTYPE_VT: /*      37              varying character string;  16-bit
+    //                   count, followed by a string */
+    //   break;
+    // case DTYPE_NU: /*      15              numeric string, unsigned */
+    //   break;
+    // case DTYPE_NL: /*      16              numeric string, left separate sign */
+    //   break;
+    // case DTYPE_NLO: /*      17              numeric string, left overpunched
+    //                    sign */
+    //   break;
+    // case DTYPE_NR: /*      18              numeric string, right separate sign
+    //                 */
+    //   break;
+    // case DTYPE_NRO: /*      19              numeric string, right overpunched
+    //                    sign */
+    //   break;
+    // case DTYPE_NZ: /*      20              numeric string, zoned sign */
+    //   break;
+    // case DTYPE_P: /*      21              packed decimal string */
+    //   break;
+    // case DTYPE_V: /*      1               aligned bit string */
+    //   break;
+    // case DTYPE_VU: /*      34              unaligned bit string */
+    //  break;
     case DTYPE_FS: /*      52              IEEE float basic single S */
       pntF = (float *)desc->pointer;
       for (i = 0; i++ < num;)
