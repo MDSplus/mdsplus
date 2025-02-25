@@ -852,14 +852,20 @@ class MARTE2_COMPONENT(MDSplus.Device):
         outGam['Inputs'] = [{'Name':'Time', 'DataSource':self.timerDDB, 'Type': self.timerType, 'NumberOfDimensions': 0, 'NumberOfElements': 1}]
         outputs = []
         for treeRef in treeRefs:
+            if isinstance(treeRef['Expression'], MDSplus.TreeNode) or isinstance(treeRef['Expression'], MDSplus.TreePath):
+                expr = treeRef['Expression'].getFullPath()
+            else:
+                expr = treeRef['Expression'].decompile()
             outputs.append({
                 'Name': treeRef['Name'], 
                 'NumberOfDimensions': treeRef['NumberOfDimensions'],
                 'NumberOfElements': treeRef['NumberOfElements'], 
                 'Type': treeRef['Type'],
                 'UseColumnOrder': treeRef['UseColumnOrder'], 
-                'DataExpr': treeRef['Expression'].decompile(), 
-                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
+#                'DataExpr': treeRef['Expression'].decompile(), 
+#                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
+                'DataExpr': expr, 
+                'TimebaseExpr': '\"DIM_OF('+expr+')\"', 
                 'DataSource': self.getMarteDeviceName(self)+'_TreeInDDB'})
         outGam['Outputs'] = outputs
         return outGam
