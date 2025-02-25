@@ -356,6 +356,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
     printf("Vararg [%d] for [0x%" PRIxPTR "]\n", nargs, (uintptr_t)tdiarg);
 #endif
   }
+  va_end(incrmtr);
   /* note minimum 1 arg I/P and 1 arg O/P */
   if (expression == NULL || nargs < 1)
   {
