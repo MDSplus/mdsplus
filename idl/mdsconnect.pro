@@ -6,7 +6,7 @@ endcase
 end
 
 function sockmin
-  if !version.os eq 'linux' then return, 0 else return, 11-(!version.os eq 'MacOS')
+  if ((!version.os eq 'linux') or (!version.os eq 'darwin')) then return, 0 else return, 11-(!version.os eq 'MacOS')
 end
 
 function mds$socket,quiet=quiet,status=status,socket=socket
