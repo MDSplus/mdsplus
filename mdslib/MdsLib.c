@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <stdint.h>
 #include <strroutines.h>
+#include <libroutines.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -42,7 +43,6 @@ extern int TdiExecute(mdsdsc_t *, ...);
 extern int TdiCompile(mdsdsc_t *, ...);
 extern int TdiData(mdsdsc_t *, ...);
 extern int TdiCvt(mdsdsc_t *, ...);
-extern void *LibCallg();
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
