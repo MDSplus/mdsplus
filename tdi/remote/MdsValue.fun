@@ -17,7 +17,7 @@ call:   mdsvalue('2+3 * $,',_p1);
    if(mdscurrent() == 'local') {
       return(execute(_p1,_p2,_p3,_p4,_p5,_p6,_p7,_p8,_p9,_p10,_p11,_p12,_p13,_p14,_p15,_p16,_p17,_p18,_p10,_p20));
    } else  {
-      _oo = "build_call(24,'TdiShrExt','rMdsValue',descr(_p1";
+	  _oo = "build_call(24,'TdiShrExt','rMdsValue#1',descr(_p1";
 /* loop through verifying parameters */
       for(_i=2;_i<=20; _i++) {
 	 _ss = '_p'//trim(adjustl(_i));
