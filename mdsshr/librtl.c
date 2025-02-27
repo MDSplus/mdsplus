@@ -62,6 +62,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include "mdsthreadstatic.h"
 
+#ifdef MACOS_ARM64
+#include <ffi.h>
+#endif
+
 #define LIBRTL_SRC
 
 typedef struct
@@ -279,6 +283,72 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
   }
   return 0;
 }
+
+
+#ifdef MACOS_ARM64
+EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed_args, int rtype)
+{
+  if (!routine)
+    abort(); // intercept definite stack corruption
+
+  int num_args = *(int *)a & 0xff;
+  
+  if (num_fixed_args > 0) {
+    enum { SIZE = 32 };
+    ffi_cif cif;
+    ffi_type *arg_types[SIZE];
+    void *values[SIZE];
+    void *myresult;
+
+    if ((num_args > SIZE) || (num_fixed_args > SIZE)) {
+      printf("Error - currently no more than 32 arguments supported on external calls\n");
+      return 0;
+    }
+
+    if (num_args < num_fixed_args) {
+      printf("Error - not enough arguments supplied to the external call\n");
+      return 0;
+    }
+
+    // Skip over first element because it is number of args, not an actual argument
+    for (int i=0; i <num_args; i++) {
+      arg_types[i] = &ffi_type_pointer;
+      values[i] = &a[i+1];
+    }
+
+    ffi_status prep_stat;
+    switch(rtype) {
+    case RTN_NONE:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_void, arg_types);      
+      break;
+    case RTN_POINTER:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_pointer, arg_types); 
+      break;
+    case RTN_INT32:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint32, arg_types); 
+      break;
+    case RTN_INT64:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint64, arg_types); 
+      break;
+    default:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint32, arg_types); 
+      break;
+    }
+    if (prep_stat == FFI_OK) {
+      ffi_call(&cif, (void (*)(void))routine, &myresult, values);
+      if (rtype != RTN_NONE) {
+        return myresult;
+      }
+    }
+
+  // Num_fixed_args = 0 denotes a non-variadic function.   Usually, the check 
+  // for non-variadic is done prior to calling this routine.  
+  } else {
+    return LibCallg(a, routine);
+  }
+  return 0; // should never reach this
+}
+#endif
 
 DEFINE_INITIALIZESOCKETS;
 EXPORT int _LibGetHostAddr(const char *name, const char *portstr, struct sockaddr *sin)
