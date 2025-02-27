@@ -137,7 +137,11 @@ inline static void initialize()
     _putenv_s("PyLib", envsym);
 #else
     envsym = "python2.7";
+#ifdef MACOS_ARM64
+    const char *aspath = "/opt/local/lib/libpython2.7.dylib";   // (MW) TODO: for MacPorts version
+#else 
     const char *aspath = "/usr/lib/python2.7.so.1";
+#endif
     setenv("PyLib", envsym, B_FALSE);
 #endif
     fprintf(stderr,
@@ -177,9 +181,15 @@ inline static void initialize()
     }
     else
     {
+    #ifdef MACOS_ARM64
+      lib = strcpy((char *)malloc(strlen(envsym) + 10), "lib");
+      strcat(lib, envsym);
+      strcat(lib, ".dylib");
+    #else
       lib = strcpy((char *)malloc(strlen(envsym) + 7), "lib");
       strcat(lib, envsym);
       strcat(lib, ".so");
+    #endif
     }
 #endif
     handle = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
