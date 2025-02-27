@@ -1441,7 +1441,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+#endif
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -1553,7 +1557,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+#endif
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -2235,7 +2243,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiCompile, VARIADIC_2_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
+#endif
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2291,7 +2303,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiExecute, VARIADIC_2_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, _TdiExecute);
+#endif
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2331,7 +2347,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_data(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiData, VARIADIC_2_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, _TdiData);
+#endif
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {
@@ -2370,7 +2390,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_evaluate(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiEvaluate, VARIADIC_2_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, _TdiEvaluate);
+#endif
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {

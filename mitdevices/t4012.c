@@ -418,6 +418,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
   return status;
 }
 
+// Usually called without a function, but once is called with TdiData().
 static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglist,
 		      int (*routine) (struct descriptor *,...))
 {
@@ -434,7 +435,12 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
     if (arglist && !called) {
       called = 1;
+#ifdef MACOS_ARM64
+      // Only called with TdiData() which is an intrinsic thus RTN_INT32
+      LibCallgFfi(arglist, routine, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
       LibCallg(arglist, routine);
+#endif
     } else
       DevWait((float).001);
     piomem(17, 0, &data, memsize);
@@ -442,7 +448,11 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   if (try == 30)
     status = DEV$_CAM_NOSQ;
   if (arglist && !called)
+#ifdef MACOS_ARM64
+    LibCallgFfi(arglist, routine, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
     LibCallg(arglist, routine);
+#endif
   return status;
 }
 
