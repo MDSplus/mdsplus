@@ -85,13 +85,17 @@ static void tmp_cleanup(void *tmp_in)
   for (; --tmp->n >= 0;)
     MdsFree1Dx(&tmp->a[tmp->n], NULL);
 }
+
+// TDI's EXT_FUNCTION is used to execute *.fun files, but doesn't execute functions in external libraries.
 int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
                     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
+  struct descriptor_d new_entry = EMPTY_D;
   FREED_ON_EXIT(&image);
   FREED_ON_EXIT(&entry);
+  FREED_ON_EXIT(&new_entry);
   status = MDSplusSUCCESS;
   if (list[0])
     status = TdiData(list[0], &image MDS_END_ARG);
@@ -112,7 +116,26 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
     goto done;
   }
 
-  status = TdiFindImageSymbol(&image, &entry, &routine);
+
+  // (MW) TODOD: Consider deprecating the rest of this routine on all platforms.
+  // The EXT_FUNCTION feature to call a function in a library was broken on Ubuntu x86-64
+  // well before the port to Apple Silicon.  Thus the Apple Silicon code added here also segfaults.
+  // Note that BUILD_CALL (aka ->) is used for most calls to external libraries.
+  // ALso, MAKE_CALL creates / executes an EXT_FUNCTION (presumably just for *.fun files).
+  if (STATUS_OK) {
+    char *c_entry = MdsDescrToCstring(&entry);
+    char *hash_ptr =strrchr(c_entry, '#');
+    if (hash_ptr == NULL) {
+      status = TdiFindImageSymbol(&image, &entry, &routine);
+    } else {
+      char *dup_entry = strdup(strtok(c_entry, "#"));
+      new_entry.length = strlen(dup_entry);
+      new_entry.pointer = dup_entry;
+      status = TdiFindImageSymbol(&image, &new_entry, &routine);
+      free(dup_entry);
+    }
+    free(c_entry);
+  }
   /**********************************************
   Requires: image found and routine symbol found.
   **********************************************/
@@ -181,9 +204,37 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
        *************************/
     if (STATUS_OK)
     {
-      struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S,
-                                 LibCallg(&new[0], routine)};
-      MdsCopyDxXd((struct descriptor *)&out, out_ptr);
+
+      char *dup = strdup(entry.pointer);  // The routine's name  
+      char *token = strtok(dup, "#");
+      token = strtok(NULL, "#");
+      int num_fixed_args = 0;
+      if (token != NULL) {
+        num_fixed_args = atoi(token);
+      }
+      free(dup);
+#ifndef MACOS_ARM64
+      num_fixed_args = 0;  // zero means no varags on this function
+#endif
+
+      // Depending on the external function being called, additional "case" clauses might be required.
+      // Use of TRUE is because case must start with a statement.
+      // Struct declaration can't be declared here because it would evaluate the LibCallg*() prematurely.
+      switch(num_fixed_args) {
+#ifdef MACOS_ARM64  
+      case 1:
+        TRUE;
+        // Is RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
+        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), VARIADIC_1_FIX_ARGS, RTN_POINTER)};
+        MdsCopyDxXd((struct descriptor *)&out1, out_ptr);
+        break;
+#endif
+      default:
+        TRUE;
+        struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallg(&new[0], (routine))}; 
+        MdsCopyDxXd((struct descriptor *)&out, out_ptr);
+        break;
+      }
     }
     pthread_cleanup_pop(1);
   }
@@ -192,5 +243,6 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
 done:;
   FREED_NOW(&entry);
   FREED_NOW(&image);
+  FREED_NOW(&new_entry);
   return status;
 }
