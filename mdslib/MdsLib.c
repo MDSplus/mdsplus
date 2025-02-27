@@ -640,7 +640,11 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
+#ifdef MACOS_ARM64
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+#endif
 
     if (STATUS_OK)
     {
@@ -898,7 +902,11 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
+#ifdef MACOS_ARM64
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+#endif
 
     if (STATUS_OK)
     {
@@ -1062,7 +1070,11 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
+#ifdef MACOS_ARM64
+      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+#endif
 
       if (STATUS_OK)
       {
@@ -1205,7 +1217,11 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
+#ifdef MACOS_ARM64
+      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+#endif
 
       if (STATUS_OK)
       {
@@ -1334,7 +1350,11 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   va_end(incrmtr);
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, descr, VARIADIC_3_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, descr);
+#endif
   return (&status);
 }
 #endif

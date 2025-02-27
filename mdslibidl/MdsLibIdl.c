@@ -380,7 +380,11 @@ EXPORT int IdlMdsValue(int argc, void **argv)
   arglist[argidx++] = (void *)&tmp;
   arglist[argidx++] = MdsEND_ARG;
   *(long *)&arglist[0] = argidx;
+#ifdef MACOS_ARM64
+  status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
   status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+#endif
   if (STATUS_OK)
   {
     status = TdiData(tmp.pointer, &mdsValueAnswer MDS_END_ARG);
@@ -626,7 +630,11 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     arglist[argidx++] = (void *)&tmp;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx;
+#ifdef MACOS_ARM64
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+#else
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+#endif
     if (STATUS_OK)
     {
       status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);

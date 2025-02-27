@@ -171,6 +171,10 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
       status = TdiINVDTYDSC;
       goto end;
     }
+    // MACOS_ARM64:  If the device calls a variadic function, then the call
+    // to _LibCallg() will segfault on Apple Silicon.   However, it is unlikely
+    // that Apple Silicon will be used for data acquistion servers (which are
+    // typically Linux).  Thus leaving this "as is" until bugs are reported.
     void (*addr)();
     status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
     if (STATUS_OK)
