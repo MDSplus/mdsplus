@@ -65,49 +65,78 @@ extern int tdi_put_ident();
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    static inline int interlude(dtype_t rtype, mdsdsc_t **newdsc,
+    static inline int interlude(dtype_t rtype, int num_fixed_args, mdsdsc_t **newdsc,
                                 int (*routine)(), void **result, int *max)
 {
   switch (rtype)
   {
   case DTYPE_MISSING:
-  {
+    *max = 0;
+#ifdef MACOS_ARM64
+    if (num_fixed_args > 0) {
+      LibCallgFfi(newdsc, routine, num_fixed_args, RTN_NONE);
+    } else {
+      LibCallg(newdsc, routine);
+    }
+#else
     LibCallg(newdsc, routine);
+#endif
     break;
-  }
   case DTYPE_C:
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
-  {
-    void *(*called_p)() = (void *(*)())LibCallg;
-    void **result_p = (void *)result;
     *max = sizeof(void *);
+    void **result_p = (void *)result;
+    void *(*called_p)() = (void *(*)())LibCallg; 
+#ifdef MACOS_ARM64
+    if (num_fixed_args > 0) {
+      *result_p =  (void *) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_POINTER);
+    } else {
+      *result_p = called_p(newdsc, routine);
+    }
+#else
     *result_p = called_p(newdsc, routine);
+#endif
     break;
-  }
   case DTYPE_D:
   case DTYPE_G:
   case DTYPE_FC:
   case DTYPE_FSC:
   case DTYPE_Q:
   case DTYPE_QU:
-  { // 8 bytes
-    int64_t (*called_q)() = (int64_t(*)())LibCallg;
-    int64_t *result_q = (int64_t *)result;
+    // 8 bytes
     *max = sizeof(int64_t);
+    int64_t *result_q = (int64_t *)result;
+    int64_t (*called_q)() = (int64_t(*)())LibCallg; 
+#ifdef MACOS_ARM64
+    if (num_fixed_args > 0) {
+      *result_q =  (int64_t) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_INT64);
+    } else {
+      *result_q = called_q(newdsc, routine);
+    }
+#else
     *result_q = called_q(newdsc, routine);
+#endif
     break;
-  }
   // case DTYPE_F:
   // case DTYPE_FS:
   default:
-  { // 4 bytes
-    int32_t (*called_int)() = (int32_t(*)())LibCallg;
-    int32_t *result_int = (int32_t *)result;
+    // 4 bytes
     *max = sizeof(int32_t);
+    int32_t *result_int = (int32_t *)result;
+    int32_t (*called_int)() = (int32_t(*)())LibCallg; 
+#ifdef MACOS_ARM64
+    if (num_fixed_args > 0) {
+      *result_int =  (int32_t) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_INT32);
+    } else {
+      *result_int = called_int(newdsc, routine);
+    }
+    break;
+#else
     *result_int = called_int(newdsc, routine);
-  }
+#endif
+    break;
   }
   return 1;
 }
@@ -115,13 +144,30 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
 {
   mdsdsc_xd_t image = EMPTY_XD, entry = EMPTY_XD;
+  mdsdsc_t new_entry = {0, DTYPE_T, CLASS_S, NULL };
+
   if (narg > 255 + 2)
     return TdiNDIM_OVER;
   int status = TdiData(list[0], &image MDS_END_ARG);
   if (STATUS_OK)
     status = TdiData(list[1], &entry MDS_END_ARG);
-  if (STATUS_OK)
-    status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
+ 
+    // Given "<function_name>#<num_fixed_args>" extract just the function name
+    if (STATUS_OK) {
+    char *c_entry = MdsDescrToCstring(entry.pointer);
+    char *hash_ptr =strrchr(c_entry, '#');
+    if (hash_ptr == NULL) {
+      status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
+    } else {
+      char *dup_entry = strdup(strtok(c_entry, "#"));
+      new_entry.length = strlen(dup_entry);
+      new_entry.pointer = dup_entry;
+      status = TdiFindImageSymbol(image.pointer, &new_entry, proutine);
+      free(dup_entry);
+    }
+    free(c_entry);
+  }
+
   if (STATUS_NOT_OK)
     printf("%s\n", LibFindImageSymbolErrString());
   MdsFree1Dx(&entry, NULL);
@@ -162,8 +208,22 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   char result[8] = {0}; // we need up to 8 bytes
   unsigned short code;
   mdsdsc_t dx = {0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result};
-  unsigned char origin[255];
+  unsigned char origin[255];   // (MW) TODO: Should this be 256?
   mdsdsc_t *newdsc[256] = {0};
+
+  // Given "<function_name>#<num_fixed_args>" extract just the number of fixed args
+  char *dup = strdup(list[1]->pointer);
+  char *token = strtok(dup, "#");
+  token = strtok(NULL, "#");
+  int num_fixed_args = 0;
+  if (token != NULL) {
+    num_fixed_args = atoi(token);
+  }
+  free(dup);
+  #ifndef MACOS_ARM64
+    num_fixed_args = 0;  // bypasses libFFI for all other platforms
+  #endif
+  
   *(int *)&newdsc[0] = narg - 2;
   for (j = 2; j < narg && STATUS_OK; ++j)
   {
@@ -245,7 +305,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
     }
   }
   if (STATUS_OK)
-    status = interlude(rtype, newdsc, routine, (void **)result, &max);
+    status = interlude(rtype, num_fixed_args, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if (STATUS_OK)
