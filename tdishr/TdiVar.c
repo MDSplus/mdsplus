@@ -688,6 +688,9 @@ static inline ext_t matchext(const mdsdsc_d_t *const file)
     return EXT_PY;
   return EXT_NONE;
 }
+
+// For TDI function <name>, search for <name>.fun and <name>.py.
+// If a directory contains both files, both will be returned.
 static inline int findfile_fun(const mdsdsc_t *const entry,
                                char **const funfile, char **const pyfile)
 {
@@ -820,30 +823,34 @@ static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,
     INIT_AND_FREE_ON_EXIT(char *, pyfile);
     INIT_AND_FREE_ON_EXIT(char *, funfile);
     // check if we can find method as either .py or .fun
+    // An error status must be remapped so that _TreeAddConglom() works OK.
     status = findfile_fun(ident_ptr, &funfile, &pyfile);
-    if (pyfile)
-    {
-      char *funname;
-      status = tdi_load_python_fun(pyfile, &funname);
-      if (STATUS_OK)
+    if (STATUS_NOT_OK) status = TdiUNKNOWN_VAR;
+    if (STATUS_OK) {
+      if (pyfile)
       {
-        mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
-        mdsdsc_xd_t tmp = EMPTY_XD;
-        status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
-        free(funname);
+        char *funname;
+        status = tdi_load_python_fun(pyfile, &funname);
         if (STATUS_OK)
         {
-          status =
-              put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
-          MdsFree1Dx(&tmp, NULL);
+          mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
+          mdsdsc_xd_t tmp = EMPTY_XD;
+          status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
+          free(funname);
+          if (STATUS_OK)
+          {
+            status =
+                put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
+            MdsFree1Dx(&tmp, NULL);
+          }
         }
+        if (STATUS_NOT_OK)
+          // unable to load python method try tdi alternative
+          status = compile_fun(ident_ptr, funfile);
       }
-      if (STATUS_NOT_OK)
-        // unable to load python method try tdi alternative
+      else // not a python method, load tdi fun
         status = compile_fun(ident_ptr, funfile);
     }
-    else // not a python method, load tdi fun
-      status = compile_fun(ident_ptr, funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
     if (STATUS_OK)
