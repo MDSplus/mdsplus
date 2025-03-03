@@ -51,7 +51,7 @@
 #endif
 
 // This define is used to bracket Apple Silicon specific code.
-#if defined __APPLE__ && defined __aarch64__
+#if defined(__APPLE__) && defined(__aarch64__)
 #define MACOS_ARM64
 #endif
 
