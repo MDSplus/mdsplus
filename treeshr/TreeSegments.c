@@ -2817,7 +2817,7 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
     if ((start && start->pointer) && (end && end->pointer))
     {
       static DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
-      ans &= IS_OK(_TdiExecute((PINO_DATABASE **)&vars->dblist, &expression, start, &segend,
+      ans &= IS_OK(_TdiExecute((void **)&vars->dblist, &expression, start, &segend,
                                end, &segstart, &ans_d MDS_END_ARG));
     }
     else
@@ -2825,13 +2825,13 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
       if (start && start->pointer)
       {
         static DESCRIPTOR(expression, "($ <= $)");
-        ans &= IS_OK(_TdiExecute((PINO_DATABASE **)&vars->dblist, &expression, start, &segend,
+        ans &= IS_OK(_TdiExecute((void **)&vars->dblist, &expression, start, &segend,
                                  &ans_d MDS_END_ARG));
       }
       else
       {
         static DESCRIPTOR(expression, "($ >= $)");
-        ans &= (_TdiExecute((PINO_DATABASE **)&vars->dblist, &expression, end, &segstart,
+        ans &= (_TdiExecute((void **)&vars->dblist, &expression, end, &segstart,
                             &ans_d MDS_END_ARG));
       }
     }
