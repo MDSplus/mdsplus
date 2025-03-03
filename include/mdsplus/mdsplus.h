@@ -49,6 +49,10 @@
 #else
 #define MDS_ATTR_FALLTHROUGH
 #endif
+
+// This define is used to bracket Apple Silicon specific code.
+#if defined __APPLE__ && defined __aarch64__
+#define MACOS_ARM64
 #endif
 
 #ifdef MDS_SHARED // defined if MDS is compiled as a shared library
