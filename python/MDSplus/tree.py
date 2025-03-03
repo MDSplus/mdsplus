@@ -3278,10 +3278,35 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                         dst_node.makeSegment(start, end, dim, data)
                         index += seg_len
                 else:
-                    # Regular data is decompiled/recompiled to preserve node references
+                    def _update_tree_paths(data, new_tree):
+                        # TreePath is a subclass of TreeNode so we need to do this first
+                        if isinstance(data, TreePath):
+                            return data
+                        
+                        elif isinstance(data, TreeNode):
+                            try:
+                                return new_tree.getNode(data.minpath)
+                            except _exc.TreeNNF:
+                                return TreePath(data.path, new_tree)
+
+                        elif isinstance(data, _cmp.Compound):
+                            for i in range(data.getNumDescs()):
+                                data.setDescAt(i, _update_tree_paths(data.getDescAt(i), new_tree))
+                            return data
+
+                        elif isinstance(data, _apd.List):
+                            return _apd.List([ _update_tree_paths(v, new_tree) for v in data.value ])
+
+                        elif isinstance(data, _apd.Dictionary):
+                            return _apd.Dictionary({ _update_tree_paths(k, new_tree): _update_tree_paths(v, new_tree) for k, v in data.value })
+
+                        return data
+
                     try:
-                        deco = src_node.record.decompile()
-                        dst_node.record = dst.tree.tdiCompile(deco)
+                        # Decompiling/Compiling the data loses floating point precision
+                        # so we manually traverse the data to update node references
+                        dst_node.record = _update_tree_paths(src_node.record, dst_node.tree)
+
                     except _exc.TreeNODATA:
                         pass
                     except Exception as e:
