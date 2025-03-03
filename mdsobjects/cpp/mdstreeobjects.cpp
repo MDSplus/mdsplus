@@ -1038,7 +1038,7 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
     throw MdsException(
         "A Tree instance must be defined when ceating TreeNode instances");
   this->nid = nid;
-  this->tree = new Tree(tree);
+  this->tree = tree;
   clazz = CLASS_S;
   dtype = DTYPE_NID;
   setAccessory(units, error, help, validation);
@@ -1046,8 +1046,6 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
 
 void TreeNode::setTree(Tree *tree)
 {
-  if (this->tree)
-    delete this->tree;
   this->tree = new Tree(tree);
 }
 
@@ -1056,8 +1054,6 @@ EXPORT void TreeNode::operator delete(void *p) { ::operator delete(p); }
 
 TreeNode::~TreeNode()
 {
-  if (tree)
-    delete tree;
 }
 
 std::string TreeNode::getNciString(int itm)
