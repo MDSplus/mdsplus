@@ -1058,6 +1058,7 @@ TreeNode::~TreeNode()
 {
 //The Tree instance is not dallocated since it may be shared with other TreeNode objects. 
 //It is responsibilitu of the user program deallocate the tree object when it is no more required.
+}
 
 std::string TreeNode::getNciString(int itm)
 {
