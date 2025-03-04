@@ -1490,7 +1490,7 @@ $<APP_NAME> = {
         import subprocess
         import os
 
-        command = 'kill -KILL `ps  | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
+        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
         print(command)
         os.system(command)
         return 1
