@@ -96,7 +96,7 @@ static void multiply(struct descriptor_xd *left_ptr,
   else if (right_ptr->pointer)
   {
     /*NEED cleaver code here */
-    status = TdiConcat((struct descriptor *)left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
+    status = TdiConcat((mdsdsc_t *)left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
     if (STATUS_NOT_OK)
       *left_ptr = BAD;
   }
@@ -114,14 +114,14 @@ static void divide(struct descriptor_xd *left_ptr,
   {
     /*NEED cleaver code here */
     /*NEED to fix up leading / or * */
-    status = TdiTranslate((struct descriptor *)right_ptr, &star_slash, &slash_star,
+    status = TdiTranslate((mdsdsc_t *)right_ptr, &star_slash, &slash_star,
                           right_ptr MDS_END_ARG);
     if (STATUS_OK)
     {
       if (left_ptr->pointer)
-        status = TdiConcat((struct descriptor *)left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
+        status = TdiConcat((mdsdsc_t *)left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
       else
-        status = TdiConcat((struct descriptor *)&slash, right_ptr, left_ptr MDS_END_ARG);
+        status = TdiConcat((mdsdsc_t *)&slash, right_ptr, left_ptr MDS_END_ARG);
     }
     if (STATUS_NOT_OK)
       *left_ptr = BAD;

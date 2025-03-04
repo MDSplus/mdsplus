@@ -358,7 +358,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK)
     status = TdiData(list[1], &tmp MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiUpcase((struct descriptor *)&tmp, &string MDS_END_ARG);
+    status = TdiUpcase((mdsdsc_t *)&tmp, &string MDS_END_ARG);
   if (STATUS_OK)
   {
     key_ptr =
@@ -377,7 +377,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
     if (STATUS_OK)
       status = TdiData(list[2], &tmp MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiUpcase((struct descriptor *)&tmp, &tmp MDS_END_ARG);
+      status = TdiUpcase((mdsdsc_t *)&tmp, &tmp MDS_END_ARG);
     if (STATUS_OK)
     {
       struct descriptor allow = *tmp.pointer;

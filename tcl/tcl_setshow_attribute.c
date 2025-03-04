@@ -72,7 +72,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
       status = TreeGetXNci(nid, attr, &xd);
       if (STATUS_OK)
       {
-        status = TdiDecompile((struct descriptor *)&xd, &dsc_string MDS_END_ARG);
+        status = TdiDecompile((mdsdsc_t *)&xd, &dsc_string MDS_END_ARG);
         if (STATUS_OK)
         {
           *output = strncpy(malloc(dsc_string.length + 100), dsc_string.pointer,
@@ -88,7 +88,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
     {
       if (TreeGetXNci(nid, "attributenames", &xd) & 1)
       {
-        TdiSortVal((struct descriptor *)&xd, &xd MDS_END_ARG);
+        TdiSortVal((mdsdsc_t *)&xd, &xd MDS_END_ARG);
         if (xd.pointer && xd.pointer->class == CLASS_A)
         {
           typedef ARRAY(char) ARRAY_DSC;

@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define COM
 #define OPC(name, NAME, ...)                                              \
-  extern EXPORT int Tdi##name(struct descriptor *first, ...)              \
+  extern EXPORT int Tdi##name(mdsdsc_t*first, ...)                        \
   {                                                                       \
     if (first == MdsEND_ARG)                                              \
       return TdiNO_OUTPTR;                                                \

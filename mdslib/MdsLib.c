@@ -645,7 +645,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
       if (STATUS_OK && xd2.pointer != 0 && xd2.pointer->pointer != 0)
       {
         int templen = (xd2.pointer)->length;
-        status = TdiCvt((struct descriptor *)&xd2, dsc, &xd3 MDS_END_ARG);
+        status = TdiCvt((mdsdsc_t *)&xd2, dsc, &xd3 MDS_END_ARG);
         /**  get string length right if scalar string (if answer descriptor has
          *longer
          **  length than returned value, then make sure the length is the length
@@ -900,7 +900,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
       if (STATUS_OK && xd2.pointer)
       {
         int templen = (xd2.pointer)->length;
-        status = TdiCvt((struct descriptor *)&xd2, dsc, &xd3 MDS_END_ARG);
+        status = TdiCvt((mdsdsc_t *)&xd2, dsc, &xd3 MDS_END_ARG);
         /**  get string length right if scalar string (if answer descriptor has
          *longer
          **  length than returned value, then make sure the length is the length

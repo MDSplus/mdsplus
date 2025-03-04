@@ -456,7 +456,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
     status = TdiEvaluate(d_ptr, &xd3 MDS_END_ARG);
     if (STATUS_OK)
     {
-      status = TdiData((struct descriptor *)&xd3, &xd3 MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&xd3, &xd3 MDS_END_ARG);
       if (STATUS_OK)
       {
         for (d_ptr = (struct descriptor *)&xd3; d_ptr->dtype == DTYPE_DSC;

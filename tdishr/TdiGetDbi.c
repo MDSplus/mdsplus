@@ -115,7 +115,7 @@ int Tdi1GetDbi(opcode_t opcode __attribute__((unused)), int narg,
   **********************/
   status = TdiData(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiUpcase((struct descriptor *)&tmp, &string MDS_END_ARG);
+    status = TdiUpcase((mdsdsc_t *)&tmp, &string MDS_END_ARG);
   if (STATUS_OK)
   {
     key_ptr =

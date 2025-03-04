@@ -169,16 +169,16 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   WARNING 3$ routines require type match.
   ********************************************/
   if (STATUS_OK)
-    status = TdiSubtract((struct descriptor *)&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
+    status = TdiSubtract((mdsdsc_t *)&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
   if (new[2] && STATUS_OK)
-    status = TdiDivide((struct descriptor *)&nelem, dat[2].pointer, &nelem MDS_END_ARG);
+    status = TdiDivide((mdsdsc_t *)&nelem, dat[2].pointer, &nelem MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiDim((struct descriptor *)&nelem, &minus_one, &nelem MDS_END_ARG);
+    status = TdiDim((mdsdsc_t *)&nelem, &minus_one, &nelem MDS_END_ARG);
   if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
   {
-    status = TdiNint((struct descriptor *)&nelem, &nelem MDS_END_ARG);
+    status = TdiNint((mdsdsc_t *)&nelem, &nelem MDS_END_ARG);
     if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
-      status = TdiLong((struct descriptor *)&nelem, &nelem MDS_END_ARG);
+      status = TdiLong((mdsdsc_t *)&nelem, &nelem MDS_END_ARG);
   }
   if (STATUS_OK)
   {

@@ -104,21 +104,21 @@ EXPORT struct descriptor *StepResample(struct descriptor *in_sig,
     sig = (struct descriptor_signal *)sig->pointer;
   while (x->dtype == DTYPE_DSC)
     x = (struct descriptor *)x->pointer;
-  return_on_error(TdiData((struct descriptor *)sig, &xd1 MDS_END_ARG));
-  return_on_error(TdiByte((struct descriptor *)&xd1, &sig_y_xd MDS_END_ARG));
+  return_on_error(TdiData((mdsdsc_t *)sig, &xd1 MDS_END_ARG));
+  return_on_error(TdiByte((mdsdsc_t *)&xd1, &sig_y_xd MDS_END_ARG));
   sig_y = (struct descriptor_a *)sig_y_xd.pointer;
   if (sig_y->class != CLASS_A)
     return 0;
   sig_y_b = sig_y->pointer;
-  return_on_error(TdiDimOf((struct descriptor *)sig, &xd1 MDS_END_ARG));
-  return_on_error(TdiData((struct descriptor *)&xd1, &xd2 MDS_END_ARG));
-  return_on_error(TdiCvt((struct descriptor *)&xd2, &float_dsc, &sig_x_xd MDS_END_ARG));
+  return_on_error(TdiDimOf((mdsdsc_t *)sig, &xd1 MDS_END_ARG));
+  return_on_error(TdiData((mdsdsc_t *)&xd1, &xd2 MDS_END_ARG));
+  return_on_error(TdiCvt((mdsdsc_t *)&xd2, &float_dsc, &sig_x_xd MDS_END_ARG));
   sig_x = (struct descriptor_a *)sig_x_xd.pointer;
   if (sig_x->class != CLASS_A)
     return 0;
   sig_x_f = (float *)sig_x->pointer;
   return_on_error(TdiData(x, &xd1 MDS_END_ARG));
-  return_on_error(TdiCvt((struct descriptor *)&xd1, &float_dsc, &new_x_xd MDS_END_ARG));
+  return_on_error(TdiCvt((mdsdsc_t *)&xd1, &float_dsc, &new_x_xd MDS_END_ARG));
   new_x = (struct descriptor_a *)new_x_xd.pointer;
   if (new_x->class != CLASS_A)
     return 0;

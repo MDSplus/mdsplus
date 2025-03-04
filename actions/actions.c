@@ -336,7 +336,7 @@ static int Refresh()
           StrCopyDx(&error, (struct descriptor *)&not_an_action);
           break;
         default:
-          if (TdiExecute((struct descriptor *)&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1)
+          if (TdiExecute((mdsdsc_t *)&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1)
             StrCopyDx(&prefix, (struct descriptor *)&phase_str);
           else
             StrCopyDx(&error, (struct descriptor *)&bad_phase);

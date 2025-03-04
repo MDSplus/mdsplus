@@ -646,9 +646,9 @@ ARGLIST *arg;
          * arg->used, arg->c);  */
         return TdiMISS_ARG;
       }
-      if (argv && ((status = TdiData((struct descriptor *)*argv, &tmp MDS_END_ARG)) & 1) &&
+      if (argv && ((status = TdiData((mdsdsc_t *)*argv, &tmp MDS_END_ARG)) & 1) &&
           (tmp.pointer->length) &&
-          ((status = TdiText((struct descriptor *)&tmp, &tmp MDS_END_ARG)) & 1))
+          ((status = TdiText((mdsdsc_t *)&tmp, &tmp MDS_END_ARG)) & 1))
       {
         for (i = 0; i < tmp.pointer->length; i++)
         {

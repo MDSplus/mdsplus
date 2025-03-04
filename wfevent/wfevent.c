@@ -161,7 +161,7 @@ int main(int argc, char **argv)
         status = MdsSerializeDscIn(data, &xd);
         if (STATUS_OK)
         {
-          TdiDecompile((struct descriptor *)&xd, &ans MDS_END_ARG);
+          TdiDecompile((mdsdsc_t *)&xd, &ans MDS_END_ARG);
           if (ans.pointer)
           {
             printf("Event %s occurred with data = %.*s\n", event, ans.length,

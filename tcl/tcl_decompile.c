@@ -68,7 +68,7 @@ EXPORT int TclDecompile(void *ctx, char **error, char **output)
       sts = TreeGetRecord(nid, &xd);
       if (sts & 1)
       {
-        sts = TdiDecompile((struct descriptor *)&xd, &dsc_string MDS_END_ARG);
+        sts = TdiDecompile((mdsdsc_t *)&xd, &dsc_string MDS_END_ARG);
         if (sts & 1)
         {
           *output = malloc(dsc_string.length + 100);

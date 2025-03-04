@@ -318,7 +318,7 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[],
       if (STATUS_OK)
         status = TdiIntrinsic(OPC_VECTOR, rank, new, out_ptr);
       if (opcode == OPC_ESIZE && STATUS_OK)
-        status = TdiProduct((struct descriptor *)out_ptr, out_ptr MDS_END_ARG);
+        status = TdiProduct((mdsdsc_t *)out_ptr, out_ptr MDS_END_ARG);
       for (; (int)--dim >= 0;)
         MdsFree1Dx(&outs[dim], NULL);
     }
