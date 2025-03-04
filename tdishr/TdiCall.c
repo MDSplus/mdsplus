@@ -190,7 +190,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
           if (CUR_XD.pointer->dtype == DTYPE_T)
           {
             DESCRIPTOR(zero, "\0");
-            TdiConcat(&CUR_XD, &zero, &CUR_XD MDS_END_ARG);
+            TdiConcat((struct descriptor *)&CUR_XD, &zero, &CUR_XD MDS_END_ARG);
           }
           newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
@@ -238,7 +238,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
         else
         {
           DESCRIPTOR(zero_dsc, "\0");
-          TdiConcat(&CUR_XD, &zero_dsc, &CUR_XD MDS_END_ARG);
+          TdiConcat((struct descriptor *)&CUR_XD, &zero_dsc, &CUR_XD MDS_END_ARG);
           newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
       }

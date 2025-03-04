@@ -360,7 +360,7 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
         case DTYPE_FS:
         case DTYPE_FTC:
         case DTYPE_FT:
-          stat1 = TdiText(&tmp, &tmp MDS_END_ARG);
+          stat1 = TdiText((struct descriptor *)&tmp, &tmp MDS_END_ARG);
           if (!(stat1 & 1))
           {
             pd = (struct descriptor *)&dBAD;
@@ -399,7 +399,7 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
           }
         default:
         none:
-          stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
+          stat1 = TdiDecompile((struct descriptor *)&tmp, &tmp MDS_END_ARG);
           pd = (stat1 & 1) ? tmp.pointer : (struct descriptor *)&dBAD;
           if (col > 0)
             col = 0, bytes += kprintf(unit, "\n");

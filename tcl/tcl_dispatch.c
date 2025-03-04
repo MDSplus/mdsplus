@@ -166,7 +166,7 @@ EXPORT int TclDispatch(void *ctx, char **error,
     struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, (char *)&nid};
     status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiData(&xd, &svr MDS_END_ARG);
+      status = TdiData((struct descriptor *)&xd, &svr MDS_END_ARG);
     if (STATUS_OK)
     {
       static char treename[13];

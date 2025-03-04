@@ -119,7 +119,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     switch (list[0]->dtype)
     {
     case DTYPE_DSC:
-      status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
+      status = TdiEvaluate((struct descriptor *)list[0]->pointer, out_ptr MDS_END_ARG);
       break;
     case DTYPE_IDENT:
       status = tdi_get_ident(list[0], out_ptr);
@@ -128,7 +128,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
       pnid = (int *)list[0]->pointer;
       status = TdiGetRecord(*pnid, out_ptr);
       if (STATUS_OK)
-        status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
+        status = TdiEvaluate((struct descriptor *)out_ptr, out_ptr MDS_END_ARG);
       break;
     case DTYPE_PATH:
     {
@@ -138,7 +138,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
       if (STATUS_OK)
         status = TdiGetRecord(nid, out_ptr);
       if (STATUS_OK)
-        status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
+        status = TdiEvaluate((struct descriptor *)out_ptr, out_ptr MDS_END_ARG);
     }
     break;
     default:
@@ -196,7 +196,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     /***************************************
     Must expand compressed data. 24-Apr-1991
     ***************************************/
-    status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
+    status = TdiEvaluate((struct descriptor *)list[0]->pointer, out_ptr MDS_END_ARG);
     if (STATUS_OK)
       status = TdiImpose(list[0], out_ptr);
     break;

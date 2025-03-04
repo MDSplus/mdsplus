@@ -387,7 +387,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
           index_dsc.pointer = (char *)&index;
           status = tdi_get_data(&omits[1], &tmp, &tmp);
           if (STATUS_OK)
-            status = TdiDimOf(&tmp, &index_dsc, out_ptr MDS_END_ARG);
+            status = TdiDimOf((struct descriptor *)&tmp, &index_dsc, out_ptr MDS_END_ARG);
         }
         else
           status = MdsCopyDxXd(

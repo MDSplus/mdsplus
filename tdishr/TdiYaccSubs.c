@@ -174,7 +174,7 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG)
 
   ++TDI_STACK_IDX;
   MDSDBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
-  int status = TdiEvaluate(ptr, &xd MDS_END_ARG);
+  int status = TdiEvaluate((struct descriptor *)ptr, &xd MDS_END_ARG);
   --TDI_STACK_IDX;
   MDSDBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
 

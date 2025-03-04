@@ -262,7 +262,7 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
       if (!(narg > 2 && list[2]))
       {
         if (STATUS_OK)
-          status = TdiData(&in, out_ptr MDS_END_ARG);
+          status = TdiData((struct descriptor *)&in, out_ptr MDS_END_ARG);
         break;
       }
       MdsFree1Dx(out_ptr, NULL);
@@ -285,7 +285,7 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
       if (!(narg > 2 && list[2]))
       {
         if (STATUS_OK)
-          status = TdiData(&in, out_ptr MDS_END_ARG);
+          status = TdiData((struct descriptor *)&in, out_ptr MDS_END_ARG);
         break;
       }
       /********************************

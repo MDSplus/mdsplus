@@ -167,7 +167,7 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
           unsigned char test;
           struct descriptor dtest = {sizeof(test), DTYPE_BU, CLASS_S, 0};
           dtest.pointer = (char *)&test;
-          status = TdiAllocated(pfun, &dtest MDS_END_ARG);
+          status = TdiAllocated((struct descriptor *)pfun, &dtest MDS_END_ARG);
           if (status && !test)
           {
             status = tdi_put_ident(pfun, 0);

@@ -326,7 +326,7 @@ static int find_ident(const int search, const mdsdsc_r_t *const ident_ptr,
                code == OPC_POST_INC || code == OPC_PRE_INC)
       {
         INIT_AND_FREEXD_ON_EXIT(tmp);
-        status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
+        status = TdiEvaluate((struct descriptor *)ident_ptr, &tmp MDS_END_ARG);
         if (STATUS_OK)
           status =
               find_ident(search, (mdsdsc_r_t *)ident_ptr->dscptrs[0], &key_dsc,
@@ -800,7 +800,7 @@ static int compile_fun(const mdsdsc_t *const entry, const char *const file)
         }
         StrUpcase((mdsdsc_t *)pfun2, (mdsdsc_t *)pfun2);
         if (StrCompare(entry, (mdsdsc_t *)pfun2) == 0)
-          status = TdiEvaluate(&tmp, &tmp MDS_END_ARG);
+          status = TdiEvaluate((struct descriptor *)&tmp, &tmp MDS_END_ARG);
       }
     }
   }
@@ -998,7 +998,7 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
       }
       else
       {
-        status = TdiEvaluate(actual_ptr, &tmp MDS_END_ARG);
+        status = TdiEvaluate((struct descriptor *)actual_ptr, &tmp MDS_END_ARG);
         if (!opt && STATUS_OK && tmp.pointer == 0)
           status = TdiMISS_ARG;
       }
@@ -1060,7 +1060,7 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
       }
     }
   }
-  TdiDeallocate(&tmp MDS_END_ARG);
+  TdiDeallocate((struct descriptor *)&tmp MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
   _private.head = old_head;
   TDI_VAR_NEW_NARG = old_narg;
@@ -1300,7 +1300,7 @@ static int show_one(const node_type *const node_ptr,
   if (STATUS_OK)
   {
     if (rptr)
-      status = TdiDecompile(rptr, &tmp MDS_END_ARG);
+      status = TdiDecompile((struct descriptor *)rptr, &tmp MDS_END_ARG);
     if (STATUS_OK)
     {
       if (rptr && rptr->dtype == DTYPE_FUNCTION &&
