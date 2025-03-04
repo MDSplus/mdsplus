@@ -66,13 +66,13 @@ extern int TdiMasterData();
 extern int TdiGetLong();
 extern int TdiGetShape();
 extern int Tdi2Bsearch();
-extern int TdiBsearch(struct descriptor *, ...);
-extern int TdiGe(struct descriptor *, ...);
-extern int TdiSort(struct descriptor *, ...);
-extern int TdiEvaluate(struct descriptor *, ...);
-extern int TdiMap(struct descriptor *, ...);
+extern int TdiBsearch(mdsdsc_t *, ...);
+extern int TdiGe(mdsdsc_t *, ...);
+extern int TdiSort(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiMap(mdsdsc_t *, ...);
 extern int TdiIntrinsic();
-extern int TdiSortVal(struct descriptor *, ...);
+extern int TdiSortVal(mdsdsc_t *, ...);
 
 /*--------------------------------------------------
         Greater than tests.

@@ -42,15 +42,15 @@ extern unsigned short OpcExtFunction;
 // static int timedAccessFlag = 0;
 
 #define MAX_FUN_NAMELEN 512
-extern int TdiData(struct descriptor *, ...);
-extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
 
-extern int TdiDecompile(struct descriptor *, ...);
-extern int TdiExecute(struct descriptor *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
 
 /*
 static void printDecompiled(struct descriptor *inD)

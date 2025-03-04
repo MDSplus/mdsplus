@@ -72,8 +72,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <usagedef.h>
 
 extern int tdi_get_data();
-extern int TdiData(struct descriptor *, ...);
-extern int TdiUpcase(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUpcase(mdsdsc_t *, ...);
 extern int Tdi1Vector();
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 

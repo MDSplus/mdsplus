@@ -53,8 +53,8 @@ extern struct descriptor *TdiItoXSpecial;
 extern int TdiGetArgs();
 extern int TdiGetLong();
 extern int TdiIntrinsic();
-extern int TdiProduct(struct descriptor *, ...);
-extern int TdiItoX(struct descriptor *, ...);
+extern int TdiProduct(mdsdsc_t *, ...);
+extern int TdiItoX(mdsdsc_t *, ...);
 extern int Tdi3Subtract();
 
 static const DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);

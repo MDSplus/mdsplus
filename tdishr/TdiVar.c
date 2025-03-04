@@ -76,14 +76,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsmsg.h>
 
 extern int TdiFaultHandler();
-extern int TdiData(struct descriptor *, ...);
-extern int TdiDeallocate(struct descriptor *, ...);
-extern int TdiDecompile(struct descriptor *, ...);
-extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiDeallocate(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int TdiPutLong();
-extern int TdiEquals(struct descriptor *, ...);
-extern int TdiSubtract(struct descriptor *, ...);
-extern int TdiAdd(struct descriptor *, ...);
+extern int TdiEquals(mdsdsc_t *, ...);
+extern int TdiSubtract(mdsdsc_t *, ...);
+extern int TdiAdd(mdsdsc_t *, ...);
 extern int TdiResetGetRecord();
 /*******************************************
 This uses the balanced binary tree routines.
@@ -750,7 +750,7 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
   return status;
 }
 
-extern int TdiCompile(struct descriptor *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
 static int compile_fun(const mdsdsc_t *const entry, const char *const file)
 {
   if (!file)

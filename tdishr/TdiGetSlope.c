@@ -45,21 +45,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-extern int TdiData(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiGetLong();
-extern int TdiRange(struct descriptor *, ...);
-extern int TdiAdd(struct descriptor *, ...);
-extern int TdiSubtract(struct descriptor *, ...);
-extern int TdiMultiply(struct descriptor *, ...);
-extern int TdiDivide(struct descriptor *, ...);
-extern int TdiEvaluate(struct descriptor *, ...);
-extern int TdiFloat(struct descriptor *, ...);
-extern int TdiFloor(struct descriptor *, ...);
-extern int TdiNint(struct descriptor *, ...);
-extern int TdiLe(struct descriptor *, ...);
-extern int TdiLt(struct descriptor *, ...);
+extern int TdiRange(mdsdsc_t *, ...);
+extern int TdiAdd(mdsdsc_t *, ...);
+extern int TdiSubtract(mdsdsc_t *, ...);
+extern int TdiMultiply(mdsdsc_t *, ...);
+extern int TdiDivide(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiFloat(mdsdsc_t *, ...);
+extern int TdiFloor(mdsdsc_t *, ...);
+extern int TdiNint(mdsdsc_t *, ...);
+extern int TdiLe(mdsdsc_t *, ...);
+extern int TdiLt(mdsdsc_t *, ...);
 extern int Tdi1Vector();
-extern int TdiSetRange(struct descriptor *, ...);
+extern int TdiSetRange(mdsdsc_t *, ...);
 
 int TdiGetSlope(struct descriptor_window *window_ptr,
                 struct descriptor_slope *slope_ptr,

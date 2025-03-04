@@ -125,13 +125,13 @@ extern pthread_mutex_t event_mutex;
 #include <strroutines.h>
 #include <mdsshr.h>
 
-extern int TdiAdjustl(struct descriptor *, ...);
-extern int TdiExecute(struct descriptor *, ...);
-extern int TdiData(struct descriptor *, ...);
-extern int TdiCvt(struct descriptor *, ...);
-extern int TdiCompile(struct descriptor *, ...);
-extern int TdiDimOf(struct descriptor *, ...);
-extern int TdiDebug(struct descriptor *, ...);
+extern int TdiAdjustl(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiCvt(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiDimOf(mdsdsc_t *, ...);
+extern int TdiDebug(mdsdsc_t *, ...);
 
 static void ResetErrors()
 {

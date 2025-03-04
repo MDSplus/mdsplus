@@ -38,15 +38,15 @@ extern int TreeClose();
 extern int TreeSetDefault();
 #endif
 extern int MdsFree1Dx();
-extern int TdiExecute(struct descriptor *, ...);
-extern int TdiCompile(struct descriptor *, ...);
-extern int TdiData(struct descriptor *, ...);
-extern int TdiCvt(struct descriptor *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiCvt(mdsdsc_t *, ...);
 extern void *LibCallg();
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
-extern int TdiDebug(struct descriptor *, ...);
+extern int TdiDebug(mdsdsc_t *, ...);
 
 short ArgLen(struct descrip *d);
 

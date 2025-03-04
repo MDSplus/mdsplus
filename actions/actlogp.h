@@ -47,7 +47,7 @@
 extern int ServerMonitorCheckin();
 extern int str_element();
 
-extern int TdiExecute(struct descriptor *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
 
 typedef struct _LinkedEvent
 {

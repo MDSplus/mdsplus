@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ************************************************************************/
 
-extern int TdiCompile(struct descriptor *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
 
 /***************************************************************
  * TclPutExpression:

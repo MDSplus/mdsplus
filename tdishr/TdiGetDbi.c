@@ -66,8 +66,8 @@ static const struct item
 #define siztab sizeof(struct item)
 #define numtab (sizeof(table) / siztab)
 
-extern int TdiData(struct descriptor *, ...);
-extern int TdiUpcase(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUpcase(mdsdsc_t *, ...);
 extern int tdi_get_data();
 extern int TdiGetLong();
 extern int _TdiEvaluate(void **ctx, struct descriptor *first, ...);

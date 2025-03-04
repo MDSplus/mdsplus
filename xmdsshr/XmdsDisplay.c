@@ -78,8 +78,8 @@ argcount); Boolean XmdsIsDisplay(Widget w);
 
 #include <xmdsshr.h>
 #include <strroutines.h>
-extern int TdiEvaluate(struct descriptor *, ...);
-extern int TdiDecompile(struct descriptor *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */

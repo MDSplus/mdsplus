@@ -67,9 +67,9 @@ extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int tdi_get_ident();
 extern int tdi_put_ident();
-extern int TdiData(struct descriptor *, ...);
-extern int TdiVector(struct descriptor *, ...);
-extern int TdiText(struct descriptor *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiVector(mdsdsc_t *, ...);
+extern int TdiText(mdsdsc_t *, ...);
 
 /* MUST match declaration in DYNAMIC_SYB.C ( ../idlsql/dyanamic_syb.c ) */
 #define MAXPARSE 16384

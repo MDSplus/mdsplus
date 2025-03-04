@@ -160,8 +160,8 @@ XmdsExprPut(Widget w); Boolean XmdsExprApply(Widget w); void XmdsExprRegister();
 
  External functions or symbols referenced:                                    */
 
-extern int TdiCompile(struct descriptor *, ...);
-extern int TdiDecompile(struct descriptor *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
 extern char *DescToNull(struct descriptor_s *text);
 #include <mdsshr.h>
 extern int MdsCompareXd();

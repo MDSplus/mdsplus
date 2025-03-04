@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-extern int TdiExecute(struct descriptor *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
 
 int tclStringToShot(char *str, int *shot_out, char **error)
 {

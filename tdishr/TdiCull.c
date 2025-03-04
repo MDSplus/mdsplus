@@ -47,15 +47,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern struct descriptor *TdiItoXSpecial;
 
 extern int tdi_get_data();
-extern int TdiUnits(struct descriptor *, ...);
-extern int TdiData(struct descriptor *, ...);
+extern int TdiUnits(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiCvtArgs();
-extern int TdiGe(struct descriptor *, ...);
-extern int TdiLe(struct descriptor *, ...);
+extern int TdiGe(mdsdsc_t *, ...);
+extern int TdiLe(mdsdsc_t *, ...);
 extern int TdiMasterData();
 extern int TdiGetArgs();
-extern int TdiIsIn(struct descriptor *, ...);
-extern int TdiItoX(struct descriptor *, ...);
+extern int TdiIsIn(mdsdsc_t *, ...);
+extern int TdiItoX(mdsdsc_t *, ...);
 extern int TdiGetLong();
 extern int Tdi2Range();
 

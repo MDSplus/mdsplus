@@ -156,7 +156,7 @@ extern char *DescToNull(struct descriptor_s *desc);
 #include <Xmds/XmdsExprField.h>
 #include <xmdsshr.h>
 
-extern int TdiCompile(struct descriptor *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
 /*------------------------------------------------------------------------------
 
  Functions and symbols defined:						      */

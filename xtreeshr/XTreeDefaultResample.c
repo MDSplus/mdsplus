@@ -44,11 +44,11 @@ typedef enum
 
 // static int lessThan(mdsdsc_t*in1D, mdsdsc_t*in2D, char *less);
 // static int getMinMax(mdsdsc_t*dimD, char isMin, mdsdsc_xd_t *outXd);
-extern int TdiDecompile(struct descriptor *, ...);
-extern int TdiCompile(struct descriptor *, ...);
-extern int TdiData(struct descriptor *, ...);
-extern int TdiFloat(struct descriptor *, ...);
-extern int TdiEvaluate(struct descriptor *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiFloat(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int XTreeConvertToDouble(mdsdsc_t *timeD, double *converted);
 
 static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,

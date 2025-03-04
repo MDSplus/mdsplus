@@ -59,7 +59,7 @@ static void printhelp(char *cmd)
 #endif
 }
 
-extern int TdiDecompile(struct descriptor *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
 
 int main(int argc, char **argv)
 {
