@@ -109,6 +109,7 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
   int rc;
   int initiator;
 
+  // Note that the Globus calling routine apparently does the va_start(ap) and the va_end(ap)
   context = va_arg(ap, gss_ctx_id_t);
   service = va_arg(ap, char *);
   desired_identity = va_arg(ap, char *);

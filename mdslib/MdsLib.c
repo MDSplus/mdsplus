@@ -135,6 +135,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 
     va_start(incrmtr, dim1);
     dim = va_arg(incrmtr, int *);
+    va_end(incrmtr);
     if (*dim == 0)
     {
       GetDescriptorCache()[next] = malloc(sizeof(struct descriptor_a));
@@ -165,6 +166,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
+      va_end(incrmtr);
     }
     else
       dsc->length = dtype_length(
@@ -197,6 +199,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
     else
       dsc->length = dtype_length(
           dsc); /* must set length after dtype and data pointers are set */
+    va_end(incrmtr);
 
     if (ndim > 1)
     {
@@ -229,6 +232,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
         adsc->m[i] = *(va_arg(incrmtr, int *));
         totsize = totsize * adsc->m[i];
       }
+      va_end(incrmtr);
       for (i = ndim; i < MAX_DIMS; i++)
       {
         adsc->m[i] = 0;
@@ -288,6 +292,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 
     va_start(incrmtr, dim1);
     dim = va_arg(incrmtr, int *);
+    va_end(incrmtr);
     if (*dim == 0)
     {
       GetDescriptorCache()[next] = malloc(sizeof(struct descriptor_a));
@@ -319,6 +324,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
+      va_end(incrmtr);
     }
     else
       dsc->length = dtype_length(
@@ -351,6 +357,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
     else
       dsc->length = dtype_length(
           dsc); /* must set length after dtype and data pointers are set */
+    va_end(incrmtr);
 
     if (ndim > 1)
     {
@@ -382,6 +389,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
         adsc->m[i] = *(va_arg(incrmtr, int *));
         totsize = totsize * adsc->m[i];
       }
+      va_end(incrmtr);
       for (i = ndim; i < MAX_DIMS; i++)
       {
         adsc->m[i] = 0;
@@ -678,14 +686,18 @@ EXPORT int MdsValueR(int *connection, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value_vargs(incrmtr, *connection, expression);
+  int status = mds_value_vargs(incrmtr, *connection, expression); 
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsValue(char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value_vargs(incrmtr, MdsCONNECTION, expression);
+  int status = mds_value_vargs(incrmtr, MdsCONNECTION, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static inline int mds_value2_vargs(va_list incrmtr, int connection,
@@ -931,14 +943,18 @@ EXPORT int MdsValue2R(int *connection, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value2_vargs(incrmtr, *connection, expression);
+  int status = mds_value2_vargs(incrmtr, *connection, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsValue2(char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value2_vargs(incrmtr, MdsCONNECTION, expression);
+  int status = mds_value2_vargs(incrmtr, MdsCONNECTION, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
@@ -1066,14 +1082,18 @@ EXPORT int MdsPutR(int *connection, char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put_vargs(incrmtr, *connection, node, expression);
+  int status = mds_put_vargs(incrmtr, *connection, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsPut(char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
+  int status = mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
@@ -1205,14 +1225,18 @@ EXPORT int MdsPut2R(int *connection, char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put2_vargs(incrmtr, *connection, node, expression);
+  int status = mds_put2_vargs(incrmtr, *connection, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsPut2(char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put2_vargs(incrmtr, MdsCONNECTION, node, expression);
+  int status = mds_put2_vargs(incrmtr, MdsCONNECTION, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static int dtype_length(struct descriptor *d)
@@ -1307,6 +1331,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
     dsc = va_arg(incrmtr, int);
     arglist[argidx++] = (void *)&dsc;
   }
+  va_end(incrmtr);
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
   status = (int)(intptr_t)LibCallg(arglist, descr);
