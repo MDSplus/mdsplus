@@ -44,11 +44,11 @@ typedef enum
 
 // static int lessThan(mdsdsc_t*in1D, mdsdsc_t*in2D, char *less);
 // static int getMinMax(mdsdsc_t*dimD, char isMin, mdsdsc_xd_t *outXd);
-extern int TdiDecompile();
-extern int TdiCompile();
-extern int TdiData();
-extern int TdiFloat();
-extern int TdiEvaluate();
+extern int TdiDecompile(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiFloat(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int XTreeConvertToDouble(mdsdsc_t *timeD, double *converted);
 
 static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
@@ -81,7 +81,7 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
     //Reset time context when evaluating timebase to avoid errors in case the timebase expression refers to segmented data
     TreeGetTimeContext(&startXd, &endXd, &deltaXd);
     TreeSetTimeContext(NULL, NULL, NULL);
-    int status = TdiData(currDim, &currXd MDS_END_ARG);
+    int status = TdiData((mdsdsc_t *)currDim, &currXd MDS_END_ARG);
     TreeSetTimeContext(startXd.pointer, endXd.pointer, deltaXd.pointer);
     MdsFree1Dx(&startXd, NULL);
     MdsFree1Dx(&endXd, NULL);
@@ -112,7 +112,7 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
   }
   if (currDim->dtype != DTYPE_FLOAT)
   {
-    if (IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG)))
+    if (IS_NOT_OK(TdiFloat((mdsdsc_t *)currDim, &currXd MDS_END_ARG)))
       goto return_out;
     currDim = (mdsdsc_a_t *)currXd.pointer;
   }

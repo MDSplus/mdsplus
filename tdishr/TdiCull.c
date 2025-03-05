@@ -47,15 +47,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern struct descriptor *TdiItoXSpecial;
 
 extern int tdi_get_data();
-extern int TdiUnits();
-extern int TdiData();
+extern int TdiUnits(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiCvtArgs();
-extern int TdiGe();
-extern int TdiLe();
+extern int TdiGe(mdsdsc_t *, ...);
+extern int TdiLe(mdsdsc_t *, ...);
 extern int TdiMasterData();
 extern int TdiGetArgs();
-extern int TdiIsIn();
-extern int TdiItoX();
+extern int TdiIsIn(mdsdsc_t *, ...);
+extern int TdiItoX(mdsdsc_t *, ...);
 extern int TdiGetLong();
 extern int Tdi2Range();
 
@@ -262,7 +262,7 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
       if (!(narg > 2 && list[2]))
       {
         if (STATUS_OK)
-          status = TdiData(&in, out_ptr MDS_END_ARG);
+          status = TdiData((mdsdsc_t *)&in, out_ptr MDS_END_ARG);
         break;
       }
       MdsFree1Dx(out_ptr, NULL);
@@ -285,7 +285,7 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
       if (!(narg > 2 && list[2]))
       {
         if (STATUS_OK)
-          status = TdiData(&in, out_ptr MDS_END_ARG);
+          status = TdiData((mdsdsc_t *)&in, out_ptr MDS_END_ARG);
         break;
       }
       /********************************

@@ -233,7 +233,7 @@ void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus)
     if (ctx)
       status = _TdiData(&ctx, (struct descriptor *)dscPtr, xdPtr MDS_END_ARG);
     else
-      status = TdiData((struct descriptor *)dscPtr, xdPtr MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)dscPtr, xdPtr MDS_END_ARG);
   }
   *retStatus = status;
   if (STATUS_NOT_OK)
@@ -525,7 +525,7 @@ void *convertToByte(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -545,7 +545,7 @@ void *convertToByteUnsigned(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -565,7 +565,7 @@ void *convertToShort(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -585,7 +585,7 @@ void *convertToShortUnsigned(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -605,7 +605,7 @@ void *convertToInt(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -625,7 +625,7 @@ void *convertToIntUnsigned(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -645,7 +645,7 @@ void *convertToLong(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -665,7 +665,7 @@ void *convertToLongUnsigned(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -686,7 +686,7 @@ void *convertToFloat(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -707,7 +707,7 @@ void *convertToDouble(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);
@@ -727,7 +727,7 @@ void *convertToShape(void *dsc)
 
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
-  status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&funD, xdPtr MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     free(xdPtr);

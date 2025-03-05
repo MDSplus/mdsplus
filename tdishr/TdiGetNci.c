@@ -72,8 +72,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <usagedef.h>
 
 extern int tdi_get_data();
-extern int TdiData();
-extern int TdiUpcase();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUpcase(mdsdsc_t *, ...);
 extern int Tdi1Vector();
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 
@@ -358,7 +358,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK)
     status = TdiData(list[1], &tmp MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiUpcase(&tmp, &string MDS_END_ARG);
+    status = TdiUpcase((mdsdsc_t *)&tmp, &string MDS_END_ARG);
   if (STATUS_OK)
   {
     key_ptr =
@@ -377,7 +377,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
     if (STATUS_OK)
       status = TdiData(list[2], &tmp MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiUpcase(&tmp, &tmp MDS_END_ARG);
+      status = TdiUpcase((mdsdsc_t *)&tmp, &tmp MDS_END_ARG);
     if (STATUS_OK)
     {
       struct descriptor allow = *tmp.pointer;

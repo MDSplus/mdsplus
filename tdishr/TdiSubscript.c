@@ -72,19 +72,19 @@ extern int TdiIcull();
 extern int TdiRecull();
 extern int TdiGetShape();
 extern int TdiIextend();
-extern int TdiLong();
-extern int TdiCull();
-extern int TdiXtoI();
-extern int TdiItoX();
-extern int TdiData();
-extern int TdiLbound();
-extern int TdiUbound();
-extern int TdiDtypeRange();
-extern int TdiNint();
-extern int TdiDataWithUnits();
-extern int TdiWindowOf();
-extern int TdiSubtract();
-extern int TdiEq();
+extern int TdiLong(mdsdsc_t *, ...);
+extern int TdiCull(mdsdsc_t *, ...);
+extern int TdiXtoI(mdsdsc_t *, ...);
+extern int TdiItoX(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiLbound(mdsdsc_t *, ...);
+extern int TdiUbound(mdsdsc_t *, ...);
+extern int TdiDtypeRange(mdsdsc_t *, ...);
+extern int TdiNint(mdsdsc_t *, ...);
+extern int TdiDataWithUnits(mdsdsc_t *, ...);
+extern int TdiWindowOf(mdsdsc_t *, ...);
+extern int TdiSubtract(mdsdsc_t *, ...);
+extern int TdiEq(mdsdsc_t *, ...);
 extern int TdiGetLong();
 
 typedef struct
@@ -205,12 +205,12 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
               0)
       {
         TDI_SELF_PTR = (struct descriptor_xd *)psig;
-        status = TdiCull(psig, &ddim, dim + 1 < narg ? list[dim + 1] : 0,
+        status = TdiCull((mdsdsc_t *)psig, &ddim, dim + 1 < narg ? list[dim + 1] : 0,
                          &xx[dim] MDS_END_ARG);
         if (STATUS_OK)
-          status = TdiXtoI(pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
+          status = TdiXtoI((mdsdsc_t *)pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
         if (STATUS_OK)
-          status = TdiItoX(pdim, ii[dim].pointer, &xx[dim] MDS_END_ARG);
+          status = TdiItoX((mdsdsc_t *)pdim, ii[dim].pointer, &xx[dim] MDS_END_ARG);
         if (STATUS_OK)
         {
           EMPTYXD(xd);
@@ -224,13 +224,13 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
                  status = TdiSubtract(&ii[dim],&xd,&ii[dim] MDS_END_ARG);
                  }
                */
-          int tmp_status = TdiWindowOf(pdim, &xd MDS_END_ARG);
+          int tmp_status = TdiWindowOf((mdsdsc_t *)pdim, &xd MDS_END_ARG);
           if (IS_OK(tmp_status))
           {
             struct descriptor_window *pwin =
                 (struct descriptor_window *)xd.pointer;
             if (pwin && pwin->startidx)
-              status = TdiSubtract(&ii[dim], pwin->startidx,
+              status = TdiSubtract((mdsdsc_t *)&ii[dim], pwin->startidx,
                                    &ii[dim] MDS_END_ARG);
           }
           MdsFree1Dx(&xd, NULL);
@@ -243,7 +243,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
       else if (pdim && pdim->dtype == DTYPE_DIMENSION && dim + 1 < narg &&
                list[dim + 1])
       {
-        status = TdiCull(pdat, &ddim, list[dim + 1], &xx[dim] MDS_END_ARG);
+        status = TdiCull((mdsdsc_t *)pdat, &ddim, list[dim + 1], &xx[dim] MDS_END_ARG);
         if (STATUS_OK)
           status = TdiData(xx[dim].pointer, &ii[dim] MDS_END_ARG);
       }
@@ -254,9 +254,9 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
         struct descriptor dright = {sizeof(int), DTYPE_L, CLASS_S, 0};
         dleft.pointer = (char *)&left;
         dright.pointer = (char *)&right;
-        status = TdiLbound(pdat, &ddim, &dleft MDS_END_ARG);
+        status = TdiLbound((mdsdsc_t *)pdat, &ddim, &dleft MDS_END_ARG);
         if (STATUS_OK)
-          status = TdiUbound(pdat, &ddim, &dright MDS_END_ARG);
+          status = TdiUbound((mdsdsc_t *)pdat, &ddim, &dright MDS_END_ARG);
         if (dim + 1 < narg && list[dim + 1])
         {
           struct descriptor *keep[3];
@@ -272,7 +272,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
           TDI_RANGE_PTRS[1] = keep[1];
           TDI_RANGE_PTRS[2] = keep[2];
           if (STATUS_OK)
-            status = TdiLong(&ii[dim], &ii[dim] MDS_END_ARG);
+            status = TdiLong((mdsdsc_t *)&ii[dim], &ii[dim] MDS_END_ARG);
           if (STATUS_OK)
             status = TdiIcull(left, right, ii[dim].pointer);
           if (status == SsINTERNAL)
@@ -283,9 +283,9 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
       }
     }
     if (STATUS_OK && ii[dim].pointer->class == CLASS_R)
-      status = TdiData(&ii[dim], &ii[dim] MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&ii[dim], &ii[dim] MDS_END_ARG);
     if (STATUS_OK && ii[dim].pointer->dtype != DTYPE_L)
-      status = TdiNint(&ii[dim], &ii[dim] MDS_END_ARG);
+      status = TdiNint((mdsdsc_t *)&ii[dim], &ii[dim] MDS_END_ARG);
     if (STATUS_OK && (pdi = (array_coeff *)ii[dim].pointer) != 0)
     {
       if (pdi->class == CLASS_A)
@@ -463,12 +463,12 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__((unused)),
     case DTYPE_QU:
     case DTYPE_O:
     case DTYPE_OU:
-      status = TdiLong(&dat[0], &dat[0] MDS_END_ARG);
+      status = TdiLong((mdsdsc_t *)&dat[0], &dat[0] MDS_END_ARG);
       break;
     default:
-      status = TdiNint(&dat[0], &dat[0] MDS_END_ARG);
+      status = TdiNint((mdsdsc_t *)&dat[0], &dat[0] MDS_END_ARG);
       if (STATUS_OK && dat[0].pointer->dtype != DTYPE_L)
-        status = TdiLong(&dat[0], &dat[0] MDS_END_ARG);
+        status = TdiLong((mdsdsc_t *)&dat[0], &dat[0] MDS_END_ARG);
       break;
     }
 

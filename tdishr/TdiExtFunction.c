@@ -56,13 +56,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 extern int TdiFaultHandler();
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiDoFun();
 extern int TdiGetLong();
-extern int TdiAllocated();
+extern int TdiAllocated(mdsdsc_t *, ...);
 extern int tdi_put_ident();
-extern int TdiCompile();
-extern int TdiEvaluate();
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 
 static const struct descriptor_d EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 
@@ -167,7 +167,7 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
           unsigned char test;
           struct descriptor dtest = {sizeof(test), DTYPE_BU, CLASS_S, 0};
           dtest.pointer = (char *)&test;
-          status = TdiAllocated(pfun, &dtest MDS_END_ARG);
+          status = TdiAllocated((mdsdsc_t *)pfun, &dtest MDS_END_ARG);
           if (status && !test)
           {
             status = tdi_put_ident(pfun, 0);

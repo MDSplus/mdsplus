@@ -603,7 +603,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec,
     }
     case DTYPE_DSC:
       status =
-          Tdi0Decompile((struct descriptor *)in_ptr->pointer, prec, out_ptr);
+          Tdi0Decompile((mdsdsc_t *)in_ptr->pointer, prec, out_ptr);
       break;
 
       /*****************
@@ -832,7 +832,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec,
     {
       char *pitem = (char *)a_ptr->pointer;
       status =
-          tdi_vector((struct descriptor *)a_ptr, dimct - 1, &pitem, out_ptr);
+          tdi_vector((mdsdsc_t *)a_ptr, dimct - 1, &pitem, out_ptr);
     }
     if ((more || a_ptr->aflags.bounds) && in_ptr->class != CLASS_APD &&
         STATUS_OK)

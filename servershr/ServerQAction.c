@@ -60,9 +60,9 @@ typedef struct _ClientList
   struct _ClientList *next;
 } ClientList;
 
-extern int TdiDoTask();
-extern int TdiGetNci();
-extern int TdiExecute();
+extern int TdiDoTask(mdsdsc_t *, ...);
+extern int TdiGetNci(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
 extern int mdsdcl_do_command(char *command);
 extern int is_broken_socket(SOCKET sock);
 

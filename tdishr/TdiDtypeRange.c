@@ -51,20 +51,20 @@ static const struct descriptor minus_one = {sizeof(int), DTYPE_L, CLASS_S,
 
 extern struct descriptor *TdiItoXSpecial;
 
-extern int TdiItoX();
-extern int TdiXtoI();
+extern int TdiItoX(mdsdsc_t *, ...);
+extern int TdiXtoI(mdsdsc_t *, ...);
 extern int TdiCvtArgs();
 extern int TdiGetArgs();
-extern int TdiDivide();
-extern int TdiSubtract();
-extern int TdiDim();
-extern int TdiLong();
+extern int TdiDivide(mdsdsc_t *, ...);
+extern int TdiSubtract(mdsdsc_t *, ...);
+extern int TdiDim(mdsdsc_t *, ...);
+extern int TdiLong(mdsdsc_t *, ...);
 extern int Tdi2Range();
 extern int Tdi3Ramp();
 extern int Tdi3Multiply();
 extern int Tdi3Add();
 extern int TdiMasterData();
-extern int TdiNint();
+extern int TdiNint(mdsdsc_t *, ...);
 
 extern struct descriptor *TdiItoXSpecial;
 
@@ -169,16 +169,16 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   WARNING 3$ routines require type match.
   ********************************************/
   if (STATUS_OK)
-    status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
+    status = TdiSubtract((mdsdsc_t *)&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
   if (new[2] && STATUS_OK)
-    status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
+    status = TdiDivide((mdsdsc_t *)&nelem, dat[2].pointer, &nelem MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
+    status = TdiDim((mdsdsc_t *)&nelem, &minus_one, &nelem MDS_END_ARG);
   if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
   {
-    status = TdiNint(&nelem, &nelem MDS_END_ARG);
+    status = TdiNint((mdsdsc_t *)&nelem, &nelem MDS_END_ARG);
     if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
-      status = TdiLong(&nelem, &nelem MDS_END_ARG);
+      status = TdiLong((mdsdsc_t *)&nelem, &nelem MDS_END_ARG);
   }
   if (STATUS_OK)
   {

@@ -67,9 +67,9 @@ extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int tdi_get_ident();
 extern int tdi_put_ident();
-extern int TdiData();
-extern int TdiVector();
-extern int TdiText();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiVector(mdsdsc_t *, ...);
+extern int TdiText(mdsdsc_t *, ...);
 
 /* MUST match declaration in DYNAMIC_SYB.C ( ../idlsql/dyanamic_syb.c ) */
 #define MAXPARSE 16384
@@ -646,9 +646,9 @@ ARGLIST *arg;
          * arg->used, arg->c);  */
         return TdiMISS_ARG;
       }
-      if (argv && ((status = TdiData(*argv, &tmp MDS_END_ARG)) & 1) &&
+      if (argv && ((status = TdiData((mdsdsc_t *)*argv, &tmp MDS_END_ARG)) & 1) &&
           (tmp.pointer->length) &&
-          ((status = TdiText(&tmp, &tmp MDS_END_ARG)) & 1))
+          ((status = TdiText((mdsdsc_t *)&tmp, &tmp MDS_END_ARG)) & 1))
       {
         for (i = 0; i < tmp.pointer->length; i++)
         {

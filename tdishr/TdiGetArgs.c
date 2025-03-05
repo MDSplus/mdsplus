@@ -45,8 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdithreadstatic.h"
 
 extern int tdi_get_data();
-extern int TdiData();
-extern int TdiUnits();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUnits(mdsdsc_t *, ...);
 extern int Tdi2Keep();
 extern int Tdi2Long2();
 extern int Tdi2Any();
