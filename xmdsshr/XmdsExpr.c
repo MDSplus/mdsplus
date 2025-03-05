@@ -372,7 +372,7 @@ EXPORT struct descriptor *XmdsExprGetXd(Widget w)
       TreeGetDefaultNid(&old_def);
       TreeSetDefaultNid(def_nid);
     }
-    status = (*ew->expr.compile)(&text_dsc, ans MDS_END_ARG);
+    status = TdiCompile((mdsdsc_t *)&text_dsc, ans MDS_END_ARG);
     if ((STATUS_OK) == 0)
     {
       TdiComplain(w);
@@ -755,7 +755,7 @@ static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc)
         TreeGetDefaultNid(&old_def);
         TreeSetDefaultNid(def_nid);
       }
-      status = (*w->expr.decompile)(xd, &text MDS_END_ARG);
+      status = TdiDecompile((mdsdsc_t *)xd, &text MDS_END_ARG);
       w->expr.is_text = 0;
       if (STATUS_OK)
       {
