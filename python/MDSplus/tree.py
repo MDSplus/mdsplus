@@ -777,7 +777,7 @@ class Tree(object):
                     _TreeShr._TreeSetSubtree(self.ctx, nid))
         return TreeNode(nid.value, self)
 
-    def createPulse(self, shot, copy_only_this=0, node_or_nid=0):
+    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
         """Create pulse.
     
         @param shot: Shot number to create
@@ -789,10 +789,10 @@ class Tree(object):
         @rtype: None
         """
 
-        if isinstance(node_or_nid, type(self.getNode('\\TOP'))):
+        if isinstance(node_or_nid, TreeNode):
             node_or_nid = node_or_nid.getNid()  # Extract node ID
     
-        nid_pointer=_C.cast(_C.pointer(_C.c_int32(node_or_nid)),_C.c_void_p)
+        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
 
         _exc.checkStatus(
             _TreeShr._TreeCreatePulseFile(
