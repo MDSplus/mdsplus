@@ -111,7 +111,7 @@ typedef struct _Resources
   XmStringTable values;
 } Resources;
 
-extern int TdiCompile();
+extern int TdiCompile(mdsdsc_t *, ...);
 extern int MdsCompareXd();
 
 static Resources *GetResources(Widget w);

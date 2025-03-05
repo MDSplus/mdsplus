@@ -125,13 +125,13 @@ extern pthread_mutex_t event_mutex;
 #include <strroutines.h>
 #include <mdsshr.h>
 
-extern int TdiAdjustl();
-extern int TdiExecute();
-extern int TdiData();
-extern int TdiCvt();
-extern int TdiCompile();
-extern int TdiDimOf();
-extern int TdiDebug();
+extern int TdiAdjustl(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiCvt(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiDimOf(mdsdsc_t *, ...);
+extern int TdiDebug(mdsdsc_t *, ...);
 
 static void ResetErrors()
 {
@@ -139,7 +139,7 @@ static void ResetErrors()
   static struct descriptor const clear_messages = {4, DTYPE_L, CLASS_S,
                                                    (char *)&four};
   static struct descriptor_d messages = {0, DTYPE_T, CLASS_D, 0};
-  TdiDebug(&clear_messages, &messages MDS_END_ARG);
+  TdiDebug((mdsdsc_t *)&clear_messages, &messages MDS_END_ARG);
   StrFree1Dx(&messages);
 }
 
@@ -158,7 +158,7 @@ static Boolean Error(Boolean brief, String topic, String *error,
     struct descriptor topic_d = {0, DTYPE_T, CLASS_S, 0};
     topic_d.length = strlen(topic);
     topic_d.pointer = topic;
-    TdiDebug(&get_messages, &messages MDS_END_ARG);
+    TdiDebug((mdsdsc_t *)&get_messages, &messages MDS_END_ARG);
     StrConcat((struct descriptor *)&messages, &topic_d, &lflf,
               &messages MDS_END_ARG);
     *error = memcpy(XtMalloc(messages.length + 1), messages.pointer,
@@ -251,7 +251,7 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     ResetErrors();
     if ((TdiExecute(&y_dsc, &sig MDS_END_ARG) & 1) &&
         (TdiData(sig.pointer, &y_xd MDS_END_ARG) & 1) &&
-        (TdiCvt(&y_xd, &float_dsc, &y_xd MDS_END_ARG) & 1))
+        (TdiCvt((mdsdsc_t *)&y_xd, &float_dsc, &y_xd MDS_END_ARG) & 1))
     {
       struct descriptor_a *y_a = (struct descriptor_a *)y_xd.pointer;
       int count = (y_a->class == CLASS_A) ? y_a->arsize / sizeof(float) : 1;
@@ -266,13 +266,13 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
           x_dsc.length = strlen(x);
           x_dsc.pointer = x;
           status = (TdiCompile(&x_dsc, &sig MDS_END_ARG) & 1) &&
-                   (TdiData(&sig, &x_xd MDS_END_ARG) & 1) &&
-                   (TdiCvt(&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
+                   (TdiData((mdsdsc_t *)&sig, &x_xd MDS_END_ARG) & 1) &&
+                   (TdiCvt((mdsdsc_t *)&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
         }
         else
-          status = (TdiDimOf(&sig, &x_xd MDS_END_ARG) & 1) &&
-                   (TdiData(&x_xd, &x_xd MDS_END_ARG) & 1) &&
-                   (TdiCvt(&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
+          status = (TdiDimOf((mdsdsc_t *)&sig, &x_xd MDS_END_ARG) & 1) &&
+                   (TdiData((mdsdsc_t *)&x_xd, &x_xd MDS_END_ARG) & 1) &&
+                   (TdiCvt((mdsdsc_t *)&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
         if (STATUS_NOT_OK && (y_a->class == CLASS_S))
         {
           static int zero = 0;
@@ -329,8 +329,8 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret,
     text_dsc.pointer = text;
     ResetErrors();
     if ((TdiExecute(&text_dsc, &string_xd MDS_END_ARG) & 1) &&
-        (TdiData(&string_xd, &string_xd MDS_END_ARG) & 1) &&
-        (TdiAdjustl(&string_xd, &string_d MDS_END_ARG) & 1))
+        (TdiData((mdsdsc_t *)&string_xd, &string_xd MDS_END_ARG) & 1) &&
+        (TdiAdjustl((mdsdsc_t *)&string_xd, &string_d MDS_END_ARG) & 1))
     {
       StrTrim((struct descriptor *)&string_d, (struct descriptor *)&string_d,
               0);

@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #endif
 
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 extern int Tdi3Add();
 extern int TdiConvert();
 extern int CvtConvertFloat();

@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ************************************************************************/
 
-extern int TdiExecute();
+extern int TdiExecute(mdsdsc_t *, ...);
 
 /*****************************************************************
  * TclSetCurrent:

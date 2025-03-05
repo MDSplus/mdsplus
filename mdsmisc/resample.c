@@ -59,9 +59,9 @@ dsc$descriptor *x);
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 
-extern int TdiData();
-extern int TdiCvt();
-extern int TdiDimOf();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiCvt(mdsdsc_t *, ...);
+extern int TdiDimOf(mdsdsc_t *, ...);
 struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x);
 
 EXPORT struct descriptor *resample(struct descriptor *in_sig,
@@ -115,19 +115,19 @@ EXPORT struct descriptor *Resample(struct descriptor *in_sig,
     sig = (struct descriptor_signal *)sig->pointer;
   while (x->dtype == DTYPE_DSC)
     x = (struct descriptor *)x->pointer;
-  return_on_error(TdiData(sig, &xd1 MDS_END_ARG),
+  return_on_error(TdiData((mdsdsc_t *)sig, &xd1 MDS_END_ARG),
                   ((struct descriptor *)&bad_sig_in));
-  return_on_error(TdiCvt(&xd1, &float_dsc, &sig_y_xd MDS_END_ARG),
+  return_on_error(TdiCvt((mdsdsc_t *)&xd1, &float_dsc, &sig_y_xd MDS_END_ARG),
                   (struct descriptor *)&bad_sig_in);
   sig_y = (struct descriptor_a *)sig_y_xd.pointer;
   if (sig_y->class != CLASS_A)
     return (struct descriptor *)&bad_sig_in;
   sig_y_f = (float *)sig_y->pointer;
-  return_on_error(TdiDimOf(sig, &xd1 MDS_END_ARG),
+  return_on_error(TdiDimOf((mdsdsc_t *)sig, &xd1 MDS_END_ARG),
                   (struct descriptor *)&bad_sig_in);
-  return_on_error(TdiData(&xd1, &xd2 MDS_END_ARG),
+  return_on_error(TdiData((mdsdsc_t *)&xd1, &xd2 MDS_END_ARG),
                   (struct descriptor *)&bad_sig_in);
-  return_on_error(TdiCvt(&xd2, &float_dsc, &sig_x_xd MDS_END_ARG),
+  return_on_error(TdiCvt((mdsdsc_t *)&xd2, &float_dsc, &sig_x_xd MDS_END_ARG),
                   (struct descriptor *)&bad_sig_in);
   sig_x = (struct descriptor_a *)sig_x_xd.pointer;
   if (sig_x->class != CLASS_A)
@@ -135,7 +135,7 @@ EXPORT struct descriptor *Resample(struct descriptor *in_sig,
   sig_x_f = (float *)sig_x->pointer;
   return_on_error(TdiData(x, &xd1 MDS_END_ARG),
                   (struct descriptor *)&bad_time_in);
-  return_on_error(TdiCvt(&xd1, &float_dsc, &new_x_xd MDS_END_ARG),
+  return_on_error(TdiCvt((mdsdsc_t *)&xd1, &float_dsc, &new_x_xd MDS_END_ARG),
                   (struct descriptor *)&bad_time_in);
   new_x = (struct descriptor_a *)new_x_xd.pointer;
   if (new_x->class != CLASS_A)

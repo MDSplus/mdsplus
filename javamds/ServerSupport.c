@@ -73,10 +73,10 @@ elements)
 #include <string.h>
 #include <treeshr.h>
 
-extern int TdiData();
-extern int TdiFloat();
-extern int TdiDimOf();
-extern int TdiCompile();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiFloat(mdsdsc_t *, ...);
+extern int TdiDimOf(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
 #define MAX_POINTS 1000
 
 EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
@@ -115,9 +115,9 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
     if (STATUS_OK)
-      status = TdiData(&startXd, &startXd MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
     if (STATUS_NOT_OK || startXd.pointer == NULL ||
         startXd.pointer->class != CLASS_S)
     {
@@ -125,9 +125,9 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
       return &xd;
     }
     if (STATUS_OK)
-      status = TdiData(&endXd, &endXd MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
     if (STATUS_NOT_OK || endXd.pointer == NULL ||
         endXd.pointer->class != CLASS_S)
     {
@@ -171,13 +171,13 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   {
     status = TreeGetSegment(nid, currSegment, &segDataXd, &segTimesXd);
     if (STATUS_OK)
-      status = TdiData(&segDataXd, &segDataXd MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&segDataXd, &segDataXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&segDataXd, &segDataXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&segDataXd, &segDataXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiData(&segTimesXd, &segTimesXd MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&segTimesXd, &segTimesXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&segTimesXd, &segTimesXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&segTimesXd, &segTimesXd MDS_END_ARG);
     if (STATUS_NOT_OK || segDataXd.pointer->class != CLASS_A ||
         segTimesXd.pointer->class != CLASS_A)
     {
@@ -487,9 +487,9 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   status = TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
   if (STATUS_NOT_OK)
     return 0;
-  status = TdiData(&startXd, &startXd MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+    status = TdiFloat((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
   if (STATUS_NOT_OK)
     return 0;
   if (startXd.pointer->length == 8)
@@ -501,9 +501,9 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   status = TreeGetSegmentLimits(nid, numSegments - 1, &startXd, &endXd);
   if (STATUS_NOT_OK)
     return 0;
-  status = TdiData(&endXd, &endXd MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+    status = TdiFloat((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
   if (STATUS_NOT_OK)
     return 0;
   if (endXd.pointer->length == 8)
@@ -560,7 +560,7 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax,
     return 0;
   if (numSegments == 0)
   {
-    status = TdiData(&xd, &xd MDS_END_ARG);
+    status = TdiData((mdsdsc_t *)&xd, &xd MDS_END_ARG);
     if (STATUS_NOT_OK || !xd.pointer || xd.pointer->class != CLASS_A)
       numPoints = 0;
     else
@@ -576,9 +576,9 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax,
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
     if (STATUS_NOT_OK)
       return 0;
-    status = TdiData(&startXd, &startXd MDS_END_ARG);
+    status = TdiData((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&startXd, &startXd MDS_END_ARG);
     if (STATUS_NOT_OK)
       return 0;
     if (startXd.pointer->length == 8)
@@ -595,9 +595,9 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax,
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
     if (STATUS_NOT_OK)
       return 0;
-    status = TdiData(&endXd, &endXd MDS_END_ARG);
+    status = TdiData((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+      status = TdiFloat((mdsdsc_t *)&endXd, &endXd MDS_END_ARG);
     if (STATUS_NOT_OK)
       return 0;
     if (endXd.pointer->length == 8)

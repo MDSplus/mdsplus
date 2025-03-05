@@ -78,9 +78,9 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 //#define DEBUG
 #include <mdsmsg.h>
 
-extern int TdiCompletionOf();
-extern int TdiExecute();
-extern int TdiErrorlogsOf();
+extern int TdiCompletionOf(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
+extern int TdiErrorlogsOf(mdsdsc_t *, ...);
 extern int TdiGetLong();
 extern int ProgLoc;
 

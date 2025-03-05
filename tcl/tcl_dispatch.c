@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 
 /**********************************************************************
  * TCL_DISPATCH.C --
@@ -64,7 +64,7 @@ extern int TdiData();
 
 extern int ServerFailedEssential();
 
-extern int TdiIdentOf();
+extern int TdiIdentOf(mdsdsc_t *, ...);
 #include "../treeshr/treeshrp.h"
 #define DBID_TABLE (((PINO_DATABASE *)TreeDbid())->dispatch_table)
 /****************************************************************
@@ -166,7 +166,7 @@ EXPORT int TclDispatch(void *ctx, char **error,
     struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, (char *)&nid};
     status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiData(&xd, &svr MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&xd, &svr MDS_END_ARG);
     if (STATUS_OK)
     {
       static char treename[13];

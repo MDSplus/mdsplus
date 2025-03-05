@@ -559,7 +559,7 @@ static void get_add_rtn_c(void *in)
 
 static inline int get_add_rtn(char const *congtype, int (**add)())
 {
-  static int (*TdiExecute)() = NULL;
+  static int (*TdiExecute)(struct descriptor *, ...) = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if (STATUS_NOT_OK)
     return status;
@@ -612,7 +612,7 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
 {
   if (!IS_OPEN_FOR_EDIT(((PINO_DATABASE *)dbid)))
     return TreeNOEDIT;
-  static int (*_TdiExecute)() = NULL;
+  static int (*_TdiExecute)(void **, struct descriptor *, ...) = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
   if (STATUS_NOT_OK)
     return status;

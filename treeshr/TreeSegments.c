@@ -1995,8 +1995,8 @@ int _TreeXNciGetNumSegments(void *dbid, int nid, const char *xnci, int *num)
   return TreeSUCCESS;
 }
 
-static int (*_TdiExecute)() = NULL;
-static int (*_TdiCompile)() = NULL;
+static int (*_TdiExecute)(void **, struct descriptor *, ...) = NULL;
+static int (*_TdiCompile)(void **, struct descriptor *, ...) = NULL;
 /* checks last segment and trims it down to last written row if necessary */
 static int trim_last_segment(void *dbid, mdsdsc_xd_t *dim, int filled_rows)
 {
@@ -2817,7 +2817,7 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
     if ((start && start->pointer) && (end && end->pointer))
     {
       static DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
-      ans &= IS_OK(_TdiExecute(&vars->dblist, &expression, start, &segend,
+      ans &= IS_OK(_TdiExecute((void **)&vars->dblist, &expression, start, &segend,
                                end, &segstart, &ans_d MDS_END_ARG));
     }
     else
@@ -2825,13 +2825,13 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
       if (start && start->pointer)
       {
         static DESCRIPTOR(expression, "($ <= $)");
-        ans &= IS_OK(_TdiExecute(&vars->dblist, &expression, start, &segend,
+        ans &= IS_OK(_TdiExecute((void **)&vars->dblist, &expression, start, &segend,
                                  &ans_d MDS_END_ARG));
       }
       else
       {
         static DESCRIPTOR(expression, "($ >= $)");
-        ans &= (_TdiExecute(&vars->dblist, &expression, end, &segstart,
+        ans &= (_TdiExecute((void **)&vars->dblist, &expression, end, &segstart,
                             &ans_d MDS_END_ARG));
       }
     }

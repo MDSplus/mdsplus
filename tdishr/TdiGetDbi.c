@@ -66,11 +66,11 @@ static const struct item
 #define siztab sizeof(struct item)
 #define numtab (sizeof(table) / siztab)
 
-extern int TdiData();
-extern int TdiUpcase();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUpcase(mdsdsc_t *, ...);
 extern int tdi_get_data();
 extern int TdiGetLong();
-extern int _TdiEvaluate();
+extern int _TdiEvaluate(void **ctx, struct descriptor *first, ...);
 
 // s2 is a pointer to the middle of the table, which is why the -1 below works
 static int compare(struct descriptor *s1, struct item *s2)
@@ -115,7 +115,7 @@ int Tdi1GetDbi(opcode_t opcode __attribute__((unused)), int narg,
   **********************/
   status = TdiData(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiUpcase(&tmp, &string MDS_END_ARG);
+    status = TdiUpcase((mdsdsc_t *)&tmp, &string MDS_END_ARG);
   if (STATUS_OK)
   {
     key_ptr =

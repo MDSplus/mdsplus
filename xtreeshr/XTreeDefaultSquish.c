@@ -269,7 +269,7 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
       arraysD[i] = arrayD = (struct descriptor_a *)currSignalD->dimensions[0];
     else
     {
-      extern int TdiData();
+      extern int TdiData(mdsdsc_t *, ...);
       status =
           TdiData(currSignalD->dimensions[0], &(*dimensionsXd)[i] MDS_END_ARG);
       if (STATUS_NOT_OK)

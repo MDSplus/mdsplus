@@ -418,7 +418,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       DESCRIPTOR(expression, "DevHelp($)");
       EMPTYXD(help_d);
       struct descriptor nid_d = {4, DTYPE_NID, CLASS_S, (char *)&nid};
-      int stat = TdiExecute((struct descriptor *)&expression, &nid_d,
+      int stat = TdiExecute((mdsdsc_t *)&expression, &nid_d,
                             &help_d MDS_END_ARG);
       if (stat & 1 && help_d.pointer != NULL)
       {

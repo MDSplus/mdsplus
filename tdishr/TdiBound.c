@@ -53,8 +53,8 @@ extern struct descriptor *TdiItoXSpecial;
 extern int TdiGetArgs();
 extern int TdiGetLong();
 extern int TdiIntrinsic();
-extern int TdiProduct();
-extern int TdiItoX();
+extern int TdiProduct(mdsdsc_t *, ...);
+extern int TdiItoX(mdsdsc_t *, ...);
 extern int Tdi3Subtract();
 
 static const DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
@@ -318,7 +318,7 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[],
       if (STATUS_OK)
         status = TdiIntrinsic(OPC_VECTOR, rank, new, out_ptr);
       if (opcode == OPC_ESIZE && STATUS_OK)
-        status = TdiProduct(out_ptr, out_ptr MDS_END_ARG);
+        status = TdiProduct((mdsdsc_t *)out_ptr, out_ptr MDS_END_ARG);
       for (; (int)--dim >= 0;)
         MdsFree1Dx(&outs[dim], NULL);
     }

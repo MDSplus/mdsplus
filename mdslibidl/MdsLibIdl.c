@@ -394,7 +394,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
         DESCRIPTOR_FLOAT(float_d, 0);
         float_d.pointer = (char *)&float_v;
         if (float_d.dtype != mdsValueAnswer.pointer->dtype)
-          TdiCvt((struct descriptor *)&mdsValueAnswer, &float_d,
+          TdiCvt((mdsdsc_t *)&mdsValueAnswer, &float_d,
                  &mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
@@ -409,7 +409,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
         double_d.pointer = (char *)&double_v;
         double_d.dtype = DTYPE_NATIVE_DOUBLE;
         if (double_d.dtype != mdsValueAnswer.pointer->dtype)
-          TdiCvt((struct descriptor *)&mdsValueAnswer, &double_d,
+          TdiCvt((mdsdsc_t *)&mdsValueAnswer, &double_d,
                  &mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_FC ||
@@ -420,7 +420,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
                                        CLASS_S, 0};
         complex_d.pointer = (char *)float_v;
         if (complex_d.dtype != mdsValueAnswer.pointer->dtype)
-          TdiCvt((struct descriptor *)&mdsValueAnswer, &complex_d,
+          TdiCvt((mdsdsc_t *)&mdsValueAnswer, &complex_d,
                  &mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_DC ||
@@ -432,7 +432,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
                                         CLASS_S, 0};
         dcomplex_d.pointer = (char *)double_v;
         if (dcomplex_d.dtype != mdsValueAnswer.pointer->dtype)
-          TdiCvt((struct descriptor *)&mdsValueAnswer, &dcomplex_d,
+          TdiCvt((mdsdsc_t *)&mdsValueAnswer, &dcomplex_d,
                  &mdsValueAnswer MDS_END_ARG);
       }
       ((char *)argv[2])[0] = 0;

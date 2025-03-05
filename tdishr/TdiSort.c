@@ -66,13 +66,13 @@ extern int TdiMasterData();
 extern int TdiGetLong();
 extern int TdiGetShape();
 extern int Tdi2Bsearch();
-extern int TdiBsearch();
-extern int TdiGe();
-extern int TdiSort();
-extern int TdiEvaluate();
-extern int TdiMap();
+extern int TdiBsearch(mdsdsc_t *, ...);
+extern int TdiGe(mdsdsc_t *, ...);
+extern int TdiSort(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiMap(mdsdsc_t *, ...);
 extern int TdiIntrinsic();
-extern int TdiSortVal();
+extern int TdiSortVal(mdsdsc_t *, ...);
 
 /*--------------------------------------------------
         Greater than tests.
@@ -717,7 +717,7 @@ int Tdi1SortVal(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK)
     status = TdiSort(tmp.pointer, narg > 1 ? list[1] : 0, out_ptr MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);
+    status = TdiMap((mdsdsc_t *)&tmp, out_ptr, out_ptr MDS_END_ARG);
   if (tmp.pointer)
     MdsFree1Dx(&tmp, NULL);
   return status;
@@ -737,7 +737,7 @@ int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
 
   status = TdiIntrinsic(OPC_VECTOR, narg, list, out_ptr);
   if (STATUS_OK)
-    status = TdiSortVal(out_ptr, out_ptr MDS_END_ARG);
+    status = TdiSortVal((mdsdsc_t *)out_ptr, out_ptr MDS_END_ARG);
   if (STATUS_OK)
   {
     struct descriptor_with_units *pdwu =
@@ -847,6 +847,6 @@ int Tdi1IsIn(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK)
     status = TdiBsearch(list[0], out_ptr, 0, pupcase, out_ptr MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiGe(out_ptr, 0, out_ptr MDS_END_ARG);
+    status = TdiGe((mdsdsc_t *)out_ptr, 0, out_ptr MDS_END_ARG);
   return status;
 }

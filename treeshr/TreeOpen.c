@@ -827,7 +827,7 @@ static char *GetFname(char *tree, int shot)
   expression_d.length =
       (unsigned short)sprintf(expression, "%s_tree_filename(%d)", tree, shot);
   expression_d.pointer = expression;
-  static int (*TdiExecute)() =
+  static int (*TdiExecute)(struct descriptor *, ...) =
       NULL; // LibFindImageSymbol_C is a NOP if TdiExecute is already set
   status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if (STATUS_OK)
