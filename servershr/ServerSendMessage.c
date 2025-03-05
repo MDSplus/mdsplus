@@ -197,6 +197,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
       MDSWRN("unexpected dtype = %d", arg->dtype);
     }
   }
+  va_end(vlist);
   *ccmd++ = ')';
   status = SendArg(conid, 0, DTYPE_CSTRING, 1, (short)(ccmd - cmd), 0, 0, cmd);
   if (STATUS_NOT_OK)
