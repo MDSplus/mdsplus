@@ -782,7 +782,7 @@ class Tree(object):
     
         @param shot: Shot number to create
         @type shot: int
-        @param copy_only_this: Logical flag (0 or 1), defaults to 0
+        @param copy_only_this: Logical flag, defaults to False
         @type copy_only_this: int
         @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
         @type node_or_nid: int or MDSplus.tree.TreeNode
