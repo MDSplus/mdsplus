@@ -16,19 +16,6 @@
 /// defined in MdsShr.so
 
 extern void *LibCallg();
-#ifdef MACOS_ARM64
-extern void *LibCallgFfi();
-#define NOT_VARIADIC 0
-#define VARIADIC_1_FIX_ARGS 1
-#define VARIADIC_2_FIX_ARGS 2
-#define VARIADIC_3_FIX_ARGS 3
-enum rtype_ffi { 
-    RTN_NONE = 0, 
-    RTN_POINTER = 1, 
-    RTN_INT32 = 2,
-    RTN_INT64 = 3
-};
-#endif
 extern int LibCreateVmZone(ZoneList **const zone);
 extern int LibDeleteVmZone(ZoneList **const zone);
 extern int LibResetVmZone(ZoneList **const zone);
