@@ -94,32 +94,55 @@ public class Connection
 
 	public Data get(java.lang.String expr, Data args[]) throws MdsException
 	{
+		System.out.println("CUEA");
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
-                java.lang.String expandedExpr;
-                if(expr.equals("$"))
-                {
-                    expandedExpr = "serializeout(`("+expr+"))";
-                }
-                else
-                {
-                    expandedExpr = "serializeout(`(data(("+expr+"))))";
-                }
-                Data serData = get(sockId, expandedExpr, args);
-                return Data.deserialize(serData.getByteArray());
+		try {	
+			java.lang.String expandedExpr;
+			if(expr.equals("$"))
+			{
+				expandedExpr = "serializeout(`("+expr+"))";
+			}
+			else
+			{
+				expandedExpr = "serializeout(`(data(("+expr+"))))";
+			}
+			Data serData = get(sockId, expandedExpr, args);
+			if(serData instanceof Array)
+				return Data.deserialize(serData.getByteArray());
+			else //error code
+				return serData;
+		}catch(Exception exc)
+		{
+			java.lang.String expandedExpr;
+			if(expr.equals("$"))
+			{
+				expandedExpr =  expr;
+			}
+			else
+			{
+				expandedExpr = "data("+expr+")";
+			}
+			return get(sockId, expandedExpr, args);
+		}
 
 	}
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-                java.lang.String expandedExpr = "serializeout(`(data(("+expr+"))))";
-                Data serData = get(sockId, expandedExpr, new Data[0]);
-                if(serData instanceof Array)
-                    return Data.deserialize(serData.getByteArray());
-                else //error code
-                    return serData;
-	}
+		try{
+			java.lang.String expandedExpr = "serializeout(`(data(("+expr+"))))";
+			Data serData = get(sockId, expandedExpr, new Data[0]);
+			if(serData instanceof Array)
+				return Data.deserialize(serData.getByteArray());
+			else //error code
+				return serData;
+		}catch(Exception exc)
+		{
+			return get(sockId,"data("+expr+")", new Data[0]);
+		}
+}
 
 	public void put(java.lang.String path, java.lang.String expr, Data inArgs[]) throws MdsException
 	{
