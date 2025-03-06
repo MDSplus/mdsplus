@@ -3285,7 +3285,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                         
                         elif isinstance(data, TreeNode):
                             try:
-                                return new_tree.getNode(data.minpath)
+                                return new_tree.getDefault().getNode(data.minpath)
                             except _exc.TreeNNF:
                                 return TreePath(data.path, new_tree)
 
