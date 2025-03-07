@@ -654,7 +654,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
  
 
-    #return DataSource and Gam Dict lists (possibly empty) to be added after synchornization has ben establisher
+    #return DataSource and Gam Dict lists (possibly empty) to be added after synchronization has ben establisher
     #before any device of the thread if INTERNAL or DERIVED or after the first SyncInput device for EXTERNAL
     def getPostSynchronizationInfo(self, stateIdx, threadIdx, timerType, timerDDB):
         retGams = []
@@ -720,17 +720,17 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         retSyncInfo = self.getSynchronizationInfo(stateIdx, threadIdx)
         dataSources = retSyncInfo['DataSources']
         gams = retSyncInfo['Gams']
-        if deviceNodes[0].getNode('MODE').data ==  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
-            currDataSources, gurrGams = deviceNodes[0].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+        if deviceNodes[0].getNode('MODE').data() ==  MARTE2_SUPERVISOR.MODE_SYNC_INPUT:
+            currDataSources, currGams = deviceNodes[0].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
                 retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
             dataSources += (currDataSources)
             gams += currGams
             postSyncDataSources, postSyncGams = self.getPostSynchronizationInfo(stateIdx, threadIdx, 
                 retSyncInfo['TimerType'], retSyncInfo['TimerDDB'])
-            dataSources += currDataSources
-            gams += currGams
+            dataSources += postSyncDataSources
+            gams += postSyncGams
             for deviceIdx in range(1, len(deviceNodes)):
-                currDataSources, gurrGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
+                currDataSources, currGams = deviceNodes[deviceIdx].generateMarteConfiguration(threadMap, retSyncInfo['TimerDDB'], 
                     retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'], typesDict)  
                 dataSources += currDataSources
                 gams += currGams
