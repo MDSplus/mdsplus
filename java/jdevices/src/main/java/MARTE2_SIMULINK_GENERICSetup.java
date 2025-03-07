@@ -43,9 +43,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4 = new DeviceField();
         jButton1 = new javax.swing.JButton();
         deviceChoice17 = new DeviceChoice();
-        jPanel47 = new javax.swing.JPanel();
-        deviceField77 = new DeviceField();
-        deviceField78 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Simulink Generic device");
@@ -73,7 +70,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel1.setLayout(new java.awt.GridLayout());
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Simulink module: ");
@@ -105,20 +102,6 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceField77.setIdentifier("");
-        deviceField77.setLabelString("MDS write trigger:");
-        deviceField77.setNumCols(30);
-        deviceField77.setOffsetNid(131);
-        jPanel47.add(deviceField77);
-
-        deviceField78.setIdentifier("");
-        deviceField78.setLabelString("Post trig. Samples: ");
-        deviceField78.setNumCols(6);
-        deviceField78.setOffsetNid(133);
-        jPanel47.add(deviceField78);
-
-        jPanel1.add(jPanel47);
-
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -144,15 +127,12 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice17;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
-    private DeviceField deviceField77;
-    private DeviceField deviceField78;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
     private DeviceParameters deviceParameters1;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel47;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

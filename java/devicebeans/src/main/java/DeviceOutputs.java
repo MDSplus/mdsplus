@@ -48,10 +48,11 @@ public class DeviceOutputs extends DeviceComponent
         private int numOutputChildren = 0;
         private int numItems;
         private int numParItems;
-        private int cpuMask;
+        private int cpuMask, postSamples;
         private java.lang.String jScopeEvent;
-        private JTextField cpuMaskTF, jScopeEventTF;
-        private int cpuMaskNid, jScopeEventNid;
+        private java.lang.String trig;
+        private JTextField cpuMaskTF, jScopeEventTF, trigTF, postSamplesTF;
+        private int cpuMaskNid, jScopeEventNid, trigNid, postSamplesNid;
         
         static final String types[] = {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"};
         private int stringToIdx(String type)
@@ -132,6 +133,30 @@ public class DeviceOutputs extends DeviceComponent
                 System.out.println("Cannot retrieve Output CPU Mask");
             } 
             try {
+                postSamples = subtree.getInt(subtree.getFullPath(baseNid)+".OUTPUTS:POST_TRIGGER");
+            }catch(Exception exc)
+            {
+                postSamples = -1;
+            } 
+            try {
+                trig = subtree.getDataExpr(subtree.getNode(subtree.getFullPath(baseNid) +".OUTPUTS:TRIGGER"));
+            }catch(Exception exc)
+            {
+                trig = "";
+            } 
+            try {
+                postSamplesNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".OUTPUTS:POST_TRIGGER"+",\'NID_NUMBER\')");
+            }catch(Exception exc)
+            {
+                System.out.println("Cannot retrieve Output Post Samples NID");
+            } 
+            try {
+                trigNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".OUTPUTS:TRIGGER"+",\'NID_NUMBER\')");
+            }catch(Exception exc)
+            {
+                System.out.println("Cannot retrieve Output Trigger NID");
+            } 
+            try {
                 cpuMaskNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".OUTPUTS:CPU_MASK"+",\'NID_NUMBER\')");
             }catch(Exception exc)
             {
@@ -149,12 +174,23 @@ public class DeviceOutputs extends DeviceComponent
             {
                 System.out.println("Cannot retrieve Output jScope Event NID");
             } 
+            
+            
             JPanel infoJp = new JPanel();
-            infoJp.add(new JLabel("CPU mask:"));
-            infoJp.add(cpuMaskTF = new JTextField(5));
-            infoJp.add(new JLabel("jScope Event:"));
-            infoJp.add(jScopeEventTF = new JTextField(15));
-            jp.add(infoJp);
+            infoJp.setLayout(new GridLayout(2,1));
+            JPanel rowJp = new JPanel();
+            rowJp.add(new JLabel("CPU mask:"));
+            rowJp.add(cpuMaskTF = new JTextField(5));
+            rowJp.add(new JLabel("jScope Event:"));
+            rowJp.add(jScopeEventTF = new JTextField(15));
+            infoJp.add(rowJp);
+            rowJp = new JPanel();
+            rowJp.add(new JLabel("Trigger:"));
+            rowJp.add(trigTF = new JTextField(35));
+            rowJp.add(new JLabel("Post Trigger Samples:"));
+            rowJp.add(postSamplesTF = new JTextField(5));
+            infoJp.add(rowJp);
+             jp.add(infoJp);
              
             currOutNid = currNid + 7;
             int currItem = 0;
@@ -285,6 +321,15 @@ public class DeviceOutputs extends DeviceComponent
 	{
             cpuMaskTF.setText(""+cpuMask);
             jScopeEventTF.setText(jScopeEvent);
+            trigTF.setText(trig);
+            if(postSamples > 0)
+            {
+                postSamplesTF.setText(""+postSamples);
+            }
+            else
+            {
+                postSamplesTF.setText("");
+            }
             for(int idx = 0; idx < numItems; idx++)
             {
                 try {
@@ -349,7 +394,20 @@ public class DeviceOutputs extends DeviceComponent
             {
                 System.out.println("Error saving jScope Event");
             }
-           
+            try
+            {
+                subtree.putDataExpr(postSamplesNid, postSamplesTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving PostSamples");
+            }
+            try
+            {
+                subtree.putDataExpr(trigNid, trigTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving Trigger");
+            }
             
             for(int idx = 0; idx < numItems; idx++)
             {
