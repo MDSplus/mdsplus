@@ -3243,7 +3243,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                     # Ensure that we don't overwrite existing tags
                     try:
                         existing_node = dst.tree.getNode('\\{}'.format(tag))
-                        print('Warning: Tag "{}" already exists and points to {}'.foramt(tag, existing_node.fullpath))
+                        print('Warning: Tag "{}" already exists and points to {}'.format(tag, existing_node.fullpath))
                         continue
                     except _exc.TreeNNF:
                         pass
@@ -3281,13 +3281,19 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                     def _update_tree_paths(data, new_tree):
                         # TreePath is a subclass of TreeNode so we need to do this first
                         if isinstance(data, TreePath):
-                            return data
+                            new_path = data.tree_path.replace(src.fullpath, dst.fullpath)
+                            return TreePath(new_path, new_tree)
                         
                         elif isinstance(data, TreeNode):
+                            # After the first node in a data structure is updated, the tree for the entire
+                            # data structure changes, this means that we need to manually get the nodes by
+                            # their NIDs, otherwise we accidentally get nodes from the new tree with those nids
+                            real_node = TreeNode(data.nid, src.tree)
+                            new_path = real_node.fullpath.replace(src.fullpath, dst.fullpath)
                             try:
-                                return new_tree.getDefault().getNode(data.minpath)
+                                return new_tree.getNode(new_path)
                             except _exc.TreeNNF:
-                                return TreePath(data.path, new_tree)
+                                return TreePath(new_path, new_tree)
 
                         elif isinstance(data, _cmp.Compound):
                             for i in range(data.getNumDescs()):
