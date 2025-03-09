@@ -97,7 +97,7 @@ static int Doit(struct descriptor_routine *ptask,
     if (STATUS_OK)
       status = TdiGetNid(pmethod->object, &nid);
 #ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TreeDoMethod, VARIADIC_2_FIX_ARGS, RTN_INT32);
+    status = (int)(intptr_t)LibCallgFfi(arglist, TreeDoMethod, VA_2_FIXED_ARGS, RTN_INT32);
 #else
     status = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
 #endif

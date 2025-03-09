@@ -498,7 +498,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
   if (ctx)
   {
 #ifdef MACOS_ARM64
-    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, _TdiCompile, VARIADIC_2_FIX_ARGS, RTN_INT32);
+    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, _TdiCompile, VA_2_FIXED_ARGS, RTN_INT32);
 #else
     status = *retStatus = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
 #endif
@@ -506,7 +506,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
   else
   {
 #ifdef MACOS_ARM64
-    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
 #else
     status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 #endif

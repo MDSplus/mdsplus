@@ -641,7 +641,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
 #ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VA_1_FIXED_ARG, RTN_INT32);
 #else
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 #endif
@@ -903,7 +903,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
 #ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VA_1_FIXED_ARG, RTN_INT32);
 #else
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 #endif
@@ -1071,7 +1071,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       *(int *)&arglist[0] = argidx - 1;
 
 #ifdef MACOS_ARM64
-      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
 #else
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 #endif
@@ -1218,7 +1218,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       *(int *)&arglist[0] = argidx - 1;
 
 #ifdef MACOS_ARM64
-      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
 #else
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 #endif
@@ -1351,7 +1351,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
 #ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, descr, VARIADIC_3_FIX_ARGS, RTN_INT32);
+  status = (int)(intptr_t)LibCallgFfi(arglist, descr, VA_3_FIXED_ARGS, RTN_INT32);
 #else
   status = (int)(intptr_t)LibCallg(arglist, descr);
 #endif

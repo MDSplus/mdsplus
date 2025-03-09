@@ -437,7 +437,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
       called = 1;
 #ifdef MACOS_ARM64
       // Only called with TdiData() which is an intrinsic thus RTN_INT32
-      LibCallgFfi(arglist, routine, VARIADIC_1_FIX_ARGS, RTN_INT32);
+      LibCallgFfi(arglist, routine, VA_1_FIXED_ARG, RTN_INT32);
 #else
       LibCallg(arglist, routine);
 #endif
@@ -449,7 +449,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
     status = DEV$_CAM_NOSQ;
   if (arglist && !called)
 #ifdef MACOS_ARM64
-    LibCallgFfi(arglist, routine, VARIADIC_1_FIX_ARGS, RTN_INT32);
+    LibCallgFfi(arglist, routine, VA_1_FIXED_ARG, RTN_INT32);
 #else
     LibCallg(arglist, routine);
 #endif

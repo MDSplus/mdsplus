@@ -988,7 +988,7 @@ JNIEXPORT jobject JNICALL Java_mdsdata_Data_compileWithArgs(
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
 #ifdef MACOS_ARM64
-  LibCallgFffi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+  LibCallgFffi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
 #else
   LibCallg(arglist, TdiCompile);
 #endif

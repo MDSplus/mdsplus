@@ -20,9 +20,9 @@ extern void *LibCallg();
 extern void *LibCallgFfi();
 enum LibCallgFfiArgs {
     NOT_VARIADIC = 0,
-    VARIADIC_1_FIX_ARGS = 1,
-    VARIADIC_2_FIX_ARGS = 2,
-    VARIADIC_3_FIX_ARGS = 3
+    VA_1_FIXED_ARG = 1,
+    VA_2_FIXED_ARGS = 2,
+    VA_3_FIXED_ARGS = 3
 };
 enum LibCallgFfiRtype { 
     RTN_NONE = 0, 

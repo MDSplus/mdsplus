@@ -381,7 +381,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
   arglist[argidx++] = MdsEND_ARG;
   *(long *)&arglist[0] = argidx;
 #ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VARIADIC_1_FIX_ARGS, RTN_INT32);
+  status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VA_1_FIXED_ARG, RTN_INT32);
 #else
   status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 #endif
@@ -631,7 +631,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx;
 #ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VARIADIC_1_FIX_ARGS, RTN_INT32);
+    status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
 #else
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 #endif
