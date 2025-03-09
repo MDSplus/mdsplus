@@ -225,7 +225,7 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
       case 1:
         TRUE;
         // Is RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
-        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), VARIADIC_1_FIX_ARGS, RTN_POINTER)};
+        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), VA_1_FIXED_ARG, RTN_POINTER)};
         MdsCopyDxXd((struct descriptor *)&out1, out_ptr);
         break;
 #endif
