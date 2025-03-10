@@ -114,7 +114,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--relative-def',
-    default='\CMOD::TOP.ELECTRONS.ECE',
+    default='\\CMOD::TOP.ELECTRONS.ECE',
     help='An expression to change the default position in the tree'
 )
 
@@ -132,7 +132,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--reset-def',
-    default='\CMOD::TOP',
+    default='\\CMOD::TOP',
     help='An expression to reset the default position to the top of the tree'
 )
 
@@ -157,7 +157,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--wildcard-value',
-    default='\CMOD::TOP.DNB.MIT_CXRS:CPLD_START',
+    default='\\CMOD::TOP.DNB.MIT_CXRS:CPLD_START',
     help='The value of evaluating the --wildcard expression, ignoring leading/trailing whitespace'
 )
 
@@ -447,11 +447,11 @@ mdsopen('{args.write_tree}', {args.write_shot});
 mdsput('A_TEXT', ' "string_a" ');
 mdsput('B_NUM', '22');
 mdsput('C_SIGNAL', 'build_signal([10,-10,5,-5,0],[10.2,-10.2,5.4,-5.4,0.0], [0 .. 4])');
-mdsput('\TOP.SUBTREE_1:D_TEXT', ' "string_d" ');
+mdsput('\\TOP.SUBTREE_1:D_TEXT', ' "string_d" ');
 mdsput('SUBTREE_1.E_UNITS', 'build_with_units(55, "volts")');
 mdstcl('set def SUBTREE_1');
 mdsput('.-.SUBTREE_2:F_NUM', '66');
-mdsput('\TAG_G', '77');
+mdsput('\\TAG_G', '77');
 mdsclose();
          
 mdsopen('{args.write_tree}', {args.write_shot});
@@ -484,8 +484,8 @@ volts
 ''')
 
 
-## ---------------------------------------------------------------------
-## test type conversion from/to MATLAB
+# ---------------------------------------------------------------------
+# test type conversion from/to MATLAB
 matlab_test(f'''
 
 addpath('../');
