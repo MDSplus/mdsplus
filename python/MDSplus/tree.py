@@ -777,17 +777,31 @@ class Tree(object):
                     _TreeShr._TreeSetSubtree(self.ctx, nid))
         return TreeNode(nid.value, self)
 
-    def createPulse(self, shot):
+    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
         """Create pulse.
+    
         @param shot: Shot number to create
         @type shot: int
+        @param copy_only_this: Logical flag, defaults to False
+        @type copy_only_this: int
+        @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
+        @type node_or_nid: int or MDSplus.tree.TreeNode
         @rtype: None
         """
+
+        if isinstance(node_or_nid, TreeNode):
+            node_or_nid = node_or_nid.getNid()  # Extract node ID
+    
+        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
+
         _exc.checkStatus(
-            _TreeShr._TreeCreatePulseFile(self.ctx,
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(0),
-                                          _C.c_void_p(0)))
+            _TreeShr._TreeCreatePulseFile(
+                self.ctx,
+                _C.c_int32(int(shot)),
+                _C.c_int32(int(copy_only_this)),
+                nid_pointer
+            )
+        )
 
     def deleteNode(self, wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
