@@ -208,24 +208,24 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
       char *dup = strdup(entry.pointer);  // The routine's name  
       char *token = strtok(dup, "#");
       token = strtok(NULL, "#");
-      int num_fixed_args = 0;
+      int num_fixed_args = MDS_BYPASS_FFI;
       if (token != NULL) {
         num_fixed_args = atoi(token);
       }
       free(dup);
-#ifndef MACOS_ARM64
-      num_fixed_args = 0;  // zero means no varags on this function
+#ifndef MDSPLUS_USE_FFI
+      num_fixed_args = MDS_BYPASS_FFI;  // zero means no varags on this function
 #endif
 
       // Depending on the external function being called, additional "case" clauses might be required.
       // Use of TRUE is because case must start with a statement.
       // Struct declaration can't be declared here because it would evaluate the LibCallg*() prematurely.
       switch(num_fixed_args) {
-#ifdef MACOS_ARM64  
+#ifdef MDSPLUS_USE_FFI  
       case 1:
         TRUE;
-        // Is RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
-        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), VA_1_FIXED_ARG, RTN_POINTER)};
+        // Is MDS_FFI_RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
+        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), 1, MDS_FFI_RTN_POINTER)};
         MdsCopyDxXd((struct descriptor *)&out1, out_ptr);
         break;
 #endif
