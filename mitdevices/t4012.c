@@ -438,7 +438,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
       called = 1;
       assert(routine == &TdiData);
       // Only called with TdiData() which is an intrinsic thus MDS_FFI_RTN_INT32
-      LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
+      status = LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
     } else
       DevWait((float).001);
     piomem(17, 0, &data, memsize);
@@ -446,7 +446,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   if (try == 30)
     status = DEV$_CAM_NOSQ;
   if (arglist && !called) {
-    LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
+    status = LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
   }
   return status;
 }
