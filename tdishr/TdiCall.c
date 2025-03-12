@@ -151,8 +151,8 @@ int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
   if (STATUS_OK)
     status = TdiData(list[1], &entry MDS_END_ARG);
  
-    // Given "<function_name>#<num_fixed_args>" extract just the function name
-    if (STATUS_OK) {
+  // Given "<function_name>#<num_fixed_args>" extract just the function name
+  if (STATUS_OK) {
     char *c_entry = MdsDescrToCstring(entry.pointer);
     char *hash_ptr =strrchr(c_entry, '#');
     if (hash_ptr == NULL) {
