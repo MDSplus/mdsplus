@@ -72,11 +72,11 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   {
   case DTYPE_MISSING:
     *max = 0;
-#ifdef MACOS_ARM64
-    if (num_fixed_args == NOT_VARIADIC) {
+#ifdef MDSPLUS_USE_FFI
+    if (num_fixed_args == MDS_BYPASS_FFI) {
       LibCallg(newdsc, routine);
     } else {
-      LibCallgFfi(newdsc, routine, num_fixed_args, RTN_NONE);
+      LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_VOID);
     }
 #else
     LibCallg(newdsc, routine);
@@ -89,11 +89,11 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(void *);
     void **result_p = (void *)result;
     void *(*called_p)() = (void *(*)())LibCallg; 
-#ifdef MACOS_ARM64
-    if (num_fixed_args == NOT_VARIADIC) {
+#ifdef MDSPLUS_USE_FFI
+    if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_p = called_p(newdsc, routine);
     } else {
-      *result_p =  (void *) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_POINTER);
+      *result_p =  (void *) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_POINTER);
     }
 #else
     *result_p = called_p(newdsc, routine);
@@ -109,11 +109,11 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int64_t);
     int64_t *result_q = (int64_t *)result;
     int64_t (*called_q)() = (int64_t(*)())LibCallg; 
-#ifdef MACOS_ARM64
-    if (num_fixed_args == NOT_VARIADIC) {
+#ifdef MDSPLUS_USE_FFI
+    if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_q = called_q(newdsc, routine);
     } else {
-      *result_q =  (int64_t) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_INT64);
+      *result_q =  (int64_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT64);
     }
 #else
     *result_q = called_q(newdsc, routine);
@@ -126,11 +126,11 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int32_t);
     int32_t *result_int = (int32_t *)result;
     int32_t (*called_int)() = (int32_t(*)())LibCallg; 
-#ifdef MACOS_ARM64
-    if (num_fixed_args == NOT_VARIADIC) {
+#ifdef MDSPLUS_USE_FFI
+    if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_int = called_int(newdsc, routine);
     } else {
-      *result_int =  (int32_t) LibCallgFfi(newdsc, routine, num_fixed_args, RTN_INT32);
+      *result_int =  (int32_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT32);
     }
 #else
     *result_int = called_int(newdsc, routine);
@@ -214,13 +214,13 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   char *dup = strdup(list[1]->pointer);
   char *token = strtok(dup, "#");
   token = strtok(NULL, "#");
-  int num_fixed_args = NOT_VARIADIC;
+  int num_fixed_args = MDS_BYPASS_FFI;
   if (token != NULL) {
     num_fixed_args = atoi(token);
   }
   free(dup);
-  #ifndef MACOS_ARM64
-    num_fixed_args = NOT_VARIADIC;  // bypasses libFFI for all other platforms
+  #ifndef MDSPLUS_USE_FFI
+  num_fixed_args = MDS_BYPASS_FFI;  // bypasses libFFI for all other platforms
   #endif
   
   *(int *)&newdsc[0] = narg - 2;
