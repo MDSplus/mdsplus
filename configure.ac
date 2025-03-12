@@ -1232,6 +1232,13 @@ AH_VERBATIM([MACOS_ARM64],[
 #endif
 ])
 
+AH_VERBATIM([MDSPLUS_USE_FFI],[
+// List of platforms that need libffi for variadic functions.
+#if defined(MACOS_ARM64)
+#define MDSPLUS_USE_FFI
+#endif  
+])
+
 dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM(
 #endif // _MSC_VER else
