@@ -152,9 +152,10 @@ EXPORT char *TreePath(char const *tree, char *tree_lower_out)
 
 static char *ReplaceAliasTrees(char *tree_in)
 {
+  char * saveptr = NULL;
   size_t buflen = strlen(tree_in) + 1;
   char *ans = calloc(1, buflen);
-  char *tree = strtok(tree_in, ",");
+  char *tree = strtok_r(tree_in, ",", &saveptr);
   size_t i;
   while (tree)
   {
@@ -175,7 +176,7 @@ static char *ReplaceAliasTrees(char *tree_in)
       strcat(ans, tree);
     }
     free(treepath);
-    tree = strtok(0, ",");
+    tree = strtok_r(0, ",", &saveptr);
   }
   free(tree_in);
   for (i = 0; i < buflen; ++i)

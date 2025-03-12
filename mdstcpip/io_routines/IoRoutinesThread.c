@@ -36,17 +36,16 @@ static int io_disconnect(Connection *c)
   io_pipes_t *p = get_pipes(c);
   if (p && p->pth != PARENT_THREAD)
   {
-#ifdef _WIN32
     close_pipe(p->in);
     close_pipe(p->out);
+
+#ifdef _WIN32
     if (WaitForSingleObject(p->pid, 100) == WAIT_TIMEOUT)
       TerminateThread(p->pid, 0);
     CloseHandle(p->pid);
 #else
     pthread_cancel(p->pth);
     pthread_join(p->pth, NULL);
-    close_pipe(p->in);
-    close_pipe(p->out);
 #endif
   }
   return C_OK;
