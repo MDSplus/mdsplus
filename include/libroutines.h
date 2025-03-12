@@ -16,21 +16,24 @@
 /// defined in MdsShr.so
 
 extern void *LibCallg();
-#ifdef MACOS_ARM64
+
+// The following define must be available on all platforms, thus cannot be inside the MDSPLUS_USE_FFI ifdef
+#define MDS_BYPASS_FFI 0
+#ifdef MDSPLUS_USE_FFI
 extern void *LibCallgFfi();
-enum LibCallgFfiArgs {
-    NOT_VARIADIC = 0,
-    VA_1_FIXED_ARG = 1,
-    VA_2_FIXED_ARGS = 2,
-    VA_3_FIXED_ARGS = 3
-};
-enum LibCallgFfiRtype { 
-    RTN_NONE = 0, 
-    RTN_POINTER = 1, 
-    RTN_INT32 = 2,
-    RTN_INT64 = 3
+enum MDS_FFI_Rtype { 
+    MDS_FFI_RTN_VOID = 0, 
+    MDS_FFI_RTN_POINTER = 1, 
+    MDS_FFI_RTN_INT32 = 2,
+    MDS_FFI_RTN_INT64 = 3
 };
 #endif
+#ifdef MDSPLUS_USE_FFI
+#define LIB_CALL_G(args, routine, fixed, rtype) (int)(intptr_t)LibCallgFfi(args, routine, fixed, rtype)
+#else
+#define LIB_CALL_G(args, routine, fixed, rtype) (int)(intptr_t)LibCallg(args, routine)
+#endif
+
 extern int LibCreateVmZone(ZoneList **const zone);
 extern int LibDeleteVmZone(ZoneList **const zone);
 extern int LibResetVmZone(ZoneList **const zone);

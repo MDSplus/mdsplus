@@ -640,11 +640,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-#ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VA_1_FIXED_ARG, RTN_INT32);
-#else
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
-#endif
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -902,11 +898,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-#ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TdiExecute, VA_1_FIXED_ARG, RTN_INT32);
-#else
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
-#endif
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -1070,11 +1062,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-#ifdef MACOS_ARM64
-      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-#endif
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1217,11 +1205,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-#ifdef MACOS_ARM64
-      status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-#endif
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1350,11 +1334,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   va_end(incrmtr);
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, descr, VA_3_FIXED_ARGS, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, descr);
-#endif
+  status = LIB_CALL_G(arglist, descr, 3, MDS_FFI_RTN_INT32);
   return (&status);
 }
 #endif

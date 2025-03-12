@@ -1441,11 +1441,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-#endif
+  status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -1557,11 +1553,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-#endif
+  status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -2243,11 +2235,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiCompile, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
-#endif
+  status = LIB_CALL_G(arglist, _TdiCompile, 2, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2303,11 +2291,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiExecute, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, _TdiExecute);
-#endif
+  status = LIB_CALL_G(arglist, _TdiExecute, 2, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2347,11 +2331,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_data(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiData, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, _TdiData);
-#endif
+  status = LIB_CALL_G(arglist, _TdiData, 2, MDS_FFI_RTN_INT32);
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {
@@ -2390,11 +2370,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_evaluate(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
-#ifdef MACOS_ARM64
-  status = (int)(intptr_t)LibCallgFfi(arglist, _TdiEvaluate, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-  status = (int)(intptr_t)LibCallg(arglist, _TdiEvaluate);
-#endif
+  status = LIB_CALL_G(arglist, _TdiEvaluate, 2, MDS_FFI_RTN_INT32);
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {

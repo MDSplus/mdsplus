@@ -497,19 +497,11 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
 
   if (ctx)
   {
-#ifdef MACOS_ARM64
-    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, _TdiCompile, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-    status = *retStatus = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
-#endif
+    status = *retStatus = LIB_CALL_G(arglist, _TdiCompile, 2, MDS_FFI_RTN_INT32);
   }
   else
   {
-#ifdef MACOS_ARM64
-    status = *retStatus = (int)(intptr_t)LibCallgFfi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-    status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-#endif
+    status = *retStatus = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   }
   if (STATUS_NOT_OK)
     return NULL;

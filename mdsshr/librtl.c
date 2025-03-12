@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
 #include <mdsshr.h>
 #include <_mdsshr.h>
 
@@ -62,11 +63,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include "mdsthreadstatic.h"
 
-#ifdef MACOS_ARM64
+#ifdef MDSPLUS_USE_FFI
 #include <ffi.h>
 #endif
 
 #define LIBRTL_SRC
+
+#define LIBCALLG_MAX_ARGS  32
 
 typedef struct
 {
@@ -285,23 +288,32 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
 }
 
 
-#ifdef MACOS_ARM64
+#ifdef MDSPLUS_USE_FFI
 EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed_args, int rtype)
 {
-  if (!routine)
-    abort(); // intercept definite stack corruption
+  assert(routine);  // in DEBUG mode checks for stack corruption
 
+  // The "a" parameter is the arglist for the "routine" and contains the following:
+  // arglist[0]        = N (total number of args excluding first and last elements of vector)
+  // arglist[1]        = expression
+  // arglist[2 .. N-1] = variable args (pointer to descriptors)
+  // arglist[N]        = result xd1 descriptor
+  // arglist[N+1]      = NULL 
   int num_args = *(int *)a & 0xff;
-  
-  if (num_fixed_args > 0) {
-    enum { SIZE = 32 };
-    ffi_cif cif;
-    ffi_type *arg_types[SIZE];
-    void *values[SIZE];
-    void *myresult;
 
-    if ((num_args > SIZE) || (num_fixed_args > SIZE)) {
-      printf("Error - currently no more than 32 arguments supported on external calls\n");
+  // Usually the check for non-variadic routines,and the associated call of LibCallg(), is
+  // done prior to calling this function.
+  if (num_fixed_args == MDS_BYPASS_FFI) {
+    return LibCallg(a, routine);
+
+  } else {
+    ffi_cif cif;
+    ffi_type *arg_types[LIBCALLG_MAX_ARGS];
+    void *values[LIBCALLG_MAX_ARGS];
+    void *result;
+
+    if ((num_args > LIBCALLG_MAX_ARGS) || (num_fixed_args > LIBCALLG_MAX_ARGS)) {
+      printf("Error - currently no more than %d arguments supported on external calls\n", LIBCALLG_MAX_ARGS);
       return 0;
     }
 
@@ -318,16 +330,16 @@ EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed
 
     ffi_status prep_stat;
     switch(rtype) {
-    case RTN_NONE:
+    case MDS_FFI_RTN_VOID:
       prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_void, arg_types);      
       break;
-    case RTN_POINTER:
+    case MDS_FFI_RTN_POINTER:
       prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_pointer, arg_types); 
       break;
-    case RTN_INT32:
+    case MDS_FFI_RTN_INT32:
       prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint32, arg_types); 
       break;
-    case RTN_INT64:
+    case MDS_FFI_RTN_INT64:
       prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint64, arg_types); 
       break;
     default:
@@ -335,18 +347,14 @@ EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed
       break;
     }
     if (prep_stat == FFI_OK) {
-      ffi_call(&cif, (void (*)(void))routine, &myresult, values);
-      if (rtype != RTN_NONE) {
-        return myresult;
+      ffi_call(&cif, (void (*)(void))routine, &result, values);
+      if (rtype != MDS_FFI_RTN_VOID) {
+        return result;
       }
     }
-
-  // Num_fixed_args = 0 denotes a non-variadic function.   Usually, the check 
-  // for non-variadic is done prior to calling this routine.  
-  } else {
-    return LibCallg(a, routine);
   }
-  return 0; // should never reach this
+  assert(FALSE); // should never reach this, triggers abort in DEBUG mode
+  return 0;
 }
 #endif
 

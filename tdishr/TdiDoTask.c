@@ -96,11 +96,7 @@ static int Doit(struct descriptor_routine *ptask,
     status = TdiData(pmethod->method, &method_d MDS_END_ARG);
     if (STATUS_OK)
       status = TdiGetNid(pmethod->object, &nid);
-#ifdef MACOS_ARM64
-    status = (int)(intptr_t)LibCallgFfi(arglist, TreeDoMethod, VA_2_FIXED_ARGS, RTN_INT32);
-#else
-    status = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
-#endif
+    status = LIB_CALL_G(arglist, TreeDoMethod, 2, MDS_FFI_RTN_INT32);
     FREED_NOW(&method_d);
     status = TdiPutLong(&status, out_ptr);
     break;

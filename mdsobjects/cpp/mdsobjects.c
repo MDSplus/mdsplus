@@ -987,11 +987,7 @@ JNIEXPORT jobject JNICALL Java_mdsdata_Data_compileWithArgs(
   arglist[varIdx++] = (struct descriptor *)&outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-#ifdef MACOS_ARM64
-  LibCallgFffi(arglist, TdiCompile, VA_1_FIXED_ARG, RTN_INT32);
-#else
-  LibCallg(arglist, TdiCompile);
-#endif
+  LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   for (i = 0; i < argLen; i++)
     freeDescrip(arglist[2 + i]);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
