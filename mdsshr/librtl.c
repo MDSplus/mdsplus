@@ -168,9 +168,17 @@ EXPORT char *Now32(char *const buf)
 ///
 EXPORT void *LibCallg(void **const a, void *(*const routine)())
 {
-  if (!routine)
-    abort(); // intercept definite stack corruption
-  switch (*(int *)a & 0xff)
+  assert(routine);  // in DEBUG mode checks for stack corruption
+
+  // The "a" parameter is the arglist for the "routine" and contains the following:
+  // arglist[0]        = N (total number of args excluding first and last elements of vector)
+  // arglist[1]        = expression
+  // arglist[2 .. N-1] = variable args (pointer to descriptors)
+  // arglist[N]        = result xd1 descriptor
+  // arglist[N+1]      = NULL 
+  int num_args = *(int *)a & 0xff;
+
+  switch (num_args)
   {
   case 0:
     return routine();
@@ -281,8 +289,7 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
                    a[19], a[20], a[21], a[22], a[23], a[24], a[25], a[26],
                    a[27], a[28], a[29], a[30], a[31], a[32]);
   default:
-    printf("Error - currently no more than 32 arguments supported on external "
-           "calls\n");
+    printf("Error - currently no more than %d arguments supported on external calls\n", LIBCALLG_MAX_ARGS);
   }
   return 0;
 }
