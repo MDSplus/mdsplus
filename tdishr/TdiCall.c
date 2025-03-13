@@ -72,15 +72,13 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   {
   case DTYPE_MISSING:
     *max = 0;
-#ifdef MDSPLUS_USE_FFI
     if (num_fixed_args == MDS_BYPASS_FFI) {
       LibCallg(newdsc, routine);
     } else {
+#ifdef MDSPLUS_USE_FFI
       LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_VOID);
-    }
-#else
-    LibCallg(newdsc, routine);
 #endif
+    }
     break;
   case DTYPE_C:
   case DTYPE_T:
@@ -89,15 +87,13 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(void *);
     void **result_p = (void *)result;
     void *(*called_p)() = (void *(*)())LibCallg; 
-#ifdef MDSPLUS_USE_FFI
     if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_p = called_p(newdsc, routine);
     } else {
+#ifdef MDSPLUS_USE_FFI
       *result_p =  (void *) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_POINTER);
-    }
-#else
-    *result_p = called_p(newdsc, routine);
 #endif
+    }
     break;
   case DTYPE_D:
   case DTYPE_G:
@@ -109,15 +105,13 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int64_t);
     int64_t *result_q = (int64_t *)result;
     int64_t (*called_q)() = (int64_t(*)())LibCallg; 
-#ifdef MDSPLUS_USE_FFI
     if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_q = called_q(newdsc, routine);
     } else {
+#ifdef MDSPLUS_USE_FFI
       *result_q =  (int64_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT64);
-    }
-#else
-    *result_q = called_q(newdsc, routine);
 #endif
+    }
     break;
   // case DTYPE_F:
   // case DTYPE_FS:
@@ -126,15 +120,13 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int32_t);
     int32_t *result_int = (int32_t *)result;
     int32_t (*called_int)() = (int32_t(*)())LibCallg; 
-#ifdef MDSPLUS_USE_FFI
     if (num_fixed_args == MDS_BYPASS_FFI) {
       *result_int = called_int(newdsc, routine);
     } else {
+#ifdef MDSPLUS_USE_FFI
       *result_int =  (int32_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT32);
-    }
-#else
-    *result_int = called_int(newdsc, routine);
 #endif
+    }
     break;
   }
   return 1;
