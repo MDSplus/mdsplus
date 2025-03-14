@@ -205,35 +205,47 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
     if (STATUS_OK)
     {
 
-      char *dup = strdup(entry.pointer);  // The routine's name  
+      char *dup = strdup(entry.pointer);  // The routine's name
       char *token = strtok(dup, "#");
       token = strtok(NULL, "#");
-      int num_fixed_args = MDS_BYPASS_FFI;
+      int bypass_ffi = TRUE;
+      int num_fixed_args = 0;
       if (token != NULL) {
         num_fixed_args = atoi(token);
       }
+      if (num_fixed_args != 0) {
+        bypass_ffi = FALSE;
+      }
       free(dup);
 #ifndef MDSPLUS_USE_FFI
-      num_fixed_args = MDS_BYPASS_FFI;  // zero means no varags on this function
+      bypass_ffi = TRUE;  // for Linux, Windows, and MacOS(Intel)
 #endif
+
+      if (bypass_ffi) {
+        struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallg(&new[0], (routine))}; 
+        MdsCopyDxXd((struct descriptor *)&out, out_ptr);
 
       // Depending on the external function being called, additional "case" clauses might be required.
       // Use of TRUE is because case must start with a statement.
       // Struct declaration can't be declared here because it would evaluate the LibCallg*() prematurely.
-      switch(num_fixed_args) {
-#ifdef MDSPLUS_USE_FFI  
-      case 1:
-        TRUE;
-        // Is MDS_FFI_RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
-        struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), 1, MDS_FFI_RTN_POINTER)};
-        MdsCopyDxXd((struct descriptor *)&out1, out_ptr);
-        break;
-#endif
-      default:
-        TRUE;
-        struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallg(&new[0], (routine))}; 
-        MdsCopyDxXd((struct descriptor *)&out, out_ptr);
-        break;
+      // (MW) TODO: If it is decided to implement this WIP, then this code needs to be refactored for clarity,
+      // and edge cases need to be handled.
+      } else {
+        switch(num_fixed_args) {
+  #ifdef MDSPLUS_USE_FFI  
+        case 1:
+          TRUE;
+          // Is MDS_FFI_RTN_POINTER correct here?   Chose that because the descriptor is DTYPE_POINTER.
+          struct descriptor_s out1 = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallgFfi(&new[0], (routine), 1, MDS_FFI_RTN_POINTER)};
+          MdsCopyDxXd((struct descriptor *)&out1, out_ptr);
+          break;
+  #endif
+        default:
+          TRUE;
+          struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S, LibCallg(&new[0], (routine))}; 
+          MdsCopyDxXd((struct descriptor *)&out, out_ptr);
+          break;
+        }
       }
     }
     pthread_cleanup_pop(1);
