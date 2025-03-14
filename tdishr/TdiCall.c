@@ -65,14 +65,14 @@ extern int tdi_put_ident();
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    static inline int interlude(dtype_t rtype, int num_fixed_args, mdsdsc_t **newdsc,
+    static inline int interlude(dtype_t rtype, int bypass_ffi, int num_fixed_args, mdsdsc_t **newdsc,
                                 int (*routine)(), void **result, int *max)
 {
   switch (rtype)
   {
   case DTYPE_MISSING:
     *max = 0;
-    if (num_fixed_args == MDS_BYPASS_FFI) {
+    if (bypass_ffi) {
       LibCallg(newdsc, routine);
     } else {
 #ifdef MDSPLUS_USE_FFI
@@ -87,7 +87,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(void *);
     void **result_p = (void *)result;
     void *(*called_p)() = (void *(*)())LibCallg; 
-    if (num_fixed_args == MDS_BYPASS_FFI) {
+    if (bypass_ffi) {
       *result_p = called_p(newdsc, routine);
     } else {
 #ifdef MDSPLUS_USE_FFI
@@ -105,7 +105,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int64_t);
     int64_t *result_q = (int64_t *)result;
     int64_t (*called_q)() = (int64_t(*)())LibCallg; 
-    if (num_fixed_args == MDS_BYPASS_FFI) {
+    if (bypass_ffi) {
       *result_q = called_q(newdsc, routine);
     } else {
 #ifdef MDSPLUS_USE_FFI
@@ -120,7 +120,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     *max = sizeof(int32_t);
     int32_t *result_int = (int32_t *)result;
     int32_t (*called_int)() = (int32_t(*)())LibCallg; 
-    if (num_fixed_args == MDS_BYPASS_FFI) {
+    if (bypass_ffi) {
       *result_int = called_int(newdsc, routine);
     } else {
 #ifdef MDSPLUS_USE_FFI
@@ -199,20 +199,24 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   char result[8] = {0}; // we need up to 8 bytes
   unsigned short code;
   mdsdsc_t dx = {0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result};
-  unsigned char origin[255];   // (MW) TODO: Should this be 256?
-  mdsdsc_t *newdsc[256] = {0};
+  unsigned char origin[255];
+  mdsdsc_t *newdsc[256] = {0};  // one bigger than origin because also has descriptor for result
 
   // Given "<function_name>#<num_fixed_args>" extract just the number of fixed args
   char *dup = strdup(list[1]->pointer);
   char *token = strtok(dup, "#");
   token = strtok(NULL, "#");
-  int num_fixed_args = MDS_BYPASS_FFI;
+  int bypass_ffi = TRUE;
+  int num_fixed_args = 0;
   if (token != NULL) {
     num_fixed_args = atoi(token);
   }
+  if (num_fixed_args != 0) {
+    bypass_ffi = FALSE;
+  }
   free(dup);
   #ifndef MDSPLUS_USE_FFI
-  num_fixed_args = MDS_BYPASS_FFI;  // bypasses libFFI for all other platforms
+  bypass_ffi = TRUE;  // for Linux, Windows and MacOS(Intel)
   #endif
   
   *(int *)&newdsc[0] = narg - 2;
@@ -296,7 +300,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
     }
   }
   if (STATUS_OK)
-    status = interlude(rtype, num_fixed_args, newdsc, routine, (void **)result, &max);
+    status = interlude(rtype, bypass_ffi, num_fixed_args, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if (STATUS_OK)

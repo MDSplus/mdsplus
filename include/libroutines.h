@@ -17,8 +17,6 @@
 
 extern void *LibCallg();
 
-// The following define must be available on all platforms, thus cannot be inside the MDSPLUS_USE_FFI ifdef
-#define MDS_BYPASS_FFI 0
 #ifdef MDSPLUS_USE_FFI
 extern void *LibCallgFfi();
 enum MDS_FFI_Rtype { 

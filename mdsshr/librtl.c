@@ -303,7 +303,7 @@ EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed
 
   // Usually the check for non-variadic routines,and the associated call of LibCallg(), is
   // done prior to calling this function.
-  if (num_fixed_args == MDS_BYPASS_FFI) {
+  if (num_fixed_args == 0) {
     return LibCallg(a, routine);
 
   } else {
@@ -312,13 +312,13 @@ EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed
     void *values[LIBCALLG_MAX_ARGS];
     void *result;
 
-    if ((num_args > LIBCALLG_MAX_ARGS) || (num_fixed_args > LIBCALLG_MAX_ARGS)) {
+    if (num_args > LIBCALLG_MAX_ARGS) {
       printf("Error - currently no more than %d arguments supported on external calls\n", LIBCALLG_MAX_ARGS);
       return 0;
     }
 
-    if (num_args < num_fixed_args) {
-      printf("Error - not enough arguments supplied to the external call\n");
+    if ((num_fixed_args < 1) || (num_fixed_args > num_args)) {
+      printf("Error - number of 'fixed' arguments must be in the range 1 through %d\n", num_args);
       return 0;
     }
 
