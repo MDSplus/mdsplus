@@ -390,7 +390,7 @@ case "$host" in
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/win32";;
 
-*86*linux*)
+*86*linux*|*64*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
@@ -403,7 +403,12 @@ case "$host" in
            D64=""
          fi
          SYB64=$D64
-         TARGET_ARCH="-m64"
+         if ( echo $host| grep aarch > /dev/null )
+         then
+           TARGET_ARCH=""
+         else
+           TARGET_ARCH="-m64"
+         fi
          UILCMD=uil
          uiddir="${uiddir}${D64}"
          MAKELIBDIR="\$(top_builddir)/lib${D64}/"

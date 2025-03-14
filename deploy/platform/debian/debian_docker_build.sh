@@ -21,6 +21,11 @@ case "${ARCH}" in
   gsi_param="--with-gsi=/usr:gcc64"
   bits=64
   ;;
+"arm64")
+  host=aarch64-linux
+  gsi_param="--with-gsi=/usr:gcc64"
+  bits=64
+  ;;
 "armhf")
   host=arm-linux-gnueabihf
   gsi_param="--with-gsi=/usr:gcc32"
