@@ -289,13 +289,17 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
 
 
 #ifdef MDSPLUS_USE_FFI
+// This routine can call many external functions, but not all.
+// Each parameter can be passed by reference or by value.
+// However call-by-value must have a "size" that fits in a pointer.
+// If the external function does not fit that constraint, users will have to write a shim function.
 EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed_args, int rtype)
 {
   assert(routine);  // in DEBUG mode checks for stack corruption
 
   // The "a" parameter is the arglist for the "routine" and contains the following:
   // arglist[0]        = N (total number of args excluding first and last elements of vector)
-  // arglist[1]        = expression
+  // arglist[1]        = expression for TDI intrinsics, otherwise an ordinary arg
   // arglist[2 .. N-1] = variable args (pointer to descriptors)
   // arglist[N]        = result xd1 descriptor
   // arglist[N+1]      = NULL 
