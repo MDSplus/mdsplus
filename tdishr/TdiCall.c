@@ -151,11 +151,10 @@ int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
     if (hash_ptr == NULL) {
       status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
     } else {
-      char *dup_entry = strdup(strtok(c_entry, "#"));
-      new_entry.length = strlen(dup_entry);
-      new_entry.pointer = dup_entry;
+      *hash_ptr = '\0';
+      new_entry.length = strlen(c_entry);
+      new_entry.pointer = c_entry;
       status = TdiFindImageSymbol(image.pointer, &new_entry, proutine);
-      free(dup_entry);
     }
     free(c_entry);
   }
@@ -204,18 +203,18 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   mdsdsc_t *newdsc[256] = {0};  // one bigger than origin because also has descriptor for result
 
   // Given "<function_name>#<num_fixed_args>" extract just the number of fixed args
-  char *dup = strdup(list[1]->pointer);
-  char *token = strtok(dup, "#");
-  token = strtok(NULL, "#");
+  char *entry_dup = strdup(list[1]->pointer);
+  char *hash_ptr = strrchr(entry_dup, '#');
   int bypass_ffi = TRUE;
   int num_fixed_args = 0;
-  if (token != NULL) {
-    num_fixed_args = atoi(token);
+  if (hash_ptr != NULL) {
+    hash_ptr++;
+    num_fixed_args = atoi(hash_ptr);
   }
   if (num_fixed_args != 0) {
     bypass_ffi = FALSE;
   }
-  free(dup);
+  free(entry_dup);
   #ifndef MDSPLUS_USE_FFI
   bypass_ffi = TRUE;  // for Linux, Windows and MacOS(Intel)
   #endif
