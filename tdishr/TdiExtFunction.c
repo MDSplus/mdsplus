@@ -204,19 +204,19 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
        *************************/
     if (STATUS_OK)
     {
-
-      char *dup = strdup(entry.pointer);  // The routine's name
-      char *token = strtok(dup, "#");
-      token = strtok(NULL, "#");
+      
+      char *entry_dup = strdup(entry.pointer);  // The routine's name
+      char *hash_ptr = strrchr(entry_dup, '#');
       int bypass_ffi = TRUE;
       int num_fixed_args = 0;
-      if (token != NULL) {
-        num_fixed_args = atoi(token);
+      if (hash_ptr != NULL) {
+        hash_ptr++;
+        num_fixed_args = atoi(hash_ptr);
       }
       if (num_fixed_args != 0) {
         bypass_ffi = FALSE;
       }
-      free(dup);
+      free(entry_dup);      
 #ifndef MDSPLUS_USE_FFI
       bypass_ffi = TRUE;  // for Linux, Windows, and MacOS(Intel)
 #endif
