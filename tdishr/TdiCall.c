@@ -65,7 +65,8 @@ extern int tdi_put_ident();
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    static inline int interlude(dtype_t rtype, int bypass_ffi, int num_fixed_args, mdsdsc_t **newdsc,
+    // num_fixed_args is unused on all platforms except those that use libffi
+    static inline int interlude(dtype_t rtype, int bypass_ffi, __attribute__((unused)) int num_fixed_args, mdsdsc_t **newdsc,
                                 int (*routine)(), void **result, int *max)
 {
   switch (rtype)
