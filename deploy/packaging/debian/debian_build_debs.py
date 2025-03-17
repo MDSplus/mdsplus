@@ -98,6 +98,12 @@ def build():
     debs = list()
     for package in root.iter('package'):
         pkg = package.attrib['name']
+
+        # Skip unsupported packages
+        if info['arch'] in ['arm64'] and pkg in ['labview', 'labview_bin']:
+            print('Skipping', pkg)
+            continue
+
         if pkg == 'MDSplus':
             info['packagename'] = ""
         else:
