@@ -5,6 +5,7 @@ def OSList = [
     'ubuntu20',
     'ubuntu22',
     'ubuntu24',
+    'ubuntu24-arm64',
     'rhel7',
     'rhel8',
     'rhel9',
@@ -137,10 +138,6 @@ pipeline {
 
                                     stage("${OS} Bootstrap") {
                                         sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --dockernetwork=${network}"
-
-                                        if (OS.endsWith("armhf")) {
-                                            sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
-                                        }
                                     }
 
                                     stage("${OS} Test") {
