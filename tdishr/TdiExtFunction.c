@@ -219,7 +219,7 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
       }
       free(c_entry);      
 #else
-      bypass_ffi = TRUE;  // for Linux, Windows, and MacOS(Intel)
+      int bypass_ffi = TRUE;  // for Linux, Windows, and MacOS(Intel)
 #endif
 
       if (bypass_ffi) {
