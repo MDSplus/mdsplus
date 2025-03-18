@@ -147,7 +147,7 @@ int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
   // Given "<function_name>#<num_fixed_args>" extract just the function name
   if (STATUS_OK) {
     char *c_entry = MdsDescrToCstring(entry.pointer);
-    char *hash_ptr =strrchr(c_entry, '#');
+    char *hash_ptr = strrchr(c_entry, '#');
     if (hash_ptr == NULL) {
       status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
     } else {
@@ -202,9 +202,10 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   unsigned char origin[255];
   mdsdsc_t *newdsc[256] = {0};  // one bigger than origin because also has descriptor for result
 
+  #ifdef MDSPLUS_USE_FFI
   // Given "<function_name>#<num_fixed_args>" extract just the number of fixed args
-  char *entry_dup = strdup(list[1]->pointer);
-  char *hash_ptr = strrchr(entry_dup, '#');
+  char *c_entry = MdsDescrToCstring(list[1]);
+  char *hash_ptr = strrchr(c_entry, '#');
   int bypass_ffi = TRUE;
   int num_fixed_args = 0;
   if (hash_ptr != NULL) {
@@ -214,8 +215,8 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   if (num_fixed_args != 0) {
     bypass_ffi = FALSE;
   }
-  free(entry_dup);
-  #ifndef MDSPLUS_USE_FFI
+  free(c_entry);
+  #else
   bypass_ffi = TRUE;  // for Linux, Windows and MacOS(Intel)
   #endif
   
