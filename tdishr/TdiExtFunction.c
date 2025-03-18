@@ -204,9 +204,10 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
        *************************/
     if (STATUS_OK)
     {
-      
-      char *entry_dup = strdup(entry.pointer);  // The routine's name
-      char *hash_ptr = strrchr(entry_dup, '#');
+
+#ifdef MDSPLUS_USE_FFI
+      char *c_entry = MdsDescrToCstring(&entry);
+      char *hash_ptr = strrchr(c_entry, '#');
       int bypass_ffi = TRUE;
       int num_fixed_args = 0;
       if (hash_ptr != NULL) {
@@ -216,8 +217,8 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
       if (num_fixed_args != 0) {
         bypass_ffi = FALSE;
       }
-      free(entry_dup);      
-#ifndef MDSPLUS_USE_FFI
+      free(c_entry);      
+#else
       bypass_ffi = TRUE;  // for Linux, Windows, and MacOS(Intel)
 #endif
 
