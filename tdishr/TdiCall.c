@@ -218,6 +218,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   free(c_entry);
   #else
   int bypass_ffi = TRUE;  // for Linux, Windows and MacOS(Intel)
+  int num_fixed_args = 0;
   #endif
   
   *(int *)&newdsc[0] = narg - 2;
