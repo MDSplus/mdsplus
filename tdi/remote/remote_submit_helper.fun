@@ -20,17 +20,25 @@ public fun remote_submit_helper(_host,_file,_shot)
   if (_host == "any")
   {
     _queues = remote_submit_queues();
-    _stat = 0;
-    while (_stat == 0)
+
+    _start = cvttime();
+    _elapsed = 0;
+    _max_seconds = 300;
+    _invalid_id = -1;
+
+    /* Note that mdsconnect() returns a connection id, not a status code */
+    _stat = _invalid_id;
+    while ((_stat == _invalid_id) AND (_elapsed < _max_seconds))
     {
       _host = _queues[long(random()*size(_queues))];
       write(*,"Trying ",_host);
       _stat = mdsconnect(_host);
+      _elapsed = cvttime() - _start;
     }
   }
   else
     _stat=mdsconnect(_host);
-  if (_stat > 0)
+  if (_stat > _invalid_id)
   {
     _stat=mdsvalue('tcl("spawn/nowait unix_submit '//_file//' '//_shot//'")');
   } else {
