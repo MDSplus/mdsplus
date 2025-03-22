@@ -55,14 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-extern int TdiFaultHandler();
 extern int TdiData(mdsdsc_t *, ...);
 extern int TdiDoFun();
-extern int TdiGetLong();
-extern int TdiAllocated(mdsdsc_t *, ...);
-extern int tdi_put_ident();
-extern int TdiCompile(mdsdsc_t *, ...);
-extern int TdiEvaluate(mdsdsc_t *, ...);
 
 static const struct descriptor_d EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 
@@ -74,17 +68,6 @@ int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry,
 
 extern int TdiFindSymbol();
 
-struct _tmp
-{
-  int n;
-  struct descriptor_xd a[253];
-};
-static void tmp_cleanup(void *tmp_in)
-{
-  struct _tmp *tmp = (struct _tmp *)tmp_in;
-  for (; --tmp->n >= 0;)
-    MdsFree1Dx(&tmp->a[tmp->n], NULL);
-}
 int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
                     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -102,7 +85,6 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
   /**************************
   Quickly do known TDI functions.
   **************************/
-  int (*routine)();
   if (image.length == 0)
   {
     status =
@@ -117,7 +99,7 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
     status = MDSplusERROR;
   }
 
-  done:;
+done:;
   FREED_NOW(&entry);
   FREED_NOW(&image);
   return status;
