@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <stdint.h>
 #include <strroutines.h>
+#include <libroutines.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -42,7 +43,6 @@ extern int TdiExecute(mdsdsc_t *, ...);
 extern int TdiCompile(mdsdsc_t *, ...);
 extern int TdiData(mdsdsc_t *, ...);
 extern int TdiCvt(mdsdsc_t *, ...);
-extern void *LibCallg();
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
@@ -640,7 +640,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -898,7 +898,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -1062,7 +1062,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1205,7 +1205,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1334,7 +1334,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
   va_end(incrmtr);
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, descr);
+  status = LIB_CALL_G(arglist, descr, 3, MDS_FFI_RTN_INT32);
   return (&status);
 }
 #endif

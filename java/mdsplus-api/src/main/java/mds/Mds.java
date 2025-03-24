@@ -569,8 +569,8 @@ public abstract class Mds implements AutoCloseable
 		if (this.mds_end_arg == 0)
 			try
 			{
-				if (this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
-					this.mds_end_arg = 1;
+				if (this.getDescriptor("TdiShr->TdiPi#1(val(0),val(1))").toLong() == 1)
+				    this.mds_end_arg = 1;
 				else
 					this.mds_end_arg = -1;
 			}
