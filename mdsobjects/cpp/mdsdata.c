@@ -497,11 +497,11 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
 
   if (ctx)
   {
-    status = *retStatus = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
+    status = *retStatus = LIB_CALL_G(arglist, _TdiCompile, 2, MDS_FFI_RTN_INT32);
   }
   else
   {
-    status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+    status = *retStatus = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   }
   if (STATUS_NOT_OK)
     return NULL;

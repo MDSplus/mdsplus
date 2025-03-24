@@ -16,6 +16,22 @@
 /// defined in MdsShr.so
 
 extern void *LibCallg();
+
+#ifdef MDSPLUS_USE_FFI
+extern void *LibCallgFfi();
+enum MDS_FFI_Rtype { 
+    MDS_FFI_RTN_VOID = 0, 
+    MDS_FFI_RTN_POINTER = 1, 
+    MDS_FFI_RTN_INT32 = 2,
+    MDS_FFI_RTN_INT64 = 3
+};
+#endif
+#ifdef MDSPLUS_USE_FFI
+#define LIB_CALL_G(args, routine, fixed, rtype) (int)(intptr_t)LibCallgFfi(args, routine, fixed, rtype)
+#else
+#define LIB_CALL_G(args, routine, fixed, rtype) (int)(intptr_t)LibCallg(args, routine)
+#endif
+
 extern int LibCreateVmZone(ZoneList **const zone);
 extern int LibDeleteVmZone(ZoneList **const zone);
 extern int LibResetVmZone(ZoneList **const zone);

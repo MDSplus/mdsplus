@@ -380,7 +380,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
   arglist[argidx++] = (void *)&tmp;
   arglist[argidx++] = MdsEND_ARG;
   *(long *)&arglist[0] = argidx;
-  status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+  status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
   if (STATUS_OK)
   {
     status = TdiData(tmp.pointer, &mdsValueAnswer MDS_END_ARG);
@@ -626,7 +626,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     arglist[argidx++] = (void *)&tmp;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx;
-    status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+    status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
     if (STATUS_OK)
     {
       status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);

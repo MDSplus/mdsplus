@@ -56,7 +56,7 @@ public final class Descriptor_A_Test
 		{ 8, 0, 5, 4, 16, 0, 0, 0, 0, 0, 48, 1, 8, 0, 0, 0, 0, 16, -91, -44, -24, 0, 0, 0 }, test.serializeArray());
 		Assert.assertEquals("ABS([1000000000000QU])",
 				Descriptor_A_Test.mds.getString(
-						"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(1));_a",
+						"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile#1(xd(_a),xd(_a),val(1));_a",
 						Function.ABS(new Uint64Array(1000000000000l)).serializeDsc()));
 		Assert.assertEquals("Build_Signal([1D0,2D0,3D0], *, [1Q,2Q,3Q])",
 				new Signal(new Float64Array(1, 2, 3), null, new Int64Array(1, 2, 3)).decompile());

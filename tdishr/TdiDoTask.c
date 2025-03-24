@@ -96,7 +96,7 @@ static int Doit(struct descriptor_routine *ptask,
     status = TdiData(pmethod->method, &method_d MDS_END_ARG);
     if (STATUS_OK)
       status = TdiGetNid(pmethod->object, &nid);
-    status = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
+    status = LIB_CALL_G(arglist, TreeDoMethod, 2, MDS_FFI_RTN_INT32);
     FREED_NOW(&method_d);
     status = TdiPutLong(&status, out_ptr);
     break;

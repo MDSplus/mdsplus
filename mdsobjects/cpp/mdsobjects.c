@@ -987,7 +987,7 @@ JNIEXPORT jobject JNICALL Java_mdsdata_Data_compileWithArgs(
   arglist[varIdx++] = (struct descriptor *)&outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  LibCallg(arglist, TdiCompile);
+  LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   for (i = 0; i < argLen; i++)
     freeDescrip(arglist[2 + i]);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
