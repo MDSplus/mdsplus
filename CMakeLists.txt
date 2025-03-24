@@ -470,6 +470,8 @@ include_directories(
     ${CMAKE_BINARY_DIR}/_include
     ${CMAKE_BINARY_DIR}/include
     ${CMAKE_BINARY_DIR}/include/mdsplus
+    #XMW **ToDo**: for MACOS_ARM64
+    /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/ffi
 )
 
 # Generate compile_commands.json
@@ -506,6 +508,8 @@ if(MSVC)
 else()
 
     # TODO: Disable for flang (family: LLVMFlang)
+    #XMW MacOS (Intel and Apple Silicon) build OK with this as is.
+    #XMW What should be disabled for flang?
 
     mdsplus_add_compiler_flags(-Wall)
     mdsplus_add_compiler_flags(-Wextra)
@@ -664,12 +668,27 @@ file(RELATIVE_PATH
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 )
 
+#XMW  Notes for MacOS (Intel and Apple Silicon):
+#XMW  1) Tests are run from the build tree so need CMAKE_BUILD_RPATH.
+#XMW  2) The mdsobjects tests require libc++.1.dylib which is in the llvm-16/lib.
+#XMW     Didn't matter if used AppleClang or Clang; they both needed this to run tests.
+#XMW  3) Assuming also needed for the CMAKE_INSTALL_RPATH.
+#XMW  4) This hard coded path is just temporary; need a more flexibile solution.
+#XMW  5) *** NOTE: This implies users will have to install LLVM runtime libs to use MDSplus. ***
+#XMW
+#XMW  Additional notes:
+#XMW  a) APIs for Python and MATLAB work if set DYLD_LIBRARY_PATH to point to $MDSPLUS_DIR/lib.
+#XMW  b) API for IDL works if set IDL_PATH to include $MDSPLUS_DIR/idl and $MDSPLUS_DIR/lib.
 if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)
     list(APPEND CMAKE_INSTALL_RPATH
         "@loader_path"
         "@executable_path/${_rpath_relative}"
         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+        "/opt/local/libexec/llvm-16/lib"
+    )
+    list(APPEND CMAKE_BUILD_RPATH
+        "/opt/local/libexec/llvm-16/lib"
     )
 else()
     list(APPEND CMAKE_INSTALL_RPATH

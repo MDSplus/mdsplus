@@ -27,6 +27,7 @@ add_library(
     UdpEventSettings.c
 )
 
+#XMW **ToDo**: improve the libffi stuff.  Note that -lffi must be removed for Linux.
 target_link_libraries(
     MdsShr
     PUBLIC
@@ -36,6 +37,7 @@ target_link_libraries(
         LibXml2::LibXml2
         Threads::Threads
         ZLIB::ZLIB
+        -lffi
 )
 
 if(TARGET LibLZMA::LibLZMA)

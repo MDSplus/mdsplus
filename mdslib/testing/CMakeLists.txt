@@ -55,11 +55,14 @@ foreach(_test_source ${_fortran_test_source_list})
             MdsTestShr
     )
 
-    target_compile_options(
-        ${_test_name}
-        PRIVATE
-            -Wno-error
-    )
+    #XMW MacOS: Flang chokes on -Wno-error
+    if(NOT CMAKE_Fortran_COMPILER_ID STREQUAL "LLVMFlang")
+        target_compile_options(
+            ${_test_name}
+            PRIVATE
+                -Wno-error
+        )
+    endif()
 
     mdsplus_add_test(
         NAME ${_test_name}
