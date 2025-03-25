@@ -13,6 +13,7 @@ call:	_host  = Host name eg elpp1.epfl.ch or elpp1.epfl.ch:9000
       write(*,"Host taken from MDS_HOST ["//_host//"]");
    }
    _status = TdiShrExt->rMdsConnect(ref(_host//char(0)));
-   if (present(_abort) && _status == 0) abort();
+   _invalid_id = -1;
+   if (present(_abort) && _status == _invalid_id) abort();
    return(_status);
 }
