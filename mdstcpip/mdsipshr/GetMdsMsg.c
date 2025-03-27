@@ -155,6 +155,10 @@ Message *GetMdsMsgTO(int id, int *status, int to_msec)
     CloseConnection(id);
     *status = MDSplusERROR;
   }
+  // SsINTERNAL has low order bit set so is erroneously treated as OK.
+  if (*status == SsINTERNAL) {
+    *status = MDSplusERROR;
+  }
   return msg;
 }
 

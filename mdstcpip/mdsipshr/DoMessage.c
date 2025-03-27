@@ -43,6 +43,10 @@ int ConnectionDoMessage(Connection *connection)
   err = 1;
   int status = MDSplusFATAL;
   message = GetMdsMsgTOC(connection, &status, -1);
+  // SsINTERNAL has low order bit set so is erroneously treated as OK.
+  if (status == SsINTERNAL) {
+    status = MDSplusERROR;
+  }
   err = !(message && STATUS_OK && ProcessMessage(connection, message));
   FREE_IF(message, err);
   return !err;

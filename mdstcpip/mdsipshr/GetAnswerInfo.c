@@ -74,7 +74,10 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims,
     CloseConnection(id);
     status = MDSplusERROR;
   }
-  if (status == SsINTERNAL) status = MDSplusERROR;
+  // SsINTERNAL has low order bit set so is erroneously treated as OK.
+  if (status == SsINTERNAL) {
+    status = MDSplusERROR;
+  }
   if (STATUS_NOT_OK)
   {
     free(m);
