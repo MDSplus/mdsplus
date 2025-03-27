@@ -168,7 +168,9 @@ EXPORT char *Now32(char *const buf)
 ///
 EXPORT void *LibCallg(void **const a, void *(*const routine)())
 {
-  assert(routine);  // in DEBUG mode checks for stack corruption
+  if (!routine) {
+    abort(); // intercept definite stack corruption
+  }
 
   // The "a" parameter is the arglist for the "routine" and contains the following:
   // arglist[0]        = N (total number of args excluding first and last elements of vector)
@@ -302,7 +304,9 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
 // If the external function does not fit that constraint, users will have to write a shim function.
 EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed_args, int rtype)
 {
-  assert(routine);  // in DEBUG mode checks for stack corruption
+  if (!routine) {
+    abort(); // intercept definite stack corruption
+  }
 
   // The "a" parameter is the arglist for the "routine" and contains the following:
   // arglist[0]        = N (total number of args excluding first and last elements of vector)
