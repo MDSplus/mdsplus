@@ -113,7 +113,7 @@ EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server_in)
         int numbytes;
         char *reply;
         if (IS_NOT_OK(GetAnswerInfoTS(
-                conid, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem, 10)) ||
+                conid, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem)) ||
             (dtype != DTYPE_CSTRING))
         {
           ans = "Invalid response from server";
