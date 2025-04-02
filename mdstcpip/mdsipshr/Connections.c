@@ -526,6 +526,10 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // SET INFO //
     ConnectionSetInfo(c, info_name, readfd, info, info_len);
     msg = GetMdsMsgTOC(c, &status, 10000);
+    // SsINTERNAL has low order bit set so is erroneously treated as OK.
+    if (status == SsINTERNAL) {
+      status = MDSplusERROR;
+    }
     if (!msg || STATUS_NOT_OK)
     {
       free(msg);
