@@ -2148,7 +2148,7 @@ static int find_file(const mdsdsc_t *const filespec, mdsdsc_t *const result,
     fspec[filespec->length] = '\0';
     *ctx = (void *)findfilestart(fspec, recursively, case_blind);
 #ifdef DEBUG
-    fprintf(stderr, "locking for %s: ", fspec);
+    fprintf(stderr, "looking for %s: ", fspec);
 #endif
     free(fspec);
     if (!*ctx)

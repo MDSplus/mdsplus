@@ -458,8 +458,10 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   static int clear = 0;
   static DESCRIPTOR_LONG(clear_d, &clear);
 #endif
+  // On entry, incrmtr points to the expression.  Save it so can scan the list of arguments later.
   va_copy(initial_incrmtr, incrmtr);
 
+  //loops: #0 = &status var above (ignored), #1 = &dsc arg, #2 = &dsc, etc, #<last> = null terminator.
   for (a_count = 0; *descnum != 0; a_count++)
   {
     descnum = va_arg(incrmtr, int *);
@@ -619,6 +621,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   }
 #else
   {
+    // Also includes overhead arguments, thus function called receives MAXARGS - 4 actual args
     void *arglist[MAXARGS];
     struct descriptor *dsc;
     struct descriptor dexpression = {0, DTYPE_T, CLASS_S, 0};
@@ -629,6 +632,12 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     int i;
     dexpression.length = strlen((char *)expression);
     dexpression.pointer = (char *)expression;
+    // Creates arglist vector as follows: 
+    // arglist[0]        = N (total number of args excluding first and last elements of vector)
+    // arglist[1]        = expression
+    // arglist[2 .. N-1] = variable args (pointer to descriptors)
+    // arglist[N]        = result xd1 descriptor
+    // arglist[N+1]      = NULL 
     arglist[argidx++] = (void *)&dexpression;
     va_copy(incrmtr, initial_incrmtr);
     for (i = 1; i < a_count; i++)
