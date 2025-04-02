@@ -103,7 +103,10 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
   m->h.message_id = (idx == 0 || nargs == 0) ? ConnectionIncMessageId(c)
                                              : c->message_id;
   int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
-  if (status == SsINTERNAL) status = MDSplusERROR;
+  // SsINTERNAL has low order bit set so is erroneously treated as OK.
+  if (status == SsINTERNAL) {
+    status = MDSplusERROR;
+  }
   free(m);
   if (STATUS_NOT_OK)
     UnlockConnection(c);

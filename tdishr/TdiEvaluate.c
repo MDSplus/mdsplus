@@ -56,6 +56,7 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
+// Can return non-MDSplus error code, SsINTERNAL
 EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
                         int narg __attribute__((unused)),
                         struct descriptor *list[],
