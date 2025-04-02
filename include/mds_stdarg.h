@@ -39,9 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * arglist:	target array of pointers
  * nargs:	int value returns the total number of args
  * pre:		offset in the arglist, so you can prepend your own
- * post:	added to nargs, so you can append some, if 1, last arg will be
- * <end> anchor:	last fix argument just before ... end:
- * terminating value, e.g. NULL or MdsEND_ARG
+ * post:	added to nargs, so you can append some, if 1, last arg will be <end> 
+ * anchor:	last fix argument just before ... 
+ * end: terminating value, e.g. NULL or MdsEND_ARG
  */
 #define VA_LIST_TO_ARGLIST(arglist, nargs, pre, post, anchor, end)         \
   {                                                                        \
