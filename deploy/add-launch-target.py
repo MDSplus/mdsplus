@@ -34,7 +34,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 target_name = args.name
-command = args.command.split(';')
+command = args.command.replace('\\ ', ' ').split(';') # Undo CMake's overzealous string escaping
 environment_modifications = args.environment.split(';')
 cwd = args.cwd
 

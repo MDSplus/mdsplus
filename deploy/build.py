@@ -563,9 +563,14 @@ def do_interactive():
 
     git_tag_command = 'git describe --abbrev=0 --tag'
 
+    # Start with a clean environment so we don't inherit anything pointing to the system MDSplus installation
+    interactive_env = dict()
+    interactive_env['HOME'] = os.environ['HOME']
+    interactive_env['TERM'] = os.environ['TERM']
+
     # Override shell prompt to ease confusion
     # \w is the "current working directory"
-    os.environ['PS1'] = f'\n{purple}[interactive]{reset} {green}\\w{reset} {turquoise}($({git_tag_command})){reset}\n\\$ '
+    interactive_env['PS1'] = f'\n{purple}[interactive]{reset} {green}\\w{reset} {turquoise}($({git_tag_command})){reset}\n\\$ '
 
     print()
     print('Spawning a new shell, type `exit` to leave.')
@@ -574,6 +579,7 @@ def do_interactive():
     subprocess.run(
         [ shell, '--login', '--noprofile' ],
         cwd=args.workspace,
+        env=interactive_env,
     )
 
 def do_docker():
@@ -637,7 +643,7 @@ def do_docker():
     passthrough_args.extend(cmake_args)
 
     # TODO: Detect python3 instead of assuming it?
-    command = f"python3 {__file__} {' '.join(passthrough_args)}"
+    command = f"python3 {os.path.abspath(__file__)} {' '.join(passthrough_args)}"
 
     docker_entrypoint = [ '/bin/bash', '-c', command ]
 

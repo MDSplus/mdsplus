@@ -26,6 +26,106 @@ if(GENERATE_VSCODE_LAUNCH_JSON AND NOT TARGET generate-vscode-launch-json)
     set(LAST_VSCODE_LAUNCH_JSON_TARGET "generate-vscode-launch-json" CACHE INTERNAL "" FORCE)
 endif()
 
+set(MDSPLUS_TEST_ENV_MODS
+    # Used to find the rest of MDSplus
+    "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
+    "MDSPLUS_LIBRARY_PATH=set:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+
+    # Used to search for TDI and Python scripts, and to add TDI drivers
+    "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"
+
+    # Used to run or load Python
+    "PYTHON=set:${PYTHON}"
+    "PyLib=set:${PyLib}"
+
+    # Needed for `import MDSplus` in Python
+    "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
+
+    # Needed to add Python drivers 
+    "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
+
+    # Needed to run MDSplus executables
+    "PATH=path_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+
+    # Several tests make use of the default trees
+    "main_path=set:${CMAKE_SOURCE_DIR}/trees"
+    "subtree_path=set:${CMAKE_SOURCE_DIR}/trees/subtree"
+
+    # Write all new tree files into the current directory
+    "default_tree_path=set:."
+
+    ${SANITIZER_ENV_MODS}
+)
+
+if(WIN32)
+
+    list(APPEND MDSPLUS_TEST_ENV_MODS
+        "OS=set:windows" # for do_tditests.sh
+    )
+
+    if(TEST_WITH_WINE)
+        # These are used even if NO_WINE is set for do_tditests.sh
+        list(APPEND MDSPLUS_TEST_ENV_MODS
+            "WINEDEBUG=set:-all"
+            "WINEARCH=set:${WINEARCH}"
+            "WINEPREFIX=set:${WINEPREFIX}"
+            "WINEPATH=cmake_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+            # https://askubuntu.com/questions/323437/how-to-prevent-wine-from-adding-file-associations
+            "WINEDLLOVERRIDES=set:winemenubuilder.exe=d,explorer.exe=d"
+
+            # Don't inherit the system python environment
+            "PYTHONHOME=unset:"
+        )
+    endif()
+
+else()
+
+    # Linux searches $LD_LIBRARY_PATH for loading .so's
+    # This is set for Apple as well for backwards compatibility
+    list(APPEND MDSPLUS_TEST_ENV_MODS
+        "LD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+        
+        # Sometimes required by the sanitizers
+        "LD_PRELOAD=set:${LD_PRELOAD}"
+    )
+
+    if(APPLE)
+        # Apple searches $DYLD_LIBRARY_PATH for loading .dylib's
+        list(APPEND MDSPLUS_TEST_ENV_MODS
+            "DYLD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+        )
+    endif()
+    
+endif()
+
+macro(_mdsplus_add_vscode_launch_target _target _command _env_mods _cwd)
+    string(REPLACE "/" "-" _vscode_launch_target "generate-vscode-launch-json-${_target}")
+
+    add_custom_target(
+        "${_vscode_launch_target}"
+        COMMENT "Adding ${_target} to .vscode/launch.json"
+        COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
+            --name "${_target}"
+            --command "\"${_command}\""
+            --environment "\"${_env_mods}\""
+            --cwd "${_cwd}"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+
+    # We chain the dependencies to force them to run in serial
+    add_dependencies("${LAST_VSCODE_LAUNCH_JSON_TARGET}" "${_vscode_launch_target}")
+    set(LAST_VSCODE_LAUNCH_JSON_TARGET "${_vscode_launch_target}" CACHE INTERNAL "" FORCE)
+endmacro()
+
+# Useful tools for debugging that shouldn't be added as actual tests
+if(GENERATE_VSCODE_LAUNCH_JSON)
+    _mdsplus_add_vscode_launch_target("mdstcl" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mdsdcl;-prep;set command tcl_commands -history=.tcl" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
+    _mdsplus_add_vscode_launch_target("python" "${Python_EXECUTABLE}" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
+    _mdsplus_add_vscode_launch_target("tditest" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tditest" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
+    _mdsplus_add_vscode_launch_target("tdic" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tdic" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
+    _mdsplus_add_vscode_launch_target("mdsip-8888" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mdsip;-p;8888;-s;-h;${CMAKE_SOURCE_DIR}/mdstcpip/mdsip.hosts" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
+endif()
+
 function(mdsplus_add_test)
 
     cmake_parse_arguments(
@@ -42,83 +142,17 @@ function(mdsplus_add_test)
         set(ARGS_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
-    set(_env_mods
-        # Used to find the rest of MDSplus
-        "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
-        "MDSPLUS_LIBRARY_PATH=set:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+    set(_env_mods "${MDSPLUS_TEST_ENV_MODS}")
 
-        # Used to search for TDI and Python scripts, and to add TDI drivers
-        "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"
-        
+    list(APPEND _env_mods
         # Some tests define their own TDI functions
         "MDS_PATH=cmake_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}"
-
-        # Used to run or load Python
-        "PYTHON=set:${PYTHON}"
-        "PyLib=set:${PyLib}"
-
-        # Needed for `import MDSplus` in Python
-        "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
-
-        # Needed to add Python drivers 
-        "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
-
-        # Needed to run MDSplus executables
-        "PATH=path_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-
-        # Several tests make use of the default trees
-        "main_path=set:${CMAKE_SOURCE_DIR}/trees"
-        "subtree_path=set:${CMAKE_SOURCE_DIR}/trees/subtree"
-
-        # Write all new tree files into the current directory
-        "default_tree_path=set:."
-
-        ${SANITIZER_ENV_MODS}
     )
 
-    if(WIN32)
-
-        list(APPEND _env_mods
-            "OS=set:windows" # for do_tditests.sh
-        )
-        
-        if(TEST_WITH_WINE)
-            # These are used even if NO_WINE is set for do_tditests.sh
-            list(APPEND _env_mods
-                "WINEDEBUG=set:-all"
-                "WINEARCH=set:${WINEARCH}"
-                "WINEPREFIX=set:${WINEPREFIX}"
-                "WINEPATH=cmake_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-                # https://askubuntu.com/questions/323437/how-to-prevent-wine-from-adding-file-associations
-                "WINEDLLOVERRIDES=set:winemenubuilder.exe=d,explorer.exe=d"
-
-                # Don't inherit the system python environment
-                "PYTHONHOME=unset:"
-            )
-
-            if(NOT ARGS_NO_WINE)
-                list(PREPEND ARGS_COMMAND ${wine_EXECUTABLE})
-            endif()
+    if(WIN32 AND TEST_WITH_WINE)
+        if(NOT ARGS_NO_WINE)
+            list(PREPEND ARGS_COMMAND ${wine_EXECUTABLE})
         endif()
-
-    else()
-
-        # Linux searches $LD_LIBRARY_PATH for loading .so's
-        # This is set for Apple as well for backwards compatibility
-        list(APPEND _env_mods
-            "LD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-            
-            # Sometimes required by the sanitizers
-            "LD_PRELOAD=set:${LD_PRELOAD}"
-        )
-
-        if(APPLE)
-            # Apple searches $DYLD_LIBRARY_PATH for loading .dylib's
-            list(APPEND _env_mods
-                "DYLD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-            )
-        endif()
-        
     endif()
 
     set(_index ${MDSPLUS_TEST_INDEX})
@@ -156,22 +190,7 @@ function(mdsplus_add_test)
     math(EXPR _index "${_index} + 1")
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
-        string(REPLACE "/" "-" _vscode_launch_target "generate-vscode-launch-json-${_target}")
-
-        add_custom_target(
-            "${_vscode_launch_target}"
-            COMMENT "Adding ${_target} to .vscode/launch.json"
-            COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
-                --name "${_target}"
-                --command "\"${ARGS_COMMAND}\""
-                --environment "\"${_base_env_mods}\""
-                --cwd "${ARGS_WORKING_DIRECTORY}"
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
-
-        # We chain the dependencies to force them to run in serial
-        add_dependencies("${LAST_VSCODE_LAUNCH_JSON_TARGET}" "${_vscode_launch_target}")
-        set(LAST_VSCODE_LAUNCH_JSON_TARGET "${_vscode_launch_target}" CACHE INTERNAL "" FORCE)
+        _mdsplus_add_vscode_launch_target(${_target} "${ARGS_COMMAND}" "${_base_env_mods}" ${ARGS_WORKING_DIRECTORY})
     endif()
 
     if(ENABLE_VALGRIND AND NOT ARGS_NO_VALGRIND)
@@ -214,6 +233,8 @@ function(mdsplus_add_test)
                     ENVIRONMENT_MODIFICATION "${_valgrind_env_mods}"
                     FAIL_REGULAR_EXPRESSION "FAILED"
             )
+
+            # TODO: _mdsplus_add_vscode_launch_target
 
             math(EXPR _index "${_index} + 1")
             math(EXPR _test_port_offset "${_test_port_offset} + 1000")
