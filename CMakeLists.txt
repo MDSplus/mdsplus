@@ -208,10 +208,15 @@ mdsplus_option(
     DEFAULT ${_enable_motif_default}
 )
 
+set(_enable_sybase_default ON)
+if(WIN32)
+    set(_enable_sybase_default OFF)
+endif()
+
 mdsplus_option(
     ENABLE_SYBASE BOOL
     "Build mdssql library, and Sybase support in TDI."
-    DEFAULT OFF
+    DEFAULT ${_enable_sybase_default}
 )
 
 mdsplus_option(
