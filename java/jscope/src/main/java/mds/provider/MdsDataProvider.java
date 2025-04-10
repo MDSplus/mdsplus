@@ -705,8 +705,14 @@ public class MdsDataProvider implements DataProvider
 				{
 					final double[] x = new double[nSamples];
 					for (int i = 0; i < nSamples; i++)
+                                        {
 						x[i] = dis.readDouble();
-					res = new XYData(x, y, dRes);
+                                                if(i > 0 && x[i-1] > x[i])
+                                                {
+                                                    System.out.println("Internal error: non increasing dimension ("+i+" "+nSamples+")");
+                                                }
+                                        }        
+                                        res = new XYData(x, y, dRes);
 				}
 				else // float X
 				{
@@ -1162,6 +1168,10 @@ public class MdsDataProvider implements DataProvider
 					try
 					{
 						requestsV.removeElementAt(requestsV.size() - 1);
+                                                //requestsV.clear(); //Older requests are ignored
+                                                
+                                                
+                                                
 						final XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound,
 								currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 						if (debug)
@@ -1185,6 +1195,7 @@ public class MdsDataProvider implements DataProvider
 						final Date d = new Date();
 						System.out.println(d + " Error in asynchUpdate: " + exc);
                                                 System.out.println(currUpdate);
+                                                exc.printStackTrace();
 					}
 				}
 			}
@@ -1382,7 +1393,7 @@ public class MdsDataProvider implements DataProvider
 		}
 		if (open)
 		{
-			if (defaultNode != null && (prev_default_node == null || !defaultNode.equals(prev_default_node)))
+			if (defaultNode != null && (prev_default_node == null || (!defaultNode.trim().equals("") && !defaultNode.equals(prev_default_node))))
 			{
 				Descriptor descr;
 				if (default_node.trim().charAt(0) == '\\')
@@ -1401,6 +1412,7 @@ public class MdsDataProvider implements DataProvider
 				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
 				prev_default_node = null;
 			}
+                        prev_default_node = default_node;
 		}
 		return true;
 	}
