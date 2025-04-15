@@ -634,14 +634,14 @@ public class MdsDataProvider implements DataProvider
 			}
 			else
 			{
-				args.addElement(new Descriptor(null, new float[]
-				{ (float) xmin }));
-				args.addElement(new Descriptor(null, new float[]
-				{ (float) xmax }));
+				args.addElement(new Descriptor(null, new double[]
+				{ (double) xmin }));
+				args.addElement(new Descriptor(null, new double[]
+				{ (double) xmax }));
 			}
 			args.addElement(new Descriptor(null, new int[]
 			{ numPoints }));
-			byte[] retData;
+			byte[] retData = null;
 			int nSamples;
 			try
 			{
@@ -650,11 +650,32 @@ public class MdsDataProvider implements DataProvider
 				if (numPoints == Integer.MAX_VALUE)
 					throw new Exception("Use Old Method for getting data");
 				if (isLong)
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
 					retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
 				else
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
-					retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
+                                {
+                                    try {
+ 					retData = GetByteArray(" MdsMisc->GetXYSignalDoubleLimits:DSC", args);
+                                    }catch(Exception exc)
+                                    {
+                                        //Try old method in case the mdsip server is not up-to-date
+                                         final Vector<Descriptor> newArgs = new Vector<>();
+                                         for(int i = 0; i < args.size() - 3; i++)
+                                        {
+                                            newArgs.addElement(args.elementAt(i));
+                                        }
+                                        newArgs.addElement(new Descriptor(null, new float[]
+                                                { (float) xmin }));
+                                        newArgs.addElement(new Descriptor(null, new float[]
+                                                { (float) xmax }));
+                                        newArgs.addElement(new Descriptor(null, new int[]
+                                                { numPoints }));
+                                         System.out.println("ORA PROVO IL VECCHIO");
+                                         try {
+                                                retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", newArgs);
+                                         } catch(Exception exc1){System.out.println(exc1);}
+                                          System.out.println("PROVATO");
+                                   }
+                                }
 				/*
 				 * Decode data: Format: -retResolution(float) ----Gabriele Feb 2019 NEW: if
 				 * retResolution == 0 then the following int is the number of bytes of the error
