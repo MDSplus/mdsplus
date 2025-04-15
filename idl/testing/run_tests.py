@@ -5,6 +5,7 @@ import subprocess
 import argparse
 import tempfile
 import threading
+from datetime import datetime
 
 # The default values are intended to be used from within the PSFC network
 # If you want to run these tests on your own infrastructure, provide the
@@ -258,6 +259,7 @@ def build_write_tree(tree, shot):
     t.write()
     t.close()
 
+tests_failed_count = 0
 
 class IDLTest(threading.Thread):
 
@@ -269,9 +271,12 @@ class IDLTest(threading.Thread):
         self.expected_output = expected_output
         self.passed = False
 
+        self.time = 0
+
         self.logfile = os.path.join(os.getcwd(), f'{self.name}.log')
 
     def run(self):
+        start_time = datetime.now()
 
         log = open(self.logfile, 'wt')
 
@@ -351,6 +356,7 @@ class IDLTest(threading.Thread):
         if self.passed:
             log.write('Success\n')
         else:
+            tests_failed_count += 1
             log.write(f'Failure, see {self.logfile}\n')
 
         log.write('\n')
@@ -359,9 +365,12 @@ class IDLTest(threading.Thread):
 
         log.close()
 
+        self.time = datetime.now() - start_time
         with open(self.logfile, 'rt') as log:
             print(log.read(), flush=True)
 
+total_time_test = 0
+g_start_time = datetime.now()
 
 all_tests = []
 def idl_test(name, code, expected_output):
@@ -1649,6 +1658,40 @@ for test in all_tests:
     if not test.passed:
         print(f'Test {test.name} failed, see {test.logfile}')
         all_tests_passed = False
+
+total_time_test = datetime.now() - g_start_time
+
+import xml.etree.ElementTree as xml
+
+root = xml.Element('testsuites')
+root.attrib['time'] = str(total_time_test)
+root.attrib['tests'] = str(len(all_tests))
+root.attrib['failures'] = str(tests_failed_count)
+
+testsuite = xml.SubElement(root, 'testsuite')
+# testsuite.attrib['time'] = str(total_time_test)
+testsuite.attrib['name'] = args.junit_suite_name
+
+for test in all_tests:
+    testcase = xml.SubElement(testsuite, 'testcase')
+    testcase.attrib['name'] = test.name
+    testcase.attrib['time'] = str(test.time)
+
+    system_out = xml.SubElement(testcase, 'system-out')
+    system_out.text = open(test['log'], 'rt').read()
+    
+    # The BEL character causes issues when loaded into Jenkins
+    system_out.text = system_out.text.replace('\x07', '')
+
+    if not test['passed']:
+        failure = xml.SubElement(testcase, 'failure')
+        failure.attrib['message'] = 'Failed'
+
+
+junit_filename = os.path.join(args.workspace, 'mdsplus-junit.xml')
+print(f'Writing jUnit XML to {junit_filename}')
+with open(junit_filename, 'wb') as file:
+    file.write(xml.tostring(root))
 
 if not all_tests_passed:
     exit(1)
