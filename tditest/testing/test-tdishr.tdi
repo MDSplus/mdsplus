@@ -2986,7 +2986,9 @@ firstloc(_M)
 firstloc(_M,0)
 lastloc(_M)
 lastloc(_M,0)
+replicate(2,0,3)
 replicate([[2,4],[3,5]],1,3)
+spread(2,0,3)
 spread([2,3,4],0,3)
 #
 # Functions implemented in TdiTrim.c

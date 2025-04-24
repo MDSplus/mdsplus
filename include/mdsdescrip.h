@@ -163,7 +163,8 @@ typedef struct descriptor_a
    *
    * The multipliers block has the following format:
    *      char    *a0;            Address of the element whose subscripts are
-   * all zero int     m [DIMCT];      Addressing coefficients (multipliers)
+   *                              all zero  
+   *      int     m [DIMCT];      Addressing coefficients (multipliers)
    *
    * The bounds block has the following format:
    *      struct
