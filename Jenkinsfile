@@ -1,265 +1,238 @@
-
-def OSList = [
-    'test-asan',
-    'test-tsan',
-    'test-ubsan',
-    'test-helgrind',
-    'test-memcheck',
-    'ubuntu-18-amd64',
-    'ubuntu-20-amd64',
-    'ubuntu-22-amd64',
-    'ubuntu-24-amd64',
-    'ubuntu-24-arm64',
-    'rhel-7-x86_64',
-    'rhel-8-x86_64',
-    'rhel-9-x86_64',
-    'debian-10-amd64',
-    'debian-11-amd64',
-    'debian-12-amd64',
-    'windows-x86',
-    'windows-x64',
+def OSList = [          
+    ['Ubuntu 18.04 (amd64)',            'ubuntu-18-amd64',  'docker && linux-amd64'],
+    ['Ubuntu 20.04 (amd64)',            'ubuntu-20-amd64',  'docker && linux-amd64'],
+    ['Ubuntu 22.04 (amd64)',            'ubuntu-22-amd64',  'docker && linux-amd64'],
+    ['Ubuntu 24.04 (amd64)',            'ubuntu-24-amd64',  'docker && linux-amd64'],
+    ['Ubuntu 24.04 (arm64)',            'ubuntu-24-arm64',  'docker && linux-aarch64'],
+    ['RHEL 7 (x86_64)',                 'rhel-7-x86_64',    'docker && linux-amd64'],
+    ['RHEL 8 (x86_64)',                 'rhel-8-x86_64',    'docker && linux-amd64'],
+    ['RHEL 9 (x86_64)',                 'rhel-9-x86_64',    'docker && linux-amd64'],
+    ['Debian 10 (amd64)',               'debian-10-amd64',  'docker && linux-amd64'],
+    ['Debian 11 (amd64)',               'debian-11-amd64',  'docker && linux-amd64'],
+    ['Debian 12 (amd64)',               'debian-12-amd64',  'docker && linux-amd64'],
+    ['Windows (x86)',                   'windows-x86',      'docker && linux-amd64'],
+    ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
+    // ['MacOSX (brew)',                   'macosx-brew',      'macosx'],
+    // ['MacOSX (macports)',               'macosx-macports',  'macosx'],
+    // ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
+    // ['Thread Sanitizer',                'test-tsan',        'docker && linux-amd64'],
+    // ['Undefined Behavior Sanitizer',    'test-ubsan',       'docker && linux-amd64'],
+    // ['Helgrind',                        'test-helgrind',    'docker && linux-amd64'],
+    // ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
 ]
 
-def AdminList = [
-    'AndreaRigoni',
-    'GabrieleManduchi',
-    'joshStillerman',
-    'mwinkel-dev',
-    'santorofer',
-    'tfredian',
-    'WhoBrokeTheBuild',
-    'zack-vii',
-    'dgarnier',
-    'heidthecamp',
-]
 
-def schedule = "";
-if (BRANCH_NAME == "alpha") {
-    schedule = "0 18 * * *";
-}
-if (BRANCH_NAME == "stable") {
-    schedule = "0 19 * * *";
+def setupStage() {
+    return {
+        stage("Setup") {
+            echo "Building on ${NODE_NAME}"
+            
+            // Useful for debugging
+            sh 'printenv'
+            
+            // This shouldn't be needed, but just in case
+            cleanWs disableDeferredWipeout: true, deleteDirs: true
+            
+            unstash 'source'
+        }
+    }
 }
 
-def new_version = '0.0.0';
-def new_tag = null;
+def testStage(os) {
 
-def release_file_list = [];
+    def extraArgs = ""
+
+    if (os.startsWith("macosx-")) { //  || OS.startsWith("windows-")
+        // Required to isolate runs on systems that don't have docker networks to do the isolation
+        def offset = (EXECUTOR_NUMBER as int) * 1000
+        extraArgs += "-DTEST_PORT_OFFSET=${offset}"
+    }
+    else {
+        extraArgs += "--dockernetwork=jenkins-${EXECUTOR_NUMBER}"
+    }
+
+    return {
+        stage("Build & Test") {
+            try {
+                sh "deploy/build.py -j --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --output-junit ${extraArgs}"
+            }
+            finally {
+                junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
+            }
+        }
+    }
+}
+
+def packageStage(os) {
+    return {
+        stage("Build & Package") {
+            sh "deploy/build.py -j --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            dir("workspace-${os}/packages") {
+                sh "ls"
+                stash includes: "*", name: "packages-${os}"
+            }
+        }
+    }
+}
+
+def cleanStage() {
+    return {
+        stage("Clean") {
+            // Collect valgrind core dumps
+            archiveArtifacts artifacts: "**/core", followSymlinks: false, allowEmptyArchive: true
+            
+            cleanWs disableDeferredWipeout: true, deleteDirs: true
+        }
+    }
+}
+
+def distributions = OSList.collectEntries {
+    info -> [ "${info[0]}": {
+        def (name, os, label) = info
+        
+        node (label) {
+            stage(name) {
+                ansiColor('xterm') {
+                    try {
+                        setupStage().call()
+                        testStage(os).call()
+                        packageStage(os).call()
+                    }
+                    finally {
+                        cleanStage().call()
+                    }
+                }
+            }
+        }
+    }]
+}
+
+def localTest(name, testStages) {
+    return {
+        stage(name) {
+            node('linux-amd64') { // TODO: Improve
+                ansiColor('xterm') {
+                    try {
+                        setupStage().call()
+                        
+                        stage("Build") {
+                            sh "deploy/build.py -j --build --install -DCMAKE_BUILD_TYPE=Debug"
+                        }
+                        
+                        testStages.call()
+                    }
+                    finally {
+                        cleanStage().call()
+                    }
+                }
+            }
+        }
+    }
+}
+
+distributions['IDL'] = localTest('IDL', {
+    stage("Test") {
+        try {
+            withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace/install/usr/local/mdsplus"]) {
+                sh """
+                    set +x
+                    . \$MDSPLUS_DIR/setup.sh
+                    export PYTHONPATH=\$MDSPLUS_DIR/python/
+                    set -x
+                    ./idl/testing/run_tests.py
+                """
+            }
+        }
+        finally {
+            // junit skipPublishingChecks: true, testResults: "mdsplus-junit.xml", keepLongStdio: true
+        }
+    }
+})
+
+distributions['MATLAB'] = localTest('MATLAB', {
+    stage("Test") {
+        withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace/install/usr/local/mdsplus"]) {
+            sh """
+                set +x
+                . \$MDSPLUS_DIR/setup.sh
+                export PYTHONPATH=\$MDSPLUS_DIR/python/
+                set -x
+                echo "Testing MATLAB"
+            """
+        }
+    }
+})
 
 pipeline {
-    agent any
+    agent {
+        label 'built-in'
+    }
     
-    options {
-        skipDefaultCheckout()
-        timeout(time: 1, unit: 'HOURS')
-    }
-    triggers {
-        cron(schedule)
-        issueCommentTrigger('(?i).*retest\\s+this\\s+please.*')
-    }
-
     stages {
-
+        
         stage('Setup') {
             steps {
                 sh 'printenv'
 
-                script {
-                    // is PR
-                    if (env.CHANGE_ID) {
-                        // This is safe because untrusted PRs will use Jenkinsfile from the target branch
-                        if (env.GITHUB_COMMENT_AUTHOR) {
-                            if (!AdminList.contains(env.GITHUB_COMMENT_AUTHOR)) {
-                                currentBuild.result = 'ABORTED'
-                                error 'This user does not have permission to trigger builds.'
-                            }
-                            else {
-                                echo("Build was started by ${GITHUB_COMMENT_AUTHOR}, who wrote: \"${GITHUB_COMMENT}\", which matches the trigger pattern.")
-                            }
-                        }
-                        else if (!AdminList.contains(env.CHANGE_AUTHOR)) {
-                            currentBuild.result = 'ABORTED'
-                            error 'This user does not have permission to trigger builds.'
-                        }
-                    }
+                retry(3) {
+                    checkout scm;
                 }
-
-                // This shouldn't be needed, but just in case
-                cleanWs disableDeferredWipeout: true, deleteDirs: true
-            }
-        }
-
-        stage("Calculate Version") {
-            when {
-                anyOf {
-                    branch 'alpha';
-                    branch 'stable';
-                }
-            }
-            steps {
+                
+                
                 script {
-                    ws("${WORKSPACE}/publish") {
-                        checkout scm;
-
-                        new_version = sh(
-                            script: "./deploy/get_new_version.py",
-                            returnStdout: true
-                        ).trim()
-
-                        if (new_version == '0.0.0') {
-                            error "Failed to calculate new version"
-                        }
-                        
-                        new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
+                    def new_version = sh(
+                        script: "/usr/bin/python3 deploy/get_new_version.py",
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (new_version != '0.0.0') {
+                        def new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
 
                         echo "Calculated new version to be ${new_version}"
-                    }
+
+                        sh "git tag ${new_tag}"
+                    }   
                 }
+
+                // By default it excludes .git/
+                stash name: 'source', includes: '**', useDefaultExcludes: false
             }
         }
-
+        
         stage('Distributions') {
             steps {
                 script {
-                    parallel OSList.collectEntries {
-                        OS -> [ "${OS} Build & Test": {
-                            stage("${OS} Build & Test") {
-                                ws("${WORKSPACE}/${OS}") {
-                                    def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-
-                                    stage("${OS} Clone") {
-                                        retry(3) {
-                                            checkout scm
-                                        }
-                                    }
-
-                                    stage("${OS} Build") {
-                                        sh "./deploy/build.py -j --os=${OS} --build --dockerpull --dockernetwork=${network} -DCMAKE_BUILD_TYPE=Debug"
-                                    }
-
-                                    stage("${OS} Test") {
-                                        try {
-                                            sh "./deploy/build.py -j --os=${OS} --no-build --test --output-junit --dockernetwork=${network}"
-                                        }
-                                        finally {
-                                            junit skipPublishingChecks: true, testResults: "workspace-${OS}/mdsplus-junit.xml", keepLongStdio: true
-                                        }
-                                    }
-
-                                    if (!OS.startsWith("test-")) {
-                                        stage("${OS} Release") {
-                                            sh "./deploy/build.py -j --os=${OS} --package -DCMAKE_BUILD_TYPE=Release"
-                                            
-                                            findFiles(glob: "packages/*.tgz").each {
-                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
-                                            }
-
-                                            findFiles(glob: "packages/*.exe").each {
-                                                file -> release_file_list.add(WORKSPACE + "/" + file.path)
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-                        }]
-                    }
+                    parallel distributions
                 }
             }
         }
-
-        stage('Additional Testing') {
-            parallel {
-                stage("Test IDL") {
-                    steps {
-                        // The IDL tests have to be run with the same OS as the builder
-                        dir("${WORKSPACE}/ubuntu-22-amd64") {
-                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/ubuntu-22-amd64/workspace-ubuntu-22-amd64/install/usr/local/mdsplus"]) {
-                                sh """
-                                    set +x
-                                    . \$MDSPLUS_DIR/setup.sh
-                                    export PYTHONPATH=\$MDSPLUS_DIR/python/
-                                    set -x
-                                    ./idl/testing/run_tests.py
-                                """
-                            }
-                        }
+        
+        stage('Test Stash') {
+            steps {
+                script {
+                    for (info in OSList) {
+                        def (name, os, label) = info
+                        unstash "packages-${os}"
                     }
-                }
-
-                stage("Test MATLAB") {
-                    steps {
-                        // The MATLAB tests have to be run with the same OS as the builder
-                        dir("${WORKSPACE}/ubuntu-22-amd64") {
-                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/ubuntu-22-amd64/workspace-ubuntu-22-amd64/install/usr/local/mdsplus"]) {
-                                sh """
-                                    set +x
-                                    . \$MDSPLUS_DIR/setup.sh
-                                    export PYTHONPATH=\$MDSPLUS_DIR/python/
-                                    set -x
-                                    cd matlab/testing
-                                    matlab -batch run_tests
-                                """
-                            }
-                        }
-                    }
+                    
+                    sh "ls"
+                    
+                    archiveArtifacts artifacts: "*.tgz,*.exe", followSymlinks: false
+                    
+                    cleanWs disableDeferredWipeout: true, deleteDirs: true
                 }
             }
         }
-
-        // stage('Publish') {
-        //     when {
-        //         allOf {
-        //             anyOf {
-        //                 branch 'alpha';
-        //                 branch 'stable';
-        //             }
-
-        //             triggeredBy 'TimerTrigger'
-        //         }
-        //     }
-        //     steps {
-        //         script {
-
-
-        //             parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
-        //                 OS -> [ "${OS} Publish": {
-        //                     stage("${OS} Publish") {
-        //                         ws("${WORKSPACE}/${OS}") {
-        //                             sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
-        //                         }
-        //                     }
-        //                 }]
-        //             }
-
-        //             stage("Publish to GitHub") {
-        //                 ws("${WORKSPACE}/publish") {
-        //                     echo "Creating GitHub Release and Tag for ${new_tag}"
-        //                     withCredentials([
-        //                         usernamePassword(
-        //                             credentialsId: 'MDSplusJenkins',
-        //                             usernameVariable: 'GITHUB_APP',
-        //                             passwordVariable: 'GITHUB_ACCESS_TOKEN'
-        //                         )]) {
-
-        //                         // TODO: Protect against spaces in filenames
-        //                         def release_file_list_arg = release_file_list.join(" ")
-        //                         sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
-        //                     }
-
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
+    
+    // TODO: UPDATE ALL DEVELOPERS
     post {
-        always {
-            
-            // Collect valgrind core dumps
-            archiveArtifacts artifacts: "**/core", followSymlinks: false, allowEmptyArchive: true
-
-            cleanWs disableDeferredWipeout: true, deleteDirs: true
+        failure {
+            // if alpha/stable
+            mail subject: 'Build is failing',
+                body: "Build is failing: ${BUILD_URL}",
+                to: 'slwalsh@psfc.mit.edu,heidcamp@mit.edu'
         }
     }
+
 }

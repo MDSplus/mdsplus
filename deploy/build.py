@@ -857,9 +857,16 @@ def do_package():
 
     # TODO: Improve
     release_version = git('describe --tag')
+    print(release_version)
 
     # TODO: Harden
-    branch, major, minor, patch, hash = release_version.split('-', maxsplit=4)
+    parts = release_version.split('-', maxsplit=4)
+
+    if len(parts) >= 4:
+        branch, major, minor, patch = parts[:4]
+    else:
+        raise Exception(f'Unable to parse release version\n\tRelease Version: {release_version}')
+    
     branch = branch.replace('_release', '')
 
     release_version = f'{major}.{minor}.{patch}'
