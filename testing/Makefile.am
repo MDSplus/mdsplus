@@ -60,7 +60,8 @@ C_TEST_DIRS =\
 	mdstcpip/testing\
 	tditest/testing\
 	mdsobjects/cpp/testing\
-	actions/testing
+	actions/testing\
+	wfevent/testing
 #	testing/selftest
 
 TEST_DIRS ?=\
