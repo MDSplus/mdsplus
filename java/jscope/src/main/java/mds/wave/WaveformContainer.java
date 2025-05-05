@@ -84,7 +84,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	 *
 	 * @param l the waveform container listener
 	 */
-	public synchronized void addWaveContainerListener(WaveContainerListener l)
+	public  void addWaveContainerListener(WaveContainerListener l)
 	{
 		if (l == null)
 		{
@@ -142,8 +142,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 					w.SetYScale(curr_w);
 		}
 	}
-
-	synchronized public void appendUpdateWaveforms()
+/*
+	public void appendUpdateWaveforms()
 	{
 		Waveform w;
 		for (int i = 0; i < getGridComponentCount(); i++)
@@ -153,7 +153,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 				w.appendUpdate();
 		}
 	}
-
+*/
 	@Override
 	public void autoscaleAll()
 	{
@@ -590,7 +590,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	 *
 	 * @param l the waveform container listener
 	 */
-	public synchronized void removeContainerListener(ActionListener l)
+	public void removeContainerListener(ActionListener l)
 	{
 		if (l == null)
 		{
@@ -1009,8 +1009,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 				w.UpdatePoint(x, y);
 		}
 	}
-
-	synchronized public void updateWaveforms()
+/*
+        public void updateWaveforms()
 	{
 		Waveform w;
 		for (int i = 0; i < getGridComponentCount(); i++)
@@ -1020,4 +1020,5 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 				w.Update();
 		}
 	}
+*/
 }

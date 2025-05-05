@@ -123,7 +123,7 @@ public class MdsMessage extends Object
 		return (short) ((ch1) + (ch2));
 	}
 
-	synchronized protected void dispatchConnectionEvent(ConnectionEvent e)
+	protected void dispatchConnectionEvent(ConnectionEvent e)
 	{
 		if (connectionListeners != null)
 			for (final ConnectionListener listener : connectionListeners)
@@ -162,7 +162,7 @@ public class MdsMessage extends Object
 		return (arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128 && arr[idx + 3] == 0);
 	}
 
-	protected synchronized void ReadBuf(byte buf[], InputStream dis) throws IOException
+	protected  void ReadBuf(byte buf[], InputStream dis) throws IOException
 	{
 		ConnectionEvent e;
 		int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;

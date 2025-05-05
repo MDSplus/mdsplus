@@ -271,7 +271,6 @@ public class MdsDataProvider implements DataProvider
 		private float times[] = null;
 		private Dimension dim = null;
 		private int header_size = 0;
-
 		public SimpleFrameData(String in_y, String in_x, float time_min, float time_max) throws Exception
 		{
 			int i;
@@ -635,14 +634,14 @@ public class MdsDataProvider implements DataProvider
 			}
 			else
 			{
-				args.addElement(new Descriptor(null, new float[]
-				{ (float) xmin }));
-				args.addElement(new Descriptor(null, new float[]
-				{ (float) xmax }));
+				args.addElement(new Descriptor(null, new double[]
+				{ (double) xmin }));
+				args.addElement(new Descriptor(null, new double[]
+				{ (double) xmax }));
 			}
 			args.addElement(new Descriptor(null, new int[]
 			{ numPoints }));
-			byte[] retData;
+			byte[] retData = null;
 			int nSamples;
 			try
 			{
@@ -651,11 +650,30 @@ public class MdsDataProvider implements DataProvider
 				if (numPoints == Integer.MAX_VALUE)
 					throw new Exception("Use Old Method for getting data");
 				if (isLong)
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
 					retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
 				else
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
-					retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
+                                {
+                                    try {
+ 					retData = GetByteArray(" MdsMisc->GetXYSignalDoubleLimits:DSC", args);
+                                    }catch(Exception exc)
+                                    {
+                                        //Try old method in case the mdsip server is not up-to-date
+                                         final Vector<Descriptor> newArgs = new Vector<>();
+                                         for(int i = 0; i < args.size() - 3; i++)
+                                        {
+                                            newArgs.addElement(args.elementAt(i));
+                                        }
+                                        newArgs.addElement(new Descriptor(null, new float[]
+                                                { (float) xmin }));
+                                        newArgs.addElement(new Descriptor(null, new float[]
+                                                { (float) xmax }));
+                                        newArgs.addElement(new Descriptor(null, new int[]
+                                                { numPoints }));
+                                         try {
+                                                retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", newArgs);
+                                         } catch(Exception exc1){System.out.println(exc1);}
+                                    }
+                                }
 				/*
 				 * Decode data: Format: -retResolution(float) ----Gabriele Feb 2019 NEW: if
 				 * retResolution == 0 then the following int is the number of bytes of the error
@@ -706,8 +724,14 @@ public class MdsDataProvider implements DataProvider
 				{
 					final double[] x = new double[nSamples];
 					for (int i = 0; i < nSamples; i++)
+                                        {
 						x[i] = dis.readDouble();
-					res = new XYData(x, y, dRes);
+                                                if(i > 0 && x[i-1] > x[i])
+                                                {
+                                                    System.out.println("Internal error: non increasing dimension ("+i+" "+nSamples+")");
+                                                }
+                                        }        
+                                        res = new XYData(x, y, dRes);
 				}
 				else // float X
 				{
@@ -795,7 +819,7 @@ public class MdsDataProvider implements DataProvider
 		@Override
 		public int getNumDimension() throws IOException
 		{
-			if (numDimensions != UNKNOWN)
+                   			if (numDimensions != UNKNOWN)
 				return numDimensions;
 			String expr;
 			if (_jscope_set)
@@ -803,9 +827,11 @@ public class MdsDataProvider implements DataProvider
 			else
 			{
 				if (segmentMode == SEGMENTED_YES)
-					expr = "shape(GetSegment(" + segmentNodeName + ",0))";
-//	            expr = "shape(GetSegment(" + in_y +",0))";
-				else
+                                {
+                                    expr = "shape("+in_y.replace(segmentNodeName, "GetSegment("+segmentNodeName+",0)")+")";
+//	expr = "shape(GetSegment(" + segmentNodeName + ",0))";
+                                }
+	        		else
 				{
 					_jscope_set = true;
 					expr = "( _jscope_" + v_idx + " = (" + in_y + ";), shape(_jscope_" + v_idx + "))";
@@ -1106,11 +1132,15 @@ public class MdsDataProvider implements DataProvider
 				this.isXLong = isXLong;
 				this.updateTime = updateTime;
 			}
+                        public String toString()
+                        {
+                            return "Lower Bound: "+updateLowerBound+"\nUpper Bound: "+updateUpperBound+"\nupdatePoints: "+updatePoints;
+                        }
 		}
 
 		boolean enabled = true;
 		Vector<UpdateDescriptor> requestsV = new Vector<>();
-
+                UpdateDescriptor currUpdate;
 		boolean stopWorker = false;
 
 		synchronized void enableAsyncUpdate(boolean enabled)
@@ -1153,10 +1183,14 @@ public class MdsDataProvider implements DataProvider
 					if (!enabled)
 						break;
 					// Take most recent request
-					final UpdateDescriptor currUpdate = requestsV.elementAt(requestsV.size() - 1);
+					currUpdate = requestsV.elementAt(requestsV.size() - 1);
 					try
 					{
 						requestsV.removeElementAt(requestsV.size() - 1);
+                                                //requestsV.clear(); //Older requests are ignored
+                                                
+                                                
+                                                
 						final XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound,
 								currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 						if (debug)
@@ -1179,6 +1213,8 @@ public class MdsDataProvider implements DataProvider
 					{
 						final Date d = new Date();
 						System.out.println(d + " Error in asynchUpdate: " + exc);
+                                                System.out.println(currUpdate);
+                                                exc.printStackTrace();
 					}
 				}
 			}
@@ -1376,7 +1412,7 @@ public class MdsDataProvider implements DataProvider
 		}
 		if (open)
 		{
-			if (defaultNode != null && (prev_default_node == null || !defaultNode.equals(prev_default_node)))
+			if (defaultNode != null && (prev_default_node == null || (!defaultNode.trim().equals("") && !defaultNode.equals(prev_default_node))))
 			{
 				Descriptor descr;
 				if (default_node.trim().charAt(0) == '\\')
@@ -1395,6 +1431,7 @@ public class MdsDataProvider implements DataProvider
 				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
 				prev_default_node = null;
 			}
+                        prev_default_node = default_node;
 		}
 		return true;
 	}
