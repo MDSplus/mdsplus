@@ -19,6 +19,7 @@ TESTS = \
  MDSplus.MdsExpressionCompileTest\
  MDSplus.MdsFunctionTest\
  MDSplus.MdsRangeTest\
+ MDSplus.MdsRemoteEventTest\
  MDSplus.MdsSignalTest\
  MDSplus.MdsStringTest\
  MDSplus.MdsTreeNodeTest\
