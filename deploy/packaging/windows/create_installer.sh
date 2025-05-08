@@ -16,6 +16,12 @@ makensis -V4 -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DBNAME=${BN
   -DINCLUDE=${srcdir}/deploy/packaging/${PLATFORM} \
   -DOUTDIR=${DISTROOT}/${PLATFORM}/${FLAVOR} -Dsrcdir=${srcdir} ${vs} ${srcdir}/deploy/packaging/${PLATFORM}/mdsplus.nsi
 popd
+
+if [ ! -f ${DISTROOT}/${PLATFORM}/${FLAVOR}/MDSplus${BNAME}-${major}.${minor}-${release}-${ARCH}.exe ]; then
+  echo "Failed to build installer"
+  exit 1
+fi
+
 if [ -d /sign_keys ]; then
   echo "Signing installer"
   if (

@@ -18,8 +18,6 @@ InstType "Minimal"
 !define DLLIB libdl.dll
 !define READLINELIB libreadline8.dll
 !define GCC_STDCPP_LIB libstdc++-6.dll
-!define GCC_S_SEH_LIB libgcc_s_seh-1.dll
-!define GCC_S_DW2_LIB libgcc_s_dw2-1.dll
 !define GFORTRAN_LIB libgfortran-5.dll
 !define QUADMATH_LIB libquadmath-0.dll
 !define LIBXML2_LIB libxml2-2.dll
@@ -29,8 +27,10 @@ InstType "Minimal"
 
 !if ${ARCH} == "x64" ; 64 bit install
     !define MINGWLIB /usr/x86_64-w64-mingw32/sys-root/mingw/bin
+	!define GCC_LIB libgcc_s_seh-1.dll
 !else ; 32 bit install
     !define MINGWLIB /usr/i686-w64-mingw32/sys-root/mingw/bin
+	!define GCC_LIB libgcc_s_dw2-1.dll
 !endif
 
 !define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
@@ -223,7 +223,7 @@ SectionGroup "!core" core
 		File ${MINGWLIB}/${READLINELIB}
 		File ${MINGWLIB}/${TERMCAPLIB}
 		File ${MINGWLIB}/${GCC_STDCPP_LIB}
-		File ${MINGWLIB}/${GCC_S_SEH_LIB}
+		File ${MINGWLIB}/${GCC_LIB}
 		File ${MINGWLIB}/${GFORTRAN_LIB}
 		File ${MINGWLIB}/${QUADMATH_LIB}
 		File ${MINGWLIB}/${LIBXML2_LIB}
