@@ -230,6 +230,15 @@ public class MdsMisc extends Mdsdcl
 		return this.mds.getByteArray(ctx, request);
 	}
 
+	private final byte[] _miscGetXYSignalDoubleLimits(final CTX ctx, final String ydata, final String xdata, final double xmin,
+			final double xmax, final int num_samples) throws MdsException
+	{
+		final Request<Uint8Array> request = new MiscCall<>(Uint8Array.class, "GetXYSignalDoubleLimits:DSC")//
+				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Float64(xmin))
+				.ref(new Float64(xmax)).ref(new Int32(num_samples)).fin();
+		return this.mds.getByteArray(ctx, request);
+	}
+
 	private final byte[] _miscGetXYSignalLongTimes(final CTX ctx, final String ydata, final String xdata,
 			final long xmin, final long xmax, final int num_samples) throws MdsException
 	{
