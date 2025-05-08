@@ -10,6 +10,7 @@ import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Uint8Array;
 import mds.data.descriptor_s.Float32;
+import mds.data.descriptor_s.Float64;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Int64;
 
