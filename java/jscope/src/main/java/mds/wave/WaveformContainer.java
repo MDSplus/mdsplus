@@ -142,18 +142,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 					w.SetYScale(curr_w);
 		}
 	}
-/*
-	public void appendUpdateWaveforms()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.appendUpdate();
-		}
-	}
-*/
 	@Override
 	public void autoscaleAll()
 	{
@@ -1009,16 +997,4 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 				w.UpdatePoint(x, y);
 		}
 	}
-/*
-        public void updateWaveforms()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.Update();
-		}
-	}
-*/
 }

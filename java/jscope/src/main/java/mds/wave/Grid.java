@@ -13,6 +13,7 @@ public class Grid implements Serializable
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final int MAX_STEPS = 1000; //Maximum number of steps in the tick selection agorithm
 	static final long dayMilliSeconds = 86400000; // 24 * 60 * 60 * 1000;
 	final static int IS_X = 0, IS_Y = 1;
 	public final static int IS_DOTTED = 0;
@@ -125,7 +126,7 @@ public class Grid implements Serializable
 		curr = (long) (curr_min / step) * step;
 		if (curr > curr_min)
 			curr -= (long) ((curr - curr_min) / step) * step;
-                int maxSteps = 1000;
+                int maxSteps = MAX_STEPS;
                 for(int j = 0; j < maxSteps && (curr >= curr_min); j++)
                 {
 			curr -= step;

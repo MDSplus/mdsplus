@@ -957,7 +957,6 @@ class MdsWaveInterface extends WaveInterface
 			{
 				if (!signals[sigIdx].supportsStreaming() || !signals[sigIdx].updateSignal())
 					return false;
-				//signals[sigIdx].mergeRegions();
 			}
 		}
 		return true;

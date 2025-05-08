@@ -819,7 +819,7 @@ public class MdsDataProvider implements DataProvider
 		@Override
 		public int getNumDimension() throws IOException
 		{
-                   			if (numDimensions != UNKNOWN)
+            if (numDimensions != UNKNOWN)
 				return numDimensions;
 			String expr;
 			if (_jscope_set)
