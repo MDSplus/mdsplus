@@ -23,9 +23,30 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-MARTE2_SIMULINK = __import__('MARTE2_SIMULINK', globals())
+from MDSplus import Data
+
+MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MARTE2_SIMULINK.BUILDER
-class MARTE2_SIMULINK_DTT(MARTE2_SIMULINK.MARTE2_SIMULINK):
-    lib_name = 'Plant'
+@MC.BUILDER('GetPoseGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+class MARTE2_GETPOSE(MC.MARTE2_COMPONENT):
+    inputs = [
+        {'name': 'Image', 'type': 'uint8',   'dimensions': [480000], 'parameters': []},
+        {'name': 'Phase', 'type': 'float32', 'dimensions': 0,        'parameters': []}
+    ]
+    outputs = [
+        {'name': 'Pose',  'type': 'float32', 'dimensions': [6],      'parameters': []},
+        {'name':'Image',  'type': 'uint8', 'dimensions': [480000], 'parameters': []},
+
+    ]
+    parameters = [
+        {'name': 'CameraMatrix', 'type': 'float32'},
+        {'name': 'DistortionCoefficients', 'type': 'float32'},
+        {'name': 'BasisVectors', 'type': 'float32'}
+    ]
+
+    parts = []
+
+    def prepareMarteInfo(self):
+       #print("GET POSE GAM")
+        pass

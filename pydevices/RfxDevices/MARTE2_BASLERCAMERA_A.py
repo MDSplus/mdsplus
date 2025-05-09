@@ -23,35 +23,37 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-
-
-
-from MDSplus import Data, TreeNode, TreePath
+from MDSplus import Data
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('PiecewiseLinearGAM', MC.MARTE2_COMPONENT.MODE_GAM)
-class MARTE2_RAMP(MC.MARTE2_COMPONENT):
-    inputs = [
-        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
-        {'name': 'Enable', 'type': 'uint8', 'dimensions': 0, 'parameters': []},
-        {'name': 'SoftLandingTrigger', 'type': 'uint8', 'dimensions': 0, 'parameters': []}]
+@MC.BUILDER('BaslerCamera', MC.MARTE2_COMPONENT.MODE_INPUT)
+class MARTE2_BASLERCAMERA_A(MC.MARTE2_COMPONENT):
     outputs = [
-        {'name': 'ramp', 'type': 'float64', 'dimensions':0, 'parameters': []}]
-    parameters = [
-        {'name': 'InitialValue', 'type': 'float64'}, 
-        {'name': 'SetPoint', 'type': 'float64'}, 
-        {'name': 'Vertices', 'type': 'float64'}, 
-        {'name': 'Slopes', 'type': 'float64'}, 
-        {'name': 'SetPointScaling', 'type': 'float64'}, 
-        {'name': 'SlopeScaling', 'type': 'float64'}, 
-        {'name': 'TimeScaling', 'type': 'float64'}, 
-        {'name': 'SoftLandingSlope', 'type': 'float64'},
-        {'name': 'VerticesMode', 'type': 'string'}
+        {'name': 'Frame', 'type': 'uint8', 'dimensions': [600,800], 'parameters': []},
+        {'name': 'Timestamp', 'type': 'uint64', 'dimensions': 0, 'parameters': []},
     ]
-
+    parameters = [
+        {'name': 'IpAddress', 'type': 'string', 'value': "224.0.23.159"},
+        {'name': 'FPS', 'type': 'float32', 'value': 5.0},
+        {'name': 'Width', 'type': 'int64', 'value': 800},
+        {'name': 'Height', 'type': 'int64', 'value': 600},
+        {'name': 'OffsetX', 'type': 'int64', 'value': 0},
+        {'name': 'OffsetY', 'type': 'int64', 'value': 0},
+        {'name': 'RawGain', 'type': 'uint32', 'value': 136},
+        {'name': 'ExposureTime', 'type': 'float64', 'value': 21110.0}, # microseconds
+    ]
     parts = []
 
     def prepareMarteInfo(self):
+        #self.OUTPUTS.FRAME.DIMENSIONS.putData(Data.compile(
+        #    '[build_path("\\' + self.getFullPath() + '.parameters:par_3:value) * build_path("\\' + self.getFullPath() + '.parameters:par_4:value)]'
+        #))
+
+        # self.timebase.putData(Data.compile(
+        #     ' 0 : * : 1.0D / (build_path("\\' + self.getFullPath() + '.parameters:par_2:value))'
+        # ))
+
+        # TODO: set Frame dimensions to Data.compile([Width * Height])
         pass

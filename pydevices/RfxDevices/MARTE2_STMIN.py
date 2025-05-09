@@ -23,9 +23,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-MARTE2_SIMULINK = __import__('MARTE2_SIMULINK', globals())
+MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MARTE2_SIMULINK.BUILDER
-class MARTE2_SIMULINK_DTT(MARTE2_SIMULINK.MARTE2_SIMULINK):
-    lib_name = 'Plant'
+@MC.BUILDER('StmIn', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
+class MARTE2_STMIN(MC.MARTE2_COMPONENT):
+    outputs = [
+        {'name': 'Time', 'type': 'int32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Chan1', 'type': 'int16', 'dimensions': 0, 'parameters': []}]
+    parameters = [
+        {'name': 'Ip', 'type': 'string', 'value': 'localhost'},
+        {'name': 'Port', 'type': 'int32', 'value': 55151},
+    ]
+    parts = []
+    
+    def prepareMarteInfo(self):
+        self.timebase.putData(self.getTree().tdiCompile(
+            '0:1000000 : 744E-6'))
