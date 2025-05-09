@@ -118,7 +118,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		abort = true;
 	}
 
-	public synchronized void AddAllEvents(UpdateEventListener l) throws IOException
+	public  void AddAllEvents(UpdateEventListener l) throws IOException
 	{
 		jScopeMultiWave w;
 		if (dp == null)
@@ -588,7 +588,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		return (JFrame) c;
 	}
 
-	public synchronized void getjScopeMultiWave()
+	public  void getjScopeMultiWave()
 	{
 		wave_all = new jScopeMultiWave[getGridComponentCount()];
 		for (int i = 0, k = 0; i < 4; i++)
@@ -789,7 +789,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		}
 	}
 
-	public synchronized void Refresh(jScopeMultiWave w, String label)
+	public  void Refresh(jScopeMultiWave w, String label)
 	{
 		Point p = null;
 		if (add_sig)
@@ -1134,7 +1134,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 			{
 				main_shot_str = null;
 				main_shot_error = "Main Shots evaluations error : \n" + exc.getMessage();
-				JOptionPane.showMessageDialog(this, main_shot_error, "alert SetMainShot", JOptionPane.ERROR_MESSAGE);
+				//JOptionPane.showMessageDialog(this, main_shot_error, "alert SetMainShot", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -1302,7 +1302,7 @@ public void ShowBrowseSignals()
 		}
 	}
 
-	public synchronized void UpdateAllWave() throws Exception
+	public  void UpdateAllWave() throws Exception
 	{
 		WaveContainerEvent wce;
 		try

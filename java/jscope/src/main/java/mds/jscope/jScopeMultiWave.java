@@ -210,7 +210,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		wi.Erase();
 	}
 
-	public synchronized void jScopeWaveUpdate()
+	public void jScopeWaveUpdate()
 	{
 		if (wi.isAddSignal())
 		{

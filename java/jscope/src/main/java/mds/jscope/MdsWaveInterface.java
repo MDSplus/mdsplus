@@ -918,7 +918,7 @@ class MdsWaveInterface extends WaveInterface
 		return 0;
 	}
 
-	public synchronized void refresh() throws Exception
+	public  void refresh() throws Exception
 	{
 		try
 		{
@@ -941,7 +941,7 @@ class MdsWaveInterface extends WaveInterface
 		}
 	}
 
-	public synchronized boolean refreshOnEvent() throws Exception
+	public boolean refreshOnEvent() throws Exception
 	{
 		final long shots[] = GetShots();
 		if (shots == null)
@@ -957,7 +957,6 @@ class MdsWaveInterface extends WaveInterface
 			{
 				if (!signals[sigIdx].supportsStreaming() || !signals[sigIdx].updateSignal())
 					return false;
-				signals[sigIdx].mergeRegions();
 			}
 		}
 		return true;

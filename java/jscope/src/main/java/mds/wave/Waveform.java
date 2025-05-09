@@ -11,8 +11,10 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import mds.jscope.jScopeMultiWave;
 
 public class Waveform extends JComponent implements SignalListener
 {
@@ -358,7 +360,7 @@ public class Waveform extends JComponent implements SignalListener
 		waveform_listener.addElement(l);
 	}
 
-	synchronized public void appendPaint(Graphics g, Dimension d)
+	 public void appendPaint(Graphics g, Dimension d)
 	{
 		setFont(g);
 		g.setColor(Color.black);
@@ -469,7 +471,25 @@ public class Waveform extends JComponent implements SignalListener
 		setBorder(unselect_border);
 	}
 
-	protected synchronized void dispatchWaveformEvent(WaveformEvent e)
+        protected void dispatchWaveformEvent(WaveformEvent e)
+        {
+            class Invoker implements Runnable {
+                WaveformEvent e;
+                public Invoker(WaveformEvent e) 
+                {
+                    this.e = e;
+                }
+                public void run()
+                {
+                    intDispatchWaveformEvent(e);
+                }
+            }
+            SwingUtilities.invokeLater(new Invoker(e));
+	}
+   
+                
+        
+	protected void intDispatchWaveformEvent(WaveformEvent e)
 	{
 		if (e == null || !event_enabled)
 		{
@@ -1462,7 +1482,7 @@ public class Waveform extends JComponent implements SignalListener
 			sendProfileEvent();
 	}
 
-	synchronized public void PaintImage(Graphics g, Dimension d, int print_mode)
+	 public void PaintImage(Graphics g, Dimension d, int print_mode)
 	{
 		if (frames != null)
 		{
@@ -1482,7 +1502,7 @@ public class Waveform extends JComponent implements SignalListener
 		}
 	}
 
-	synchronized protected void PaintSignal(Graphics g, Dimension dim, int print_mode)
+	 protected void PaintSignal(Graphics g, Dimension dim, int print_mode)
 	{
 		Dimension d;
 		String orizLabel = x_label;
@@ -1642,7 +1662,7 @@ public class Waveform extends JComponent implements SignalListener
 		return is_playing;
 	}
 
-	public synchronized void removeWaveformListener(WaveformListener l)
+	public void removeWaveformListener(WaveformListener l)
 	{
 		if (l == null)
 		{
@@ -2753,7 +2773,7 @@ public class Waveform extends JComponent implements SignalListener
 		repaint();
 	}
 
-	synchronized public void StopFrame()
+         public void StopFrame()
 	{
 		if (is_image && is_playing)
 		{
@@ -2809,7 +2829,7 @@ public class Waveform extends JComponent implements SignalListener
 		repaint();
 	}
 
-	synchronized public void Update(Signal s)
+	 public void Update(Signal s)
 	{
 		update_timestamp++;
 		waveform_signal = s;
@@ -2840,7 +2860,7 @@ public class Waveform extends JComponent implements SignalListener
 		UpdatePoint(curr_x, Double.NaN);
 	}
 
-	public synchronized void UpdatePoint(double curr_x, double curr_y)
+	public  void UpdatePoint(double curr_x, double curr_y)
 	{
 		final Dimension d = getWaveSize();
 		if (curr_x == curr_point && !dragging)

@@ -1116,8 +1116,9 @@ static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd)
   return retXd;
 }
 
-EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
-                                float *inXMax, int *reqNSamples)
+
+EXPORT mdsdsc_xd_t *GetXYSignalDoubleLimits(char *inY, char *inX, double *inXMin,
+                                double *inXMax, int *reqNSamples)
 {
   static EMPTYXD(retXd);
   const size_t len = strlen(inY);
@@ -1127,8 +1128,8 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     return (encodeError("Y data must not be NULL or empty.", __LINE__, &retXd));
   EMPTYXD(yXd);
   EMPTYXD(xXd);
-  mdsdsc_t xMinD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
-  mdsdsc_t xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
+  mdsdsc_t xMinD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMax};
   int status;
   {
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
@@ -1149,6 +1150,7 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
   return getPackedDsc(&retXd);
 }
+
 
 EXPORT mdsdsc_xd_t *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin,
                                          int64_t *inXMax, int *reqNSamples)
