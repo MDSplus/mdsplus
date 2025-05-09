@@ -28,4 +28,4 @@ MARTE2_SIMULINK = __import__('MARTE2_SIMULINK', globals())
 
 @MARTE2_SIMULINK.BUILDER
 class MARTE2_SIMULINK_DTT(MARTE2_SIMULINK.MARTE2_SIMULINK):
-    lib_name = 'PS_and_plasma'
+    lib_name = 'Plant'

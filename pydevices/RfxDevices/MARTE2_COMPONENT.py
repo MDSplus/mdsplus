@@ -24,7 +24,6 @@
 #
 
 import MDSplus
-import RfxDevices
 import numpy as np
 import copy
 
@@ -37,6 +36,10 @@ class BUILDER:
 
     def __call__(self, cls):
         cls.buildGam(cls.parts, self.clazz, self.mode, self.timebaseExpr)
+        try:
+            cls.postBuild()
+        except:
+            pass
         return cls
 
 
@@ -223,6 +226,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
             parts.append(
                 {'path': ':JSCOPE_EV', 'type': 'text', 'value': 'updatejScope'})
+            parts.append(
+               {'path': ':ALIAS', 'type': 'numeric'})
+                
 
 
     @classmethod
@@ -289,7 +295,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         except:
             name = currSigNode.getName()
 
-        while not isinstance(currSigNode.getParent().getParent(), RfxDevices.MARTE2_COMPONENT):
+        while not isinstance(currSigNode.getParent().getParent(), MARTE2_COMPONENT):
             currSigNode = currSigNode.getParent().getParent()
             try:
                 currName = currSigNode.getNode('NAME').data()
@@ -304,7 +310,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     #return the containing MARTE2 device 
     def getMarteDevice(self, node):
         currNode = node
-        while not isinstance(currNode, RfxDevices.MARTE2_COMPONENT):
+        while not isinstance(currNode, MARTE2_COMPONENT):
             if currNode.getParent().getNid() == 0: #TOP reached
                 raise Exception('Node '+ node.getPath() +' is not contained in a MARTe2 device')
             currNode = currNode.getParent()
@@ -340,7 +346,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         try:
             refTypeNode = refSigNode.getNode('TYPE')
         except:
-            raise Exception ('Not a valid MARTE2 device reference for '+ self.getSignalName(sigNode) + ' of '+self.getPath()+ ':  '+ value()) 
+            raise Exception ('Not a valid MARTE2 device reference for '+ self.getSignalName(sigNode) + ' of '+self.getPath()) 
 
         if refTypeNode.data() != sigNode.getNode('TYPE').data():
             raise Exception ('Invalid type for signal '+ self.getSignalName(sigNode) + ' of '+self.getPath()+':'+value.getPath()+': '+refTypeNode.data()+'  '+sigNode.getNode('TYPE').data()) 
@@ -348,7 +354,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             refDimNode = refSigNode.getNode('DIMENSIONS')
         except:
             raise Exception ('Not a valid MARTE2 device reference for '+ sigNode + ' of '+self.getPath()) 
-        if refDimNode.data() != sigNode.getNode('DIMENSIONS').data():
+        if not (refDimNode.data() == sigNode.getNode('DIMENSIONS').data()).all():
             raise Exception ('Invalid dimension for signal '+ sigNode.getPath()+ ' of '+self.getPath() ) 
         return True
 
@@ -676,7 +682,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                         useColumnOrder = 0
                     treeRefs.append({
                         'Name':currSig['Name'], 
-                        'Expression': value, 
+                        'Expression': value,
+                        'NumberOfElements':  currSig['NumberOfElements'],
+                        'NumberOfDimensions': currSig['NumberOfDimensions'],
                         'UseColumnOrder': useColumnOrder, 
                         'Type': currSig['Type']})
                 else: #It is a constant
@@ -744,7 +752,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         else: #Not a reference to the output of a MARTe2 device
             if isinstance(value.evaluate(), MDSplus.Signal):
-                treeRefs.append({'Name':'OutputTrigger', 'Expression': value, 'UseColumnOrder': 0, 'Type': 'uint8'})
+                treeRefs.append({'Name':'OutputTrigger', 'Expression': value, 'UseColumnOrder': 0, 'Type': 'uint8', 'NumberOfElements':1, 'NumberOfDimensions':0})
                           
     #Return DataSource definition (dictionary) handling the inputs to be received form other supervisors
     def handleInputsToBeReceived(self, inputs, isSync):
@@ -844,14 +852,20 @@ class MARTE2_COMPONENT(MDSplus.Device):
         outGam['Inputs'] = [{'Name':'Time', 'DataSource':self.timerDDB, 'Type': self.timerType, 'NumberOfDimensions': 0, 'NumberOfElements': 1}]
         outputs = []
         for treeRef in treeRefs:
+            if isinstance(treeRef['Expression'], MDSplus.TreeNode) or isinstance(treeRef['Expression'], MDSplus.TreePath):
+                expr = treeRef['Expression'].getFullPath()
+            else:
+                expr = treeRef['Expression'].decompile()
             outputs.append({
                 'Name': treeRef['Name'], 
-                'NumberOfDimensions': 0, 
-                'NumberOfElements': 1, 
+                'NumberOfDimensions': treeRef['NumberOfDimensions'],
+                'NumberOfElements': treeRef['NumberOfElements'], 
                 'Type': treeRef['Type'],
                 'UseColumnOrder': treeRef['UseColumnOrder'], 
-                'DataExpr': treeRef['Expression'].decompile(), 
-                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
+#                'DataExpr': treeRef['Expression'].decompile(), 
+#                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
+                'DataExpr': expr, 
+                'TimebaseExpr': '\"DIM_OF('+expr+')\"', 
                 'DataSource': self.getMarteDeviceName(self)+'_TreeInDDB'})
         outGam['Outputs'] = outputs
         return outGam
@@ -937,7 +951,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def isReferencedByAnyThread(self, outValNode, threadMap):
         marteNids = threadMap['DeviceInfo'].keys()
         for marteNid in marteNids:
-            inputNodes = MDSplus.TreeNode(marteNid).getNode('INPUTS').getChildren()
+            try:
+                inputNodes = MDSplus.TreeNode(marteNid).getNode('INPUTS').getChildren()
+            except: 
+                return False #No Inputs
             if self.isReferenced(outValNode, inputNodes):
                 return True
             marteDevice = MDSplus.TreeNode(marteNid)
@@ -967,18 +984,24 @@ class MARTE2_COMPONENT(MDSplus.Device):
             marteDevice = MDSplus.TreeNode(marteNid)
             mode = marteDevice.getNode('MODE').data()
             if mode == MARTE2_COMPONENT.MODE_INPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
-                continue
-            inputNodes = marteDevice.getNode('INPUTS').getChildren()
-            if self.isReferenced(outValNode, inputNodes):
-                if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
-                    ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
-                    ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
-                    circuitIds.append(marteDevice.getNid())
-            if mode != MARTE2_COMPONENT.MODE_OUTPUT and self.isReferenced(outValNode, [marteDevice.getNode('OUTPUTS:TRIGGER')]):
-                if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
-                    ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
-                    ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
-                    circuitIds.append(marteDevice.getNid())
+                #For input devices we must only check possible data acquisition trigger
+                if self.isReferenced(outValNode, [marteDevice.getNode('OUTPUTS:TRIGGER')]):
+                    if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
+                        ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
+                        ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
+                        circuitIds.append(marteDevice.getNid()) 
+            else:
+                inputNodes = marteDevice.getNode('INPUTS').getChildren()
+                if self.isReferenced(outValNode, inputNodes):
+                    if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
+                        ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
+                        ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
+                        circuitIds.append(marteDevice.getNid())
+                if mode != MARTE2_COMPONENT.MODE_OUTPUT and self.isReferenced(outValNode, [marteDevice.getNode('OUTPUTS:TRIGGER')]):
+                    if threadMap['DeviceInfo'][marteNid]['SupervisorNid'] !=  threadMap['DeviceInfo'][thisNid]['SupervisorNid']:
+                        ips.append(threadMap['DeviceInfo'][marteNid]['SupervisorIp'])
+                        ports.append(threadMap['DeviceInfo'][marteNid]['DevicePort'])
+                        circuitIds.append(marteDevice.getNid())
         netInfos['Ip'] = ips
         netInfos['Port'] = ports
         netInfos['CircuitId'] = circuitIds
@@ -1085,7 +1108,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currDimension = sigNode.getNode('DIMENSIONS').data()
             except:
                 currDimension = -1
-            if currDimension == -1:
+            if not hasattr(currDimension, '__len__') and currDimension == -1:
                 continue
 
             currName = self.getSignalName(sigNode)
@@ -1313,7 +1336,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'NodeName': self.getNode('OUTPUTS:OUT_TIME').getFullPath(),
             'AutomaticSegmentation': 0,
             'TimeSignal': 1,
-            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
+#            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
+            'Period': str(self.timerPeriod).replace('D', 'E'),
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data(),
             'DiscontinuityFactor': 10
             })
@@ -1323,7 +1347,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
-            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
+#            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
+            sigDef['Period'] = str(self.timerPeriod).replace('D', 'E')
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
@@ -1373,10 +1398,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 sigDef['DataSource'] = self.getMarteDeviceName(self)+'_Output_DDB'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-#            sigDef['NumberOfDimensions'] = numDims
-#            sigDef['NumberOfElements'] = numEls
- #            if samples > 1:
-#                sigDef['Samples'] = samples
+            sigDef['NumberOfDimensions'] = numDims
+            sigDef['NumberOfElements'] = numEls
+            if samples > 1:
+                sigDef['Samples'] = samples
             inputs.append(sigDef)
         retGam['Inputs'] = inputs
 
@@ -1401,7 +1426,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-            sigDef['NumberOfDimensions'] = numDims
+#            sigDef['NumberOfDimensions'] = numDims  Set to 1 as current MDSWriter does not support matrixes
+            sigDef['NumberOfDimensions'] = 1
             sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()
@@ -1462,6 +1488,31 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         return retDataSource, retGam
 
+#Get Alisa: valid for Input and Output MARTE2 devices. When defined it must refer to an Input or Output device, respectively and
+#and it will share the same DataSource instance
+
+    def getAlias(self):
+        try:
+            mode = self.getNode('MODE').data()
+        except:
+            raise Exception('No mode field defined for '+self.getPath())
+        if mode == MARTE2_COMPONENT.MODE_GAM:
+            raise Exception('Internal error: getAlias() called for non Input or Output device '+self.getPath())
+        try:
+            aliasDevice = self.getNode(':ALIAS').getData()
+        except:
+            return None
+        if not self.isMarteDeviceRef(aliasDevice):
+            raise Exception('Wrong ALIAS reference for '+self.getPath())
+        try:
+            aliasMode = aliasDevice.getNode('MODE').data()
+        except:
+            raise Exception('No mode field defined for '+aliasDevice.getPath())
+        if aliasMode != mode:
+            raise Exception('Wrong device type ALIAS reference for '+self.getPath())
+        return aliasDevice
+
+
 
  ###########Overall Generation
 
@@ -1470,7 +1521,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
-
+        
         retGams = []
         retDataSources = []
 
@@ -1589,6 +1640,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
+        alias = self.getAlias()
 
         retGams = []
         retDataSources = []
@@ -1606,7 +1658,26 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if numPars > 0:
             retDataSource['Parameters'] = self.getParametersDict(self.getNode('PARAMETERS'))
 
+###############################################################
+        resampledSyncSigs = []
+        syncInputsToBeReceived = []
+        asyncInputsToBeReceived = []
+        treeRefs = []
 
+        self.handleOutputTrigger(threadMap, resampledSyncSigs, syncInputsToBeReceived, 
+                            asyncInputsToBeReceived, treeRefs)
+
+        #Handle reception of input signals from devices belonging to a different supervisor
+        #For Input devices this can ONLY occur if dfata acquisition is triggered by a signal generated by another 
+        #MARTE2 supervisor
+        if len(syncInputsToBeReceived) > 0:
+            rtnInInfo = self.handleInputsToBeReceived(syncInputsToBeReceived, isSync = True)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
+        if len(asyncInputsToBeReceived) > 0:
+            rtnInInfo = self.handleInputsToBeReceived(asyncInputsToBeReceived, isSync = False)
+            retDataSources += rtnInInfo['DataSources']
+            retGams += rtnInInfo['Gams']
 ###############Outputs
         syncThreadSignals = []
         asyncThreadSignals = []
@@ -1628,13 +1699,19 @@ class MARTE2_COMPONENT(MDSplus.Device):
             currSignal.pop('DataSource')
 
         retDataSource['Signals'] = signals
-        retDataSources.append(retDataSource)
+
+        if alias == None:
+            retDataSources.append(retDataSource)
 
         retGam = {}
         retGam['Name'] = self.getMarteDeviceName(self)+'_IOGAM'
         retGam['Class'] = 'IOGAM'
         for currInput in inputs:
-            currInput['DataSource'] = self.getMarteDeviceName(self)
+            if alias == None:
+                currInput['DataSource'] = self.getMarteDeviceName(self)
+            else:
+                currInput['DataSource'] = self.getMarteDeviceName(alias)
+
         retGam['Inputs'] = self.removeParametersFromList(inputs)
         for currOutput in outputs:
             try:
@@ -1661,6 +1738,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Name': self.getMarteDeviceName(self)+'_Output_DDB',
             'Class': 'GAMDataSource'})
 
+       #Handle unpacking of output structures
+        if len(outputsToBeUnpacked) > 0:
+            retGams.append(self.handleOutputUnpack(outputsToBeUnpacked))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_Expanded_Output_DDB', 'Class': 'GAMDataSource'})
         #Handle Synchronous Outputs
         if len(syncThreadSignals) > 0:
             retGams.append(self.handleSynchronoutOutputs(syncThreadSignals))
@@ -1684,11 +1765,12 @@ class MARTE2_COMPONENT(MDSplus.Device):
         return retDataSources, retGams
 
 
-    #return the list of GAM and DataSource (dictionaries) corresponding to this GAM MARTe2 device 
+    #return the list of GAM and DataSource (dictionaries) corresponding to this Output MARTe2 device 
     def generateMarteOutputConfiguration(self, threadMap, timerDDB, timerType, timerPeriod, typesDict):
         self.timerDDB = timerDDB
         self.timerType = timerType
         self.timerPeriod = timerPeriod
+        alias = self.getAlias()
 
         retGams = []
         retDataSources = []
@@ -1733,10 +1815,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
             except:
                 pass
         retDataSource['Signals'] = signals
-        retDataSources.append(retDataSource)
+        if alias == None:
+            retDataSources.append(retDataSource)
 
         for currOutput in outputs:
-            currOutput['DataSource'] = self.getMarteDeviceName(self)
+            if alias == None:
+                currOutput['DataSource'] = self.getMarteDeviceName(self)
+            else:
+                 currOutput['DataSource'] = self.getMarteDeviceName(alias)
             try:
                 currOutput.pop('Alias')
             except:
@@ -1767,13 +1853,18 @@ class MARTE2_COMPONENT(MDSplus.Device):
             retGams.append(self.handleConstRefs(constRefs))
             retDataSources.append({'Name': self.getMarteDeviceName(self)+'_ConstInDDB', 'Class': 'GAMDataSource'})
 
+        #Handle Packing of input structures defined in separate fields
+        if len(inputsToBePacked) > 0:
+            retGams.append(self.handleInputPacking(inputsToBePacked))
+            retDataSources.append({'Name': self.getMarteDeviceName(self)+'_Input_Bus_DDB', 'Class': 'GAMDataSource'})
 
 
         retGams.append({
             'Name': self.getMarteDeviceName(self)+'_IOGAM', 
             'Class': 'IOGAM', 
             'Inputs': self.removeParametersFromList(inputs),
-            'Outputs': self.removeParametersFromList(outputs)})
+            'Outputs': outputs})
+#            'Outputs': self.removeParametersFromList(outputs)})
 
         return retDataSources, retGams
 
