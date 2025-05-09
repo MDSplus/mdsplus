@@ -87,7 +87,7 @@ int SGSetMAXBUF(int scsiDevice, int new)
   int old = -1;
   char *bufptr;
   int fd = -1;
-  if (scsiDevice >= 0 || scsiDevice <= 9)
+  if (scsiDevice >= 0 && scsiDevice <= 9)
   {
     old = MAXBUF[scsiDevice];
     if (new >= MIN_MAXBUF)
@@ -112,7 +112,7 @@ int SGSetMAXBUF(int scsiDevice, int new)
 
 int SGGetMAXBUF(int scsiDevice)
 {
-  if (scsiDevice >= 0 || scsiDevice <= 9)
+  if (scsiDevice >= 0 && scsiDevice <= 9)
   {
     char *bufptr;
     OpenScsi(scsiDevice, &bufptr);
@@ -127,7 +127,7 @@ static int OpenScsi(int scsiDevice, char **buff_out)
   char *buff = 0;
   static char *BUFFS[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int fd = -1;
-  if (scsiDevice >= 0 || scsiDevice <= 9)
+  if (scsiDevice >= 0 && scsiDevice <= 9)
   {
     if (FDS[scsiDevice] >= 0)
     {

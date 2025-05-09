@@ -28,9 +28,8 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
+        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
@@ -46,23 +45,17 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Time Div.:");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(253);
-        jPanel2.add(deviceField2);
-
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Write CPU Mask: ");
         deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(120);
+        deviceField3.setOffsetNid(145);
         jPanel2.add(deviceField3);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Port: ");
+        deviceField1.setNumCols(6);
+        deviceField1.setOffsetNid(309);
+        jPanel2.add(deviceField1);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -75,7 +68,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
-        deviceOutputs1.setOffsetNid(114);
+        deviceOutputs1.setOffsetNid(139);
         jPanel3.add(deviceOutputs1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Outputs", jPanel3);
@@ -96,7 +89,6 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;

@@ -34,8 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-extern int TdiConcat();
-extern int TdiTranslate();
+extern int TdiConcat(mdsdsc_t *, ...);
+extern int TdiTranslate(mdsdsc_t *, ...);
 extern int TdiGetLong();
 
 static const DESCRIPTOR(asterisk, "*");
@@ -96,7 +96,7 @@ static void multiply(struct descriptor_xd *left_ptr,
   else if (right_ptr->pointer)
   {
     /*NEED cleaver code here */
-    status = TdiConcat(left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
+    status = TdiConcat((mdsdsc_t *)left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
     if (STATUS_NOT_OK)
       *left_ptr = BAD;
   }
@@ -114,14 +114,14 @@ static void divide(struct descriptor_xd *left_ptr,
   {
     /*NEED cleaver code here */
     /*NEED to fix up leading / or * */
-    status = TdiTranslate(right_ptr, &star_slash, &slash_star,
+    status = TdiTranslate((mdsdsc_t *)right_ptr, &star_slash, &slash_star,
                           right_ptr MDS_END_ARG);
     if (STATUS_OK)
     {
       if (left_ptr->pointer)
-        status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
+        status = TdiConcat((mdsdsc_t *)left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
       else
-        status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
+        status = TdiConcat((mdsdsc_t *)&slash, right_ptr, left_ptr MDS_END_ARG);
     }
     if (STATUS_NOT_OK)
       *left_ptr = BAD;

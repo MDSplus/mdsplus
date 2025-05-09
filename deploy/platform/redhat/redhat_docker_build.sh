@@ -23,6 +23,10 @@ do_createrepo() {
   fi
   : && createrepo -q $update_args -o ${tmpdir} ${repodir}/${FLAVOR}/RPMS
   checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
+  rm -f ${tmpdir}/repodata/repomd.xml.asc
+  if [ -d /sign_keys/.gnupg ]; then
+    GNUPGHOME=/sign_keys/.gnupg gpg --local-user MDSplus --detach-sign --armor ${tmpdir}/repodata/repomd.xml
+  fi  
   : && rsync -a ${tmpdir}/repodata ${repodir}/${FLAVOR}/RPMS/
 }
 
@@ -57,9 +61,10 @@ buildrelease() {
   set -e
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
+  PACKAGESDIR=/workspace/packages
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD} /release/${FLAVOR}
-  mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR}
+  rm -Rf ${RELEASEBLD} /release/${FLAVOR} ${PACKAGESDIR}
+  mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR} ${PACKAGESDIR}
   pushd ${RELEASEBLD}/64
   config ${test64} ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
@@ -84,7 +89,6 @@ buildrelease() {
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/
-    cp ${srcdir}/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/
     if [ -d /sign_keys/.gnupg ]; then
       GPGCHECK="1"
     else
@@ -100,6 +104,7 @@ name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${OS}/${FLAVOR}/RPMS
 enabled=1
 gpgcheck=${GPGCHECK}
+repo_gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
@@ -132,6 +137,14 @@ EOF
       fi
     done
     checkstatus abort "Failure: Problem with contents of one or more rpms. (see above)" $badrpm
+
+    pushd ${MDSPLUS_DIR}
+    tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}.tgz *
+    popd
+
+    pushd /release/${FLAVOR}/RPMS
+    tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}_rpms.tgz */*.rpm
+    popd
   fi #nomake
 }
 

@@ -144,6 +144,7 @@ class Dbi(object):
     VERSIONS_IN_MODEL = (10, bool, 4)  # settable
     VERSIONS_IN_PULSE = (11, bool, 4)  # settable
     DISPATCH_TABLE = (13, bool, 4)
+    ALTERNATE_COMPRESSION = (14, bool, 4) #settable
 
     class _dbi_item(_C.Structure):
         """ Ctype structure class for making calls into _TreeGetDbi() """
@@ -287,12 +288,12 @@ class Nci(object):
     MEMBER = (18, _C.c_int32, 4, None)
     CHILD = (19, _C.c_int32, 4, None)
     PARENT_RELATIONSHIP = (20, _C.c_uint32, 4, int)
-    CONGLOMERATE_NIDS = (21, _C.c_int32*1024, 1024*4, None)
+    CONGLOMERATE_NIDS = (21, _C.c_int32, None, None)
     ORIGINAL_PART_NAME = (22, _C.c_char_p, 1024, str)
     NUMBER_OF_MEMBERS = (23, _C.c_uint32, 4, int)
     NUMBER_OF_CHILDREN = (24, _C.c_uint32, 4, int)
-    MEMBER_NIDS = (25, _C.c_int32*4096, 4096*4, None)
-    CHILDREN_NIDS = (26, _C.c_int32*4096, 4096*4, None)
+    MEMBER_NIDS = (25, _C.c_int32, None, None)
+    CHILDREN_NIDS = (26, _C.c_int32, None, None)
     FULLPATH = (27, _C.c_char_p, 1024, str)
     MINPATH = (28, _C.c_char_p, 1024, str)
     USAGE = (29, _C.c_uint8, 1, int)
@@ -652,6 +653,8 @@ class Tree(object):
         Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
     dispatch_table = Dbi._dbiProp(
         Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
+    alternate_compression = Dbi._dbiProp(
+        Dbi.ALTERNATE_COMPRESSION,  "Set to True to enable alternate compression methods", False)
 
     @property
     def default(self):
@@ -774,17 +777,31 @@ class Tree(object):
                     _TreeShr._TreeSetSubtree(self.ctx, nid))
         return TreeNode(nid.value, self)
 
-    def createPulse(self, shot):
+    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
         """Create pulse.
+    
         @param shot: Shot number to create
         @type shot: int
+        @param copy_only_this: Logical flag, defaults to False
+        @type copy_only_this: int
+        @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
+        @type node_or_nid: int or MDSplus.tree.TreeNode
         @rtype: None
         """
+
+        if isinstance(node_or_nid, TreeNode):
+            node_or_nid = node_or_nid.getNid()  # Extract node ID
+    
+        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
+
         _exc.checkStatus(
-            _TreeShr._TreeCreatePulseFile(self.ctx,
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(0),
-                                          _C.c_void_p(0)))
+            _TreeShr._TreeCreatePulseFile(
+                self.ctx,
+                _C.c_int32(int(shot)),
+                _C.c_int32(int(copy_only_this)),
+                nid_pointer
+            )
+        )
 
     def deleteNode(self, wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -1112,7 +1129,7 @@ class Tree(object):
 
     def setVersionsInPulse(self, flag):
         """Enable/Disable versions in pulse
-        @param flag: True or False. True enabled versions
+        @param flag: True or False. True enables versions
         @type flag: bool
         @rtype: None
         """
@@ -1131,6 +1148,21 @@ class Tree(object):
         @rtype: bool
         """
         return self.versions_in_pulse
+
+    def setAlternateCompression(self, flag):
+        """Enable/Disable alternate compression methods
+        @param flag: True or False. True enables alternate compression methods
+        @type flag: bool
+        @rtype: None
+        """
+        self.alternate_compression = bool(flag)
+
+    def alternateCompressionEnabled(self):
+        """Check to see if alternate compression methods are enabled
+        @return: True if alternate compression methods are enabled
+        @rtype: bool
+        """
+        return self.alternate_compression
 
     def write(self):
         """Write out edited tree.
@@ -1299,6 +1331,18 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     def _getNci(self, info):
         """Return nci data"""
         code, ctype, buflen, rtype = info
+        
+        if buflen is None:
+            count = 0
+            if code == 25: # MEMBER_NIDS
+                count = self.number_of_members
+            elif code == 26: # CHILDREN_NIDS
+                count = self.number_of_children
+            elif code == 21: # CONGLOMERATE_NIDS
+                count = self.number_of_elts
+            buflen = _C.sizeof(ctype) * count
+            ctype = ctype * count
+
         if ctype is _C.c_char_p:
             ans = ctype((b' ')*buflen)
             pointer = ans
@@ -2287,6 +2331,12 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         return dim.value
 
     def getSegmentLimits(self, idx):
+        """Return the start and end times of a given segment
+        @param idx: The index of the segment to query. Indexes start with 0.
+        @type idx: int
+        @return: A Tuple of (startTime, endTime)
+        @rtype: Tuple(Data, Data)
+        """
         start = _dsc.DescriptorXD()._setTree(self.tree)
         end = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
@@ -2300,14 +2350,20 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         if start is not None or end is not None:
             return (start, end)
 
-    def getSegmentList(self, start, end):
-        start, end = map(_dat.Data, (start, end))
+    def getSegmentList(self, startTime, endTime):
+        """Return a signal composed of the segments from startTime to endTime
+        @param startTime: The start of the time range of segments to return
+        @param endTime: The end of the time range of segments to return
+        @return: Segment dimension
+        @rtype: Signal
+        """
+        startTime, endTime = map(_dat.Data, (startTime, endTime))
         xd = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
-                                           _dat.Data.byref(start),
-                                           _dat.Data.byref(end),
+                                           _dat.Data.byref(startTime),
+                                           _dat.Data.byref(endTime),
                                            xd.ref))
         return xd.value
 
@@ -3124,7 +3180,7 @@ class TreeNodeArray(_dat.TreeRef, _arr.Int32Array):  # HINT: TreeNodeArray begin
         nids = _N.array(nids)
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
-        self._value = _N.array(nids, dtype=_N.int32, copy=False)
+        self._value = _N.asarray(nids, dtype=_N.int32)
         if 'tree' in kw:
             self.tree = tree
         elif isinstance(tree[0], (Tree,)):

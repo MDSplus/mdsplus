@@ -34,43 +34,26 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
 
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Simulink Tank");
         setDeviceType("MARTE2_SIMULINK_TANK");
-        setHeight(250);
+        setHeight(200);
+        setUpdateEvent("");
         setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(3, 1));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase Div: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(44);
-        jPanel2.add(deviceField2);
-
-        jPanel1.add(jPanel2);
+        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Input");
         deviceField3.setNumCols(25);
-        deviceField3.setOffsetNid(25);
+        deviceField3.setOffsetNid(28);
         jPanel3.add(deviceField3);
 
         jPanel1.add(jPanel3);
@@ -78,20 +61,14 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Out Segment len (0 to disable writing): ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(40);
+        deviceField4.setOffsetNid(44);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Out CPUs");
         deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(34);
+        deviceField5.setOffsetNid(38);
         jPanel4.add(deviceField5);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Stream:");
-        deviceField6.setOffsetNid(41);
-        deviceField6.setTextOnly(true);
-        jPanel4.add(deviceField6);
 
         jPanel1.add(jPanel4);
 
@@ -100,14 +77,10 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
-    private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
-    private DeviceField deviceField6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables

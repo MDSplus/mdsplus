@@ -3073,6 +3073,10 @@ namespace MDSplus
     virtual void putData(Data *data);
     virtual void deleteData();
 
+    virtual Data *dim_of();
+    virtual Data *units_of();
+
+
     /// virtual function to resolve node id in the active tree.
     /// This is called each time a path to nid conversion is needed.
     virtual void resolveNid() {}
@@ -4142,6 +4146,16 @@ namespace MDSplus
     ///
     void setVersionsInPulse(bool enable);
 
+    /// This function returns true if the tree allows for alternate compression
+    /// methods (gzip).  \note this can only be changed in edit mode.
+    /// 
+    bool alternateCompressionEnabled();
+
+    /// Activates alternate compression methods. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiALTERNATE_COMPRESSION.
+    ///
+    void setAlternateCompression(bool enable);
+
     /// View data stored in tree from given start date when version control is
     /// enabled.
     ///
@@ -4494,9 +4508,10 @@ namespace MDSplus
       closeAllTrees();
     }
     void setDefault(char *path);
-    Data *get(const char *expr, Data **args, int nArgs);
+    Data *get(const char *expr, Data **args, int nArgs, bool serialized = true);
     Data *get(const char *expr) { return get(expr, 0, 0); }
     void put(const char *path, char *expr, Data **args, int nArgs);
+    void put(const char *path, Data *data);
     PutMany *putMany() { return new PutMany(this); }
     GetMany *getMany() { return new GetMany(this); }
     // Get TreeNode instance for (a subset of) TreeNode functionality in thin

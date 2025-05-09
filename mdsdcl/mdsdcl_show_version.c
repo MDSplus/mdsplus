@@ -13,24 +13,21 @@
 extern MDSplusGitVersionInfo MDSplusGitVersion;
 extern const mds_version_t MdsVersion;
 extern const char *MdsRelease();
+extern const char *MdsReleaseDate();
 
 EXPORT int mdsdcl_show_version(void *ctx __attribute__((unused)),
                                char **error __attribute__((unused)),
                                char **output)
 {
+  const char *tag = MdsRelease();
   char *info = *output = malloc(1024);
   info += sprintf(info, "\n\n");
-  info += sprintf(info, "MDSplus version: %d.%d.%d\n", MdsVersion.MAJOR,
-                  MdsVersion.MINOR, MdsVersion.MICRO);
+  info += sprintf(info, "MDSplus version: %d.%d.%d\n", MdsVersion.MAJOR, MdsVersion.MINOR, MdsVersion.MICRO);
   info += sprintf(info, "----------------------\n");
-  const char *tag = MdsRelease();
   info += sprintf(info, "  Release:  %s\n", tag);
-  info += sprintf(
-      info, "  Browse:   https://github.com/MDSplus/mdsplus/tree/%s\n", tag);
-  info += sprintf(
-      info,
-      "  Download: https://github.com/MDSplus/mdsplus/archive/%s.tar.gz\n",
-      tag);
+  info += sprintf(info, "  Date:     %s\n", MdsReleaseDate());
+  info += sprintf(info, "  Browse:   https://github.com/MDSplus/mdsplus/tree/%s\n", tag);
+  info += sprintf(info, "  Download: https://github.com/MDSplus/mdsplus/releases/tag/%s\n", tag);
   info += sprintf(info, "\n\n");
   return 1;
 }

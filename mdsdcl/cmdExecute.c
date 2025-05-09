@@ -43,6 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dcl_p.h"
 #include "mdsdclthreadstatic.h"
 
+#define ERROR_MESSAGE_LENGTH 512
+
 /*! Free the memory associated with a parameter definition structure.
  \param p [in,out] the address of a pointer to  a dclParameter struct.
 */
@@ -672,8 +674,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
     }
     if (j == cmdDef->qualifier_count)
     {
-      char *errstr = malloc(100);
-      sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n",
+      char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+      snprintf(errstr, ERROR_MESSAGE_LENGTH, "Qualifier \"%s\" is not valid for this command\n",
               cmd->qualifiers[i]->name);
       *error = errstr;
       return MdsdclIVQUAL;
@@ -683,8 +685,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
   if (cmd->parameter_count > cmdDef->parameter_count)
   {
-    char *errstr = malloc(100);
-    sprintf(errstr,
+    char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+    snprintf(errstr, ERROR_MESSAGE_LENGTH,
             "Too many parameters specified in the command. Maximum supported "
             "is %d. Provided was %d.\n",
             cmdDef->parameter_count, cmd->parameter_count);
@@ -703,8 +705,9 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
     {
       if ((i < cmd->parameter_count) && (cmd->parameters[i]->value_count > 1))
       {
-        char *errstr = malloc(500);
-        sprintf(errstr,
+        char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+        snprintf(errstr,
+                ERROR_MESSAGE_LENGTH,
                 "Parameter number %d does not accept a list of values. "
                 "Perhaps that parameter needs to enclosed in double quotes?\n",
                 i + 1);
@@ -775,8 +778,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
         {
           if (cmd->qualifiers[q]->value_count == 0)
           {
-            char *errstr = malloc(100);
-            sprintf(errstr,
+            char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+            snprintf(errstr, ERROR_MESSAGE_LENGTH,
                     "Qualifier \"%s\" requires a value and none was provided\n",
                     cmdDef->qualifiers[i]->name);
             *error = errstr;
@@ -870,8 +873,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
         if ((cmd->qualifiers[i]->value_count > 1) &&
             (cmdDef->qualifiers[q]->listOk == 0))
         {
-          char *errstr = malloc(100);
-          sprintf(errstr, "Qualifier \"%s\" does not permit a list of values\n",
+          char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+          snprintf(errstr, ERROR_MESSAGE_LENGTH, "Qualifier \"%s\" does not permit a list of values\n",
                   cmdDef->qualifiers[i]->name);
           *error = errstr;
           return MdsdclTOO_MANY_VALS;
@@ -884,8 +887,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
         {
           if (cmdDef->qualifiers[q]->nonnegatable)
           {
-            char *errstr = malloc(100);
-            sprintf(errstr, "Qualifier \"%s\" cannot be negated\n", realname);
+            char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+            snprintf(errstr, ERROR_MESSAGE_LENGTH, "Qualifier \"%s\" cannot be negated\n", realname);
             *error = errstr;
             return MdsdclNOTNEGATABLE;
           }
@@ -904,8 +907,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
     }
     if (q == cmdDef->qualifier_count)
     {
-      char *errstr = malloc(100);
-      sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n",
+      char *errstr = malloc(ERROR_MESSAGE_LENGTH);
+      snprintf(errstr, ERROR_MESSAGE_LENGTH, "Qualifier \"%s\" is not valid for this command\n",
               cmd->qualifiers[i]->name);
       *error = errstr;
       return MdsdclIVQUAL;
@@ -938,8 +941,9 @@ rest_of_line:
       if ((*error == 0) && (status != 0))
       {
         char *msg = MdsGetMsg(status);
-        *error = malloc(strlen(msg) + 100);
-        sprintf(*error, "Error message was: %s\n", msg);
+        size_t length = strlen(msg) + 100;
+        *error = malloc(length);
+        snprintf(*error, length, "Error message was: %s\n", msg);
       }
       else if (*error == 0)
         *error = strdup("");
@@ -1320,8 +1324,9 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
   if (doc == 0)
   {
     pthread_mutex_unlock(&lock);
-    char *errstr = malloc(strlen(filename) + 50);
-    sprintf(errstr, " Error: unable to parse %s\n", filename);
+    size_t length = strlen(filename) + 50;
+    char *errstr = malloc(length);
+    snprintf(errstr, length, " Error: unable to parse %s\n", filename);
     *error = errstr;
     status = -1;
   }

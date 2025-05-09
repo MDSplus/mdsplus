@@ -44,7 +44,6 @@ _common = _mimport("_common")
 
 
 class Tests(_common.TreeTests, _common.MdsIp):
-    index = 0
     trees = ["consub"]
     tree = "con"
     treesub = "consub"
@@ -68,8 +67,13 @@ class Tests(_common.TreeTests, _common.MdsIp):
             except:
                 print(nci, t, l, c)
                 raise
-        server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7500+self.index, True)
+
+        test_port_offset = 0
+        if 'TEST_PORT_OFFSET' in os.environ:
+            test_port_offset = int(os.environ['TEST_PORT_OFFSET'])
+
+	    # See testing/ports.csv
+        server, server_port = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT', 8013 + test_port_offset, True)
 
         svr, svr_log = self._start_mdsip(server, server_port, 'thick')
         try:
@@ -176,8 +180,12 @@ class Tests(_common.TreeTests, _common.MdsIp):
         ))
 
     def tcp(self):
-        server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7510+self.index, True)
+        test_port_offset = 0
+        if 'TEST_PORT_OFFSET' in os.environ:
+            test_port_offset = int(os.environ['TEST_PORT_OFFSET'])
+
+	    # See testing/ports.csv
+        server, server_port = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT', 8014 + test_port_offset, True)
         svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
         try:
             self._thread_test(server)
@@ -210,9 +218,13 @@ class Tests(_common.TreeTests, _common.MdsIp):
             test.assertEqual(i, count)
             print("%s: rate=%f, max_period=%f" %
                   (name, i / (end-start), max_period))
+        
+        test_port_offset = 0
+        if 'TEST_PORT_OFFSET' in os.environ:
+            test_port_offset = int(os.environ['TEST_PORT_OFFSET'])
 
-        server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7520+self.index, True)
+	    # See testing/ports.csv
+        server, server_port = self._setup_mdsip('ACTION_SERVER', 'ACTION_PORT', 8015 + test_port_offset, True)
         tempdir = tempfile.mkdtemp()
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'tcp')

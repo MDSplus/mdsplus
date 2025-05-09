@@ -142,8 +142,11 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 	protected String getSignalInfo(int i)
 	{
 		String s;
-		final String name = (wi.in_label != null && wi.in_label[i] != null && wi.in_label[i].length() > 0)
-				? wi.in_label[i]
+//		final String name = (wi.in_label != null && wi.in_label[i] != null && wi.in_label[i].length() > 0)
+//				? wi.in_label[i]
+//				: wi.in_y[i];
+		final String name = (wi.eval_labels != null && wi.eval_labels[i] != null && wi.eval_labels[i].length() > 0)
+				? wi.eval_labels[i]
 				: wi.in_y[i];
 		final String er = (wi.w_error != null && wi.w_error[i] != null) ? " ERROR " : "";
 		// If the legend is defined in the signal, override it
@@ -239,7 +242,6 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 			@Override
 			public void run()
 			{
-				// System.out.println("Evento su waveform "+e.name);
 				final WaveformEvent we = new WaveformEvent(jScopeMultiWave.this, WaveformEvent.EVENT_UPDATE,
 						"Update on event " + eventName);
 				dispatchWaveformEvent(we);
@@ -256,10 +258,10 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		}
 		catch (final IOException e)
 		{}
-		final Thread p = new Thread()
-		{
-			@Override
-			public void run()
+	//	final Thread p = new Thread()
+	//	{
+	//		@Override
+	//		public void run()
 			{
 				final MdsWaveInterface mwi = (MdsWaveInterface) wi;
 				try
@@ -277,8 +279,8 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 					}
 				});
 			}
-		};
-		p.start();
+	//	};
+	//	p.start();
 	}
 
 	public void RefreshOnEvent()
@@ -316,7 +318,6 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 	@Override
 	public void removeNotify()
 	{
-		// System.out.println("Rimuovo jScopeMultiWave");
 		try
 		{
 			RemoveEvent();
@@ -375,8 +376,10 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 				if (wi.signals[i] != null)
 				{
 					all_null = false;
-					if (wi.in_label[i] != null && wi.in_label[i].length() != 0)
-						wi.signals[i].setName(wi.in_label[i]);
+					//if (wi.in_label[i] != null && wi.in_label[i].length() != 0)
+					//	wi.signals[i].setName(wi.in_label[i]);
+					if (wi.eval_labels[i] != null && wi.eval_labels[i].length() != 0)
+						wi.signals[i].setName(wi.eval_labels[i]);
 					else
 						wi.signals[i].setName(wi.in_y[i]);
 					wi.signals[i].setMarker(wi.markers[i]);

@@ -948,6 +948,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <keyword name="TREE" syntax="set_tree"/>"
     <keyword name="VIEW" syntax="set_view"/>"
     <keyword name="VERSIONS" syntax="set_versions"/>"
+    <keyword name="ALTERNATE_COMPRESSION" syntax="set_alternate_compression"/>"
   </type>
 
   <syntax name="set_attribute">
@@ -1237,6 +1238,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <qualifier name="SHOT"/>
   </syntax>
 
+  <syntax name="set_alternate_compression">
+    <help name="SET ALTERNATE_COMPRESSION">
+      Command: SET ALTERNATE_COMPRESSION
+      Purpose: Enable or disable alternate compression methods in a tree.
+      Format: SET ALTERNATE_COMPRESSION [ON|OFF]
+      Description:
+
+      The SET ALTERNATE_COMPRESSION command is used to enable or disable support
+      for alternate compression methods (stored in the NCI for a node) across
+      an entire tree.
+
+    </help>
+    <routine name="TclSetAlternateCompression"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="enabled" prompt="ON/OFF" required="True"/>
+  </syntax>
+
   <verb name="SETEVENT">
     <help name="SETEVENT">
       Command: SETEVENT
@@ -1268,6 +1286,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <keyword name="VERSION" syntax="show_version"/>"
     <keyword name="GIT" syntax="SHOW_GIT_INFO"/>
     <keyword name="VERSIONS" syntax="show_versions"/>"
+    <keyword name="ALTERNATE_COMPRESSION" syntax="show_alternate_compression"/>"
   </type>
 
   <syntax name="show_attribute">
@@ -1459,6 +1478,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Versions are disabled in the model file and disabled in the shot file.
     </help>
     <routine name="TclShowVersions"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </syntax>
+
+  <syntax name="show_alternate_compression">
+    <help name="SHOW ALTERNATE_COMPRESSION">
+      Command: SHOW ALTERNATE_COMPRESSION
+      Purpose: Show whether or not data alternate compression methods are enabled
+      for the current tree.
+      Format: SHOW ALTERNATE_COMPRESSION
+
+      Description:
+
+      The SHOW ALTERNATE_COMPRESSION command is used to display the current
+      alternate compression settings for the current tree.
+
+      Example:
+
+      TCL> SET TREE main
+      TCL> SHOW ALTERNATE_COMPRESSION
+        Alternate Compression is disabled.
+    </help>
+    <routine name="TclShowAlternateCompression"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
 

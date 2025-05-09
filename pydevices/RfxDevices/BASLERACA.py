@@ -429,7 +429,7 @@ class BASLERACA(Device):
             frameRate,
         )
 
-        self.debugPrint("Data = " + Data.decompile(timeBase))
+        #self.debugPrint("Data = " + Data.decompile(timeBase))   #20231031 fede: crash on decompile!!!
 
         self.timing_time_base.putData(timeBase)
         status = BASLERACA.baslerLib.setTriggerMode(

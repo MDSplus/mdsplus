@@ -8,6 +8,7 @@
 #define VERSIONCONST CONCAT(LIBPREFIX, Version)
 #define GETRELEASE CONCAT(LIBPREFIX, Release)
 #define GETRELEASEDSC CONCAT(LIBPREFIX, ReleaseDsc)
+#define GETRELEASEDATE CONCAT(LIBPREFIX, ReleaseDate)
 
 EXPORT
 const mds_version_t VERSIONCONST = {
@@ -17,14 +18,15 @@ const mds_version_t VERSIONCONST = {
 	"@RELEASE_BRANCH@",
 };
 
-
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static char tag[64];
 static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, tag };
 
+static const char release_date[64] = "@RELEASE_DATE@";
+
 static void buildtag()
 {
-	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release_%d.%d.%d",
+	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release-%d-%d-%d",
 	VERSIONCONST.BRANCH,
 	VERSIONCONST.MAJOR,
 	VERSIONCONST.MINOR,
@@ -43,4 +45,10 @@ const mdsdsc_t *GETRELEASEDSC()
 {
 	pthread_once(&once, buildtag);
 	return &RELEASE_D;
+}
+
+EXPORT
+const char *GETRELEASEDATE()
+{
+	return release_date;
 }

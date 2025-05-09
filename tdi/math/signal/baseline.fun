@@ -21,13 +21,7 @@ public fun baseline(in _sig, optional in _start, optional in _end)
 
 		_sum = 0.;
 		
-		/*
-		for(_i = 0; _i < _points; _i++)
-			_sum = _sum + _y[_i];
-		*/
-		
-		_sum = sum(_y[0.._points-1]);
-		_offset = _sum / _points;
+		_sum = sum(_y[0 .. _points-1]);
 			
 		_offset = _sum / _points;
 	}

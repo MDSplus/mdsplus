@@ -60,14 +60,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int TdiGetRecord(int nid, mdsdsc_xd_t *out);
 
-extern int TdiEvaluate();
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int tdi_get_ident();
-extern int TdiItoX();
+extern int TdiItoX(mdsdsc_t *, ...);
 extern int TdiIntrinsic();
 extern int TdiCall();
 extern int TdiConvert();
-extern int TdiData();
-extern int TdiUnits();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiUnits(mdsdsc_t *, ...);
 extern int Tdi2Add();
 
 static void fixup_dollar_nodes(int nid, mdsdsc_t *out_ptr)
@@ -258,7 +258,7 @@ static int _get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
     }
     return MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
   case CLASS_APD:
-    return TdiEvaluate(pin, out_ptr MDS_END_ARG);
+    return TdiEvaluate((mdsdsc_t *)pin, out_ptr MDS_END_ARG);
   case CLASS_S:
   case CLASS_D:
   case CLASS_A:
@@ -352,7 +352,7 @@ static int _get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
       return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
     }
     case DTYPE_DIMENSION:
-      status = TdiItoX(pin, out_ptr MDS_END_ARG);
+      status = TdiItoX((mdsdsc_t *)pin, out_ptr MDS_END_ARG);
       RETURN_IF_STATUS_NOT_OK;
       return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
     case DTYPE_RANGE:

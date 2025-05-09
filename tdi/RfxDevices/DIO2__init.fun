@@ -92,7 +92,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 	if(_remote != 0)
 	{
 	
-		_cmd = 'MdsConnect("'//_ip_addr//'",1)';
+		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		_status = execute(_cmd);
 
 

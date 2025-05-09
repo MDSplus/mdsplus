@@ -56,6 +56,7 @@ class DTACQ_SUPERVISOR(Device):
              {'path': '.PG2:D4_TIMES', 'type': 'numeric'},
              {'path': '.PG2:D5_TIMES', 'type': 'numeric'},
              {'path': ':PASSWD', 'type': 'text', 'value':'d-t1012q'},
+             {'path': ':THIS_UDP_ADD', 'type': 'text'},
              {'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'init',head))",
                   'options': ('no_write_shot',)}]
@@ -217,6 +218,13 @@ class DTACQ_SUPERVISOR(Device):
         except:
             print('Cannot read UDP port')
             raise mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            thisUdpAddress = self.this_udp_add.data()
+        except:
+            thisUdpAddress = socket.gethostbyname(socket.gethostname())
+
+
+
 
         try:
             clockMode = self.clock_mode.data()
@@ -363,18 +371,19 @@ class DTACQ_SUPERVISOR(Device):
             try:
                 dtackAi = self.ai_b_device.getData()
                 hasBulkAi = True
-                dtackAi.parameters_par_13_value.putData(Int32(int(clockFreq))) #num samples
-                dtackAi.parameters_par_1_value.putData(Float64(1)) #1 segment per second
-                dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
-                dtackAi.parameters_par_3_value.putData(Int32(1))
-                dtackAi.parameters_par_4_value.putData(len(aiSites))
-                dtackAi.parameters_par_5_value.putData(Int32(numDis))
-                dtackAi.parameters_par_6_value.putData(Int32Array(aiChans))
-                dtackAi.parameters_par_7_value.putData(Float64Array(cals))
-                dtackAi.parameters_par_8_value.putData(Float64Array(offs))
-                dtackAi.parameters_par_9_value.putData(String(ipAddr))
-                dtackAi.parameters_par_10_value.putData(Int32(4210))
-                dtackAi.parameters_par_12_value.putData(Int32(spadSize))
+                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(clockFreq)) #num samples
+#                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/numSamples))
+                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(1)) #1 segment per second
+                dtackAi.getNode('.PARAMETERS.PAR_2:VALUE').putData(Float64(triggerTime))
+                dtackAi.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32(1))
+                dtackAi.getNode('.PARAMETERS.PAR_4:VALUE').putData(len(aiSites))
+                dtackAi.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(numDis))
+                dtackAi.getNode('.PARAMETERS.PAR_6:VALUE').putData(Int32Array(aiChans))
+                dtackAi.getNode('.PARAMETERS.PAR_7:VALUE').putData(Float64Array(cals))
+                dtackAi.getNode('.PARAMETERS.PAR_8:VALUE').putData(Float64Array(offs))
+                dtackAi.getNode('.PARAMETERS.PAR_9:VALUE').putData(String(ipAddr))
+                dtackAi.getNode('.PARAMETERS.PAR_10:VALUE').putData(Int32(4210))
+                dtackAi.getNode('.PARAMETERS.PAR_12:VALUE').putData(Int32(spadSize))
             except:
                 print('No Bulk AI MARTe2 device')
 
@@ -388,19 +397,19 @@ class DTACQ_SUPERVISOR(Device):
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-                dtackAi.parameters_par_13_value.putData(Int32(1)) #num samples
-                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/freqDiv))
-                dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
-                dtackAi.parameters_par_3_value.putData(Int32(2))
-                dtackAi.parameters_par_4_value.putData(len(aiSites))
-                dtackAi.parameters_par_5_value.putData(Int32(numDis))
-                dtackAi.parameters_par_6_value.putData(Int32Array(aiChans))
-                dtackAi.parameters_par_7_value.putData(Float64Array(cals))
-                dtackAi.parameters_par_8_value.putData(Float64Array(offs))
-                dtackAi.parameters_par_9_value.putData(String(udpAddress))
-                dtackAi.parameters_par_10_value.putData(Int32(udpPort))
-                dtackAi.parameters_par_12_value.putData(Int32(spadSize))
-                dtackAi.parameters_par_14_value.putData(Int32(freqDivision))
+                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(1)) #num samples
+                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(clockFreq/freqDiv))
+                dtackAi.getNode('.PARAMETERS.PAR_2:VALUE').putData(Float64(triggerTime))
+                dtackAi.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32(2))
+                dtackAi.getNode('.PARAMETERS.PAR_4:VALUE').putData(len(aiSites))
+                dtackAi.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(numDis))
+                dtackAi.getNode('.PARAMETERS.PAR_6:VALUE').putData(Int32Array(aiChans))
+                dtackAi.getNode('.PARAMETERS.PAR_7:VALUE').putData(Float64Array(cals))
+                dtackAi.getNode('.PARAMETERS.PAR_8:VALUE').putData(Float64Array(offs))
+                dtackAi.getNode('.PARAMETERS.PAR_9:VALUE').putData(String(udpAddress))
+                dtackAi.getNode('.PARAMETERS.PAR_10:VALUE').putData(Int32(udpPort))
+                dtackAi.getNode('.PARAMETERS.PAR_12:VALUE').putData(Int32(spadSize))
+                dtackAi.getNode('.PARAMETERS.PAR_14:VALUE').putData(Int32(freqDivision))
             except:
                 print('No Realtime AI MARTe2 device')
 
@@ -414,7 +423,8 @@ class DTACQ_SUPERVISOR(Device):
 #                st += ' 1,'+str(spadSize)+',0'
             st += ' 1,'+str(spadSize/4)+',0'
             if hasRealtimeAi:
-                args = self.Args('255.255.255.0', udpAddress, socket.gethostbyname(socket.gethostname()), udpGateway, udpPort, st, '', hudp_decim = freqDiv)
+#                args = self.Args('255.255.255.0', udpAddress, socket.gethostbyname(socket.gethostname()), udpGateway, udpPort, st, '', hudp_decim = freqDiv)
+                args = self.Args('255.255.255.0', udpAddress, thisUdpAddress, udpGateway, udpPort, st, '', hudp_decim = freqDiv)
                 self.config_tx_uut(uut, args)
             if hasBulkAi:
                 print("BULK ")
@@ -428,11 +438,12 @@ class DTACQ_SUPERVISOR(Device):
             except:
                 print('Cannot fine MARTE2_TACQAO device')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            dtackAo.parameters_par_1_value.putData(Int32(len(aoSites)))
-            dtackAo.parameters_par_2_value.putData(Int32(numDos))
-            dtackAo.parameters_par_3_value.putData(Int32Array(aoChans))
-            dtackAo.parameters_par_4_value.putData(udpAddress)
-            dtackAo.parameters_par_5_value.putData(Int32(udpPort))
+            print(dtackAo)
+            dtackAo.getNode('.PARAMETERS.PAR_1:VALUE').putData(Int32(len(aoSites)))
+            dtackAo.getNode('.PARAMETERS.PAR_2:VALUE').putData(Int32(numDos))
+            dtackAo.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32Array(aoChans))
+            dtackAo.getNode('.PARAMETERS.PAR_4:VALUE').putData(udpAddress)
+            dtackAo.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(udpPort))
 
             st = ''
             for i in range(len(aoSites)):
@@ -443,7 +454,8 @@ class DTACQ_SUPERVISOR(Device):
                 st += ','+str(dioSite)
             st += ' 0'
 
-            args = self.Args('255.255.255.0', socket.gethostbyname(socket.gethostname()), udpAddress, udpGateway, udpPort, '', st)
+#            args = self.Args('255.255.255.0', socket.gethostbyname(socket.gethostname()), udpAddress, udpGateway, udpPort, '', st)
+            args = self.Args('255.255.255.0', thisUdpAddress, udpAddress, udpGateway, udpPort, '', st)
             self.config_rx_uut(uut, args)
     
 ####################HUDP_SEUP Stuff   

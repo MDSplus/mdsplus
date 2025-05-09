@@ -38,11 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 extern int TdiIntrinsic();
-extern int TdiEvaluate();
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int TdiGetLong();
-extern int TdiGe();
-extern int TdiLe();
-extern int TdiEq();
+extern int TdiGe(mdsdsc_t *, ...);
+extern int TdiLe(mdsdsc_t *, ...);
+extern int TdiEq(mdsdsc_t *, ...);
 
 static int goto1(int, mdsdsc_t *[], mdsdsc_xd_t *);
 
@@ -373,7 +373,7 @@ static int switch_case(const mdsdsc_t *ptest, const mdsdsc_t *arg,
   else
   {
     mdsdsc_xd_t xd = EMPTY_XD;
-    status = TdiEvaluate(arg, &xd MDS_END_ARG);
+    status = TdiEvaluate((mdsdsc_t *)arg, &xd MDS_END_ARG);
     if (STATUS_OK)
     {
       mds_range_t *pr = (mds_range_t *)xd.pointer;
@@ -381,17 +381,17 @@ static int switch_case(const mdsdsc_t *ptest, const mdsdsc_t *arg,
       {
         if (pr->begin)
         {
-          status = TdiGe(ptest, pr->begin, out_ptr MDS_END_ARG);
+          status = TdiGe((mdsdsc_t *)ptest, pr->begin, out_ptr MDS_END_ARG);
           if (STATUS_OK)
             status = TdiGetLong(out_ptr, test_ptr);
         }
         else
           *test_ptr = 1;
         if (STATUS_OK && IS_OK(*test_ptr) && pr->ending)
-          status = TdiLe(ptest, pr->ending, out_ptr MDS_END_ARG);
+          status = TdiLe((mdsdsc_t *)ptest, pr->ending, out_ptr MDS_END_ARG);
       }
       else
-        status = TdiEq(ptest, pr, out_ptr MDS_END_ARG);
+        status = TdiEq((mdsdsc_t *)ptest, pr, out_ptr MDS_END_ARG);
       MdsFree1Dx(&xd, NULL);
       if (STATUS_OK)
         status = TdiGetLong(out_ptr, test_ptr);
@@ -457,7 +457,7 @@ static int switch1(const mdsdsc_t *ptest, int *jdefault,
   {
     *jdefault = 0; /*suppress the default because it is a match */
     for (; STATUS_OK && j < narg; ++j)
-      status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
+      status = TdiEvaluate((mdsdsc_t *)list[j], out_ptr MDS_END_ARG);
   }
   return status;
 }

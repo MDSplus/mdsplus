@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Xm/List.h>
 #include <stdio.h>
 #include <time.h>
+#include <assert.h>
 #include "devroutines.h"
 
 static void Load(Widget w);
@@ -418,6 +419,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
   return status;
 }
 
+// Usually called without a function, but once is called with TdiData().
 static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglist,
 		      int (*routine) (struct descriptor *,...))
 {
@@ -434,15 +436,18 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
     if (arglist && !called) {
       called = 1;
-      LibCallg(arglist, routine);
+      assert(routine == &TdiData);
+      // Only called with TdiData() which is an intrinsic thus MDS_FFI_RTN_INT32
+      status = LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
     } else
       DevWait((float).001);
     piomem(17, 0, &data, memsize);
   }
   if (try == 30)
     status = DEV$_CAM_NOSQ;
-  if (arglist && !called)
-    LibCallg(arglist, routine);
+  if (arglist && !called) {
+    status = LIB_CALL_G(arglist, routine, 1, MDS_FFI_RTN_INT32);
+  }
   return status;
 }
 

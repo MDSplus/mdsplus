@@ -80,7 +80,7 @@ extern Boolean PutIfChanged(int nid, struct dsc$descriptor_xd *xd);
  External functions or symbols referenced:                                    */
 
 extern int XmdsComplain();
-extern int TdiDebug();
+extern int TdiDebug(mdsdsc_t *, ...);
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */

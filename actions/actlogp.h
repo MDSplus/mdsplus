@@ -47,7 +47,7 @@
 extern int ServerMonitorCheckin();
 extern int str_element();
 
-extern int TdiExecute();
+extern int TdiExecute(mdsdsc_t *, ...);
 
 typedef struct _LinkedEvent
 {
@@ -254,7 +254,7 @@ static void Phase(LinkedEvent *event)
     current_shot = event->shot;
   if (current_phase != event->phase)
   {
-    if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
+    if (!(TdiExecute((mdsdsc_t *)&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
       StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
     char *str = MdsDescrToCstring(&phase);
     PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, str);

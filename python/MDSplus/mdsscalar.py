@@ -108,10 +108,18 @@ class Scalar(_dat.Data):
             value = value.data()
         elif isinstance(value, _C._SimpleCData):
             value = value.value
-        if _ver.ispy3 and self._ntype is _N.bytes_:
-            self._value = self._ntype(_ver.tobytes(value))
+        if _ver.ispy3 and self._ntype in [ bytes, _N.bytes_ ]:
+            self._value = _ver.tobytes(value)
         else:
-            self._value = self._ntype(value)
+            try:
+                self._value = self._ntype(value)
+            
+            # HACK: To workaround numpy 2+ no longer wrapping negative numbers in uint* types
+            except OverflowError as e:
+                if hasattr(self, '_ctype'):
+                    self._value = self._ntype(self._ctype(value).value)
+                else:
+                    raise e
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
@@ -436,9 +444,9 @@ class String(Scalar):
         if d.length == 0:
             return cls('')
         if sys.version_info.major == 2: # needed for rhel7 and ubuntu14
-            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tostring())
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.int8).tostring())
         else:
-            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tobytes())
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.int8).tobytes())
 
     def __radd__(self, y):
         """radd: x.__radd__(y) <==> y+x

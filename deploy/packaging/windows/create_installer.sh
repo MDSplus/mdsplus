@@ -30,3 +30,8 @@ if [ -d /sign_keys ]; then
     echo "Failed to sign installer"
   fi
 fi
+
+PACKAGESDIR=/workspace/packages
+rm -Rf ${PACKAGESDIR}
+mkdir -p $PACKAGESDIR
+cp /release/${FLAVOR}/*.exe $PACKAGESDIR/

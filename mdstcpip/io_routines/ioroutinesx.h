@@ -250,15 +250,20 @@ VOID CALLBACK ShutdownEvent(PVOID arg __attribute__((unused)),
   fprintf(stderr, "Service shut down\n");
   exit(0);
 }
+#ifdef _WIN64
+#define SOCKET_FMT "%d:%lld"
+#else
+#define SOCKET_FMT "%d:%d"
+#endif
 
 static inline SOCKET get_single_server_socket(char *name)
 {
   HANDLE shutdownEvent, waitHandle;
   HANDLE h;
   int ppid;
-  SOCKET psock;
+  SOCKET psock = INVALID_SOCKET;
   char shutdownEventName[120];
-  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
+  if (name == 0 || sscanf(name, SOCKET_FMT, &ppid, &psock) != 2)
   {
     fprintf(stderr, "Mdsip single connection server can only be started from "
                     "windows service\n");

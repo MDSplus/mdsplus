@@ -8,7 +8,7 @@
 # 4) compile and install
 
 
-PYLON_ROOT ?= /opt/pylon5
+PYLON_ROOT ?= /opt/pylon
 DRIVER_INCLUDE += $(shell $(PYLON_ROOT)/bin/pylon-config --cflags)
 #LDFLAGS += $(shell $(PYLON_ROOT)/bin/pylon-config --libs-rpath)
 DRIVER_LIB += $(shell $(PYLON_ROOT)/bin/pylon-config --libs)

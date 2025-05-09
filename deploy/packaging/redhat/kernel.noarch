@@ -263,6 +263,7 @@
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenEdit.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeOpenNew.fun
 ./usr/local/mdsplus/tdi/treeshr/TreePut.fun
+./usr/local/mdsplus/tdi/treeshr/TreePutDeserialized.fun
 ./usr/local/mdsplus/tdi/treeshr/TreePutRecord.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeQuit.fun
 ./usr/local/mdsplus/tdi/treeshr/TreeSetCurrentShot.fun

@@ -158,7 +158,7 @@ class DT100(transport.Transport):
 
     def waitState(self, state):
         import pexpect
-        regstr = '([0-9\.]*) [0-9] ST_(.*)\r\n'
+        regstr = '([0-9\\.]*) [0-9] ST_(.*)\r\n'
         dprint("waitState %s" % regstr)
         wantex = re.compile(regstr)
 

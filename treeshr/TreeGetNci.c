@@ -290,7 +290,11 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       set_retlen(sizeof(nci.compression_method));
-      *(unsigned char *)itm->pointer = nci.compression_method;
+      if (dblist->tree_info->header->alternate_compression) {
+        *(unsigned char *)itm->pointer = nci.compression_method;
+      } else {
+        *(unsigned char *)itm->pointer = 0;
+      } 
       break;
     case NciCLASS:
       break_on_no_node;
@@ -697,8 +701,12 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
     {
       break_on_no_node;
       read_nci;
-      if (nci.compression_method >= NUM_COMPRESSION_METHODS)
-          nci.compression_method = 0;
+      if (! dblist->tree_info->header->alternate_compression) {
+        nci.compression_method = 0;
+      }
+      if (nci.compression_method >= NUM_COMPRESSION_METHODS) {
+        nci.compression_method = 0;
+      }
       string = strdup(compression_methods[nci.compression_method].name);
       break;
     }
@@ -1054,21 +1062,24 @@ void TreeFree(void *ptr) { free(ptr); }
 
 int64_t RfaToSeek(unsigned char *rfa)
 {
-  int64_t ans = (((int64_t)rfa[0] << 9) | ((int64_t)rfa[1] << 17) |
-                 ((int64_t)rfa[2] << 25) | ((int64_t)rfa[4]) |
-                 (((int64_t)rfa[5] & 1) << 8)) -
-                512;
-  ans |= ((int64_t)rfa[3] << 33);
-  return ans;
+  int64_t ans;
+  ans = 0
+    | (((int64_t)(rfa[0] & 0xff)) << 9)
+    | (((int64_t)(rfa[1] & 0xff)) << 17)
+    | (((int64_t)(rfa[2] & 0xff)) << 25)
+    | (((int64_t)(rfa[3] & 0xff)) << 33)
+    | (((int64_t)(rfa[4] & 0xff)) << 0)
+    | (((int64_t)(rfa[5] & 0x01)) << 8);
+  return ans - 512;
 }
 
 void SeekToRfa(int64_t seek, unsigned char *rfa)
 {
   int64_t tmp = seek + 512;
-  rfa[0] = (unsigned char)((tmp >> 9) & 0xff);
-  rfa[1] = (unsigned char)((tmp >> 17) & 0xff);
-  rfa[2] = (unsigned char)((tmp >> 25) & 0xff);
-  rfa[3] = (unsigned char)((tmp >> 33) & 0xff);
-  rfa[4] = (unsigned char)(tmp & 0xff);
-  rfa[5] = (unsigned char)(tmp >> 8 & 0x1);
+  rfa[0] = (unsigned char)(0xff & (tmp >> 9));
+  rfa[1] = (unsigned char)(0xff & (tmp >> 17));
+  rfa[2] = (unsigned char)(0xff & (tmp >> 25));
+  rfa[3] = (unsigned char)(0xff & (tmp >> 33));
+  rfa[4] = (unsigned char)(0xff & (tmp >> 0));
+  rfa[5] = (unsigned char)(0x01 & (tmp >> 8));
 }

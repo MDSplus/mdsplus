@@ -293,16 +293,39 @@ BASLER_ACA::BASLER_ACA(const char *ipAddress)
      {     
         printf("\n\n%s:Pylon Inizialize.\n\n",this->ipAddress);
         PylonInitialize();
-     } 
+     }
+
      CTlFactory& TlFactory = CTlFactory::GetInstance();
-     CBaslerGigEDeviceInfo di;
-     di.SetIpAddress(ipAddress);
-     this->pDevice = TlFactory.CreateDevice( di);       
-     // old this->pCamera = new Pylon::CBaslerGigEInstantCamera::CBaslerGigEInstantCamera(this->pDevice); 
-     this->pCamera = new CBaslerGigEInstantCamera(this->pDevice); 		
+     CDeviceInfo di;
+
+     char *pos;
+     pos = strchr((char *)ipAddress, '.'); 		//if dots are present -> ipAddr -> ipCamera. ELSE usb camera.
+     if (pos!=NULL)
+     {
+        printf("Try to open IP camera %s\n", ipAddress);
+        di.SetIpAddress(ipAddress);
+        di.SetDeviceClass(BaslerGigEDeviceClass);
+     }
+     else
+     {     
+        printf("Try to open USB camera %s\n", ipAddress);  //ip address used as the serial number in USB cameras
+        di.SetSerialNumber(ipAddress);
+        di.SetDeviceClass(BaslerUsbDeviceClass);
+     }
+
+     this->pDevice = TlFactory.CreateDevice(di);
+     this->pCamera = new CBaslerUniversalInstantCamera(this->pDevice); 
+
      pCamera->Open();
      printf("%s: Device Connected.\n", this->ipAddress); 
      lastOpRes=SUCCESS;
+
+     if(pCamera->IsGigE())  //20231201: after adding USB cameras support, GIGE do NOT work anymore! This seems to fix the problem...
+     {
+        printf("%s: Stream Grabber Transmission set to Multicast.\n", this->ipAddress); 
+        pCamera->GetStreamGrabberParams().TransmissionType = TransmissionType_Multicast;
+        //pCamera->GetStreamGrabberParams().DestinationAddr = "192.168.1.X";
+     }
 
      printf("EVENTO abilitato \n");
      //CT MDSplus acquisition Triggered on MDSevent 
@@ -359,27 +382,56 @@ int BASLER_ACA::checkLastOp()
 
 
 int BASLER_ACA::readInternalTemperature()
-{  
-    // Select the kind of internal temperature as the device temperature
-    pCamera->TemperatureSelector.SetValue(TemperatureSelector_Coreboard);
-    // Read the device temperature
-    double t = pCamera->TemperatureAbs.GetValue();
-    printf("%s: Camera Temperature is now %3.2f°C\n", this->ipAddress, t); 
-    this->internalTemperature=t;
+{ 
+  double t;
+  INodeMap& nodeMap = pCamera->GetNodeMap();
 
-   return SUCCESS;
+  try
+  {
+   if(IsAvailable(nodeMap.GetNode("TemperatureSelector")))  // 20231128: GIGE cameras
+   {
+    pCamera->TemperatureSelector.SetValue(TemperatureSelector_Coreboard);
+    t = pCamera->TemperatureAbs.GetValue();
+   }
+   else if(IsAvailable(nodeMap.GetNode("DeviceTemperatureSelector")))  // 20231128: USB cameras	
+   {
+    pCamera->DeviceTemperatureSelector.SetValue(DeviceTemperatureSelector_Coreboard);
+    t = pCamera->DeviceTemperature.GetValue();
+   }
+   else
+   {
+    printf("%s: readInternalTemperature error.\n", this->ipAddress);
+   }
+  }
+  catch (const GenericException & e)
+  {
+     cerr << "Error in readInternalTemperature(). Reason: " << e.GetDescription() << endl;
+     lastOpRes=ERROR;
+     return ERROR;
+  }
+  
+  printf("%s: Camera Temperature is now %3.2f°C\n", this->ipAddress, t); 
+  this->internalTemperature=t;
+
+  return SUCCESS;
 }
 
 
 
 int BASLER_ACA::setExposure(double exposure)
 {  
-   if (IsWritable(pCamera->ExposureTimeAbs))
+   if (IsWritable(pCamera->ExposureTimeAbs)) // 20231128: GIGE cameras
    {
      pCamera->ExposureTimeAbs.SetValue(exposure);
-     //pCamera->ExposureTimeRaw.SetValue(exposure);  //not to use!
      cout << this->ipAddress << ": Exposure set to: " << exposure << endl;  
-   }    
+   }  
+
+   if (IsWritable(pCamera->ExposureTime)) // 20231128: USB cameras
+   {
+     pCamera->ExposureTime.SetValue(exposure);
+     cout << this->ipAddress << ": Exposure set to: " << exposure << endl;  
+   } 
+  
    this->exposure=exposure;
 
    return SUCCESS;
@@ -407,7 +459,7 @@ int BASLER_ACA::setGainAuto(char *gainAuto)
   INodeMap& nodeMap = pCamera->GetNodeMap();
   CEnumerationPtr pFormat(nodeMap.GetNode("GainAuto"));
 
-  if(IsAvailable( pFormat->GetEntryByName(gainAuto)))             //OFF Once Continuous
+  if(IsAvailable(pFormat->GetEntryByName(gainAuto)))             //OFF Once Continuous
   {
      pFormat->FromString(gainAuto);
      cout << this->ipAddress << ": Gain Auto set to : " << pFormat->ToString() << endl;
@@ -418,38 +470,80 @@ int BASLER_ACA::setGainAuto(char *gainAuto)
 
 int BASLER_ACA::setGain(int gain)
 {
-    if (IsWritable(pCamera->GainRaw))
+    if (IsWritable(pCamera->GainRaw)) //20231130: GIGE cameras has GainRaw
     {
      pCamera->GainRaw.SetValue(gain);
      cout << this->ipAddress << ": Gain set to: " << gain << endl;
     }   
+
+   if (IsWritable(pCamera->Gain))  //20231130: USB cameras has Gain [dB]
+   {
+     pCamera->Gain.SetValue(gain);
+     cout << this->ipAddress << ": Gain set to: " << gain << endl;
+   }   
+
     this->gain = gain;
 
    return SUCCESS;
 }
 
-int BASLER_ACA::setGammaEnable(char *gammaEnable)
-{
-  if(strcmp(gammaEnable, "On")==0)
+int BASLER_ACA::setGammaEnable(char *gammaEnable)   
+{  
+  INodeMap& nodeMap = pCamera->GetNodeMap();
+  INode *node;
+  node = nodeMap.GetNode("GammaEnable");
+
+  if (IsImplemented(node) && IsAvailable(node))   //20231030 fede: in usb cameras GammaEnable do NOT exists
   {
-    pCamera->GammaEnable.SetValue(true);
+     CEnumParameter gammaEn(node);
+     gammaEn.TrySetValue(gammaEnable);
+     cout << this->ipAddress << ": Gamma Enable set to: " << gammaEnable << endl; 
   }
-  if(strcmp(gammaEnable, "Off")==0)
+  else
   {
-    pCamera->GammaEnable.SetValue(false);
+     cout << this->ipAddress << ": Gamma Enable is NOT available" << endl;
   }
-   
-  cout << this->ipAddress << ": Gamma Enable set to: " << gammaEnable << endl;  
+
   return SUCCESS;
 }
 
 int BASLER_ACA::setFrameRate(double frameRate)
 {
-    pCamera->AcquisitionFrameRateEnable.SetValue(true);
-    pCamera->AcquisitionFrameRateAbs.SetValue(frameRate);
-    cout << this->ipAddress << ": Frame Rate set to: " << frameRate << endl;   
-    this->frameRate = frameRate;
-    return SUCCESS;
+   INodeMap& nodeMap = pCamera->GetNodeMap();  
+   INode *node;
+
+   node = nodeMap.GetNode("AcquisitionFrameRateEnable");
+   if (IsImplemented(node) && IsAvailable(node))
+   {
+     pCamera->AcquisitionFrameRateEnable.SetValue(true); 
+   }
+   else
+   {
+     cout << this->ipAddress << ": AcquisitionFrameRateEnable is NOT available" << endl;
+   }
+
+   node = nodeMap.GetNode("AcquisitionFrameRateAbs");  //20231030 fede: GIGE cameras
+   if (IsImplemented(node) && IsAvailable(node))
+   {
+     pCamera->AcquisitionFrameRateAbs.SetValue(frameRate); 
+     cout << this->ipAddress << ": Frame Rate Abs set to: " << frameRate << endl;  
+   }
+   else
+   {
+     node = nodeMap.GetNode("AcquisitionFrameRate");  //20231030 fede: USB cameras
+     if (IsImplemented(node) && IsAvailable(node))
+     {
+       pCamera->AcquisitionFrameRate.SetValue(frameRate); 
+       cout << this->ipAddress << ": Frame Rate set to: " << frameRate << endl; 
+     }
+     else
+     {
+       cout << this->ipAddress << ": AcquisitionFrameRate is NOT available" << endl;
+     }
+   }
+
+   this->frameRate = frameRate;
+   return SUCCESS;
 }
 
 
@@ -516,7 +610,6 @@ int BASLER_ACA::setReadoutArea(int x, int y, int width, int height)
 
 int BASLER_ACA::setPixelFormat(char *pixelFormat)
 {
-  cout << this->ipAddress << ": DEBUG TO REMOVE setPixelFormat " << endl;
   INodeMap& nodeMap = pCamera->GetNodeMap();
   CEnumerationPtr pFormat(nodeMap.GetNode("PixelFormat"));
   try
@@ -585,15 +678,34 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
 			
    *payloadSize=this->width*this->height*this->Bpp;  //no metadata
 
-   printf("%s: width=%d.", this->ipAddress, this->width); 
-   printf("%s: height=%d.", this->ipAddress, this->height);
-   printf("%s: Bpp=%d.\n", this->ipAddress, this->Bpp);
+   printf("%s: width=%d height=%d Bpp=%d\n", this->ipAddress, this->width, this->height, this->Bpp); 
 
-   //fede new 30/06/2017 due to incomplete grabbed frame error. The error advice to change iter-packed delay
-   pCamera->GevStreamChannelSelector.SetValue(GevStreamChannelSelector_StreamChannel0);
-   pCamera->GevSCPD.SetValue(10000);  //1 tick should be 8ns from manual. So inter packed delay is now 80us.
-   //int64_t i = camera.GevSCPD.GetValue();
-
+   if(pCamera->IsGigE()) // 20231030 fede: added USB support
+   {
+     node = nodeMap.GetNode("GevStreamChannelSelector");  
+     if (IsImplemented(node) && IsAvailable(node))
+     {
+       //fede new 30/06/2017 due to incomplete grabbed frame error. The error advice to change iter-packed delay
+       pCamera->GevStreamChannelSelector.SetValue(GevStreamChannelSelector_StreamChannel0);
+       pCamera->GevSCPD.SetValue(10000);  //1 tick should be 8ns from manual. So inter packed delay is now 80us.
+     }
+   }  
+  
+   if(pCamera->IsUsb()) // 20231201 fede: added USB support
+   {
+    node = nodeMap.GetNode("DeviceLinkSelector");  //disable throughput limit in USB camera to manage high fps
+    if (IsImplemented(node) && IsAvailable(node))
+    {
+      pCamera->DeviceLinkSelector.SetValue(0);
+    }
+    node = nodeMap.GetNode("DeviceLinkThroughputLimitMode"); 
+    if (IsImplemented(node) && IsAvailable(node))
+    {
+      pCamera->DeviceLinkThroughputLimitMode.SetValue(DeviceLinkThroughputLimitMode_Off);
+      printf("%s: Disabling DeviceLinkThroughputLimit... OK!\n", this->ipAddress);
+    }
+   }
+ 
    // Enable chunks in general.
    node = nodeMap.GetNode("ChunkModeActive");
    if (IsWritable(node))
@@ -604,38 +716,48 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    {
      throw RUNTIME_EXCEPTION( "The camera doesn't support chunk features");
    }
-   // Enable time stamp chunks.
+
    CEnumerationPtr ChunkSelector(nodeMap.GetNode("ChunkSelector"));
    if(IsAvailable(ChunkSelector->GetEntryByName("Timestamp")))
    {
      ChunkSelector->FromString("Timestamp");
+     cout << this->ipAddress << ": Enabled ChunkSelector_Timestamp. " << endl;
+     node = nodeMap.GetNode("ChunkEnable");
+     CBooleanPtr(node)->SetValue(true);
    }
-   node = nodeMap.GetNode("ChunkEnable");
-   CBooleanPtr(node)->SetValue(true);
 
    if(IsAvailable(ChunkSelector->GetEntryByName("PayloadCRC16")))
    {
      ChunkSelector->FromString("PayloadCRC16");
+     cout << this->ipAddress << ": Enabled ChunkSelector_PayloadCRC16. " << endl;
+     node = nodeMap.GetNode("ChunkEnable");
+     CBooleanPtr(node)->SetValue(true);
    }
-   node = nodeMap.GetNode("ChunkEnable");
-   CBooleanPtr(node)->SetValue(true);
 
-   //new fede 20170918
    if(IsAvailable(ChunkSelector->GetEntryByName("ExposureTime")))
    {
      ChunkSelector->FromString("ExposureTime");
-     cout << this->ipAddress << ": New ChunkSelector_ExposureTime: " << ChunkSelector->ToString() << endl;
+     cout << this->ipAddress << ": Enabled ChunkSelector_ExposureTime. " << endl;
+     node = nodeMap.GetNode("ChunkEnable");
+     CBooleanPtr(node)->SetValue(true);
    }
-   node = nodeMap.GetNode("ChunkEnable");
-   CBooleanPtr(node)->SetValue(true);
 
-   if(IsAvailable(ChunkSelector->GetEntryByName("GainAll")))
+   if(IsAvailable(ChunkSelector->GetEntryByName("GainAll"))) //gain used in GIGE cameras
    {
      ChunkSelector->FromString("GainAll");
-     cout << this->ipAddress << ": New ChunkSelector_GainAll: " << ChunkSelector->ToString() << endl;
+     cout << this->ipAddress << ": Enabled ChunkSelector_GainAll. "<< endl;
+     node = nodeMap.GetNode("ChunkEnable");
+     CBooleanPtr(node)->SetValue(true);
    }
-   node = nodeMap.GetNode("ChunkEnable");
-   CBooleanPtr(node)->SetValue(true);
+
+   if(IsAvailable(ChunkSelector->GetEntryByName("Gain"))) //gain used in USB cameras
+   {
+     ChunkSelector->FromString("Gain");
+     cout << this->ipAddress << ": Enabled ChunkSelector_Gain. " << endl;
+     node = nodeMap.GetNode("ChunkEnable");
+     CBooleanPtr(node)->SetValue(true);
+   }
+
 
    //  CInstantCamera camera( device );
    //  static const uint32_t c_countOfImagesToGrab = 100;
@@ -643,6 +765,13 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    // The parameter MaxNumBuffer can be used to control the count of buffers
    // allocated for grabbing. The default value of this parameter is 10.
    pCamera->MaxNumBuffer = 20;
+//   pCamera->MaxNumBuffer = 50;
+
+   if(IsAvailable(nodeMap.GetNode("SensorReadoutTime")))  //available on USB cameras
+   {
+     double sRoT = pCamera->SensorReadoutTime.GetValue();
+     printf("%s: calculated sensor readout time [us]: %f", this->ipAddress, sRoT); //useful to check when going on high speed
+   }   
 
    // Start the grabbing of c_countOfImagesToGrab images.
    // The camera device is parameterized with a default configuration which
@@ -670,7 +799,6 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 
    if(pCamera->IsGrabbing())
    {
-      //printf("getframe is grabbing\n");
       // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
       try{
          pCamera->RetrieveResult( 5000, ptrGrabResult, TimeoutHandling_ThrowException);
@@ -681,7 +809,8 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
        // exitCode = 1;
         *status=3; //timeout
         printf("-> 5s timeout reached in getFrame\n");
-      }     
+      }   
+
       if (ptrGrabResult->GrabSucceeded()) // Image grabbed successfully
       {
           *status=1; //complete
@@ -697,41 +826,75 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
             {
                 throw RUNTIME_EXCEPTION( "Unexpected payload type received.");
             }
-            // Since we have activated the CRC Checksum feature, we can check
-            // the integrity of the buffer first.
-            // Note: Enabling the CRC Checksum feature is not a prerequisite for using
-            // chunks. Chunks can also be handled when the CRC Checksum feature is deactivated.
-            if (ptrGrabResult->HasCRC() && ptrGrabResult->CheckCRC() == false)
+         
+            //20231207 fede: CRC check slow down the acquisition and cannot be used at high fps rate
+            if(pCamera->IsUsb())
             {
+             if(this->frameRate<100)  //check CRC only below defined fps
+             {
+              if (ptrGrabResult->HasCRC() && ptrGrabResult->CheckCRC() == false)
+              {
                 throw RUNTIME_EXCEPTION( "Image was damaged!");
+              }
+             }
             }
 
-           int64_t ts;
-           if(ptrGrabResult->IsChunkDataAvailable())
-           {
-             INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
-             ts = CIntegerPtr(nodeMap.GetNode("ChunkTimestamp"))->GetValue();
-             // printf("%I64d\n", ts);
-           }
-
-           int gain=0;
-           if(ptrGrabResult->IsChunkDataAvailable())
-           {
-             INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
-             gain = CIntegerPtr(nodeMap.GetNode("ChunkGainAll"))->GetValue();
-             //printf("fede gainall chunk:%d\n", gain);
-           }
+           int64_t ts=0;
            double exp=0;
+           double gain=0;
+           int gainInteger=0;
+
            if(ptrGrabResult->IsChunkDataAvailable())
            {
              INodeMap& nodeMap = ptrGrabResult->GetChunkDataNodeMap();
-             exp = CFloatPtr(nodeMap.GetNode("ChunkExposureTime"))->GetValue();
-             //printf("fede exp chunk:%f\n", exp);
+             INode *nodeChunk;
+
+             nodeChunk = nodeMap.GetNode("ChunkTimestamp");
+             if (IsImplemented(nodeChunk) && IsAvailable(nodeChunk))
+             {
+              ts = CIntegerPtr(nodeChunk)->GetValue();
+              //printf("chunk timestamp:%ld\n", ts); 
+             }
+         
+             nodeChunk = nodeMap.GetNode("ChunkGainAll");    //GainAll is integer
+             if (IsImplemented(nodeChunk) && IsAvailable(nodeChunk))  
+             {
+               gainInteger = CIntegerPtr(nodeChunk)->GetValue();
+               //printf("chunk gainAll:%d\n", gainInteger); 
+             }
+             else
+             {
+               nodeChunk = nodeMap.GetNode("ChunkGain");    //Gain is double
+               if (IsImplemented(nodeChunk) && IsAvailable(nodeChunk))  
+               {
+                 gain = CFloatPtr(nodeChunk)->GetValue();
+                 gainInteger = (int)gain;
+                 //printf("chunk gain:%f\n", gain); 
+                 //printf("chunk gain integer:%d\n", gainInteger); 
+               }
+               else
+               {
+                 gainInteger=this->gain; 
+                 //printf("gain chunk not available on this camera:%d\n", gainInteger); 
+               }
+             }
+
+             nodeChunk = nodeMap.GetNode("ChunkExposureTime");
+             if (IsImplemented(nodeChunk) && IsAvailable(nodeChunk)) 
+             {
+               exp = CFloatPtr(nodeChunk)->GetValue();
+               //printf("chunk exposure:%f\n", exp);
+             }
+             else
+             {
+               exp=this->exposure; 
+               //printf("exposure chunk not available on this camera:%f\n", exp); 
+             }
            }
 
         //printf("metadata size: %d\n", sizeof(BASLERMETADATA));
         BASLERMETADATA bMeta;
-        bMeta.gain=gain;
+        bMeta.gain=gainInteger;
         bMeta.exposure=exp;
         bMeta.internalTemperature=this->internalTemperature;
         bMeta.timestamp=ts;
@@ -832,7 +995,8 @@ int BASLER_ACA::stopFramesAcquisition()
  
 	acqStopped = 0;
 	acqFlag = 0;
-	while( !acqStopped & count < 20 )
+//	while( !acqStopped & count < 20 )
+	while( !acqStopped & count < 100 ) //to stop fast USB camera acquisition (500 fps) bigger timeout is required
 	{
 		count++;
 		usleep(50000);
@@ -882,8 +1046,7 @@ int BASLER_ACA::startFramesAcquisition()
          {
             sprintf(error, "%s: Error getting frame0 time\n", this->ipAddress);
          }
-
-    
+  
         //if ( triggerMode != 1 ) //in internal mode use the timebaseNid as T0 offset (ex. T_START_SPIDER)
         {                         //20210325: In external trigger, triggered on event must be set timeOffest
          TreeNode *tStartOffset;
@@ -923,7 +1086,9 @@ int BASLER_ACA::startFramesAcquisition()
 
         while ( acqFlag )
 	{
+
         getFrame( &frameStatus, frameBuffer, metaData);   //get the frame  
+
         if(storeEnabled)
         {
           if ( triggerMode == 1 )        // External trigger source
@@ -954,18 +1119,16 @@ int BASLER_ACA::startFramesAcquisition()
                         Int64 *tsMDS = new Int64(timeStamp);
                         t0Node->putData(tsMDS);
                         timeStamp0=timeStamp;
-                        printf("frameTime stamp 0: %f", timeStamp0); 
+                        printf("frameTime stamp 0: %ld", timeStamp0); 
                     }
                     else
                     {   
-                        frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
-                     // printf("frameTime: %f", frameTime);      
+                        frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]  
+                        //printf("frameTime: %f", frameTime);      
                     }
                 }//if startStoreTrg == 1 
 
 /*************************/
-
-
 
            	if (frameTriggerCounter == burstNframe) 
 		{
@@ -1004,7 +1167,7 @@ int BASLER_ACA::startFramesAcquisition()
                   else
                   {   
                     frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
-                   // printf("frameTime: %f", frameTime);      
+                    //printf("frameTime: %f", frameTime);      
                   }
               }//if startStoreTrg == 1 
 
@@ -1028,12 +1191,12 @@ int BASLER_ACA::startFramesAcquisition()
 	  frameTimeBaseIdx = NtriggerCount * burstNframe + frameTriggerCounter;
 	  //printf("SAVE Frame : %d timebase Idx : %d\n", frameTriggerCounter,  frameTimeBaseIdx);
 	
-	  // CT la routine camSaveFrame utilizza il frame index in acquisizione. L'indice viene
-    	  // utilizzato per individuare nell'array della base temporale il tempo associato al frame.
+	  // CT: routine camSaveFrame uses frame index in acquisition. Index is used to determine the frame timestamp using the base time array
 
-	  // Con Trigger interno viene utilizzato frameTime come tempo relativo allo 0; timebaseNid deve essere -1
+	  // In internal trigger, frameTime is the relative time to the t0 (time of first frame); timebaseNid must be -1
 //          camSaveFrame((void *)frameBuffer, width, height, frameTime, 14, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList); 
           //printf("%s: SAVE FRAME: %d of %d frame time %f\n", this->ipAddress, frameTriggerCounter+1, burstNframe, frameTime+timeOffset);                              
+
           camSaveFrame((void *)frameBuffer, width, height, frameTime+timeOffset, 8*this->Bpp, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList); 
 	  enqueueFrameNumber++;
 

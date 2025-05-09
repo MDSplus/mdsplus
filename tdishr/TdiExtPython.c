@@ -90,7 +90,11 @@ static int (*PyCallable_Check)() = NULL;
 static void (*PyErr_Clear)() = NULL;
 static PyObject *(*PyImport_AddModule)() = NULL;
 static PyObject *(*PyModule_AddObject)() = NULL;
+#ifdef MACOS_ARM64
+static PyObject *(*PyObject_CallFunctionObjArgs)(void *, ...) = NULL;
+#else
 static PyObject *(*PyObject_CallFunctionObjArgs)() = NULL;
+#endif
 static PyObject *(*PyString_FromString)() = NULL;
 // callPyFunction
 static PyObject *_Py_NoneStruct = NULL;
@@ -101,7 +105,11 @@ static int (*PyObject_IsSubclass)() = NULL;
 static void *(*PyLong_AsVoidPtr)() = NULL;
 static PyObject *(*PyObject_GetAttrString)() = NULL;
 // args_to_tuple
+#ifdef MACOS_ARM64
+static PyObject *(*PyObject_CallFunction)(void *, void *, ...) = NULL;
+#else
 static PyObject *(*PyObject_CallFunction)() = NULL;
+#endif
 static PyObject *(*PyTuple_New)() = NULL;
 static void (*PyTuple_SetItem)() = NULL;
 #ifdef USE_EXECFILE
@@ -129,7 +137,11 @@ inline static void initialize()
     _putenv_s("PyLib", envsym);
 #else
     envsym = "python2.7";
+#ifdef MACOS_ARM64
+    const char *aspath = "/opt/local/lib/libpython2.7.dylib";   // (MW) TODO: for MacPorts version
+#else 
     const char *aspath = "/usr/lib/python2.7.so.1";
+#endif
     setenv("PyLib", envsym, B_FALSE);
 #endif
     fprintf(stderr,
@@ -169,9 +181,15 @@ inline static void initialize()
     }
     else
     {
+    #ifdef MACOS_ARM64
+      lib = strcpy((char *)malloc(strlen(envsym) + 10), "lib");
+      strcat(lib, envsym);
+      strcat(lib, ".dylib");
+    #else
       lib = strcpy((char *)malloc(strlen(envsym) + 7), "lib");
       strcat(lib, envsym);
       strcat(lib, ".so");
+    #endif
     }
 #endif
     handle = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);

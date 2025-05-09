@@ -63,7 +63,7 @@ extern "C"
  */
   JNIEXPORT void JNICALL Java_MDSplus_Connection_put(JNIEnv *, jobject, jint,
                                                      jstring, jstring,
-                                                     jobjectArray);
+                                                     jobjectArray, jboolean);
 
 #ifdef __cplusplus
 }

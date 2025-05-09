@@ -6,7 +6,7 @@ VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
-TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@
+TDIC_LIBS= $(LIBS) @LIBREADLINE@
 
 SOURCES = \
         TdiShrExt.c

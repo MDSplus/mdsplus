@@ -28,13 +28,22 @@ public class DeviceParameters extends DeviceComponent
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numParameters, 1));
             int currNid = baseNid + offsetNid + 2 + 3 * parameterOffset;
-            for(int i = 0; i < numParameters; i++)
+            int i = 0;
+            while(i < numParameters)
             {
+                int numChildren = 0;
+                try {
+                    numChildren = subtree.getInt("GETNCI("+subtree.getFullPath(currNid+1)+",\'NUMBER_OF_CHILDREN\')");
+                }catch(Exception exc){System.out.println("Internal error in DeviceParameters.initialize)");}
+                if(numChildren > 0)
+                {
+                    currNid += 3;
+                    continue;
+                }
                 JPanel jp1 = new JPanel();
                 String parName = "";
                 try {
                     parName = subtree.getString(subtree.getDataExpr(currNid));
-                    parName = parName.substring(11);
                 }catch(Exception exc){System.out.println("Cannot read parameter name");}
  
                 jp1.setBorder(new TitledBorder(parName));
@@ -42,6 +51,7 @@ public class DeviceParameters extends DeviceComponent
                 jp1.add(valuesTF[i] = new JTextField(), "Center");
                 jp.add(jp1);
                 currNid += 3;
+                i++;
             }
             scrollP = new JScrollPane(jp);
             setLayout(new BorderLayout());
@@ -52,12 +62,23 @@ public class DeviceParameters extends DeviceComponent
 	protected void displayData(String data, boolean is_on)
 	{
             int currNid = baseNid + offsetNid + 3 + 3 * parameterOffset;
-            for(int parIdx = 0; parIdx < numParameters; parIdx++)
+            int parIdx = 0;
+            while(parIdx < numParameters)
             {
+                int numChildren = 0;
+                try {
+                    numChildren = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
+                }catch(Exception exc){System.out.println("Internal error in DeviceParameters.initialize)");}
+                if(numChildren > 0)
+                {
+                    currNid += 3;
+                    continue;
+                }
                 try {
                     valuesTF[parIdx].setText(subtree.getDataExpr(currNid));
                 }catch(Exception exc){System.out.println("Cannot read parameter value");}
                 currNid += 3;
+                parIdx++;
             }
 	}
 
@@ -67,12 +88,23 @@ public class DeviceParameters extends DeviceComponent
         public void apply() throws Exception
         {
             int currNid = baseNid + offsetNid + 3 + 3 * parameterOffset;
-            for(int parIdx = 0; parIdx < numParameters; parIdx++)
+            int parIdx = 0;
+            while(parIdx < numParameters)
             {
+                int numChildren = 0;
+                try {
+                    numChildren = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
+                }catch(Exception exc){System.out.println("Internal error in DeviceParameters.initialize)");}
+                if(numChildren > 0)
+                {
+                    currNid += 3;
+                    continue;
+                }
                 try {
                     subtree.putDataExpr(currNid, valuesTF[parIdx].getText());
                 }catch(Exception exc){System.out.println("Cannot write parameter "+labels[parIdx]+": "+exc);}
                 currNid += 3;
+                parIdx++;
             }
        }
        public int getNumParameters() {return numParameters;}

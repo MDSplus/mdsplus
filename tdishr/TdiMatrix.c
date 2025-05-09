@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 extern int TdiGetArgs();
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiConvert();
 extern int TdiMasterData();
 

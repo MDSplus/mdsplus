@@ -165,7 +165,8 @@ static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
           0xFFFFFF;
       elt_nid.tree = nid->tree;
       elt_node = nid_to_node(dblist, &elt_nid);
-      for (; swapint16(&elt_node->conglomerate_elt) == elt_num;
+      for (; swapint16(&elt_node->conglomerate_elt) == elt_num 
+                && elt_nid.node < dblist->tree_info->header->nodes;
            elt_nid.node++, elt_num++, elt_node++)
         check_nid(dblist, &elt_nid, count);
     }

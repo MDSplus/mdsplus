@@ -38,11 +38,14 @@ def get_root():
 def external_package(info, root, package):
     for extpackages in root.iter('external_packages'):
         dist = extpackages.attrib.get('dist', None)
+        pkg = None
         if dist:
             if info['dist'] != dist:
                 continue
             selected = dist
-        else:
+            pkg = extpackages.find(package)
+
+        if pkg is None:
             platform = extpackages.attrib.get('platform', None)
             if platform:
                 if info['platform'] != platform:
@@ -50,7 +53,7 @@ def external_package(info, root, package):
                 selected = platform
             else:
                 continue
-        pkg = extpackages.find(package)
+            pkg = extpackages.find(package)
         if pkg is not None:  # found and include dependency
             pkg = pkg.attrib.get('package', package)
             print('REQUIRES: %s' % (pkg,))

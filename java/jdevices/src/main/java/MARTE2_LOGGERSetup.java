@@ -27,9 +27,6 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -80,26 +77,12 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         jPanel25 = new javax.swing.JPanel();
         deviceField18 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Logger");
         setDeviceType("MARTE2_LOGGER");
         setHeight(300);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel1.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase Div.: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(62);
-        jPanel1.add(deviceField2);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         jPanel2.setLayout(new java.awt.GridLayout(2, 1));
 
@@ -133,14 +116,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type:");
-        deviceChoice2.setOffsetNid(14);
+        deviceChoice2.setOffsetNid(15);
         deviceChoice2.setUpdateIdentifier("");
         jPanel6.add(deviceChoice2);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Dimensions: ");
         deviceField5.setNumCols(6);
-        deviceField5.setOffsetNid(15);
+        deviceField5.setOffsetNid(16);
         jPanel6.add(deviceField5);
 
         jPanel5.add(jPanel6);
@@ -148,7 +131,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Value: ");
         deviceField6.setNumCols(25);
-        deviceField6.setOffsetNid(17);
+        deviceField6.setOffsetNid(18);
         jPanel7.add(deviceField6);
 
         jPanel5.add(jPanel7);
@@ -160,14 +143,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice3.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type:");
-        deviceChoice3.setOffsetNid(21);
+        deviceChoice3.setOffsetNid(23);
         deviceChoice3.setUpdateIdentifier("");
         jPanel9.add(deviceChoice3);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Dimensions: ");
         deviceField7.setNumCols(6);
-        deviceField7.setOffsetNid(22);
+        deviceField7.setOffsetNid(24);
         jPanel9.add(deviceField7);
 
         jPanel8.add(jPanel9);
@@ -175,7 +158,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Value: ");
         deviceField8.setNumCols(25);
-        deviceField8.setOffsetNid(24);
+        deviceField8.setOffsetNid(26);
         jPanel10.add(deviceField8);
 
         jPanel8.add(jPanel10);
@@ -187,14 +170,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice4.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type:");
-        deviceChoice4.setOffsetNid(28);
+        deviceChoice4.setOffsetNid(31);
         deviceChoice4.setUpdateIdentifier("");
         jPanel12.add(deviceChoice4);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Dimensions: ");
         deviceField9.setNumCols(6);
-        deviceField9.setOffsetNid(29);
+        deviceField9.setOffsetNid(32);
         jPanel12.add(deviceField9);
 
         jPanel11.add(jPanel12);
@@ -202,7 +185,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Value: ");
         deviceField10.setNumCols(25);
-        deviceField10.setOffsetNid(31);
+        deviceField10.setOffsetNid(34);
         jPanel13.add(deviceField10);
 
         jPanel11.add(jPanel13);
@@ -214,14 +197,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice5.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type:");
-        deviceChoice5.setOffsetNid(35);
+        deviceChoice5.setOffsetNid(39);
         deviceChoice5.setUpdateIdentifier("");
         jPanel15.add(deviceChoice5);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Dimensions: ");
         deviceField11.setNumCols(6);
-        deviceField11.setOffsetNid(36);
+        deviceField11.setOffsetNid(40);
         jPanel15.add(deviceField11);
 
         jPanel14.add(jPanel15);
@@ -229,7 +212,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Value: ");
         deviceField12.setNumCols(25);
-        deviceField12.setOffsetNid(38);
+        deviceField12.setOffsetNid(42);
         jPanel16.add(deviceField12);
 
         jPanel14.add(jPanel16);
@@ -241,14 +224,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice6.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type:");
-        deviceChoice6.setOffsetNid(42);
+        deviceChoice6.setOffsetNid(47);
         deviceChoice6.setUpdateIdentifier("");
         jPanel18.add(deviceChoice6);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Dimensions: ");
         deviceField13.setNumCols(6);
-        deviceField13.setOffsetNid(43);
+        deviceField13.setOffsetNid(48);
         jPanel18.add(deviceField13);
 
         jPanel17.add(jPanel18);
@@ -256,7 +239,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Value: ");
         deviceField14.setNumCols(25);
-        deviceField14.setOffsetNid(45);
+        deviceField14.setOffsetNid(50);
         jPanel19.add(deviceField14);
 
         jPanel17.add(jPanel19);
@@ -268,14 +251,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice7.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type:");
-        deviceChoice7.setOffsetNid(49);
+        deviceChoice7.setOffsetNid(55);
         deviceChoice7.setUpdateIdentifier("");
         jPanel21.add(deviceChoice7);
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Dimensions: ");
         deviceField15.setNumCols(6);
-        deviceField15.setOffsetNid(50);
+        deviceField15.setOffsetNid(56);
         jPanel21.add(deviceField15);
 
         jPanel20.add(jPanel21);
@@ -283,7 +266,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Value: ");
         deviceField16.setNumCols(25);
-        deviceField16.setOffsetNid(52);
+        deviceField16.setOffsetNid(58);
         jPanel22.add(deviceField16);
 
         jPanel20.add(jPanel22);
@@ -295,14 +278,14 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type:");
-        deviceChoice8.setOffsetNid(56);
+        deviceChoice8.setOffsetNid(63);
         deviceChoice8.setUpdateIdentifier("");
         jPanel24.add(deviceChoice8);
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Dimensions: ");
         deviceField17.setNumCols(6);
-        deviceField17.setOffsetNid(57);
+        deviceField17.setOffsetNid(64);
         jPanel24.add(deviceField17);
 
         jPanel23.add(jPanel24);
@@ -310,7 +293,7 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Value: ");
         deviceField18.setNumCols(25);
-        deviceField18.setOffsetNid(59);
+        deviceField18.setOffsetNid(66);
         jPanel25.add(deviceField18);
 
         jPanel23.add(jPanel25);
@@ -333,7 +316,6 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
     private DeviceChoice deviceChoice6;
     private DeviceChoice deviceChoice7;
     private DeviceChoice deviceChoice8;
-    private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
@@ -343,7 +325,6 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
@@ -351,7 +332,6 @@ public class MARTE2_LOGGERSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;

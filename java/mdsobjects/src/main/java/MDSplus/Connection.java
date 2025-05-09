@@ -97,7 +97,15 @@ public class Connection
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
-                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                java.lang.String expandedExpr;
+                if(expr.equals("$"))
+                {
+                    expandedExpr = "serializeout(`("+expr+"))";
+                }
+                else
+                {
+                    expandedExpr = "serializeout(`(data(("+expr+"))))";
+                }
                 Data serData = get(sockId, expandedExpr, args);
                 return Data.deserialize(serData.getByteArray());
 
@@ -105,17 +113,38 @@ public class Connection
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                java.lang.String expandedExpr = "serializeout(`(data(("+expr+"))))";
                 Data serData = get(sockId, expandedExpr, new Data[0]);
-                return Data.deserialize(serData.getByteArray());
+                if(serData instanceof Array)
+                    return Data.deserialize(serData.getByteArray());
+                else //error code
+                    return serData;
 	}
 
-	public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
+	public void put(java.lang.String path, java.lang.String expr, Data inArgs[]) throws MdsException
 	{
+        Data args[] = new Data[inArgs.length];
+		//Check if any passed argument is Apd
+		boolean serialized = false;
+		for(int i = 0; i < inArgs.length; i++)
+		{
+			if(inArgs[i] instanceof Apd)
+			{
+				serialized = true;
+			}
+		}
+
+		for(int i = 0; i < inArgs.length; i++)
+		{
+			if(serialized)
+				args[i] = new Uint8Array(inArgs[i].serialize());
+			else
+				args[i] = inArgs[i];
+		}
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.put()");
-		put(sockId, path, expr, args);
+		put(sockId, path, expr, args, serialized);
 	}
 
 	public void put(java.lang.String path, java.lang.String expr) throws MdsException
@@ -141,7 +170,7 @@ public class Connection
 
 	public native Data get(int sockId, java.lang.String expr, Data args[]) throws MdsException;
 
-	public native void put(int sockId, java.lang.String path, java.lang.String expr, Data args[]) throws MdsException;
+	public native void put(int sockId, java.lang.String path, java.lang.String expr, Data args[], boolean serialized) throws MdsException;
 
 	public GetMany getMany()
 	{ return new GetManyInConnection(); }

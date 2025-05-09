@@ -64,6 +64,9 @@ except:
 for filename in os.listdir(os.path.dirname(__file__)):
     if not filename.startswith("_"):
         if filename.endswith('.py'):
-            _mimport(filename[:-3])
+            try:
+                _mimport(filename[:-3])
+            except:
+                pass
 
 #print('RfxDevices loaded.')

@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <_mdsversion.h>
 #include "mdsipthreadstatic.h"
 
-#define DEBUG
+// #define DEBUG
 #include <mdsmsg.h>
 
 static void buffer_free(MDSIPTHREADSTATIC_ARG)

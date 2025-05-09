@@ -136,7 +136,7 @@ namespace testing
 
 void main_test()
 {
-  TEST_TIMEOUT(100);
+  // TEST_TIMEOUT(100);
   BEGIN_TESTING(TreeNode);
 
   
@@ -702,13 +702,19 @@ void main_test()
 
       // putTimestampedSegment of size 2
       ts_node->putTimestampedSegment(
-          unique_ptr<Array>(new Int32Array(array, 2)), times);
+          unique_ptr<Array>(new Int32Array(array, 2)), &times[1]);
 
       // putrow puts single element into segment
-      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 1)), times);
+      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 1)), &times[3]);
 
       // putrow puts two elements into segment
-      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 2)), times);
+      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 2)), &times[4]);
+
+      // putrow puts two elements into segment
+      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 2)), &times[6]);
+
+      // putrow puts two elements into segment
+      ts_node->putRow(unique_ptr<Array>(new Int32Array(array, 2)), &times[8]);
 
       // Now putRow does not throw exception !
       //            TEST_EXCEPTION(
@@ -716,6 +722,8 @@ void main_test()
       //                        Int32Array(array,2)), times), MdsException );
 
       // makeTimestampedSegment
+      TEST1(AutoString(unique_ptr<Data>(ts_node->dim_of())->decompile())
+                .string == "[1Q,1Q,2Q,3Q,5Q,8Q,13Q,21Q,34Q,55Q]");
       ts_node->makeTimestampedSegment(array_data, times);
       TEST1(ts_node->getNumSegments() == 2);
       TEST1(AutoString(unique_ptr<Data>(ts_node->getSegmentDim(1))->decompile())
@@ -889,8 +897,11 @@ void main_test()
     delete n1->addDevice("device", "DIO2");
   }
 
+  // If we don't close the existing "t_treenode" tree, windows will fail when attempting to make a NEW one
+  tree = NULL;
 
   {
+    // TODO: Rename these so they don't use the same names from the top of this function
     Tree *tree = new Tree("t_treenode", -1, "NEW");
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;

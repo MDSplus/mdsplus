@@ -2075,14 +2075,20 @@ public class Signal implements WaveDataListener
 	{
 		// if(!xLimitsInitialized)
 		// return -Double.MAX_VALUE;
-		return xmax;
+                if(longXLimits)
+                    return xMaxLong;
+                else
+                    return xmax;
 	}
 
 	public double getXmin()
 	{
 		// if(!xLimitsInitialized)
 		// return Double.MAX_VALUE;
-		return xmin;
+                if(longXLimits)
+                    return xMinLong;
+                else
+                    return xmin;
 	}
 
 	public float[] getY() throws IOException

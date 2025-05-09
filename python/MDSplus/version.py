@@ -28,14 +28,21 @@ This is a helper module.
 Its purpose is to supply tools that are used to generate version specific code.
 Goal is to generate code that work on both python2x and python3x.
 """
+
 from types import GeneratorType as generator  # analysis:ignore
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
-from numpy import string_ as npbytes
-from numpy import unicode_ as npunicode
 from numpy import version as npver
 from sys import version_info as pyver
 import os
+
+try:
+    from numpy import string_ as npbytes
+    from numpy import unicode_ as npunicode
+except ImportError:
+    npbytes = bytes
+    npunicode = str
+
 ispy3 = pyver > (3,)
 ispy38 = pyver >= (3,8)
 ispy2 = pyver < (3,)

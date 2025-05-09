@@ -137,6 +137,7 @@ int WriteShotId(char * filename, int shot, int mode)
   return status;
 }
 
+// On error returns 0 (a non-MDSplus error viewed as failure by the status macros)
 int TreeGetCurrentShotId(char const *experiment)
 {
   int shot = 0;
@@ -144,6 +145,9 @@ int TreeGetCurrentShotId(char const *experiment)
   char experiment_lower[16] = {0};
   size_t slen;
   char * pathlist = TreePath(experiment, experiment_lower);
+  if (pathlist == NULL) {
+    return 0;
+  }
   char * filename;
   char * saveptr = NULL;
   char * path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);

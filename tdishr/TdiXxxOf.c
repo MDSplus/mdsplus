@@ -35,12 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int tdi_get_data();
 extern int TdiGetLong();
 extern int tdi_put_logical();
-extern int TdiEvaluate();
-extern int TdiDispatchOf();
-extern int TdiBuildRange();
-extern int TdiDimOf();
-extern int TdiValueOf();
-extern int TdiTaskOf();
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiDispatchOf(mdsdsc_t *, ...);
+extern int TdiBuildRange(mdsdsc_t *, ...);
+extern int TdiDimOf(mdsdsc_t *, ...);
+extern int TdiValueOf(mdsdsc_t *, ...);
+extern int TdiTaskOf(mdsdsc_t *, ...);
 
 /*--------------------------------------------------------------
         Return one of the class-R descriptor arguments.
@@ -387,7 +387,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
           index_dsc.pointer = (char *)&index;
           status = tdi_get_data(&omits[1], &tmp, &tmp);
           if (STATUS_OK)
-            status = TdiDimOf(&tmp, &index_dsc, out_ptr MDS_END_ARG);
+            status = TdiDimOf((mdsdsc_t *)&tmp, &index_dsc, out_ptr MDS_END_ARG);
         }
         else
           status = MdsCopyDxXd(

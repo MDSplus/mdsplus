@@ -326,6 +326,11 @@ int MDSUdpEventCan(int eventid)
   pthread_cancel(ev->thread);
 #endif
   pthread_join(ev->thread, NULL);
+
+#ifndef _WIN32
+  close(ev->socket);
+#endif
+
   free(ev);
   return MDSplusSUCCESS;
 }

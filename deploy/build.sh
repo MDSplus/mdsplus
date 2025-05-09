@@ -177,6 +177,10 @@ OPTIONS
        before performing the build. If a docker image is not already
        present on the system it will automatically pulled from dockerhub
        even without the --dockerpull option.
+    
+    --dockernetwork
+       If specified, a docker network with this name will be created,
+       used for the docker container, and then removed.
 
     --keys=dir
        Specifies a directory containing signing keys and certificates
@@ -317,6 +321,9 @@ parsecmd() {
 		eval "RELEASE_VERSION=${i#*=}"
 		PUBLISH=yes
 		;;
+	    --version=*)
+		eval "RELEASE_VERSION=${i#*=}"
+		;;
 	    --platform=*)
 		eval "PLATFORM=${i#*=}"
 		;;
@@ -355,6 +362,9 @@ parsecmd() {
 		;;
 	    --dockerfile=*)
 		eval "DOCKERFILE=${i#*=}"
+		;;
+	    --dockernetwork=*)
+		eval "DOCKERNETWORK=${i#*=}"
 		;;
 	    --keys=*)
 		eval "KEYS=${i#*=}"
@@ -644,6 +654,7 @@ OS=${OS} \
   PUBLISHDIR=${PUBLISHDIR} \
   DOCKERIMAGE=${DOCKERIMAGE} \
   DOCKERFILE=${DOCKERFILE} \
+  DOCKERNETWORK=${DOCKERNETWORK} \
   KEYS=${KEYS} \
   DISTNAME=${DISTNAME} \
   UPDATEPKG=${UPDATEPKG} \

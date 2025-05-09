@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
-extern int TdiExecute();
+extern int TdiExecute(mdsdsc_t *, ...);
 
 static inline int filter_string(char **const str_ptr, const int upcase)
 {

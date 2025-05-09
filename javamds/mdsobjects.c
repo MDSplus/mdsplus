@@ -1441,7 +1441,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+  status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -1553,7 +1553,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+  status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[2 + i]);
@@ -2235,7 +2235,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
+  status = LIB_CALL_G(arglist, _TdiCompile, 2, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2291,7 +2291,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute(JNIEnv *env,
   arglist[varIdx++] = &outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, _TdiExecute);
+  status = LIB_CALL_G(arglist, _TdiExecute, 2, MDS_FFI_RTN_INT32);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
   for (i = 0; i < numArgs; i++)
     FreeDescrip(arglist[3 + i]);
@@ -2331,7 +2331,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_data(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
-  status = (int)(intptr_t)LibCallg(arglist, _TdiData);
+  status = LIB_CALL_G(arglist, _TdiData, 2, MDS_FFI_RTN_INT32);
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {
@@ -2370,7 +2370,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_evaluate(JNIEnv *env,
   arglist[3] = &outXd;
   arglist[4] = MdsEND_ARG;
   *(int *)&arglist[0] = 4;
-  status = (int)(intptr_t)LibCallg(arglist, _TdiEvaluate);
+  status = LIB_CALL_G(arglist, _TdiEvaluate, 2, MDS_FFI_RTN_INT32);
   FreeDescrip(arglist[2]);
   if (STATUS_NOT_OK)
   {
@@ -3909,7 +3909,7 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
  */
 JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
     JNIEnv *env, jobject obj __attribute__((unused)), jint sockId,
-    jstring jPath, jstring jExpr, jobjectArray jArgs)
+    jstring jPath, jstring jExpr, jobjectArray jArgs, jboolean serialized)
 {
   const char *expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   const char *inPath = (*env)->GetStringUTFChars(env, jPath, 0);
@@ -3936,12 +3936,25 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
   else
     strcpy(path, inPath);
 
+  if(serialized)
+  {
+    putExpr = malloc(strlen("TreePutDeserialized(") + strlen(expr) + strlen(path) + 5 +
+                    nArgs * 2 + 2);
+    if (nArgs > 0)
+      sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\',", path, expr);
+    else
+      sprintf(putExpr, "TreePutDeserialized(\'%s\',\'%s\'", path, expr);
+  }
+  else
+  {
   putExpr = malloc(strlen("TreePut(") + strlen(expr) + strlen(path) + 5 +
                    nArgs * 2 + 2);
   if (nArgs > 0)
     sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
   else
     sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
+
+  }
   for (varIdx = 0; varIdx < nArgs; varIdx++)
   {
     if (varIdx < nArgs - 1)

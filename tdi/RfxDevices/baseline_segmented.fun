@@ -23,7 +23,7 @@ public fun baseline_segmented(as_is _node, optional in _npoints)
 
 
 	_sum = 0.;
-	_sum = sum(_first_seg[0.._actpoints-1]);
+	_sum = sum(_first_seg[0 .. _actpoints-1]);
 	_offset = _sum / _actpoints;
 
 	_y = _y - _offset;
