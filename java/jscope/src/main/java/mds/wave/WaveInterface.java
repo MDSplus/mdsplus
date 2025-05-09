@@ -448,7 +448,7 @@ public class WaveInterface
 		evaluated = null;
 	}
 
-	public synchronized boolean EvaluateOthers()
+	public  boolean EvaluateOthers()
 	{
 		int curr_wave;
 		if (is_image)
@@ -509,7 +509,7 @@ public class WaveInterface
 		return retStatus;
 	}
 
-	public synchronized void EvaluateShot(long shot) throws Exception
+	public  void EvaluateShot(long shot) throws Exception
 	{
 		int curr_wave;
 		if (is_image)

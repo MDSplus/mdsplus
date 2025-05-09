@@ -2478,6 +2478,17 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	}
 
 	public void UpdateAllWaves()
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                    @Override
+                    public void run()
+                    {
+                            intUpdateAllWaves();
+                    }
+            });
+        }
+	public void intUpdateAllWaves()
 	{
 		final String s = shot_t.getText();
 		final String s1 = def_values.shot_str;

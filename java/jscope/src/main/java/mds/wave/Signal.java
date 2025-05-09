@@ -20,6 +20,9 @@ import java.util.Vector;
  */
 public class Signal implements WaveDataListener
 {
+        static final int DIM_THRESHOLD = 5000; //Number of 1D data points triggering reallocation of X and Y arrays
+    
+    
 	static class RegionDescriptor
 	{
 		double lowerBound, upperBound;
@@ -53,7 +56,13 @@ public class Signal implements WaveDataListener
 			// Skip disjoint regions with lower bounds
 			if (newReg.upperBound < newReg.lowerBound)
 			{
-				System.err.println("INTERNAL ERROR: LOWER BOUND > UPPER BOUND!!!!!");
+				System.err.println("INTERNAL ERROR : LOWER BOUND "+ newReg.lowerBound +" > UPPER BOUND ("+newReg.upperBound+")");
+                                try {
+                                    throw(new Exception());
+                                }catch(Exception exc)
+                                {
+                                    exc.printStackTrace();
+                                }
 			}
 			int idx;
 			RegionDescriptor currRegion;
@@ -170,8 +179,9 @@ public class Signal implements WaveDataListener
 			}
 		}
 
+                
 		// Check if the passed interval intersects any low resolution region
-		Vector<RegionDescriptor> getLowerResRegions(double lowerInt, double upperInt, double resolution)
+		synchronized Vector<RegionDescriptor> getLowerResRegions(double lowerInt, double upperInt, double resolution)
 		{
 			final Vector<RegionDescriptor> retRegions = new Vector<>();
 			for (int i = 0; i < lowResRegions.size(); i++)
@@ -1457,18 +1467,69 @@ public class Signal implements WaveDataListener
 		}
 	}
 
-	@Override
-	public void dataRegionUpdated(double[] regX, float[] regY, double resolution)
+        static final int UPDATE_LIMITS = 0;
+        static final int DO_NOT_UPDATE_LIMITS = 1;
+        static final int UPDATE_PENDING = 2;
+                
+        @Override       
+        public void dataRegionUpdated(double[] inRegX, float[] inRegY, double resolution)
+        {
+            int updateStatus = updateDataRegion(inRegX, inRegY, resolution);
+            if(updateStatus == UPDATE_LIMITS)
+            {
+                fireSignalUpdated(true);
+            }
+            else if (updateStatus == DO_NOT_UPDATE_LIMITS)
+            {
+                 fireSignalUpdated(false);
+           }
+        }
+        
+        
+
+	public synchronized int updateDataRegion(double[] inRegX, float[] inRegY, double resolution)
 	{
+            
+            if(inRegX != null && inRegX.length > 1 && inRegX[inRegX.length - 1] < inRegX[0])
+            {
+                System.out.println("INTERNAL ERROR IN UPDATE DATA REGION REGION: Inconsistent dimension, update skipped");
+                return UPDATE_PENDING;
+            }
+            double[] regX;
+            float[] regY;
+            try {
+                if(inRegX.length == inRegY.length)
+                {
+                    regX = inRegX;
+                    regY = inRegY;
+                }
+                else if (inRegX.length > inRegY.length)
+                {
+                    regY = inRegY;
+                    regX = new double[inRegY.length];
+                    System.arraycopy(inRegX, 0, regX, 0, inRegY.length);
+                }
+                else // inRegX.length < inRegY.length
+                {
+                    regX = inRegX;
+                    regY = new float[inRegX.length];
+                    System.arraycopy(inRegY, 0, regY, 0, inRegX.length);
+                }
+                
 		if (regX == null || regX.length == 0)
-			return;
+			return UPDATE_PENDING;
+                if(regX.length != regY.length)
+                {
+                    System.out.println("INTERNAL ERROR in Signal.dataRegionUpdated: regX.length = "+regX.length+"  regY.length = "+regY.length);
+                    return UPDATE_PENDING;
+                }
 		if (debug)
 			System.out.println("dataRegionUpdated " + resolutionManager.lowResRegions.size() + " new data len:"
 					+ regX.length + " XMIN:" + regX[0] + "  XMAX: " + regX[regX.length - 1]);
 		if (freezeMode != NOT_FREEZED) // If zooming in ANY part of the signal
 		{
 			pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
-			return;
+			return UPDATE_PENDING;
 		}
 		int samplesBefore, samplesAfter;
 		// if(regX.length == 0) return;
@@ -1505,28 +1566,51 @@ public class Signal implements WaveDataListener
 				xmax = newX[newX.length - 1];
 			x = newX;
 			y = newY;
-			fireSignalUpdated(true);
+                        checkSize();
+			return UPDATE_LIMITS;
 		}
 		else
 		{
-			resolutionManager.addRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
+                        resolutionManager.addRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
 			x = newX;
 			y = newY;
-			fireSignalUpdated(false);
+			return DO_NOT_UPDATE_LIMITS;
 		}
+            }catch(Exception exc)
+            {
+                System.out.println("Exception in Signal.dataRegionUpdated");
+                exc.printStackTrace();
+            }
+            return UPDATE_PENDING;
 	}
 
 	@Override
 	public void dataRegionUpdated(long[] regX, float[] regY, double resolution)
+        {
+            int updateStatus = updateDataRegion(regX, regY, resolution);
+            if(updateStatus == UPDATE_LIMITS)
+            {
+                fireSignalUpdated(true);
+            }
+            else if (updateStatus == DO_NOT_UPDATE_LIMITS)
+            {
+                 fireSignalUpdated(false);
+           }
+       }
+	
+                
+                
+                
+	public synchronized int updateDataRegion(long[] regX, float[] regY, double resolution)
 	{
 		if (regX == null || regX.length == 0)
-			return;
+			return UPDATE_PENDING;
 		if (debug)
 			System.out.println("dataRegionUpdated " + resolutionManager.lowResRegions.size());
 		if (freezeMode == FREEZED_BLOCK) // If zooming in some inner part of the signal
 		{
 			pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true));
-			return;
+			return UPDATE_PENDING;
 		}
 		/*
 		 * if(freezeMode == FREEZED_SCROLL) //If zooming the end of the signal do the
@@ -1550,7 +1634,7 @@ public class Signal implements WaveDataListener
 			for (int i = 0; i < regX.length; i++)
 				x[i] = regX[i];
 			y = regY;
-			fireSignalUpdated(true);
+                        return UPDATE_LIMITS;
 		}
 		else // Data Appended
 		{
@@ -1603,7 +1687,7 @@ public class Signal implements WaveDataListener
 				x = newX;
 				xLong = newXLong;
 				y = newY;
-				fireSignalUpdated(true);
+				return UPDATE_LIMITS;
 			}
 			else
 			{
@@ -1611,10 +1695,32 @@ public class Signal implements WaveDataListener
 				x = newX;
 				xLong = newXLong;
 				y = newY;
-				fireSignalUpdated(false);
+				return DO_NOT_UPDATE_LIMITS;
 			}
 		}
-	}
+ 	}
+        
+// Management of data reduction in case of append
+        synchronized void checkSize()
+        {
+            if(longXLimits) //On the  fly compression not performed for absolute times
+            {
+                return;
+            }
+            if(x == null || x.length < DIM_THRESHOLD)
+            {
+                return;
+            }
+            double xMin = x[0];
+            double xMax = x[x.length - 1];
+            if(xMin >= xMax) 
+            {
+                return;
+            }
+            mergeRegions();
+        }
+         
+        
 
 	public void decShow()
 	{
@@ -2301,14 +2407,18 @@ public class Signal implements WaveDataListener
 
 	// reset all region info building a single region with
 	// resolution=NUM_POINTS/(xmax - xmin)
-	public void mergeRegions()
+	public synchronized void mergeRegions()
 	{
 		if (x == null || x.length < 1)
 			return;
-		final double currXMin = x[0];
+                if (x.length < DIM_THRESHOLD) //Do the Job only if it is worth
+                    return;
+                final double currXMin = x[0];
 		final double currXMax = x[x.length - 1];
-		final double currResolution = 3 * NUM_POINTS / (currXMax - currXMin);
-		final double currDelta = (currXMax - currXMin) / (3 * NUM_POINTS);
+		final double currResolution = NUM_POINTS / (currXMax - currXMin);
+		//final double currResolution = 3 * NUM_POINTS / (currXMax - currXMin);
+		//final double currDelta = (currXMax - currXMin) / (3 * NUM_POINTS);
+		final double currDelta = (currXMax - currXMin) / NUM_POINTS;
 		int newPoints = 0;
 		double currX = currXMin - currDelta / 2;
 		int currIdx = 0;
@@ -2833,7 +2943,7 @@ public class Signal implements WaveDataListener
 			if (((mode & DO_NOT_UPDATE) == 0)
 					&& (currLower != saved_xmin || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
                         {
-				data.getDataAsync(currLower, currUpper, NUM_POINTS);
+ 				data.getDataAsync(currLower, currUpper, NUM_POINTS);
                         }
 		}
 		// fireSignalUpdated();
