@@ -107,6 +107,10 @@ rundocker() {
         docker network create ${DOCKERNETWORK}
         network="--network=${DOCKERNETWORK}"
       fi
+      docker_platform=""
+      if [ ! -z $DOCKERPLATFORM ]; then
+        docker_platform="--platform=${DOCKERPLATFORM}"
+      fi
 
       docker run --cap-add=SYS_PTRACE -t $stdio $network \
         --cidfile=${WORKSPACE}/${OS}_docker-cid \
@@ -142,6 +146,7 @@ rundocker() {
         $(volume "${RELEASEDIR}" /release) \
         $(volume "${PUBLISHDIR}" /publish) \
         $(volume "${KEYS}" /sign_keys) \
+        ${docker_platform} \
         ${image} $program
       status=$?
 

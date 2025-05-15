@@ -181,6 +181,9 @@ OPTIONS
     --dockernetwork
        If specified, a docker network with this name will be created,
        used for the docker container, and then removed.
+    
+    --dockerplatform
+      If specified, a the specific {docker --platfrom} will be used.
 
     --keys=dir
        Specifies a directory containing signing keys and certificates
@@ -365,6 +368,9 @@ parsecmd() {
 		;;
 	    --dockernetwork=*)
 		eval "DOCKERNETWORK=${i#*=}"
+		;;
+	    --dockerplatform=*)
+		eval "DOCKERPLATFORM=${i#*=}"
 		;;
 	    --keys=*)
 		eval "KEYS=${i#*=}"
@@ -655,6 +661,7 @@ OS=${OS} \
   DOCKERIMAGE=${DOCKERIMAGE} \
   DOCKERFILE=${DOCKERFILE} \
   DOCKERNETWORK=${DOCKERNETWORK} \
+  DOCKERPLATFORM=${DOCKERPLATFORM} \
   KEYS=${KEYS} \
   DISTNAME=${DISTNAME} \
   UPDATEPKG=${UPDATEPKG} \
