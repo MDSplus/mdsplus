@@ -26,7 +26,7 @@ import MDSplus
 import time
 import numpy
 
-class _ACQ2106_WRPG(MDSplus.Device):
+class _ACQ2106_DIOPG(MDSplus.Device):
     """
     D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
 
@@ -139,7 +139,7 @@ class _ACQ2106_WRPG(MDSplus.Device):
             nchans = 4            
             if self.debug >= 2:
                 self.dprint(2, 'DIO site and Number of Channels: {} {}'.format(self.dio_site.data(), nchans))
-            
+
         # Create the STL table:
         self.set_stl(nchans)
 
@@ -204,7 +204,7 @@ class _ACQ2106_WRPG(MDSplus.Device):
             is_pg = False
 
         return is_pg
-
+    
 
     def load_stl_data(self):
         uut = self.getUUT()
@@ -221,79 +221,57 @@ class _ACQ2106_WRPG(MDSplus.Device):
 
 
     def set_stl(self, nchan):
-        all_t_times   = []
-        all_t_times_states = []
+
+        data_by_chan = []
+        all_times = []
 
         for i in range(nchan):
-            chan_t_times = self.__getattr__('OUTPUT_%3.3d' % (i+1))
+            c = self.__getattr__('OUTPUT_%3.3d' % (i + 1))
 
-            # Pair of (transition time, state) for each channel:
-            chan_t_states = chan_t_times.data()
+            times = c.dim_of().data()
+            data = c.data()
 
-            # Creation of an array that contains, as EVERY OTHER element, all the transition times in it, appending them
-            # for each channel:
-            for x in numpy.nditer(chan_t_states):
-                all_t_times_states.append(x) #Appends arrays made of one element,
+            # Build dictionary of times -> states
+            data_dict = { k: v for k, v in zip(times, data) }
 
-        # Choosing only the transition times:
-        all_t_times = all_t_times_states[0::2]
+            data_by_chan.append(data_dict)
+            all_times.extend(times)
 
-        # Removing duplicates and then sorting in ascending manner:
-        t_times = []
-        for i in all_t_times:
-            if i not in t_times:
-                t_times.append(i)
-
-        # t_times contains the unique set of transitions times used in the experiment:
-        t_times = sorted(numpy.float64(t_times))
+        all_times = sorted(list(set(all_times)))
 
         # initialize the state matrix
-        rows, cols = (len(t_times), nchan)
-        state = [[0 for i in range(cols)] for j in range(rows)]
-
-        # Building the state matrix. For each channel, we traverse all the transition times to find those who are 
-        # in the particular channel. 
-        # If the transition time is in the channel, we copied its state into the state[i][j] element. 
-        # If a transition time does not appear in that channel, we keep the previous state for, i.e. the state doesn't change.
-        for j in range(nchan):
-            chan_t_states = self.__getattr__('OUTPUT_%3.3d' % (j+1))
-
-            for i in range(len(t_times)):
-
-                if i == 0:
-                    state[i][j] = 0
+        state_matrix = numpy.zeros((len(all_times), nchan), dtype='int')
+                
+        for c, data in enumerate(data_by_chan):
+            for t, time in enumerate(all_times):
+                if time in data:
+                    state_matrix[t][c] = data[time]
                 else:
-                    state[i][j] = state[i-1][j]
-                    
-                    # chan_t_states its elements are pairs of [ttimes, state]. e.g [[0.0, 0],[1.0, 1],...]
-                    # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: 
-                    # e.g [[1D0], [2D0], [3D0], [4D0] ... ]
-                    # chan_t_states[1] are all the second elements of those pairs, i.e. the states: 
-                    # e.g [[0],[1],...]
-                    for t in range(len(chan_t_states[0])):
-                        #Check if the transition time is one of the times that belongs to this channel:
-                        if t_times[i] == chan_t_states[0][t][0]:
-                            state[i][j] = int(chan_t_states[1][t][0])
-
+                    state_matrix[t][c] = state_matrix[t - 1][c]
 
         # Building the string of 1s and 0s for each transition time:
-        binrows = []
-        for row in state:
-            rowstr = [str(i) for i in numpy.flip(row)]  # flipping the bits so that chan 1 is in the far right position
-            binrows.append(''.join(rowstr))
-
-        # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds:
+        binary_rows = []
         times_usecs = []
-        for elements in t_times:
-            #The documentation and STL examples says time is in micro-seconds, but it's actually in 1/10th of micro-seconds.
-            times_usecs.append(int(elements * 1E7)) 
-         
+        last_row = None
+        for time, row in zip(all_times, state_matrix):
+            if not numpy.array_equal(row, last_row):
+                rowstr = [ str(i) for i in numpy.flip(row) ]  # flipping the bits so that chan 1 is in the far right position
+                binary_rows.append(''.join(rowstr))
+                times_usecs.append(int(time * 1E7)) # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds
+                last_row = row
+
+        # TODO: depending on the hardware there is a limit number of states allowed. The below lines limited the number of the CMOD's 1800 states table to 510:
+        # binary_rows = binary_rows[0:510]
+        # times_usecs = times_usecs[0:510]
+        
         # Write to a list with states in HEX form.
         stl  = ''
-        for time, state in zip(times_usecs, binrows):
+        for time, state in zip(times_usecs, binary_rows):
             stl += '%d,%08X\n' % (time, int(state, 2))
-
+        
         self.stl.record = stl
+
+
 
 OUTFMT3 = ':OUTPUT_%3.3d'
 ACQ2106_CHANNEL_CHOICES = [4, 32]
@@ -310,12 +288,16 @@ def create_classes(base_class, root_name, parts, channel_choices):
 def assemble(cls):
     outfmt = OUTFMT3
     for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':outfmt%(ch,), 'type':'NUMERIC', 'options':('no_write_shot',)})
+        cls.parts.append(
+            {'path':outfmt % (ch,), 
+             'type':'SIGNAL', 
+             'options':('no_write_shot',)}
+            )
     return cls
 
 class_ch_dict = create_classes(
-    _ACQ2106_WRPG, "ACQ2106_WRPG",
-    list(_ACQ2106_WRPG.base_parts),
+    _ACQ2106_DIOPG, "ACQ2106_DIOPG",
+    list(_ACQ2106_DIOPG.base_parts),
     ACQ2106_CHANNEL_CHOICES
 )
 
@@ -324,5 +306,5 @@ globals().update(class_ch_dict)
 del(class_ch_dict)
 
 # public classes created in this module
-# ACQ2106_WRPG_4CH
-# ACQ2106_WRPG_32CH
+# ACQ2106_DIOPG_4CH
+# ACQ2106_DIOPG_32CH
