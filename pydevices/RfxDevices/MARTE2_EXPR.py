@@ -57,13 +57,6 @@ class MARTE2_EXPR(MC.MARTE2_COMPONENT):
             {'name': 'Expression', 'type': 'string', 'value': '1'}]},
     ]
     parameters = [
-        {'name': 'Parameter1', 'type': 'int32'},
-        {'name': 'Parameter2', 'type': 'int32'},
-        {'name': 'Parameter3', 'type': 'int32'},
-        {'name': 'Parameter4', 'type': 'int32'},
-        {'name': 'Parameter5', 'type': 'int32'},
-        {'name': 'Parameter6', 'type': 'int32'},
-        {'name': 'Parameter7', 'type': 'int32'},
-        {'name': 'Parameter8', 'type': 'int32'},
-    ]
+        {'name': 'Expression', 'type': 'string'},
+     ]
     parts = []

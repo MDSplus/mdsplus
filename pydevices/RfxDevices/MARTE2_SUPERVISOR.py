@@ -7,7 +7,11 @@ import time
 import traceback
 import os
 import glob
-from pathlib import Path
+try:
+    from pathlib import Path
+except:
+    pass
+
 import stat
 
 MC = __import__('MARTE2_COMPONENT', globals())
