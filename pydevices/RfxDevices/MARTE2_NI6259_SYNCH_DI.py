@@ -31,14 +31,23 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
     outputs = [
         {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
-        {'name': 'OutBits', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'DIO0_0', 'type': 'uint32', 'dimensions': 0, 'parameters': [
+            {'name': 'Mask', 'type': 'int32', 'value': 0},
+            {'name': 'PortId', 'type': 'int32', 'value': 0},
+        ]},
+        {'name': 'DIO0_1', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+            {'name': 'Mask', 'type': 'int32', 'value': 0},
+            {'name': 'PortId', 'type': 'int32', 'value': 0},
+        ]},
+        {'name': 'DIO0_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+            {'name': 'Mask', 'type': 'int32', 'value': 0},
+            {'name': 'PortId', 'type': 'int32', 'value': 0},
+        ]},
     ]
     parameters = [
         {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
         {'name': 'BoardId', 'type': 'int32', 'value': 0},
-        {'name': 'Mode', 'type': 'int32', 'value': 2},
-        {'name': 'BitMask', 'type': 'int32', 'value': 0},
-        {'name': 'ClockId', 'type': 'int32', 'value': 1},
+        {'name': 'ClockId', 'type': 'int32', 'value': 0},
         {'name': 'TriggerId', 'type': 'int32', 'value': -1},
         {'name': 'Period', 'type': 'float64', 'value': 1E-3},
         {'name': 'TriggerTime', 'type': 'float64', 'value': 0},
@@ -47,10 +56,10 @@ class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
 
     def prepareMarteInfo(self):
         try:
-            print('(build_path("\\'+self.getFullPath()+'.parameters:par_8:value"))' +
-                  ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))')
-            self.timebase.putData(Data.compile('(build_path("\\'+self.getFullPath()+'.parameters:par_8:value"))' +
-                                               ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))'))
+            print('(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))' +
+                  ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_6:value"))')
+            self.timebase.putData(Data.compile('(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))' +
+                                               ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_6:value"))'))
             self.outputs_time_idx = 0  # The first produced signal is time
             print('prepare fatta')
         except Exception as inst:
