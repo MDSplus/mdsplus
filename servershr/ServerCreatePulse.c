@@ -59,7 +59,7 @@ dsc$descriptor *tree, int *shot, void (*ast)(), int astprm, int *netid, void
 #include "servershrp.h"
 
 EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
-                             void (*ast)(), void *astprm, int *retstatus,
+                             void (*ast)(void *, char *), void *astprm, int *retstatus,
                              pthread_rwlock_t *lock, void (*before_ast)())
 {
   struct descrip p1, p2;
