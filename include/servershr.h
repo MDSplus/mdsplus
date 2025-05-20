@@ -28,17 +28,17 @@ EXPORT extern int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
                                            void **table);
 EXPORT extern int ServerCloseTrees(char *server);
 EXPORT extern int ServerCreatePulse(int *id, char *server, char *tree, int shot,
-                                    void (*ast)(), void *astprm, int *retstatus,
+                                    void (*ast)(void *, char *), void *astprm, int *retstatus,
                                     pthread_rwlock_t *lock,
                                     void (*before_ast)());
 EXPORT extern int ServerDispatchAction(int *id, char *server, char *tree,
-                                       int shot, int nid, void (*ast)(),
+                                       int shot, int nid, void (*ast)(void *, char *),
                                        void *astprm, int *retstatus,
                                        pthread_rwlock_t *lock, int *socket,
                                        void (*before_ast)());
 EXPORT extern int ServerDispatchClose(void *vtable);
 EXPORT extern int ServerDispatchCommand(int *id, char *server, char *cli,
-                                        char *command, void (*ast)(),
+                                        char *command, void (*ast)(void *, char *),
                                         void *astprm, int *retstatus,
                                         pthread_rwlock_t *lock,
                                         void (*before_ast)());
@@ -51,7 +51,7 @@ EXPORT extern int ServerDispatchPhase(int *id, void *vtable, char *phasenam,
                                       const char *monitor);
 EXPORT extern int ServerFailedEssential(void *vtable, int reset);
 EXPORT extern char *ServerFindServers(void **ctx, char *wild_match);
-EXPORT extern int ServerMonitorCheckin(char *server, void (*ast)(),
+EXPORT extern int ServerMonitorCheckin(char *server, void (*ast)(void *, char *),
                                        void *astparam);
 EXPORT extern int ServerSetLogging(char *server, char logging_mode);
 EXPORT extern int ServerStartServer(char *server);
