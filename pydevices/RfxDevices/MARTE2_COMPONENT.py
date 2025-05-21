@@ -1508,8 +1508,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
             aliasMode = aliasDevice.getNode('MODE').data()
         except:
             raise Exception('No mode field defined for '+aliasDevice.getPath())
-        if aliasMode != mode:
-            raise Exception('Wrong device type ALIAS reference for '+self.getPath())
+        #This chekc has been removed in order to allow Inout/Ouput DataSources
+        #if aliasMode != mode:
+        #    raise Exception('Wrong device type ALIAS reference for '+self.getPath())
         return aliasDevice
 
 
