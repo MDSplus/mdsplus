@@ -261,7 +261,7 @@ public class Node
 		}
 		try
 		{
-			nid.rename(newName);
+			nid.rename(newParent.toString()+":"+newName);
 			info = getInfo();
 		}
 		catch (final Exception exc)
