@@ -35,6 +35,6 @@ class MARTE2_NI6259_ASYNCH_DO(MC.MARTE2_COMPONENT):
     parameters = [
         {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
         {'name': 'BoardId', 'type': 'int32', 'value': 0},
-        {'name': 'Mode', 'type': 'int32', 'value': 2},
+        {'name': 'Mode', 'type': 'int32', 'value': 3},
         {'name': 'BitMask', 'type': 'int32', 'value': 1}, ]
     parts = []

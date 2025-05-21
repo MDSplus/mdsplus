@@ -37,7 +37,6 @@ class MARTE2_NI6368_SYNCH_DI(MC.MARTE2_COMPONENT):
         {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxie-6368'},
         {'name': 'BoardId', 'type': 'int32', 'value': 0},
         {'name': 'Mode', 'type': 'int32', 'value': 2},
-        {'name': 'BitMask', 'type': 'int32', 'value': 0},
         {'name': 'ClockId', 'type': 'int32', 'value': 1},
         {'name': 'TriggerId', 'type': 'int32', 'value': -1},
         {'name': 'Period', 'type': 'float64', 'value': 1E-3},
