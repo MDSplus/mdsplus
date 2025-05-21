@@ -62,7 +62,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Clock id: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="13"/>
+                <Property name="offsetNid" type="int" value="16"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField3">
@@ -70,14 +70,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trigger id. "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="16"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField8">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Mask: "/>
-                <Property name="offsetNid" type="int" value="51"/>
+                <Property name="offsetNid" type="int" value="19"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -91,7 +84,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Period: "/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="19"/>
+                <Property name="offsetNid" type="int" value="22"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
@@ -99,7 +92,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trig. Time: "/>
                 <Property name="numCols" type="int" value="25"/>
-                <Property name="offsetNid" type="int" value="22"/>
+                <Property name="offsetNid" type="int" value="25"/>
               </Properties>
             </Component>
           </SubComponents>
