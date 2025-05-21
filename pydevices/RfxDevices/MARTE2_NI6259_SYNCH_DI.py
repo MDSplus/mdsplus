@@ -31,17 +31,17 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
     outputs = [
         {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
-        {'name': 'DIO0_0', 'type': 'uint32', 'dimensions': 0, 'parameters': [
+        {'name': 'DIO_0', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'Mask', 'type': 'int32', 'value': 0},
             {'name': 'PortId', 'type': 'int32', 'value': 0},
         ]},
-        {'name': 'DIO0_1', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'DIO_1', 'type': 'uint32', 'dimensions': -1, 'parameters': [
             {'name': 'Mask', 'type': 'int32', 'value': 0},
-            {'name': 'PortId', 'type': 'int32', 'value': 0},
+            {'name': 'PortId', 'type': 'int32', 'value': 1},
         ]},
-        {'name': 'DIO0_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'DIO_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
             {'name': 'Mask', 'type': 'int32', 'value': 0},
-            {'name': 'PortId', 'type': 'int32', 'value': 0},
+            {'name': 'PortId', 'type': 'int32', 'value': 2},
         ]},
     ]
     parameters = [
