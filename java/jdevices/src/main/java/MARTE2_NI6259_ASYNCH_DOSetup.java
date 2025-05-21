@@ -34,8 +34,8 @@ public class MARTE2_NI6259_ASYNCH_DOSetup extends DeviceSetup {
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 NI6259 Digital Out");
         setDeviceType("MARTE2_NI6259_ASYNCH_DO");
-        setHeight(400);
-        setWidth(300);
+        setHeight(200);
+        setWidth(400);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField1.setIdentifier("");

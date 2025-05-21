@@ -5,8 +5,8 @@
     <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI6259 Digital Out"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_ASYNCH_DO"/>
-    <Property name="height" type="int" value="400"/>
-    <Property name="width" type="int" value="300"/>
+    <Property name="height" type="int" value="200"/>
+    <Property name="width" type="int" value="400"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>

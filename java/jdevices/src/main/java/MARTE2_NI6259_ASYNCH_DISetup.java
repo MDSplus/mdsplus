@@ -37,7 +37,7 @@ public class MARTE2_NI6259_ASYNCH_DISetup extends DeviceSetup {
         setDeviceTitle("MARTe2 NI6256 Asynch DI");
         setDeviceType("MARTE2_NI6259_ASYNCH_DI");
         setHeight(200);
-        setWidth(400);
+        setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 1));
