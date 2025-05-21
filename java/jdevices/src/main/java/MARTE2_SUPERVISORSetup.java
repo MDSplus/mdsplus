@@ -48,6 +48,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceDispatch1 = new DeviceDispatch();
         jPanel109 = new javax.swing.JPanel();
         deviceField172 = new DeviceField();
+        deviceChoice10 = new DeviceChoice();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -329,6 +330,13 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceField172.setNumCols(50);
         deviceField172.setOffsetNid(5);
         jPanel109.add(deviceField172);
+
+        deviceChoice10.setChoiceItems(new String[] {"QUIET", "VERBOSE"});
+        deviceChoice10.setIdentifier("");
+        deviceChoice10.setLabelString("Vervosity: ");
+        deviceChoice10.setOffsetNid(2049);
+        deviceChoice10.setUpdateIdentifier("");
+        jPanel109.add(deviceChoice10);
 
         jPanel2.add(jPanel109);
 
@@ -1441,6 +1449,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice10;
     private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice18;
     private DeviceChoice deviceChoice19;
