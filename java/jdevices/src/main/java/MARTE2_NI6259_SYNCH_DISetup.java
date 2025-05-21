@@ -52,19 +52,19 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id.:");
-        deviceField1.setNumCols(2);
+        deviceField1.setNumCols(4);
         deviceField1.setOffsetNid(10);
         jPanel2.add(deviceField1);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Clock id: ");
-        deviceField2.setNumCols(2);
+        deviceField2.setNumCols(4);
         deviceField2.setOffsetNid(13);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Trigger id. ");
-        deviceField3.setNumCols(2);
+        deviceField3.setNumCols(4);
         deviceField3.setOffsetNid(16);
         jPanel2.add(deviceField3);
 
