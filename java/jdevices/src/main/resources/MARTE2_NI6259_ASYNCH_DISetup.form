@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI6256 Asynch DI"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_ASYNCH_DI"/>
     <Property name="height" type="int" value="200"/>
-    <Property name="width" type="int" value="400"/>
+    <Property name="width" type="int" value="600"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
