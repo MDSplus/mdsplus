@@ -1359,15 +1359,21 @@ $<APP_NAME> = {
             marte2MdsComponents = os.environ['MARTe2_MDSplus_DIR']
         except:
             marte2MdsComponents = '/opt/MARTe2/MARTe2-MDSplus'
-        for gamClass in gamClasses:
-            dirs = glob.glob(marte2Components+'/Build/x86-linux/Components/*/'+gamClass)
-            if(len(dirs) == 0):
-                dirs = glob.glob(marte2MdsComponents+'/Build/x86-linux/Components/*/'+gamClass)
-            if len(dirs) != 1:
-                print('Internal error: cannot resolve '+ gamClass)
-            fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+dirs[0]+'\n'
-        fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+ os.environ['MARTe2_DIR'] +'/Build/x86-linux/Core\n'
 
+        #Handle MARTe2_Components
+        for  name in glob.glob(marte2Components+'/Build/x86-linux/Components/*/*'):
+             fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+name+'\n'
+        #Handle MARTe2-rfx-components
+        for  name in glob.glob(marte2Components+'/Build/x86-linux/Components/*/*'):
+             fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+name+'\n'
+        #handle MARTe2-MDSplus components
+        for gamClass in gamClasses:
+            dirs = glob.glob(marte2MdsComponents+'/Build/x86-linux/Components/*/'+gamClass)
+            if(len(dirs) == 0):
+                dirs = glob.glob(marte2MdsComponents+'/Build/x86-linux/Components/*/*/'+gamClass)
+            if len(dirs) == 1:
+                fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+dirs[0]+'\n'
+        fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+ os.environ['MARTe2_DIR'] +'/Build/x86-linux/Core\n'
         verbosity = self.getNode(':VERBOSITY').data()
         if verbosity.upper() == 'VERBOSE':
             verb = -1

@@ -27,7 +27,7 @@ from MDSplus import Data
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('NI6259DIO_M', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
+@MC.BUILDER('NI6259DIO', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
     outputs = [
         {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
@@ -51,6 +51,7 @@ class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
         {'name': 'TriggerId', 'type': 'int32', 'value': -1},
         {'name': 'Period', 'type': 'float64', 'value': 1E-3},
         {'name': 'TriggerTime', 'type': 'float64', 'value': 0},
+        {'name': 'Mode', 'type': 'int32', 'value': 2},
     ]
     parts = []
 
