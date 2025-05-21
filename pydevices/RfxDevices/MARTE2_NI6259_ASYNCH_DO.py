@@ -27,7 +27,7 @@ from MDSplus import Data
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('NI6259_DIO_M', MC.MARTE2_COMPONENT.MODE_OUTPUT)
+@MC.BUILDER('NI6259DIO_M', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_NI6259_ASYNCH_DO(MC.MARTE2_COMPONENT):
     inputs = [
         {'name': 'InBits', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
