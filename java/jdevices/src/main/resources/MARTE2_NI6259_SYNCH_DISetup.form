@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="NI6259 Synch Digital In"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_SYNCH_DI"/>
     <Property name="height" type="int" value="200"/>
-    <Property name="width" type="int" value="600"/>
+    <Property name="width" type="int" value="800"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -113,7 +113,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Time Seg. Len.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="45"/>
+                <Property name="offsetNid" type="int" value="41"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField7">
@@ -121,14 +121,14 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Out Bits seg. len: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="45"/>
+                <Property name="offsetNid" type="int" value="51"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField9">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Storage CPU Mask:"/>
-                <Property name="offsetNid" type="int" value="29"/>
+                <Property name="offsetNid" type="int" value="35"/>
               </Properties>
             </Component>
           </SubComponents>

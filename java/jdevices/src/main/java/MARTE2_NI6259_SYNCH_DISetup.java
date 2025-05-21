@@ -45,7 +45,7 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         setDeviceTitle("NI6259 Synch Digital In");
         setDeviceType("MARTE2_NI6259_SYNCH_DI");
         setHeight(200);
-        setWidth(600);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
@@ -92,18 +92,18 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Time Seg. Len.:");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(45);
+        deviceField6.setOffsetNid(41);
         jPanel4.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Out Bits seg. len: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(45);
+        deviceField7.setOffsetNid(51);
         jPanel4.add(deviceField7);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Storage CPU Mask:");
-        deviceField9.setOffsetNid(29);
+        deviceField9.setOffsetNid(35);
         jPanel4.add(deviceField9);
 
         jPanel1.add(jPanel4);

@@ -133,6 +133,20 @@
                     <Property name="offsetNid" type="int" value="5"/>
                   </Properties>
                 </Component>
+                <Component class="DeviceChoice" name="deviceChoice10">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="QUIET"/>
+                        <StringItem index="1" value="VERBOSE"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Vervosity: "/>
+                    <Property name="offsetNid" type="int" value="2049"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
