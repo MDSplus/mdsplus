@@ -31,27 +31,16 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6259_SYNCH_DI(MC.MARTE2_COMPONENT):
     outputs = [
         {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
-        {'name': 'DIO_0', 'type': 'uint32', 'dimensions': 0, 'parameters': [
-            {'name': 'Mask', 'type': 'int32', 'value': 0},
-            {'name': 'PortId', 'type': 'int32', 'value': 0},
-        ]},
-        {'name': 'DIO_1', 'type': 'uint32', 'dimensions': -1, 'parameters': [
-            {'name': 'Mask', 'type': 'int32', 'value': 0},
-            {'name': 'PortId', 'type': 'int32', 'value': 1},
-        ]},
-        {'name': 'DIO_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
-            {'name': 'Mask', 'type': 'int32', 'value': 0},
-            {'name': 'PortId', 'type': 'int32', 'value': 2},
-        ]},
+        {'name': 'OutBits', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
     ]
     parameters = [
         {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
         {'name': 'BoardId', 'type': 'int32', 'value': 0},
+        {'name': 'Mode', 'type': 'int32', 'value': 2},
         {'name': 'ClockId', 'type': 'int32', 'value': 0},
         {'name': 'TriggerId', 'type': 'int32', 'value': -1},
         {'name': 'Period', 'type': 'float64', 'value': 1E-3},
         {'name': 'TriggerTime', 'type': 'float64', 'value': 0},
-        {'name': 'Mode', 'type': 'int32', 'value': 2},
     ]
     parts = []
 
