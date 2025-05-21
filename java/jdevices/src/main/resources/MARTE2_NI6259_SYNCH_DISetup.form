@@ -124,10 +124,10 @@
                 <Property name="offsetNid" type="int" value="51"/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField9">
+            <Component class="DeviceField" name="deviceField10">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Storage CPU Mask:"/>
+                <Property name="labelString" type="java.lang.String" value="Storage CPU Mask: "/>
                 <Property name="offsetNid" type="int" value="35"/>
               </Properties>
             </Component>

@@ -39,7 +39,7 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
-        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("NI6259 Synch Digital In");
@@ -101,10 +101,10 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         deviceField7.setOffsetNid(51);
         jPanel4.add(deviceField7);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Storage CPU Mask:");
-        deviceField9.setOffsetNid(35);
-        jPanel4.add(deviceField9);
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Storage CPU Mask: ");
+        deviceField10.setOffsetNid(35);
+        jPanel4.add(deviceField10);
 
         jPanel1.add(jPanel4);
 
@@ -115,6 +115,7 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -122,7 +123,6 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
-    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
