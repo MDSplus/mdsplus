@@ -32,7 +32,6 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
-        deviceField8 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
@@ -59,32 +58,27 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Clock id: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(13);
+        deviceField2.setOffsetNid(16);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Trigger id. ");
         deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(16);
+        deviceField3.setOffsetNid(19);
         jPanel2.add(deviceField3);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Mask: ");
-        deviceField8.setOffsetNid(51);
-        jPanel2.add(deviceField8);
 
         jPanel1.add(jPanel2);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Period: ");
         deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(19);
+        deviceField4.setOffsetNid(22);
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trig. Time: ");
         deviceField5.setNumCols(25);
-        deviceField5.setOffsetNid(22);
+        deviceField5.setOffsetNid(25);
         jPanel3.add(deviceField5);
 
         jPanel1.add(jPanel3);
@@ -122,7 +116,6 @@ public class MARTE2_NI6259_SYNCH_DISetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
-    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
