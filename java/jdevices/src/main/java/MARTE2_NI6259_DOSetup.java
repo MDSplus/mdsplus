@@ -76,7 +76,7 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Mask: ");
-        deviceField4.setOffsetNid(40);
+        deviceField4.setOffsetNid(41);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");

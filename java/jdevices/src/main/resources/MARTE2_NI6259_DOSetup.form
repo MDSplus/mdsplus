@@ -107,7 +107,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Mask: "/>
-                <Property name="offsetNid" type="int" value="40"/>
+                <Property name="offsetNid" type="int" value="41"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
