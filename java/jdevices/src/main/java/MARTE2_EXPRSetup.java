@@ -45,6 +45,7 @@ public class MARTE2_EXPRSetup extends DeviceSetup {
         deviceOutputs1.setOffsetNid(73);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
+        deviceParameters1.setNumParameters(1);
         deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
