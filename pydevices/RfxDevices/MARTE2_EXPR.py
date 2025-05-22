@@ -39,22 +39,14 @@ class MARTE2_EXPR(MC.MARTE2_COMPONENT):
         {'name': 'In8', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
     ]
     outputs = [
-        {'name': 'Out1', 'type': 'int32', 'dimensions': 0, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out2', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out3', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out4', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out5', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out6', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out7', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
-        {'name': 'Out8', 'type': 'int32', 'dimensions': -1, 'parameters': [
-            {'name': 'Expression', 'type': 'string', 'value': '1'}]},
+        {'name': 'Out1', 'type': 'int32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Out2', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out3', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out4', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out5', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out6', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out7', 'type': 'int32', 'dimensions': -1, 'parameters': []},
+        {'name': 'Out8', 'type': 'int32', 'dimensions': -1, 'parameters': []},
     ]
     parameters = [
         {'name': 'Expression', 'type': 'string'},
