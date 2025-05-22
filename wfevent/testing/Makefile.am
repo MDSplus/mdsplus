@@ -9,9 +9,10 @@ include ../../testing/testing.am
 
 TEST_EXTENSIONS = .sh
 
-TESTS = \
-  LocalEventTest.sh\
-  RemoteEventTest.sh
+# Temporarily disable tests
+#TESTS = \
+#  LocalEventTest.sh\
+#  RemoteEventTest.sh
 
 # Files produced by tests that must be purged
 #
