@@ -60,6 +60,10 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
         </Container>
         <Container class="DeviceParameters" name="deviceParameters1">
+          <Properties>
+            <Property name="numParameters" type="int" value="2"/>
+            <Property name="offsetNid" type="int" value="4"/>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Parameters">
