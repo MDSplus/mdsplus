@@ -40,6 +40,9 @@ public class MARTE2_EPICS_INSetup extends DeviceSetup {
 
         deviceOutputs1.setOffsetNid(11);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
+
+        deviceParameters1.setNumParameters(2);
+        deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
