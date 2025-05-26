@@ -67,6 +67,13 @@
                 <Property name="offsetNid" type="int" value="10"/>
               </Properties>
             </Component>
+            <Component class="DeviceField" name="deviceField41">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Period: "/>
+                <Property name="offsetNid" type="int" value="13"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel475">
