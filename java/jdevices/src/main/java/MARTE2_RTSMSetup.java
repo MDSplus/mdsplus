@@ -31,6 +31,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel61 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
+        deviceField41 = new DeviceField();
         jPanel475 = new javax.swing.JPanel();
         deviceField39 = new DeviceField();
         deviceField4 = new DeviceField();
@@ -893,6 +894,11 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField2.setNumCols(25);
         deviceField2.setOffsetNid(10);
         jPanel61.add(deviceField2);
+
+        deviceField41.setIdentifier("");
+        deviceField41.setLabelString("Period: ");
+        deviceField41.setOffsetNid(13);
+        jPanel61.add(deviceField41);
 
         jPanel2.add(jPanel61, java.awt.BorderLayout.NORTH);
 
@@ -5247,6 +5253,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
     private DeviceField deviceField407;
     private DeviceField deviceField408;
     private DeviceField deviceField409;
+    private DeviceField deviceField41;
     private DeviceField deviceField410;
     private DeviceField deviceField411;
     private DeviceField deviceField412;
