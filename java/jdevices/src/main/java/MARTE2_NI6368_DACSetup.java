@@ -134,7 +134,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
         deviceChoice4.setChoiceItems(new String[] {"10", "5", "APFI0", "APFI1"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Range: ");
-        deviceChoice4.setOffsetNid(87);
+        deviceChoice4.setOffsetNid(90);
         deviceChoice4.setUpdateIdentifier("");
         jPanel12.add(deviceChoice4);
 
