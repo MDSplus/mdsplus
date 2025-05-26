@@ -76,9 +76,4 @@ class MARTE2_RTSM(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-     # try:
-        period = self.timebase.evaluate().getDelta().data()
-        self.parameters_par_3_value.putData(Float64(period))
-        print('****************PERIOD:', period)
-     # except:
-        #  pass
+        pass
