@@ -178,7 +178,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Value: ");
-        deviceField6.setNumCols(30);
+        deviceField6.setNumCols(35);
         deviceField6.setOffsetNid(22);
         jPanel7.add(deviceField6);
 
@@ -207,7 +207,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Value: ");
-        deviceField8.setNumCols(30);
+        deviceField8.setNumCols(35);
         deviceField8.setOffsetNid(33);
         jPanel10.add(deviceField8);
 
@@ -236,7 +236,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Value: ");
-        deviceField10.setNumCols(30);
+        deviceField10.setNumCols(35);
         deviceField10.setOffsetNid(44);
         jPanel13.add(deviceField10);
 
@@ -265,7 +265,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Value: ");
-        deviceField12.setNumCols(30);
+        deviceField12.setNumCols(35);
         deviceField12.setOffsetNid(55);
         jPanel16.add(deviceField12);
 
@@ -294,7 +294,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Value: ");
-        deviceField14.setNumCols(30);
+        deviceField14.setNumCols(35);
         deviceField14.setOffsetNid(66);
         jPanel19.add(deviceField14);
 
@@ -323,7 +323,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Value: ");
-        deviceField16.setNumCols(30);
+        deviceField16.setNumCols(35);
         deviceField16.setOffsetNid(77);
         jPanel22.add(deviceField16);
 
@@ -352,7 +352,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Value: ");
-        deviceField18.setNumCols(30);
+        deviceField18.setNumCols(35);
         deviceField18.setOffsetNid(88);
         jPanel25.add(deviceField18);
 
@@ -381,7 +381,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Value: ");
-        deviceField20.setNumCols(30);
+        deviceField20.setNumCols(35);
         deviceField20.setOffsetNid(99);
         jPanel28.add(deviceField20);
 
@@ -410,7 +410,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("Value: ");
-        deviceField22.setNumCols(30);
+        deviceField22.setNumCols(35);
         deviceField22.setOffsetNid(110);
         jPanel31.add(deviceField22);
 
@@ -439,7 +439,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("Value: ");
-        deviceField24.setNumCols(30);
+        deviceField24.setNumCols(35);
         deviceField24.setOffsetNid(121);
         jPanel34.add(deviceField24);
 
@@ -468,7 +468,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField26.setIdentifier("");
         deviceField26.setLabelString("Value: ");
-        deviceField26.setNumCols(30);
+        deviceField26.setNumCols(35);
         deviceField26.setOffsetNid(132);
         jPanel37.add(deviceField26);
 
@@ -497,7 +497,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField28.setIdentifier("");
         deviceField28.setLabelString("Value: ");
-        deviceField28.setNumCols(30);
+        deviceField28.setNumCols(35);
         deviceField28.setOffsetNid(143);
         jPanel40.add(deviceField28);
 
@@ -526,7 +526,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("Value: ");
-        deviceField30.setNumCols(30);
+        deviceField30.setNumCols(35);
         deviceField30.setOffsetNid(154);
         jPanel43.add(deviceField30);
 
@@ -555,7 +555,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Value: ");
-        deviceField32.setNumCols(30);
+        deviceField32.setNumCols(35);
         deviceField32.setOffsetNid(152);
         jPanel46.add(deviceField32);
 
@@ -584,7 +584,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Value: ");
-        deviceField34.setNumCols(30);
+        deviceField34.setNumCols(35);
         deviceField34.setOffsetNid(176);
         jPanel49.add(deviceField34);
 
@@ -613,7 +613,7 @@ public class MARTE2_EPICS_OUTSetup extends DeviceSetup {
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Value: ");
-        deviceField36.setNumCols(30);
+        deviceField36.setNumCols(35);
         deviceField36.setOffsetNid(187);
         jPanel52.add(deviceField36);
 
