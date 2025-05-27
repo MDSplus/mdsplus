@@ -202,7 +202,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     @classmethod
     def buildGam(cls, parts, clazz, mode, timebaseExpr=None):
-
         parts.append({'path': ':GAM_CLASS', 'type': 'text', 'value': clazz})
         parts.append({'path': ':MODE', 'type': 'numeric', 'value': mode})
         if mode != MARTE2_COMPONENT.MODE_INTERFACE:
@@ -229,8 +228,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parts.append(
                {'path': ':ALIAS', 'type': 'numeric'})
                 
-
-
     @classmethod
     # NON USATA QUA PER IL MOMENTO
     def convertName(cls, name, nameList):
@@ -268,7 +265,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 try:
                     val = parNode.getNode('value').getData()
                 except:
-                    print('Warning: Empty value for parameter '+parNode.getPath())
+                    #print('Warning: Empty value for parameter '+parNode.getPath())
                     continue
                 if isinstance(val, MDSplus.Apd):
                     if not isinstance(val, MDSplus.Dictionary):
@@ -864,7 +861,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 'UseColumnOrder': treeRef['UseColumnOrder'], 
 #                'DataExpr': treeRef['Expression'].decompile(), 
 #                'TimebaseExpr': '\"DIM_OF('+treeRef['Expression'].decompile()+')\"', 
-                'DataExpr': expr, 
+                'DataExpr': '\"'+expr+'\"', 
                 'TimebaseExpr': '\"DIM_OF('+expr+')\"', 
                 'DataSource': self.getMarteDeviceName(self)+'_TreeInDDB'})
         outGam['Outputs'] = outputs
@@ -968,7 +965,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
         for outValNode in outValNodes:
             if self.isReferencedByAnyThread(outValNode.getNode('VALUE'), threadMap):
                 return True
- 
     #get IP, Port of referenced device and Nid (CircuitId)of target device
     def getReferencedNetInfo(self, outValNode, threadMap):
         outValNid = outValNode.getNid()
@@ -1054,7 +1050,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     return True
         return False
 
-    #Check if the passed output is referenced by a sychornized thread of the same supervisor
+    #Check if the passed output is referenced by a sychronized thread of the same supervisor
     def isReferencedBySynchronizedThreadSameSupervisor(self, outValNode, threadMap):
         thisNid = self.getNid()
         thisThreadName = threadMap['DeviceInfo'][thisNid]['ThreadName']
@@ -1602,7 +1598,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             outputNodes.sort()
         except:
             raise Exception('No outputs defined for GAM device '+self.getPath())
-
         retGam['Outputs'] = self.getOutputSignalsDict(outputNodes, threadMap, typesDict, syncThreadSignals, asyncThreadSignals, 
             outputsToBeSent, signalsToBeStored, outputsToBeUnpacked, isFieldCheck = False)
 

@@ -31,35 +31,35 @@ class MARTE2_EPICS_OUT(MC.MARTE2_COMPONENT):
     inputs = [
         {'name': 'PV_1', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_1'}]},
-        {'name': 'PV_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_2', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_2'}]},
-        {'name': 'PV_3', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_3', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_3'}]},
-        {'name': 'PV_4', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_4', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_4'}]},
-        {'name': 'PV_5', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_5', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_5'}]},
-        {'name': 'PV_6', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_6', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_6'}]},
-        {'name': 'PV_7', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_7', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_7'}]},
-        {'name': 'PV_8', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_8', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_8'}]},
-        {'name': 'PV_9', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_9', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_9'}]},
-        {'name': 'PV_10', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_10', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_10'}]},
-        {'name': 'PV_11', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_11', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_11'}]},
-        {'name': 'PV_12', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_12', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_12'}]},
-        {'name': 'PV_13', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_13', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_13'}]},
-        {'name': 'PV_14', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_14', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_14'}]},
-        {'name': 'PV_15', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_15', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_15'}]},
-        {'name': 'PV_16', 'type': 'uint32', 'dimensions': -1, 'parameters': [
+        {'name': 'PV_16', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PVName', 'type': 'string', 'value': 'PV_16'}]},
     ]
     parameters = [
