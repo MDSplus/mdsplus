@@ -978,6 +978,14 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             return 'int32'
         if value.dtype == np.int64:
             return 'int64'
+        if value.dtype == np.uint8:
+            return 'uint8'
+        if value.dtype == np.uint16:
+            return 'uint16'
+        if value.dtype == np.uint32:
+            return 'uint32'
+        if value.dtype == np.uint64:
+            return 'uint64'
         if value.dtype == np.float32:
             return 'float32'
         if value.dtype == np.float64:
@@ -1322,7 +1330,6 @@ $<APP_NAME> = {
             if isinstance(gams, MDSplus.VECTOR):
                 for i in range(gams.getNumDescs()):
                     currGamNode = gams.getDescAt(i)
-                    print(currGamNode)
                     if isinstance(currGamNode, MDSplus.TreePath):
                         currGamNode = self.getTree().getNode(currGamNode)
                     gamClasses.append(currGamNode.getNode(':GAM_CLASS').data())
@@ -1414,6 +1421,20 @@ $<APP_NAME> = {
 #        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
 #            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
         subprocess.Popen([self.buildStartScript()], shell=True)
+
+    def startMarteIdleFromConfig(self):
+        try:
+            config = self.getNode('marte_config').data().tostring()
+        except:
+            print('Cannot get saved configuration')
+            return
+        name = self.getNode('NAME').data()
+        f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
+        f.write(config)
+        f.close()
+        subprocess.Popen([self.buildStartScript()], shell=True)
+
+
 
     def startMarte(self):
         self.buildConfiguration()
