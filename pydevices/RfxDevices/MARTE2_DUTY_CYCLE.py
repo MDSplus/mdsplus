@@ -45,7 +45,4 @@ class MARTE2_DUTY_CYCLE(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-        # InFrequency is derived from timebase
-        period = self.timebase.evaluate().getDelta().data()
-        inFrequency = 1./period
-        self.parameters_par_1_value.putData(inFrequency)
+        pass

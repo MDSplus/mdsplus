@@ -591,7 +591,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             if numParameters > 0:
                 currSig['Parameters'] = self.getParametersDict(sigNode.getNode('PARAMETERS'))
 #Data Source
-            if value == None: #Handle the case the structured input has been defined by means of its fields
+            if not isinstance(value, MDSplus.Data) and value == None: #Handle the case the structured input has been defined by means of its fields
                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Input_Bus_DDB'
                 sigDicts.append(currSig)
                 continue

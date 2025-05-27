@@ -30,13 +30,13 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 @MC.BUILDER('RTSMGAM', MC.MARTE2_COMPONENT.MODE_GAM)
 class MARTE2_RTSM(MC.MARTE2_COMPONENT):
-    inputs = [{'name': 'InBits', 'type': 'int32',
+    inputs = [{'name': 'InBits', 'type': 'uint32',
                'dimensions': 0, 'parameters': []}]
-    outputs = [{'name': 'OutBits', 'type': 'int32',
+    outputs = [{'name': 'OutBits', 'type': 'uint32',
                 'dimensions': 0, 'parameters': []}]
     for i in range(8):
         outputs.append({'name': 'OutWave'+str(i+1),
-                        'type': 'float32', 'dimensions': -1, 'parameters': []})
+                        'type': 'float32', 'dimensions': 0, 'parameters': []})
     parameters = [{'name': 'TriggerIdx', 'type': 'int32', 'value': 0},
                   {'name': 'TriggerTime', 'type': 'float32', 'value': 0},
                   {'name': 'Period', 'type': 'float32', 'value': 0},
