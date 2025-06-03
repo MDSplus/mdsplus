@@ -1455,6 +1455,7 @@ AC_OUTPUT(
   treeshr/Makefile
   treeshr/testing/Makefile
   wfevent/Makefile
+  wfevent/testing/Makefile
   xmdsshr/Makefile
   xtreeshr/Makefile
 )
