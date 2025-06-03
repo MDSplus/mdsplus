@@ -7,4 +7,6 @@ python/MDSplus/tests/connection-tcp, 8014
 python/MDSplus/tests/connection-write, 8015
 python/MDSplus/tests/dcl-dispatcher, 8016-8017
 python/MDSplus/tests/dcl-timeout, 8018
+java/mdsobjects/test/MdsRemoteEventTest, 8019
+wfevent/testing/RemoteEventTest.sh, 8020
 actions/testing/ServerShrTest.sh, 8021-8023

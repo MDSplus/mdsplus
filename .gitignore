@@ -205,6 +205,7 @@ testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
 treeshr/TreeFindNodeWild.c
 wfevent/Makefile.in
+wfevent/testing/Makefile.in
 m4/ax_git_revision.m4
 
 # Generated Java binaries
