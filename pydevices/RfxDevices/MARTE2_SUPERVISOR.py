@@ -1367,11 +1367,16 @@ $<APP_NAME> = {
         except:
             marte2MdsComponents = '/opt/MARTe2/MARTe2-MDSplus'
 
+        try:
+            marte2RfxComponents = os.environ['MARTe2_RFX_DIR']
+        except:
+            marte2RfxComponents = '/opt/MARTe2/MARTe2-rfx-components'
+
         #Handle MARTe2_Components
         for  name in glob.glob(marte2Components+'/Build/x86-linux/Components/*/*'):
              fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+name+'\n'
         #Handle MARTe2-rfx-components
-        for  name in glob.glob(marte2Components+'/Build/x86-linux/Components/*/*'):
+        for  name in glob.glob(marte2RfxComponents+'/Build/x86-linux/Components/*/*'):
              fileContent += 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'+name+'\n'
         #handle MARTe2-MDSplus components
         for gamClass in gamClasses:
@@ -1430,7 +1435,7 @@ $<APP_NAME> = {
             return
         name = self.getNode('NAME').data()
         f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
-        f.write(config)
+        f.write(config.decode())
         f.close()
         subprocess.Popen([self.buildStartScript()], shell=True)
 
