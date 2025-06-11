@@ -41,9 +41,11 @@ public class DeviceOutputs extends DeviceComponent
 	}
 	private JScrollPane scrollP; 
 	private int numOutputs;
+        private JTextField CPUMaskTF, preSamplesTF, postSamplesTF, triggerTF;
 	private JTextField segLensTF[], parametersTF[], dimensionsTF[];
         private JTextField typesTF[];
         private boolean parametersIsText[];
+        private int CPUMaskNid, preSamplesNid, postSamplesNid, triggerNid;
         private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
         private int numOutputChildren = 0;
         private int numItems;
@@ -117,8 +119,25 @@ public class DeviceOutputs extends DeviceComponent
             dimensionNids = new int[numItems];
             segLenNids = new int[numItems];
             parameterNids = new int[numParItems];
+            triggerNid = currNid + 1;
+            preSamplesNid = currNid + 2;
+            postSamplesNid = currNid + 3;
+            CPUMaskNid = currNid + 6;
             JPanel jp = new JPanel();
-            jp.setLayout(new GridLayout(numItems+numBusItems, 1));
+            jp.setLayout(new GridLayout(2+numItems+numBusItems, 1));
+            JPanel jpAux = new JPanel();
+            jpAux.add(new JLabel("CPU Mask: "));
+            jpAux.add(CPUMaskTF = new JTextField(4));
+            jpAux.add(new JLabel("Pre Samples: "));
+            jpAux.add(preSamplesTF = new JTextField(8));
+            jpAux.add(new JLabel("Post Samples: "));
+            jpAux.add(postSamplesTF = new JTextField(8));
+            jp.add(jpAux);
+            jpAux = new JPanel();
+            jpAux.add(new JLabel("Trigger: "));
+            jpAux.add(triggerTF = new JTextField(40));
+            jp.add(jpAux);
+            
             currOutNid = currNid + 7;
             int currItem = 0;
             numParItems = 0;
@@ -246,7 +265,31 @@ public class DeviceOutputs extends DeviceComponent
         }
 	protected void displayData(String data, boolean is_on)
 	{
-             for(int idx = 0; idx < numItems; idx++)
+            try {
+                CPUMaskTF.setText(subtree.getDataExpr(CPUMaskNid));
+            } catch(Exception exc)
+            {
+                CPUMaskTF.setText("");
+            }
+            try {
+                preSamplesTF.setText(subtree.getDataExpr(preSamplesNid));
+            } catch(Exception exc)
+            {
+                preSamplesTF.setText("");
+            }
+            try {
+                postSamplesTF.setText(subtree.getDataExpr(postSamplesNid));
+            } catch(Exception exc)
+            {
+                postSamplesTF.setText("");
+            }
+            try {
+                triggerTF.setText(subtree.getDataExpr(triggerNid));
+            } catch(Exception exc)
+            {
+                triggerTF.setText("");
+            }
+            for(int idx = 0; idx < numItems; idx++)
             {
                 try {
                      segLensTF[idx].setText(subtree.getDataExpr(segLenNids[idx]));
@@ -296,6 +339,30 @@ public class DeviceOutputs extends DeviceComponent
       
         public void apply() throws Exception
         {
+            try {
+                    subtree.putDataExpr(CPUMaskNid, CPUMaskTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving CPU Mask");
+            }
+           try {
+                    subtree.putDataExpr(preSamplesNid, preSamplesTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving Pre Samples");
+            }
+            try {
+                    subtree.putDataExpr(postSamplesNid, postSamplesTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving Post Samples");
+            }
+            try {
+                    subtree.putDataExpr(triggerNid, triggerTF.getText());
+            }catch(Exception exc)
+            {
+                System.out.println("Error saving Trigger");
+            }
             for(int idx = 0; idx < numItems; idx++)
             {
                 try {
