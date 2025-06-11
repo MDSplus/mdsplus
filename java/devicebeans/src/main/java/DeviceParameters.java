@@ -14,7 +14,8 @@ public class DeviceParameters extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int parameterOffset;
 	private int numParameters;
-	private JTextField valuesTF[];
+//	private JTextField valuesTF[];
+	private JTextArea valuesTF[];
 	private JLabel labels[];
 	public DeviceParameters()
 	{
@@ -23,7 +24,8 @@ public class DeviceParameters extends DeviceComponent
 	protected void initializeData(String data, boolean is_on)
         {
             mode = STRUCTURE;
-            valuesTF = new JTextField[numParameters];
+//            valuesTF = new JTextField[numParameters];
+            valuesTF = new JTextArea[numParameters];
             labels = new JLabel[numParameters];
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numParameters, 1));
@@ -48,7 +50,8 @@ public class DeviceParameters extends DeviceComponent
  
                 jp1.setBorder(new TitledBorder(parName));
                 jp1.setLayout(new BorderLayout());
-                jp1.add(valuesTF[i] = new JTextField(), "Center");
+ //               jp1.add(valuesTF[i] = new JTextField(), "Center");
+                jp1.add(new JScrollPane(valuesTF[i] = new JTextArea()), "Center");
                 jp.add(jp1);
                 currNid += 3;
                 i++;
