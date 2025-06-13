@@ -459,7 +459,7 @@ class MdsWaveInterface extends WaveInterface
 				StringTokenizer st_x = null;
 				num_shot = 1;
 				String token = null;
-				String y_str = prop.toLowerCase();
+				String y_str = prop;
 				String x_str = null;
 				y_str = RemoveNewLineCode(y_str);
 				if (in_x != null && in_x.length != 0)
