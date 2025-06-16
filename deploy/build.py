@@ -16,6 +16,7 @@ import shutil
 import signal
 import subprocess
 
+from urllib import request
 from datetime import datetime
 
 # Get the path to deploy/
@@ -143,6 +144,13 @@ parser.add_argument(
     action=boolean_action,
     default=False,
     help='Generates packages in `{--workspace}/package`.'
+)
+
+parser.add_argument(
+    '--verify-packages',
+    action=boolean_action,
+    default=False,
+    help='When used with --package, it validates the contents of the generated packages against `deploy/packaging/{--platform}/*`.'
 )
 
 parser.add_argument(
@@ -549,6 +557,7 @@ def do_interactive():
     setup_filename = os.path.join(args.workspace, 'setup.sh')
     with open(setup_filename, 'wt') as file:
         file.write('#!/bin/bash\n') # TODO: Remove?
+        file.write(f'export PYTHONPATH=\"{usr_local_mdsplus_dir}/python\"\n')
         file.write(f'export MDSPLUS_DIR=\"{usr_local_mdsplus_dir}\"\n')
         file.write('source $MDSPLUS_DIR/setup.sh\n')
     os.chmod(setup_filename, 0o755)
@@ -567,6 +576,7 @@ def do_interactive():
     interactive_env = dict()
     interactive_env['HOME'] = os.environ['HOME']
     interactive_env['TERM'] = os.environ['TERM']
+    interactive_env['DISPLAY'] = os.environ['DISPLAY']
 
     # Override shell prompt to ease confusion
     # \w is the "current working directory"
@@ -606,6 +616,7 @@ def do_docker():
         # Working directory
         f'--workdir={args.workspace}',
         f'--env=HOME={args.workspace}',
+        f'--env=DOCKERIMAGE={args.dockerimage}'
     ]
 
     if args.dockernetwork is not None:
@@ -874,8 +885,15 @@ def do_package():
     # Consider using the actual branch name for flavor instead of "alpha", "stable", or "other"
     if branch in ['alpha', 'stable']:
         flavor = branch
+    # HACK: Remove once testing on the CMake branch is done
+    elif branch == 'cmake':
+        flavor = 'alpha'
     else:
         flavor = 'other'
+
+    bname = ''
+    if flavor != 'stable':
+        bname = f'-{flavor}'
 
     if args.arch is None:
         if args.platform == 'debian':
@@ -904,10 +922,20 @@ def do_package():
     package_env['PLATFORM'] = args.platform
     package_env['BRANCH'] = branch
     package_env['FLAVOR'] = flavor
-    package_env['BNAME'] = f'-{branch}'
+    package_env['BNAME'] = bname
     package_env['RELEASE_VERSION'] = release_version
     package_env['BUILDROOT'] = install_dir
     package_env['DISTROOT'] = dist_dir
+
+    publish_info = {
+        'flavor': flavor,
+        'arch': args.arch, # ?
+        'version': release_version,
+        'distname': args.distname,
+        'platform': args.platform,
+        'dockerimage': os.environ['DOCKERIMAGE'],
+        'packages': [],
+    }
 
     # TODO: Move
     import tarfile
@@ -926,18 +954,99 @@ def do_package():
             print('Failed to build debian packages')
             exit(1)
 
+        deb_files = glob.glob(os.path.join(dist_dir, f'**/*{flavor}*_{release_version}*.deb'), recursive=True)
+
+        for filename in deb_files:
+            publish_info['packages'].append(os.path.relpath(filename, dist_dir))
+
+        if args.verify_packages:
+            for filename in deb_files:
+                result = subprocess.run(
+                    ['/usr/bin/dpkg', '-c', filename],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
+                )
+
+                if result.returncode != 0:
+                    print('Failed to enumerate deb package contents for', filename)
+                    exit(1)
+
+                # mdsplus-alpha-package_bin_1.2.3_amd64.deb -> package_bin
+                reference_filename = os.path.basename(filename)
+                reference_filename = reference_filename.removeprefix(f'mdsplus{bname}-')
+                reference_filename = reference_filename.removesuffix(f'_{release_version}_{args.arch}.deb')
+
+                if '_bin' in reference_filename:
+                    reference_filename += f'.{args.arch}'
+                else:
+                    reference_filename += '.noarch'
+
+                print('Verifying contents of', os.path.basename(filename), 'against', reference_filename)
+
+                reference_filename = os.path.join(deploy_dir, 'packaging', args.platform, reference_filename)
+
+                install_filenames = []
+                # TODO: Harden
+                reference_filenames = [ line.strip() for line in open(reference_filename).readlines() ]
+
+                dpkg_contents = result.stdout.decode().splitlines()
+                for install_filename in dpkg_contents:
+
+                    if len(install_filename.rstrip()) == 0:
+                        continue
+
+                    # TODO: Harden
+                    # e.g. -rw-r--r-- 1234/5678    12345 1970-01-01 00:00 ./usr/local/mdsplus/file
+                    install_filename = './' + install_filename.split(' ./')[1]
+
+                    # .e.g ./path/to/file -> otherFile
+                    if '->' in install_filename:
+                        install_filename = install_filename.split(' -> ')[0]
+                    
+                    if install_filename[-1] == '/':
+                        continue
+                    
+                    install_filenames.append(install_filename.strip())
+                
+                for install_filename, reference_filename in zip(sorted(install_filenames), sorted(reference_filenames)):
+                    if install_filename != reference_filename:
+                        print(f'"{install_filename}" != "{reference_filename}"')
+                        exit(1)
+                    else:
+                        print(f'"{install_filename}" == "{reference_filename}"')
+
         package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_debs.tgz")
         print(f'Creating {package_filename}')
         
         package_file = tarfile.open(package_filename, 'w:gz')
 
-        package_contents = glob.glob(os.path.join(dist_dir, 'DEBS/*/*.deb'))
-        for filename in package_contents:
+        for filename in deb_files:
             package_file.add(filename, arcname=os.path.basename(filename))
             
         package_file.close()
 
     elif args.platform == 'redhat':
+
+        os.makedirs(os.path.join(install_dir, 'etc/pki/rpm-gpg'), exist_ok=True)
+        os.makedirs(os.path.join(install_dir, 'etc/yum.repos.d'), exist_ok=True)
+
+        rpm_gpg_key_url = 'http://www.mdsplus.org/dist/RPM-GPG-KEY-MDSplus'
+        _, result = request.urlretrieve(rpm_gpg_key_url, os.path.join(install_dir, 'etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus'), )
+        # TODO: Error handling?
+
+        with open(os.path.join(install_dir, f'etc/yum.repos.d/mdsplus{bname}.repo'), 'wt') as file:
+            repo_lines = [
+                f'[MDSplus{bname}]',
+                f'name=MDSplus{bname}',
+                f'baseurl=http://www.mdsplus.org/dist/{args.distname}/{flavor}/RPMS',
+                f'enabled=1',
+                f'gpgcheck=1',
+                f'repo_gpgcheck=1',
+                f'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus',
+                f'metadata_expire=300',
+                '',
+            ]
+            file.write('\n'.join(repo_lines))
 
         result = subprocess.run(
             [ sys.executable, os.path.join(deploy_dir, 'packaging/redhat/redhat_build_rpms.py') ],
@@ -949,13 +1058,54 @@ def do_package():
             print('Failed to build redhat packages')
             exit(1)
 
+        redhat_package_version = '-'.join(release_version.rsplit('.', maxsplit=1)) # 1.2-3
+        rpm_files = glob.glob(os.path.join(dist_dir, f'**/*{flavor}*-{redhat_package_version}*.rpm'), recursive=True)
+
+        for filename in rpm_files:
+            publish_info['packages'].append(os.path.relpath(filename, dist_dir))
+
+        if args.verify_packages:
+            for filename in rpm_files:
+                result = subprocess.run(
+                    [ '/bin/bash', '-c', f'rpm2cpio {filename} | cpio --list --quiet | sort' ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                )
+
+                if result.returncode != 0:
+                    print('Failed to run list contents of', filename)
+                    exit(1)
+
+                # mdsplus-alpha-package_bin_1.2-3_x86_64.rpm -> package_bin
+                reference_filename = os.path.basename(filename)
+                reference_filename = reference_filename.removeprefix(f'mdsplus{bname}-')
+                reference_filename = reference_filename.replace(f'-{redhat_package_version}.{args.distname}', '')
+                reference_filename = reference_filename.removesuffix('.rpm')
+
+                print('Verifying contents of', os.path.basename(filename), 'against', reference_filename)
+
+                reference_filename = os.path.join(deploy_dir, 'packaging', args.platform, reference_filename)
+                if not os.path.exists(reference_filename):
+                    print('Skipping')
+                    continue
+
+                install_filenames = [ line.strip() for line in result.stdout.decode().splitlines() ]
+                # TODO: Harden
+                reference_filenames = [ line.strip() for line in open(reference_filename).readlines() ]
+                
+                for install_filename, reference_filename in zip(sorted(install_filenames), sorted(reference_filenames)):
+                    if install_filename != reference_filename:
+                        print(f'"{install_filename}" != "{reference_filename}"')
+                        exit(1)
+                    else:
+                        print(f'"{install_filename}" == "{reference_filename}"')
+
         package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}_rpms.tgz")
         print(f'Creating {package_filename}')
 
         package_file = tarfile.open(package_filename, 'w:gz')
 
-        package_contents = glob.glob(os.path.join(dist_dir, 'RPMS/*/*.rpm'))
-        for filename in package_contents:
+        for filename in rpm_files:
             package_file.add(filename, arcname=os.path.basename(filename))
             
         package_file.close()
@@ -972,9 +1122,16 @@ def do_package():
             print('Failed to build windows installer')
             exit(1)
 
-        exe_list = glob.glob(os.path.join(dist_dir, f'{args.platform}/{flavor}/*.exe'))
+        exe_version = '-'.join(release_version.rsplit('.', maxsplit=1)) # 1.2-3
+        exe_list = glob.glob(os.path.join(dist_dir, f'**/*{flavor}-{exe_version}*.exe'), recursive=True)
         for filename in exe_list:
+            publish_info['packages'].append(os.path.relpath(filename, dist_dir))
             shutil.copy(filename, packages_dir)
+
+    publish_info_filename = os.path.join(args.workspace, 'mdsplus-publish.json')
+
+    with open(publish_info_filename, 'wt') as file:
+        file.write(json.dumps(publish_info, indent=2))
 
     root_package_filename = os.path.join(packages_dir, f"mdsplus_{flavor}_{release_version}_{args.distname}_{args.arch}.tgz")
 

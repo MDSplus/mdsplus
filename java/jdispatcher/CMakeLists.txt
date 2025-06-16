@@ -3,6 +3,40 @@
 ### jDispatcher.jar
 ###
 
+# MANIFEST.MF
+
+set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
+
+file(WRITE ${_manifest}
+    "Specification-Version: ${RELEASE_VERSION}\n"
+    "Implementation-Version: ${RELEASE_VERSION}\n"
+    "Implementation-Vendor-Id: org.mdsplus\n"
+    "Class-Path: mdsobjects.jar\n"
+)
+
+file(GLOB_RECURSE
+    _source_list
+    "src/main/java/mds/jdispatcher/*.java"
+)
+
+
+add_jar(
+    jDispatcher
+    SOURCES ${_source_list}
+    INCLUDE_JARS mdsobjects
+    ENTRY_POINT mds.jscope.jDispatcher
+    MANIFEST ${_manifest}
+)
+
+install_jar(
+    jDispatcher
+    DESTINATION java/classes
+)
+
+install(
+    FILES src/main/resources/mds/jdispatcher/jDispatcher.properties
+    DESTINATION java/classes
+)
 
 ###
 ### Scripts

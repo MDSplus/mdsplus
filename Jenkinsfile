@@ -67,9 +67,9 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             sh "deploy/build.py -j --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
-            dir("workspace-${os}/packages") {
-                sh "ls"
-                stash includes: "*", name: "packages-${os}"
+            dir("workspace-${os}") {
+                stash name: "packages-${os}", includes: "packages/**/*"
+                stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
             }
         }
     }
@@ -173,6 +173,9 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'printenv'
+                
+                // This shouldn't be needed, but just in case
+                cleanWs disableDeferredWipeout: true, deleteDirs: true
 
                 retry(3) {
                     checkout scm;
@@ -190,7 +193,7 @@ pipeline {
 
                         echo "Calculated new version to be ${new_version}"
 
-                        sh "git tag ${new_tag}"
+                        sh "git tag ${new_tag} || true"
                     }   
                 }
 
@@ -207,19 +210,26 @@ pipeline {
             }
         }
         
-        stage('Test Stash') {
+        stage('Test Publish') {
             steps {
                 script {
-                    for (info in OSList) {
-                        def (name, os, label) = info
-                        unstash "packages-${os}"
+                    ansiColor('xterm') {
+                        for (info in OSList) {
+                            def (name, os, label) = info
+
+                            unstash "packages-${os}"
+                            unstash "dist-${os}"
+
+                            sh "deploy/publish.py --distdir=/opt/fakedist --certdir=/mdsplus/certs --publish-info=mdsplus-publish.json"
+                        }
+                        
+                        dir("packages") {
+                            sh "ls"
+                            archiveArtifacts artifacts: "*.tgz,*.exe", followSymlinks: false
+                        }
+                        
+                        cleanWs disableDeferredWipeout: true, deleteDirs: true
                     }
-                    
-                    sh "ls"
-                    
-                    archiveArtifacts artifacts: "*.tgz,*.exe", followSymlinks: false
-                    
-                    cleanWs disableDeferredWipeout: true, deleteDirs: true
                 }
             }
         }

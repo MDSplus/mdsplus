@@ -417,10 +417,14 @@ mdsplus_option(
 ### Global Configuration
 ###
 
-# $ENV{CFLAGS} is added by default
-# $ENV{CXXFLAGS} is added by default
-# $ENV{FFLAGS} is added by default
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
+# ${CMAKE_C_FLAGS_INIT} is set to $ENV{CFLAGS} by default
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT}")
+
+# ${CMAKE_CXX_FLAGS_INIT} is set to $ENV{CXXFLAGS} by default
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT}")
+
+# ${CMAKE_Fortran_FLAGS_INIT} is set to $ENV{FFLAGS} by default
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS_INIT} ${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
 
 set(CMAKE_INSTALL_BINDIR bin)
 set(CMAKE_INSTALL_LIBDIR lib)
@@ -1434,7 +1438,6 @@ endif()
 install(
     DIRECTORY
         desktop
-        epics
         idl
         include
         LabView
@@ -1461,6 +1464,13 @@ install(
 
     PATTERN "*.pyc" EXCLUDE
     PATTERN "__pycache__" EXCLUDE
+)
+
+install(
+    DIRECTORY
+        epics
+    DESTINATION .
+    USE_SOURCE_PERMISSIONS
 )
 
 install(

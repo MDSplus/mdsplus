@@ -359,11 +359,6 @@ SectionGroup /e "!APIs" apis
 	File /x modpython.py /x setup.py "python/MDSplus/*.py" python/MDSplus/pyproject.toml
 	File python/MDSplus/_version.py
   SectionEnd ; python_cp
-  Section "tests" python_tst
-	SectionIn 2
-	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r python/MDSplus/tests
-  SectionEnd ; python_tst
   Section "WSGI" python_wsgi
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
@@ -463,7 +458,6 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${MATLAB}	"Copy MATLAB plugin to '.\matlab'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python}	"Setup the python package"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_cp}	"Copy MDSplus package to '.\python'"
-	!insertmacro MUI_DESCRIPTION_TEXT ${python_tst}	"Copy MDSplus test suite to '.\python\MDSplus\tests'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_wsgi} "Copy WSGI server support to '.\python\MDSplus[\wsgi]'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_wdg}	"Copy glade widgets for device setups to '.\python\MDSplus\widgets'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_mod}	"Copy mod_python module for apache to '.\python\MDSplus'"
@@ -493,7 +487,6 @@ Function .onSelChange
 			${UnselectSection}  ${python_pp}
 			${UnselectSection}  ${python_su}
 			${UnselectSection}  ${python_comp}
-			${UnselectSection}  ${python_tst}
 			${UnselectSection}  ${python_wdg}
 			${UnselectSection}  ${python_wsgi}
 		${EndIf}
@@ -530,7 +523,6 @@ Function .onSelChange
 		${EndIf}
 	${ElseIf} $0 == ${python_su}
 	${OrIf}   $0 == ${python_comp}
-	${OrIf}   $0 == ${python_tst}
 	${OrIf}   $0 == ${python_wdg}
 	${OrIf}   $0 == ${python_wsgi}
 	${If} $0 is ${SF_SELECTED}

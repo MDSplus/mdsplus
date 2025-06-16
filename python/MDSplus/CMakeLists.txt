@@ -20,4 +20,10 @@ install(
         PATTERN "*.js"
         PATTERN "*.tbl"
         PATTERN "*.toml"
+        PATTERN "*.xml"
+
+    PATTERN "docs" EXCLUDE
+    PATTERN "tests" EXCLUDE
+    PATTERN "*.pyc" EXCLUDE
+    PATTERN "__pycache__" EXCLUDE
 )

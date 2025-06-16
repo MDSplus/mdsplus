@@ -798,6 +798,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <requires package="numpy" external=""/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
+    <exclude dir="/usr/local/mdsplus/python/MDSplus/__pycache__"/>
 
     <!-- rpm scripts -->
     <post>$RPM_INSTALL_PREFIX/mdsplus/rpm/python_module_install.sh MDSplus</post>
