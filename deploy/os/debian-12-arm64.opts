@@ -1,0 +1,2 @@
+--dockerimage=mdsplus/builder:debian-12-amd64 --distname=DebianBookworm --platform=debian
+-DENABLE_LABVIEW=OFF

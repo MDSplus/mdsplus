@@ -10,6 +10,7 @@ def OSList = [
     ['Debian 10 (amd64)',               'debian-10-amd64',  'docker && linux-amd64'],
     ['Debian 11 (amd64)',               'debian-11-amd64',  'docker && linux-amd64'],
     ['Debian 12 (amd64)',               'debian-12-amd64',  'docker && linux-amd64'],
+    ['Debian 12 (arm64)',               'debian-12-arm64',  'docker && linux-aarch64'],
     ['Windows (x86)',                   'windows-x86',      'docker && linux-amd64'],
     ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
     // ['MacOSX (brew)',                   'macosx-brew',      'macosx'],
