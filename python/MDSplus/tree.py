@@ -4079,9 +4079,12 @@ If you did intend to write to a subnode of the device you should check the prope
         source = self.head.record.qualifiers.data()
         if isinstance(source, _N.ndarray) and source.dtype == _N.uint8:
             import difflib
-            inrecord = _ver.tostr(source.tostring()).splitlines(1)
-            infile = _ver.tostr(self.__read_source(
-                self.__class__.__name__, sourcefile).tostring()).splitlines(1)
+            if hasattr(source, 'tobytes'):
+                inrecord = _ver.tostr(source.tobytes()).splitlines(1)
+                infile = _ver.tostr(self.__read_source(self.__class__.__name__, sourcefile).tobytes()).splitlines(1)
+            else:
+                inrecord = _ver.tostr(source.tostring()).splitlines(1)
+                infile = _ver.tostr(self.__read_source(self.__class__.__name__, sourcefile).tostring()).splitlines(1)
             diff = difflib.unified_diff(inrecord, infile)
             diff = ''.join(diff)
             return diff
