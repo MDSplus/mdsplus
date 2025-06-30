@@ -59,7 +59,7 @@ static void printhelp(char *cmd)
 #endif
 }
 
-extern int TdiDecompile();
+extern int TdiDecompile(mdsdsc_t *, ...);
 
 int main(int argc, char **argv)
 {
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
         status = MdsSerializeDscIn(data, &xd);
         if (STATUS_OK)
         {
-          TdiDecompile(&xd, &ans MDS_END_ARG);
+          TdiDecompile((mdsdsc_t *)&xd, &ans MDS_END_ARG);
           if (ans.pointer)
           {
             printf("Event %s occurred with data = %.*s\n", event, ans.length,
@@ -193,13 +193,17 @@ int main(int argc, char **argv)
         printf("Event %s occurred with data = \\%.*s\\\n", event, len, data);
       else
       {
-        printf("Event %s occured with data = [", event);
+        printf("Event %s occurred with data = [", event);
         for (i = 0; i < len - 1; i++)
         {
           printf("%0dB,", (int)data[i]);
         }
         printf("%dB]\n", (int)data[i]);
       }
+    }
+    else
+    {
+      printf("Event %s occurred.\n", event);
     }
     return (0);
   }

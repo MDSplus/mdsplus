@@ -111,6 +111,11 @@ public class Function extends Descriptor_R<Short>
 		return new Function(OPC.OpcAsIs, dscptrs);
 	}
 
+	public static final Function Decompile(final Descriptor<?> dscptrs)
+	{
+		return new Function(OPC.OpcDecompile, dscptrs);
+	}
+
 	private final static void deIndent(final StringBuilder pout)
 	{
 		int fin;

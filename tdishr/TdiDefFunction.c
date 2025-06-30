@@ -33,9 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #include <tdishr.h>
 
+// TDI Intrinsic functions have these parameters:
+//    first -- descriptor pointer for result, or NULL for no output
+//    [<args1> .. <argsN>] -- optional descriptor pointers for input arguments
+//    MdsEND_ARG (aka 1) -- denotes end of variable arguments
+
 #define COM
 #define OPC(name, NAME, ...)                                              \
-  extern EXPORT int Tdi##name(struct descriptor *first, ...)              \
+  extern EXPORT int Tdi##name(mdsdsc_t *first, ...)                       \
   {                                                                       \
     if (first == MdsEND_ARG)                                              \
       return TdiNO_OUTPTR;                                                \

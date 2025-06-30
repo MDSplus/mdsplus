@@ -288,12 +288,12 @@ class Nci(object):
     MEMBER = (18, _C.c_int32, 4, None)
     CHILD = (19, _C.c_int32, 4, None)
     PARENT_RELATIONSHIP = (20, _C.c_uint32, 4, int)
-    CONGLOMERATE_NIDS = (21, _C.c_int32*1024, 1024*4, None)
+    CONGLOMERATE_NIDS = (21, _C.c_int32, None, None)
     ORIGINAL_PART_NAME = (22, _C.c_char_p, 1024, str)
     NUMBER_OF_MEMBERS = (23, _C.c_uint32, 4, int)
     NUMBER_OF_CHILDREN = (24, _C.c_uint32, 4, int)
-    MEMBER_NIDS = (25, _C.c_int32*4096, 4096*4, None)
-    CHILDREN_NIDS = (26, _C.c_int32*4096, 4096*4, None)
+    MEMBER_NIDS = (25, _C.c_int32, None, None)
+    CHILDREN_NIDS = (26, _C.c_int32, None, None)
     FULLPATH = (27, _C.c_char_p, 1024, str)
     MINPATH = (28, _C.c_char_p, 1024, str)
     USAGE = (29, _C.c_uint8, 1, int)
@@ -777,17 +777,31 @@ class Tree(object):
                     _TreeShr._TreeSetSubtree(self.ctx, nid))
         return TreeNode(nid.value, self)
 
-    def createPulse(self, shot):
+    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
         """Create pulse.
+    
         @param shot: Shot number to create
         @type shot: int
+        @param copy_only_this: Logical flag, defaults to False
+        @type copy_only_this: int
+        @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
+        @type node_or_nid: int or MDSplus.tree.TreeNode
         @rtype: None
         """
+
+        if isinstance(node_or_nid, TreeNode):
+            node_or_nid = node_or_nid.getNid()  # Extract node ID
+    
+        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
+
         _exc.checkStatus(
-            _TreeShr._TreeCreatePulseFile(self.ctx,
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(0),
-                                          _C.c_void_p(0)))
+            _TreeShr._TreeCreatePulseFile(
+                self.ctx,
+                _C.c_int32(int(shot)),
+                _C.c_int32(int(copy_only_this)),
+                nid_pointer
+            )
+        )
 
     def deleteNode(self, wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -1182,6 +1196,10 @@ class Tree(object):
         kwargs['tree'] = self.tree
         return _dat.TdiData(arg, **kwargs)
 
+    def copyTo(self, dst, **kwargs):
+        """Alias for self.top.copyTo(dst, **kwargs), see TreeNode.copyTo for details"""
+        return self.top.copyTo(dst, **kwargs)
+
 
 # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
 class TreeNode(_dat.TreeRef, _dat.Data):
@@ -1317,6 +1335,18 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     def _getNci(self, info):
         """Return nci data"""
         code, ctype, buflen, rtype = info
+        
+        if buflen is None:
+            count = 0
+            if code == 25: # MEMBER_NIDS
+                count = self.number_of_members
+            elif code == 26: # CHILDREN_NIDS
+                count = self.number_of_children
+            elif code == 21: # CONGLOMERATE_NIDS
+                count = self.number_of_elts
+            buflen = _C.sizeof(ctype) * count
+            ctype = ctype * count
+
         if ctype is _C.c_char_p:
             ans = ctype((b' ')*buflen)
             pointer = ans
@@ -3090,6 +3120,234 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                         None,
                                         _C.c_int32(int(idx))))
 
+    def copyTo(self, dst, node_filter=None, copy_tags=True, copy_data=True, copy_nci=True, copy_xnci=True):
+        """Recursively copy a portion of one tree to another from this node to the dst node.
+        @param dst: The destination TreeNode to copy nodes to
+        @param node_filter: An optional function that takes a source node and returns True if it should be included in the copy, or False otherwise.
+        @param copy_tags: True if tags should be copied as well. Existing tags will not be overwritten.
+        @param copy_data: True if the data for nodes should be copied as well.
+        @param copy_nci: True if NCI properties should be copied as well.
+        @param copy_xnci: True if XNCI properties should be copied as well.
+        """
+
+        src = self
+
+        if type(src) == Tree:
+            src = src.top
+
+        if type(dst) == Tree:
+            dst = dst.top
+
+        print('Copying from {} to {}'.format(src.fullpath, dst.fullpath))
+
+        if not dst.tree.open_for_edit:
+            print('Destination tree must be open for edit')
+            return
+
+        if src.tree == dst.tree:
+            print('Cannot currently copy within a tree')
+            return
+
+        original_src_default = src.tree.getDefault()
+        original_dst_default = dst.tree.getDefault()
+
+        src.tree.setDefault(src)
+        dst.tree.setDefault(dst)
+
+        root_src = src.fullpath
+        root_dst = dst.fullpath
+
+        # Sort by conglomerate_elt to keep conglomerates together
+        def compare_nodes(a, b):
+            if a.conglomerate_elt < b.conglomerate_elt:
+                return -1
+            elif a.conglomerate_elt > b.conglomerate_elt:
+                return 1
+            return 0
+
+        import functools
+        src_nodes = sorted(list(src.getNodeWild('***')), key=functools.cmp_to_key(compare_nodes))
+        skip_nodes = []
+
+        # Filter out nodes that the user doesn't want
+        if node_filter is not None:
+            for src_node in src_nodes:
+                # We can't filter out nodes that are part of a conglomerate, except the head node
+                if src_node.conglomerate_elt > 1:
+                    continue
+
+                copy_this_node = node_filter(src_node)
+
+                # Skip this node and all children
+                if not copy_this_node:
+                    skip_nodes.extend(list(src_node.getNodeWild('***')))
+
+        # Handle existing nodes with discrepancies
+        for src_node in src_nodes:
+            dst_path = src_node.fullpath.replace(root_src, root_dst)
+
+            try:
+                dst_node = dst.getNode(dst_path)
+
+                if dst_node.usage != src_node.usage:
+                    print('Node {} already exists but with a different usage, updating'.format(dst_node.fullpath))
+                    dst_node.usage = src_node.usage
+
+                if dst_node.conglomerate_elt != src_node.conglomerate_elt:
+                    print('Node {} already exists would conflict with the conglomerate, removing it and all children'.format(dst_node.fullpath))
+
+                    # Skip this node and all children
+                    skip_nodes.extend(list(src_node.getNodeWild('***')))
+
+                continue
+            except _exc.TreeNNF:
+                pass
+
+        # Remove nodes that shouldn't be copied
+        for node in skip_nodes:
+            try:
+                src_nodes.remove(node)
+            except ValueError:
+                pass
+        
+        # Add missing nodes, starting/ending conglomerates as needed
+        remaining_conglomerate_nodes = 0
+        for src_node in src_nodes:
+            dst_path = src_node.fullpath.replace(root_src, root_dst)
+
+            if remaining_conglomerate_nodes == 0:
+                if src_node.conglomerate_elt == 1:
+                    remaining_conglomerate_nodes = src_node.number_of_elts
+                    _TreeShr._TreeStartConglomerate(dst.tree.ctx, remaining_conglomerate_nodes)
+
+            try:
+                dst.addNode(dst_path, src_node.usage)
+            except _exc.TreeALREADY_THERE:
+                pass
+
+            if remaining_conglomerate_nodes > 0:
+                remaining_conglomerate_nodes -= 1
+                if remaining_conglomerate_nodes == 0:
+                    _TreeShr._TreeEndConglomerate(dst.tree.ctx)
+
+        # Copy tags, data, XNCIs and NCIs
+        for src_node in src_nodes:
+            dst_path = src_node.fullpath.replace(root_src, root_dst)
+            dst_node = dst.getNode(dst_path)
+
+            if copy_tags:
+                tags = src_node.getTags()
+                for tag in tags:
+                    tag = str(tag).strip()
+
+                    # Ensure that we don't overwrite existing tags
+                    try:
+                        existing_node = dst.tree.getNode('\\{}'.format(tag))
+                        print('Warning: Tag "{}" already exists and points to {}'.format(tag, existing_node.fullpath))
+                        continue
+                    except _exc.TreeNNF:
+                        pass
+
+                    dst_node.addTags(tag, replace=False)
+
+
+            original_no_write_model = dst_node.no_write_model
+            original_no_write_shot = dst_node.no_write_shot
+            original_write_once = dst_node.write_once
+
+            # Temporarily disable write protections if writing data or XNCIs
+            if copy_data or copy_xnci:
+                dst_node.no_write_model = False
+                dst_node.no_write_shot = False
+                dst_node.write_once = False
+
+            if copy_data:
+
+                if src_node.isSegmented():
+                    # Segmented records need to be treated differently
+
+                    index = 0
+                    for i in range(src_node.getNumSegments()):
+                        seg = src_node.getSegment(i)
+                        data = seg.value
+                        seg_len = len(data)
+                        dim = seg.dim_of()
+
+                        start = index
+                        end = index + seg_len - 1
+                        dst_node.makeSegment(start, end, dim, data)
+                        index += seg_len
+                else:
+                    def _update_tree_paths(data, new_tree):
+                        # TreePath is a subclass of TreeNode so we need to do this first
+                        if isinstance(data, TreePath):
+                            new_path = data.tree_path.replace(src.fullpath, dst.fullpath)
+                            return TreePath(new_path, new_tree)
+                        
+                        elif isinstance(data, TreeNode):
+                            # After the first node in a data structure is updated, the tree for the entire
+                            # data structure changes, this means that we need to manually get the nodes by
+                            # their NIDs, otherwise we accidentally get nodes from the new tree with those nids
+                            real_node = TreeNode(data.nid, src.tree)
+                            new_path = real_node.fullpath.replace(src.fullpath, dst.fullpath)
+                            try:
+                                return new_tree.getNode(new_path)
+                            except _exc.TreeNNF:
+                                return TreePath(new_path, new_tree)
+
+                        elif isinstance(data, _cmp.Compound):
+                            for i in range(data.getNumDescs()):
+                                data.setDescAt(i, _update_tree_paths(data.getDescAt(i), new_tree))
+                            return data
+
+                        elif isinstance(data, _apd.List):
+                            return _apd.List([ _update_tree_paths(v, new_tree) for v in data.value ])
+
+                        elif isinstance(data, _apd.Dictionary):
+                            return _apd.Dictionary({ _update_tree_paths(k, new_tree): _update_tree_paths(v, new_tree) for k, v in data.value })
+
+                        return data
+
+                    try:
+                        # Decompiling/Compiling the data loses floating point precision
+                        # so we manually traverse the data to update node references
+                        dst_node.record = _update_tree_paths(src_node.record, dst_node.tree)
+
+                    except _exc.TreeNODATA:
+                        pass
+                    except Exception as e:
+                        print(e)
+
+            # XNCI attributes are technically data, so they need to be copied while the write protections are disabled
+            if copy_xnci:
+                xncis = src_node.getExtendedAttributes()
+                if xncis is not None:
+                    for key, value in xncis.items():
+                        try:
+                            deco = value.decompile()
+                            dst_node.setExtendedAttribute(key, dst.tree.tdiCompile(deco))
+                        except Exception as e:
+                            print(e)
+
+            # Enable write protections, unless we're copying NCIs, then they would be overwritten
+            if copy_data or copy_xnci and not copy_nci:
+                dst_node.no_write_model = original_no_write_model
+                dst_node.no_write_shot = original_no_write_shot
+                dst_node.write_once = original_write_once
+
+            if copy_nci:
+                dst_node.compress_segments = src_node.compress_segments
+                dst_node.essential = src_node.essential
+                dst_node.do_not_compress = src_node.do_not_compress
+                dst_node.compress_on_put = src_node.compress_on_put
+                dst_node.include_in_pulse = src_node.include_in_pulse
+                dst_node.no_write_model = src_node.no_write_model
+                dst_node.no_write_shot = src_node.no_write_shot
+                dst_node.state = src_node.state
+                dst_node.write_once = src_node.write_once
+
+        src.tree.setDefault(original_src_default)
+        dst.tree.setDefault(original_dst_default)
 
 class TreePath(TreeNode):  # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""
@@ -3154,7 +3412,7 @@ class TreeNodeArray(_dat.TreeRef, _arr.Int32Array):  # HINT: TreeNodeArray begin
         nids = _N.array(nids)
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
-        self._value = _N.array(nids, dtype=_N.int32, copy=False)
+        self._value = _N.asarray(nids, dtype=_N.int32)
         if 'tree' in kw:
             self.tree = tree
         elif isinstance(tree[0], (Tree,)):
@@ -3821,9 +4079,12 @@ If you did intend to write to a subnode of the device you should check the prope
         source = self.head.record.qualifiers.data()
         if isinstance(source, _N.ndarray) and source.dtype == _N.uint8:
             import difflib
-            inrecord = _ver.tostr(source.tostring()).splitlines(1)
-            infile = _ver.tostr(self.__read_source(
-                self.__class__.__name__, sourcefile).tostring()).splitlines(1)
+            if hasattr(source, 'tobytes'):
+                inrecord = _ver.tostr(source.tobytes()).splitlines(1)
+                infile = _ver.tostr(self.__read_source(self.__class__.__name__, sourcefile).tobytes()).splitlines(1)
+            else:
+                inrecord = _ver.tostr(source.tostring()).splitlines(1)
+                infile = _ver.tostr(self.__read_source(self.__class__.__name__, sourcefile).tostring()).splitlines(1)
             diff = difflib.unified_diff(inrecord, infile)
             diff = ''.join(diff)
             return diff

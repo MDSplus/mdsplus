@@ -74,6 +74,7 @@ extern "C" int SetCompressionLevel(int level);
 extern "C" int MdsSetCompression(int id, int level);
 extern "C" void DisconnectFromMds(int sockId);
 extern "C" void FreeMessage(void *m);
+extern "C" void freeDsc(void *dscPtr);
 
 #define DTYPE_UCHAR_IP 2
 #define DTYPE_USHORT_IP 3
@@ -275,16 +276,20 @@ void *putManyObj(char *serializedIn)
     AutoArray<char> expr(exprData->getString());
     AutoData<List> argsData((List *)currArg->getItem(&argsKey));
 
-    int nPutArgs = 0;
-    if (argsData.get())
-      nPutArgs = argsData->len();
+    std::vector<void *> actualDscList;
+    if (argsData.get()) {
+      Data ** dataList = argsData->getDscs();
+      for (size_t i = 0; i < argsData->len(); ++i) {
+        actualDscList.push_back(dataList[i]->convertToDsc());
+      }
+    }
 
     try
     {
       AutoPointer<Tree> tree(getActiveTree());
       int retStatus;
       AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(
-          expr.get(), nPutArgs, (argsData.get()) ? argsData->getDscs() : 0,
+          expr.get(), actualDscList.size(), actualDscList.data(),
           tree.get(), nullptr, &retStatus);
       AutoPointer<TreeNode> node = tree->getNode(nodeNameData.get());
       node->putData(compiledData.get());
@@ -295,6 +300,10 @@ void *putManyObj(char *serializedIn)
     {
       AutoData<String> errorData(new String(e.what()));
       result->setItem(nodeNameData.get(), errorData.get());
+    }
+
+    for (size_t i = 0; i < actualDscList.size(); ++i) {
+      freeDsc(actualDscList[i]);
     }
   }
 
@@ -668,7 +677,7 @@ void Connection::setDefault(char *path)
 TreeNodeThinClient *Connection::getNode(char *path)
 {
   char expr[256];
-  sprintf(expr, "GETNCI(%s, \'NID_NUMBER\')", path);
+  snprintf(expr, sizeof(expr), "GETNCI(%s, \'NID_NUMBER\')", path);
   AutoData<Data> nidData(get(expr));
   if (!nidData)
     throw MdsException("Cannot get remote nid in Connection::getNode");
@@ -681,7 +690,7 @@ void Connection::registerStreamListener(DataStreamListener *listener,
                                         char *expr, char *tree, int shot)
 {
   char regExpr[64 + strlen(expr) + strlen(tree)];
-  sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))",
+  snprintf(regExpr, sizeof(regExpr), "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))",
           expr, tree, shot);
 
   AutoData<Data> idData(get(regExpr, NULL, 0));
@@ -701,7 +710,7 @@ void Connection::unregisterStreamListener(DataStreamListener *listener)
     return;
   int id = listenerIdV[idx];
   char regExpr[64];
-  sprintf(regExpr, "MdsObjectsCppShr->unregisterListener(val(%d))", id);
+  snprintf(regExpr, sizeof(regExpr), "MdsObjectsCppShr->unregisterListener(val(%d))", id);
   get(regExpr);
   listenerV.erase(listenerV.begin() + idx);
   listenerIdV.erase(listenerIdV.begin() + idx);

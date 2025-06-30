@@ -63,7 +63,7 @@ typedef struct _server
   struct _server *next;
 } Server;
 
-extern int TdiExecute();
+extern int TdiExecute(mdsdsc_t *, ...);
 
 /****************************************************************
  * CheckCondtion:

@@ -53,9 +53,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-extern int TdiConcat();
-extern int TdiData();
-extern int TdiEvaluate();
+extern int TdiConcat(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int TdiFaultHandler();
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
@@ -65,49 +65,70 @@ extern int tdi_put_ident();
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    static inline int interlude(dtype_t rtype, mdsdsc_t **newdsc,
+    // num_fixed_args is unused on all platforms except those that use libffi
+    static inline int interlude(dtype_t rtype, int bypass_ffi, __attribute__((unused)) int num_fixed_args, mdsdsc_t **newdsc,
                                 int (*routine)(), void **result, int *max)
 {
   switch (rtype)
   {
   case DTYPE_MISSING:
-  {
-    LibCallg(newdsc, routine);
+    *max = 0;
+    if (bypass_ffi) {
+      LibCallg(newdsc, routine);
+    } else {
+#ifdef MDSPLUS_USE_FFI
+      LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_VOID);
+#endif
+    }
     break;
-  }
   case DTYPE_C:
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
-  {
-    void *(*called_p)() = (void *(*)())LibCallg;
-    void **result_p = (void *)result;
     *max = sizeof(void *);
-    *result_p = called_p(newdsc, routine);
+    void **result_p = (void *)result;
+    void *(*called_p)() = (void *(*)())LibCallg; 
+    if (bypass_ffi) {
+      *result_p = called_p(newdsc, routine);
+    } else {
+#ifdef MDSPLUS_USE_FFI
+      *result_p =  (void *) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_POINTER);
+#endif
+    }
     break;
-  }
   case DTYPE_D:
   case DTYPE_G:
   case DTYPE_FC:
   case DTYPE_FSC:
   case DTYPE_Q:
   case DTYPE_QU:
-  { // 8 bytes
-    int64_t (*called_q)() = (int64_t(*)())LibCallg;
-    int64_t *result_q = (int64_t *)result;
+    // 8 bytes
     *max = sizeof(int64_t);
-    *result_q = called_q(newdsc, routine);
+    int64_t *result_q = (int64_t *)result;
+    int64_t (*called_q)() = (int64_t(*)())LibCallg; 
+    if (bypass_ffi) {
+      *result_q = called_q(newdsc, routine);
+    } else {
+#ifdef MDSPLUS_USE_FFI
+      *result_q =  (int64_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT64);
+#endif
+    }
     break;
-  }
   // case DTYPE_F:
   // case DTYPE_FS:
   default:
-  { // 4 bytes
-    int32_t (*called_int)() = (int32_t(*)())LibCallg;
-    int32_t *result_int = (int32_t *)result;
+    // 4 bytes
     *max = sizeof(int32_t);
-    *result_int = called_int(newdsc, routine);
-  }
+    int32_t *result_int = (int32_t *)result;
+    int32_t (*called_int)() = (int32_t(*)())LibCallg; 
+    if (bypass_ffi) {
+      *result_int = called_int(newdsc, routine);
+    } else {
+#ifdef MDSPLUS_USE_FFI
+      *result_int =  (int32_t) LibCallgFfi(newdsc, routine, num_fixed_args, MDS_FFI_RTN_INT32);
+#endif
+    }
+    break;
   }
   return 1;
 }
@@ -115,13 +136,29 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
 {
   mdsdsc_xd_t image = EMPTY_XD, entry = EMPTY_XD;
+  mdsdsc_t new_entry = {0, DTYPE_T, CLASS_S, NULL };
+
   if (narg > 255 + 2)
     return TdiNDIM_OVER;
   int status = TdiData(list[0], &image MDS_END_ARG);
   if (STATUS_OK)
     status = TdiData(list[1], &entry MDS_END_ARG);
-  if (STATUS_OK)
-    status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
+ 
+  // Given "<function_name>#<num_fixed_args>" extract just the function name
+  if (STATUS_OK) {
+    char *c_entry = MdsDescrToCstring(entry.pointer);
+    char *hash_ptr = strrchr(c_entry, '#');
+    if (hash_ptr == NULL) {
+      status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
+    } else {
+      *hash_ptr = '\0';
+      new_entry.length = strlen(c_entry);
+      new_entry.pointer = c_entry;
+      status = TdiFindImageSymbol(image.pointer, &new_entry, proutine);
+    }
+    free(c_entry);
+  }
+
   if (STATUS_NOT_OK)
     printf("%s\n", LibFindImageSymbolErrString());
   MdsFree1Dx(&entry, NULL);
@@ -163,7 +200,27 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
   unsigned short code;
   mdsdsc_t dx = {0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result};
   unsigned char origin[255];
-  mdsdsc_t *newdsc[256] = {0};
+  mdsdsc_t *newdsc[256] = {0};  // one bigger than origin because also has descriptor for result
+
+  #ifdef MDSPLUS_USE_FFI
+  // Given "<function_name>#<num_fixed_args>" extract just the number of fixed args
+  char *c_entry = MdsDescrToCstring(list[1]);
+  char *hash_ptr = strrchr(c_entry, '#');
+  int bypass_ffi = TRUE;
+  int num_fixed_args = 0;
+  if (hash_ptr != NULL) {
+    hash_ptr++;
+    num_fixed_args = atoi(hash_ptr);
+  }
+  if (num_fixed_args != 0) {
+    bypass_ffi = FALSE;
+  }
+  free(c_entry);
+  #else
+  int bypass_ffi = TRUE;  // for Linux, Windows and MacOS(Intel)
+  int num_fixed_args = 0;
+  #endif
+  
   *(int *)&newdsc[0] = narg - 2;
   for (j = 2; j < narg && STATUS_OK; ++j)
   {
@@ -190,7 +247,7 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
           if (CUR_XD.pointer->dtype == DTYPE_T)
           {
             DESCRIPTOR(zero, "\0");
-            TdiConcat(&CUR_XD, &zero, &CUR_XD MDS_END_ARG);
+            TdiConcat((mdsdsc_t *)&CUR_XD, &zero, &CUR_XD MDS_END_ARG);
           }
           newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
@@ -238,14 +295,14 @@ int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cl
         else
         {
           DESCRIPTOR(zero_dsc, "\0");
-          TdiConcat(&CUR_XD, &zero_dsc, &CUR_XD MDS_END_ARG);
+          TdiConcat((mdsdsc_t *)&CUR_XD, &zero_dsc, &CUR_XD MDS_END_ARG);
           newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
       }
     }
   }
   if (STATUS_OK)
-    status = interlude(rtype, newdsc, routine, (void **)result, &max);
+    status = interlude(rtype, bypass_ffi, num_fixed_args, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if (STATUS_OK)

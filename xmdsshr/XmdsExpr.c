@@ -160,8 +160,8 @@ XmdsExprPut(Widget w); Boolean XmdsExprApply(Widget w); void XmdsExprRegister();
 
  External functions or symbols referenced:                                    */
 
-extern int TdiCompile();
-extern int TdiDecompile();
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
 extern char *DescToNull(struct descriptor_s *text);
 #include <mdsshr.h>
 extern int MdsCompareXd();
@@ -372,7 +372,7 @@ EXPORT struct descriptor *XmdsExprGetXd(Widget w)
       TreeGetDefaultNid(&old_def);
       TreeSetDefaultNid(def_nid);
     }
-    status = (*ew->expr.compile)(&text_dsc, ans MDS_END_ARG);
+    status = ((int (*)(mdsdsc_t *, ...))(*ew->expr.compile))((mdsdsc_t *)&text_dsc, ans MDS_END_ARG);
     if ((STATUS_OK) == 0)
     {
       TdiComplain(w);
@@ -514,8 +514,9 @@ EXPORT void XmdsExprSetXd(Widget w, struct descriptor *dsc)
   Resize((Widget)ew);
 }
 
-static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *desired,
-                                        XtWidgetGeometry *allowed)
+static XtGeometryResult GeometryManager(Widget w __attribute__((unused)),
+                                        XtWidgetGeometry *desired __attribute__((unused)),
+                                        XtWidgetGeometry *allowed __attribute__((unused)))
 {
   return XtGeometryYes;
 }
@@ -683,7 +684,8 @@ static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args,
   return 0;
 }
 
-static void ChangeQuotes(Widget q_w, XmdsExprWidget e_w)
+static void ChangeQuotes(Widget q_w __attribute__((unused)),
+                         XmdsExprWidget e_w)
 {
   char *text = GetString(e_w->expr.text_widget);
   int text_len = strlen(text);
@@ -753,7 +755,7 @@ static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc)
         TreeGetDefaultNid(&old_def);
         TreeSetDefaultNid(def_nid);
       }
-      status = (*w->expr.decompile)(xd, &text MDS_END_ARG);
+      status = ((int (*)(mdsdsc_t *, ...))(*w->expr.decompile))((mdsdsc_t *)xd, &text MDS_END_ARG);
       w->expr.is_text = 0;
       if (STATUS_OK)
       {

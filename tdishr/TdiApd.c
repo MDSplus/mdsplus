@@ -36,8 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <tdishr_messages.h>
 
-extern int TdiData();
-extern int TdiEvaluate();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 int unwrapCommaCount(int ndesc, struct descriptor *list[])
 {
   if (list[0] && list[0]->class == CLASS_R &&

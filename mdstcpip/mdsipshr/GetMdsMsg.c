@@ -121,13 +121,15 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
     {
       Message *m;
       memcpy(&msglen, msg->bytes, 4);
-      dlen = msglen - sizeof(MsgHdr);
       if (Endian(header.client_type) != Endian(ClientType()))
+      {
         FlipBytes(4, (char *)&msglen);
+      }
+      dlen = msglen - sizeof(MsgHdr);
       m = malloc(msglen);
       m->h = header;
       *status = uncompress((unsigned char *)m->bytes, &dlen,
-                           (unsigned char *)msg->bytes + 4, dlen - 4) == Z_OK;
+                           (unsigned char *)msg->bytes + 4, msg->h.msglen - 4 - sizeof(MsgHdr)) == Z_OK;
       if (IS_OK(*status))
       {
         m->h.msglen = msglen;
@@ -153,6 +155,10 @@ Message *GetMdsMsgTO(int id, int *status, int to_msec)
   {
     // not for ETIMEDOUT or EINTR like exceptions
     CloseConnection(id);
+    *status = MDSplusERROR;
+  }
+  // SsINTERNAL has low order bit set so is erroneously treated as OK.
+  if (*status == SsINTERNAL) {
     *status = MDSplusERROR;
   }
   return msg;

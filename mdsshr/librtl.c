@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
 #include <mdsshr.h>
 #include <_mdsshr.h>
 
@@ -62,7 +63,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include "mdsthreadstatic.h"
 
+#ifdef MDSPLUS_USE_FFI
+#include <ffi.h>
+#endif
+
 #define LIBRTL_SRC
+
+#define LIBCALLG_MAX_ARGS  32
 
 typedef struct
 {
@@ -161,9 +168,19 @@ EXPORT char *Now32(char *const buf)
 ///
 EXPORT void *LibCallg(void **const a, void *(*const routine)())
 {
-  if (!routine)
+  if (!routine) {
     abort(); // intercept definite stack corruption
-  switch (*(int *)a & 0xff)
+  }
+
+  // The "a" parameter is the arglist for the "routine" and contains the following:
+  // arglist[0]        = N (total number of args excluding first and last elements of vector)
+  // arglist[1]        = expression
+  // arglist[2 .. N-1] = variable args (pointer to descriptors)
+  // arglist[N]        = result xd1 descriptor
+  // arglist[N+1]      = NULL 
+  int num_args = *(int *)a & 0xff;
+
+  switch (num_args)
   {
   case 0:
     return routine();
@@ -274,11 +291,87 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
                    a[19], a[20], a[21], a[22], a[23], a[24], a[25], a[26],
                    a[27], a[28], a[29], a[30], a[31], a[32]);
   default:
-    printf("Error - currently no more than 32 arguments supported on external "
-           "calls\n");
+    printf("Error - currently no more than %d arguments supported on external calls\n", LIBCALLG_MAX_ARGS);
   }
   return 0;
 }
+
+
+#ifdef MDSPLUS_USE_FFI
+// This routine can call many external functions, but not all.
+// Each parameter can be passed by reference or by value.
+// However call-by-value must have a "size" that fits in a pointer.
+// If the external function does not fit that constraint, users will have to write a shim function.
+EXPORT void *LibCallgFfi(void **const a, void *(*const routine)(), int num_fixed_args, int rtype)
+{
+  if (!routine) {
+    abort(); // intercept definite stack corruption
+  }
+
+  // The "a" parameter is the arglist for the "routine" and contains the following:
+  // arglist[0]        = N (total number of args excluding first and last elements of vector)
+  // arglist[1]        = expression for TDI intrinsics, otherwise an ordinary arg
+  // arglist[2 .. N-1] = variable args (pointer to descriptors)
+  // arglist[N]        = result xd1 descriptor
+  // arglist[N+1]      = NULL 
+  int num_args = *(int *)a & 0xff;
+
+  // Usually the check for non-variadic routines,and the associated call of LibCallg(), is
+  // done prior to calling this function.
+  if (num_fixed_args == 0) {
+    return LibCallg(a, routine);
+
+  } else {
+    ffi_cif cif;
+    ffi_type *arg_types[LIBCALLG_MAX_ARGS];
+    void *values[LIBCALLG_MAX_ARGS];
+    void *result;
+
+    if (num_args > LIBCALLG_MAX_ARGS) {
+      printf("Error - currently no more than %d arguments supported on external calls\n", LIBCALLG_MAX_ARGS);
+      return 0;
+    }
+
+    if ((num_fixed_args < 1) || (num_fixed_args > num_args)) {
+      printf("Error - number of 'fixed' arguments must be in the range 1 through %d\n", num_args);
+      return 0;
+    }
+
+    // Skip over first element because it is number of args, not an actual argument
+    for (int i=0; i <num_args; i++) {
+      arg_types[i] = &ffi_type_pointer;
+      values[i] = &a[i+1];
+    }
+
+    ffi_status prep_stat;
+    switch(rtype) {
+    case MDS_FFI_RTN_VOID:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_void, arg_types);      
+      break;
+    case MDS_FFI_RTN_POINTER:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_pointer, arg_types); 
+      break;
+    case MDS_FFI_RTN_INT32:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint32, arg_types); 
+      break;
+    case MDS_FFI_RTN_INT64:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint64, arg_types); 
+      break;
+    default:
+      prep_stat = ffi_prep_cif_var(&cif, FFI_DEFAULT_ABI, num_fixed_args, num_args, &ffi_type_sint32, arg_types); 
+      break;
+    }
+    if (prep_stat == FFI_OK) {
+      ffi_call(&cif, (void (*)(void))routine, &result, values);
+      if (rtype != MDS_FFI_RTN_VOID) {
+        return result;
+      }
+    }
+  }
+  assert(FALSE); // should never reach this, triggers abort in DEBUG mode
+  return 0;
+}
+#endif
 
 DEFINE_INITIALIZESOCKETS;
 EXPORT int _LibGetHostAddr(const char *name, const char *portstr, struct sockaddr *sin)
@@ -2055,7 +2148,7 @@ static int find_file(const mdsdsc_t *const filespec, mdsdsc_t *const result,
     fspec[filespec->length] = '\0';
     *ctx = (void *)findfilestart(fspec, recursively, case_blind);
 #ifdef DEBUG
-    fprintf(stderr, "locking for %s: ", fspec);
+    fprintf(stderr, "looking for %s: ", fspec);
 #endif
     free(fspec);
     if (!*ctx)

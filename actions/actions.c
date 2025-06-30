@@ -62,10 +62,10 @@ MCR ACTIONS -TREE treename
 #include <usagedef.h>
 #include <xmdsshr.h>
 
-extern int TdiDispatchOf();
-extern int TdiExecute();
+extern int TdiDispatchOf(mdsdsc_t *, ...);
+extern int TdiExecute(mdsdsc_t *, ...);
 extern int TdiGetLong();
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 
 static void Modify();
 static void ToggleEssential();
@@ -336,7 +336,7 @@ static int Refresh()
           StrCopyDx(&error, (struct descriptor *)&not_an_action);
           break;
         default:
-          if (TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1)
+          if (TdiExecute((mdsdsc_t *)&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1)
             StrCopyDx(&prefix, (struct descriptor *)&phase_str);
           else
             StrCopyDx(&error, (struct descriptor *)&bad_phase);

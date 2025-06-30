@@ -258,12 +258,18 @@ static void print_help(int error)
   FILE *file = error ? stderr : stdout;
   fprintf(
       file,
-      "tditest help:\n"
-      "  -h, --help		: print this help and exit\n"
-      "  -q, --quiet		: suppress output of errors and results\n"
-      "  -s, --server <server>	: evaluate expression on server "
-      "(experimental)\n"
-      "  -v, --verbose		: print this help and exit\n");
+      "Usage:\n"
+      "  tditest [<options>] <script> [<arg1> ... <argN>]\n"
+      "where\n"
+      "  -h, --help             : print this help and exit\n"
+      "  -o, --output <file>    : records output to the file\n"
+      "  -q, --quiet            : suppress output of errors and results\n"
+      "  -s, --server <server>  : evaluate expression on server (experimental)\n"
+      "  -v, --verbose          : more detailed output\n"
+      "  <script>               : the TDI script to execute, name will be stored in the TDI _$0 variable\n"
+      "                         :    # are comment lines, @ for commands, 'exit' or 'quit' to end script\n"
+      "  <arg1>                 : used only if no server, arg1 will be stored in the TDI _$1 variable\n"
+      "  <argN>                 : used only if no server, argN will be stored in the TDI _$N variable\n");
   exit(error);
 }
 
@@ -277,6 +283,7 @@ static inline char *get_arg(const int argc, char **const args, const int inext,
   }
   return args[inext];
 }
+
 int main(int argc, char **argv)
 {
   FILE *f_in = NULL;

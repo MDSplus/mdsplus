@@ -51,7 +51,7 @@ const char *PubCmds[] = {
 const int PubNCmd = sizeof(PubCmds) / sizeof(*PubCmds);
 
 const char *TreeCmds[] = {
-    "_a=*;ext_function('TreeShr','TreeCtx')",
+    "_a=*;TreeShr->TreeCtx()",
 };
 const int TreeNCmd = sizeof(TreeCmds) / sizeof(*TreeCmds);
 

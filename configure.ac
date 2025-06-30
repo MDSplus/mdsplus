@@ -156,7 +156,7 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])]
 )
-AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+AM_CONDITIONAL([ENABLE_JAVA],[test x"$enable_java" = xyes])
 AC_MSG_RESULT([$enable_java])
 
 AS_CASE([$enable_java], [yes], [
@@ -1225,6 +1225,20 @@ AH_VERBATIM([_WIN32], [
 #endif
 ])
 
+AH_VERBATIM([MACOS_ARM64],[
+// This define is used to bracket Apple Silicon specific code.
+#if defined(__APPLE__) && defined(__aarch64__)
+#define MACOS_ARM64
+#endif
+])
+
+AH_VERBATIM([MDSPLUS_USE_FFI],[
+// List of platforms that need libffi for variadic functions.
+#if defined(MACOS_ARM64)
+#define MDSPLUS_USE_FFI
+#endif  
+])
+
 dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM(
 #endif // _MSC_VER else
@@ -1361,6 +1375,7 @@ AC_OUTPUT(
   Makefile.inc
   _include/_mdsversion.h
   actions/Makefile
+  actions/testing/Makefile
   camshr/Makefile
   ccl/Makefile
   d3dshr/Makefile
@@ -1440,6 +1455,7 @@ AC_OUTPUT(
   treeshr/Makefile
   treeshr/testing/Makefile
   wfevent/Makefile
+  wfevent/testing/Makefile
   xmdsshr/Makefile
   xtreeshr/Makefile
 )
@@ -1448,7 +1464,7 @@ AC_OUTPUT(
 
 
 AC_OUTPUT_COMMANDS(make depend)
-if test "$JAVA_APS" = ""
+if test "$JAVA_APS" = "" -a "$enable_java" = "yes"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()

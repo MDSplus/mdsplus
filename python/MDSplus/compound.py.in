@@ -28,9 +28,13 @@ import ctypes as _C
 import numpy as _N
 
 try:
-    import imp
-except:
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        import imp
+except ModuleNotFoundError:
     # imp was removed in 3.12
+    # https://docs.python.org/3.12/whatsnew/3.12.html#imp
     from types import ModuleType
 
     class imp:
@@ -282,7 +286,10 @@ class Conglom(_dat.TreeRefX, Compound):
                 module = imp.new_module(unique)
                 qualifiers = self.qualifiers.data()
                 if isinstance(qualifiers, _N.ndarray) and qualifiers.dtype == _N.uint8:
-                    qualifiers = qualifiers.tostring()
+                    if hasattr(qualifiers, 'tobytes'):
+                        qualifiers = qualifiers.tobytes()
+                    else:
+                        qualifiers = qualifiers.tostring()
                 elif isinstance(qualifiers, _N.generic):
                     qualifiers = qualifiers.tolist()
                     if isinstance(qualifiers, list):
@@ -591,8 +598,12 @@ class Opaque(_dat.TreeRefX, Compound):
             fn, typestring = os.path.splitext(filename)
         f = open(filename, 'rb')
         try:
-            opq = cls(_dat.Data(_N.fromstring(
-                f.read(), dtype="uint8")), typestring)
+            if hasattr(_N, 'frombuffer'):
+                f_bytes = _N.frombuffer(f.read(), dtype="uint8")
+            else:
+                f_bytes = _N.fromstring(f.read(), dtype="uint8")
+
+            opq = cls(_dat.Data(f_bytes), typestring)
         finally:
             f.close()
         return opq

@@ -13,6 +13,7 @@ public class Grid implements Serializable
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final int MAX_STEPS = 1000; //Maximum number of steps in the tick selection agorithm
 	static final long dayMilliSeconds = 86400000; // 24 * 60 * 60 * 1000;
 	final static int IS_X = 0, IS_Y = 1;
 	public final static int IS_DOTTED = 0;
@@ -64,8 +65,8 @@ public class Grid implements Serializable
 		y_values = new double[50];
 		this.xmax = xmax;
 		x_dim = BuildGrid(x_values, IS_X, xmax, ymax, xmin, ymin, xlog, ylog);
-		y_dim = BuildGrid(y_values, IS_Y, xmax, ymax, xmin, ymin, xlog, ylog);
-	}
+ 		y_dim = BuildGrid(y_values, IS_Y, xmax, ymax, xmin, ymin, xlog, ylog);
+ 	}
 
 	private int BuildGrid(double val[], int mode, double xmax, double ymax, double xmin, double ymin, boolean xlog,
 			boolean ylog)
@@ -125,8 +126,11 @@ public class Grid implements Serializable
 		curr = (long) (curr_min / step) * step;
 		if (curr > curr_min)
 			curr -= (long) ((curr - curr_min) / step) * step;
-		while (curr >= curr_min)
+                int maxSteps = MAX_STEPS;
+                for(int j = 0; j < maxSteps && (curr >= curr_min); j++)
+                {
 			curr -= step;
+                }
 		for (i = 0; i < 50 && curr < curr_max + step; i++)
 		{
 			val[i] = (long) (curr / step + 0.5) * step;

@@ -76,14 +76,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsmsg.h>
 
 extern int TdiFaultHandler();
-extern int TdiData();
-extern int TdiDeallocate();
-extern int TdiDecompile();
-extern int TdiEvaluate();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiDeallocate(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
 extern int TdiPutLong();
-extern int TdiEquals();
-extern int TdiSubtract();
-extern int TdiAdd();
+extern int TdiEquals(mdsdsc_t *, ...);
+extern int TdiSubtract(mdsdsc_t *, ...);
+extern int TdiAdd(mdsdsc_t *, ...);
 extern int TdiResetGetRecord();
 /*******************************************
 This uses the balanced binary tree routines.
@@ -326,7 +326,7 @@ static int find_ident(const int search, const mdsdsc_r_t *const ident_ptr,
                code == OPC_POST_INC || code == OPC_PRE_INC)
       {
         INIT_AND_FREEXD_ON_EXIT(tmp);
-        status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
+        status = TdiEvaluate((mdsdsc_t *)ident_ptr, &tmp MDS_END_ARG);
         if (STATUS_OK)
           status =
               find_ident(search, (mdsdsc_r_t *)ident_ptr->dscptrs[0], &key_dsc,
@@ -688,6 +688,9 @@ static inline ext_t matchext(const mdsdsc_d_t *const file)
     return EXT_PY;
   return EXT_NONE;
 }
+
+// For TDI function <name>, search for <name>.fun and <name>.py.
+// If a directory contains both files, both will be returned.
 static inline int findfile_fun(const mdsdsc_t *const entry,
                                char **const funfile, char **const pyfile)
 {
@@ -747,7 +750,7 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
   return status;
 }
 
-extern int TdiCompile();
+extern int TdiCompile(mdsdsc_t *, ...);
 static int compile_fun(const mdsdsc_t *const entry, const char *const file)
 {
   if (!file)
@@ -797,7 +800,7 @@ static int compile_fun(const mdsdsc_t *const entry, const char *const file)
         }
         StrUpcase((mdsdsc_t *)pfun2, (mdsdsc_t *)pfun2);
         if (StrCompare(entry, (mdsdsc_t *)pfun2) == 0)
-          status = TdiEvaluate(&tmp, &tmp MDS_END_ARG);
+          status = TdiEvaluate((mdsdsc_t *)&tmp, &tmp MDS_END_ARG);
       }
     }
   }
@@ -820,30 +823,34 @@ static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,
     INIT_AND_FREE_ON_EXIT(char *, pyfile);
     INIT_AND_FREE_ON_EXIT(char *, funfile);
     // check if we can find method as either .py or .fun
+    // An error status must be remapped so that _TreeAddConglom() works OK.
     status = findfile_fun(ident_ptr, &funfile, &pyfile);
-    if (pyfile)
-    {
-      char *funname;
-      status = tdi_load_python_fun(pyfile, &funname);
-      if (STATUS_OK)
+    if (STATUS_NOT_OK) status = TdiUNKNOWN_VAR;
+    if (STATUS_OK) {
+      if (pyfile)
       {
-        mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
-        mdsdsc_xd_t tmp = EMPTY_XD;
-        status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
-        free(funname);
+        char *funname;
+        status = tdi_load_python_fun(pyfile, &funname);
         if (STATUS_OK)
         {
-          status =
-              put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
-          MdsFree1Dx(&tmp, NULL);
+          mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
+          mdsdsc_xd_t tmp = EMPTY_XD;
+          status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
+          free(funname);
+          if (STATUS_OK)
+          {
+            status =
+                put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
+            MdsFree1Dx(&tmp, NULL);
+          }
         }
+        if (STATUS_NOT_OK)
+          // unable to load python method try tdi alternative
+          status = compile_fun(ident_ptr, funfile);
       }
-      if (STATUS_NOT_OK)
-        // unable to load python method try tdi alternative
+      else // not a python method, load tdi fun
         status = compile_fun(ident_ptr, funfile);
     }
-    else // not a python method, load tdi fun
-      status = compile_fun(ident_ptr, funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
     if (STATUS_OK)
@@ -991,7 +998,7 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
       }
       else
       {
-        status = TdiEvaluate(actual_ptr, &tmp MDS_END_ARG);
+        status = TdiEvaluate((mdsdsc_t *)actual_ptr, &tmp MDS_END_ARG);
         if (!opt && STATUS_OK && tmp.pointer == 0)
           status = TdiMISS_ARG;
       }
@@ -1053,7 +1060,7 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
       }
     }
   }
-  TdiDeallocate(&tmp MDS_END_ARG);
+  TdiDeallocate((mdsdsc_t *)&tmp MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
   _private.head = old_head;
   TDI_VAR_NEW_NARG = old_narg;
@@ -1293,7 +1300,7 @@ static int show_one(const node_type *const node_ptr,
   if (STATUS_OK)
   {
     if (rptr)
-      status = TdiDecompile(rptr, &tmp MDS_END_ARG);
+      status = TdiDecompile((mdsdsc_t *)rptr, &tmp MDS_END_ARG);
     if (STATUS_OK)
     {
       if (rptr && rptr->dtype == DTYPE_FUNCTION &&

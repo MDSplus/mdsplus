@@ -1116,8 +1116,9 @@ static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd)
   return retXd;
 }
 
-EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
-                                float *inXMax, int *reqNSamples)
+
+EXPORT mdsdsc_xd_t *GetXYSignalDoubleLimits(char *inY, char *inX, double *inXMin,
+                                double *inXMax, int *reqNSamples)
 {
   static EMPTYXD(retXd);
   const size_t len = strlen(inY);
@@ -1127,8 +1128,8 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     return (encodeError("Y data must not be NULL or empty.", __LINE__, &retXd));
   EMPTYXD(yXd);
   EMPTYXD(xXd);
-  mdsdsc_t xMinD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
-  mdsdsc_t xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
+  mdsdsc_t xMinD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMin};
+  mdsdsc_t xMaxD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)inXMax};
   int status;
   {
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
@@ -1149,6 +1150,7 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
   return getPackedDsc(&retXd);
 }
+
 
 EXPORT mdsdsc_xd_t *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin,
                                          int64_t *inXMax, int *reqNSamples)
@@ -1200,6 +1202,58 @@ EXPORT mdsdsc_xd_t *GetXYWave(char *inY, float *inXMin, float *inXMax,
                            inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
   if (STATUS_NOT_OK)
     return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  return &xd;
+}
+
+EXPORT mdsdsc_xd_t *GetLastTime(char *inY)
+{
+  static EMPTYXD(xd);
+  int nid, numSegments = 0, status;
+  EMPTYXD(segXd);
+  EMPTYXD(dimXd);
+  struct descriptor_a *arrD = NULL;
+  int64_t lastTime = 0;
+  mdsdsc_t lastTimeD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)&lastTime};
+
+  nid = IsSegmented(inY);
+  if(nid == 0)
+  {
+        return (encodeError("Not a segmented node", __LINE__, &xd));
+  }
+  status = TreeGetNumSegments(nid, &numSegments);
+  if(STATUS_NOT_OK)
+  {
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  }
+  if(numSegments == 0)
+  {
+    return (encodeError("Segments not found", __LINE__, &xd));
+  }
+  status = TreeGetSegment(nid, numSegments - 1, &segXd, &dimXd);
+  if(STATUS_NOT_OK)
+  {
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  }
+  status = TdiData(dimXd.pointer, &dimXd MDS_END_ARG);
+  if (STATUS_NOT_OK) 
+  {
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  }
+
+  if(dimXd.pointer && dimXd.pointer->class == CLASS_A && (dimXd.pointer->dtype == DTYPE_Q || dimXd.pointer->dtype == DTYPE_QU))
+  {
+    arrD = (struct  descriptor_a *)dimXd.pointer;
+    lastTime = ((int64_t *)arrD->pointer)[arrD->arsize/sizeof(int64_t) - 1];
+    MdsCopyDxXd((mdsdsc_t *)&lastTimeD, &xd);
+    MdsFree1Dx(&segXd, 0);    
+    MdsFree1Dx(&dimXd, 0);    
+  }
+  else
+  {
+    MdsFree1Dx(&segXd, 0);    
+    MdsFree1Dx(&dimXd, 0);    
+    return (encodeError("Dimension is not absolute times", __LINE__, &xd));
+  }
   return &xd;
 }
 

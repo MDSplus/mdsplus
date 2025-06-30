@@ -49,10 +49,10 @@ extern int TdiGetShape();
 extern int TdiGetLong();
 extern int Tdi3Conjg();
 extern int Tdi3Multiply();
-extern int TdiSum();
+extern int TdiSum(mdsdsc_t *, ...);
 extern int TdiMasterData();
-extern int TdiDigits();
-extern int TdiPower();
+extern int TdiDigits(mdsdsc_t *, ...);
+extern int TdiPower(mdsdsc_t *, ...);
 
 #define _factor ((float).30103)
 
@@ -228,7 +228,7 @@ int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
     static const struct descriptor two = {sizeof(two_d), DTYPE_NATIVE_DOUBLE,
                                           CLASS_S, (char *)&two_d};
     digits_d = 1. - digits_d;
-    status = TdiPower(&two, &digits, out_ptr MDS_END_ARG);
+    status = TdiPower((mdsdsc_t *)&two, &digits, out_ptr MDS_END_ARG);
   }
   return status;
 }
@@ -715,13 +715,13 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
     {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in1_ptr);
       if (STATUS_OK)
-        status = TdiSum(in1_ptr, &tmp MDS_END_ARG);
+        status = TdiSum((mdsdsc_t *)in1_ptr, &tmp MDS_END_ARG);
     }
     else
     {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in2_ptr);
       if (STATUS_OK)
-        status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
+        status = TdiSum((mdsdsc_t *)in2_ptr, &tmp MDS_END_ARG);
     }
     if (STATUS_OK)
       memcpy(out_ptr->pointer, tmp.pointer->pointer, out_ptr->length);

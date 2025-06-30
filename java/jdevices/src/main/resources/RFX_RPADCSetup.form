@@ -252,6 +252,36 @@
             </Component>
           </SubComponents>
         </Container>
+        <Container class="javax.swing.JPanel" name="jPanel9">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField12">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Dead Time(s):"/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="34"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField13">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Offset A (raw):"/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="21"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField14">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Offset B (raw): "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="22"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
         <Container class="javax.swing.JPanel" name="jPanel5">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>

@@ -51,12 +51,12 @@ static const DESCRIPTOR(dBAD, "/*bad*/");
 #define kprintf2(unit, ctrl, a1, a2) \
   (unit ? fprintf(unit, ctrl, a1, a2) : printf(ctrl, a1, a2));
 
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 extern int TdiGetLong();
 extern int TdiGetFloat();
-extern int TdiText();
-extern int TdiEvaluate();
-extern int TdiDecompile();
+extern int TdiText(mdsdsc_t *, ...);
+extern int TdiEvaluate(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...);
 
 /*----------------------------------------------
         Internal routine to output a long.
@@ -360,7 +360,7 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
         case DTYPE_FS:
         case DTYPE_FTC:
         case DTYPE_FT:
-          stat1 = TdiText(&tmp, &tmp MDS_END_ARG);
+          stat1 = TdiText((mdsdsc_t *)&tmp, &tmp MDS_END_ARG);
           if (!(stat1 & 1))
           {
             pd = (struct descriptor *)&dBAD;
@@ -399,7 +399,7 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
           }
         default:
         none:
-          stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
+          stat1 = TdiDecompile((mdsdsc_t *)&tmp, &tmp MDS_END_ARG);
           pd = (stat1 & 1) ? tmp.pointer : (struct descriptor *)&dBAD;
           if (col > 0)
             col = 0, bytes += kprintf(unit, "\n");

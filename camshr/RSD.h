@@ -1,7 +1,7 @@
 // RSD.h -- request sense data
 #ifndef __RSD_H
 #define __RSD_H
-#pragma pack(1)
+#pragma pack(push, 1)
 // for Linux on x86
 // NB! order of members is different from original
 //      to get data to pack into same size memory, ie
@@ -65,5 +65,5 @@ typedef struct
 
   __u32 stacnt;
 } RequestSenseData;
-#pragma pack(4)
+#pragma pack(pop)
 #endif

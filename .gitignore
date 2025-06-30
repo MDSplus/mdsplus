@@ -1,3 +1,15 @@
+# test outputs
+**/testing/*
+!**/testing/*.*
+**/testing/*.characteristics
+**/testing/*.datafile
+**/testing/*.tree
+**/testing/*.hosts
+**/testing/*.txt
+*.tap
+*.tmp
+*.trs
+
 Makefile
 .deps
 config.log
@@ -116,6 +128,7 @@ trigger.opts
 
 # bootstrap output files
 LabView/Makefile.in
+actions/testing/Makefile.in
 configure
 ChangeLog
 MANIFEST.MF
@@ -123,15 +136,17 @@ _include/_mdsversion.h
 docs/Makefile.in
 dwscope/Makefile.in
 include/camshr_messages.h
-include/mdsplus/mdsconfig.h
 include/mdsdcl_messages.h
+include/mdsplus/mdsconfig.h
 include/mdsplus/mdsconfig.h.in
 include/mdsshr_messages.h
 include/mitdevices_messages.h
 include/servershr_messages.h
 include/tcl_messages.h
 include/tdishr_messages.h
+include/tdishr.h
 include/treeshr_messages.h
+include/opcbuiltins.h
 java/Makefile.in
 java/devicebeans/Makefile.in
 java/jdevices/Makefile.in
@@ -190,6 +205,7 @@ testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
 treeshr/TreeFindNodeWild.c
 wfevent/Makefile.in
+wfevent/testing/Makefile.in
 m4/ax_git_revision.m4
 
 # Generated Java binaries

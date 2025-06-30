@@ -116,9 +116,7 @@ class Tests(_common.Tests):
         test('abs(-_a)', abs(-a), res.pop(), **kwargs)
         test('abs1(-_a)', m.ABS1(-a), res.pop(), **kwargs)
         test('abssq(-_a)', m.ABSSQ(-a), res.pop(), **kwargs)
-        rcount = 11
-        acount = 4+rcount
-        if almost:  # some operations only make sence on floating point
+        if almost:  # some operations only make sense on floating point
             test('exp(_a)',     m.EXP(a),    res.pop(), **kwargs)
             test('log(_a)',     m.LOG(a),    res.pop(), **kwargs)
             test('sin(_a)',     m.SIN(a),    res.pop(), **kwargs)
@@ -135,10 +133,6 @@ class Tests(_common.Tests):
                 test('cosd(_a)',    m.COSD(a),   res.pop(), **kwargs)
                 test('tand(_a)',    m.TAND(a),   res.pop(), **kwargs)
                 test('anint(_a/3)', m.ANINT(a/3), res.pop(), **kwargs)
-            else:  # strip results of real operations
-                res = res[:-rcount]
-        else:  # strip results of floating operations
-            res = res[:-acount]
         if real:  # some binary operations are only defined for real numbers
             test('_a mod _b',   a % b,   res.pop(), **kwargs)
             test('_a>_b',       a > b,   res.pop())
@@ -175,31 +169,71 @@ class Tests(_common.Tests):
             range(10)), 'Int32(range(10))')
 
     def scalars(self):
-        def doTest(suffix, cl, scl, ucl, **kw):
+        def doTest(suffix, cl, scl, ucl, **kwargs):
             """ test scalar """
             import warnings
+            almost = kwargs.get('almost', False)
+            real = kwargs.get('real', True)
+
             results = [
-                cl(13), cl(7), cl(30), cl(10./3), cl(1000),
-                ucl(11), ucl(2),
-                False, True,
-                cl(80), cl(1), scl(-10), scl(10), scl(10), scl(100),
-                cl(22026.4658), cl(2.30258509),
-                cl(-0.54402111), cl(-0.83907153), cl(0.64836083),
-                cl(1.57079633), cl(0.), cl(1.47112767), cl(1.47112767),
-                cl(3.32192809), cl(1.),
-                cl(0.17364818), cl(0.98480775), cl(0.17632698),
-                cl(3),
-                cl(1), True, True, False, False,
+                cl(7), # a + b
+                cl(3), # a - b
+                cl(10), # a * b
+                cl(5./2), # a / b
+                cl(25), # a ** b
+                ucl(7), # a | b
+                ucl(0), # a & b
+                False, # a == b
+                True, # a != b
+                cl(20), # a << b
+                cl(1), # a >> b
+                scl(-5), # -a
+                scl(5), # abs(-a)
+                scl(5), # abs1(-a)
+                scl(25), # abssq(-a)
             ]
-            m.Data.execute('_a=10%s,_b=3%s' % tuple([suffix]*2))
-            a, b = cl(10), cl(3)
+
+            if almost:
+                results.extend([
+                    cl(148.41315910), # exp(a)
+                    cl(1.60943791), # log(a)
+                    scl(-0.95892427), # sin(a)
+                    scl(0.28366218), # cos(a)
+                ])
+
+                if real:
+                    results.extend([
+                        scl(-3.38051500), # tan(a)
+                        cl(0.52359877), # asin(a/10)
+                        cl(1.04719755), # acos(a/10)
+                        cl(1.3734008), # atan(a)
+                        cl(1.3734008), # atan2(a, 1)
+                        cl(2.321928), # log2(a)
+                        cl(0.69897), # log10(a)
+                        cl(0.08715574), # sind(a) (degrees)
+                        cl(0.99619469), # cosd(a) (degrees)
+                        cl(0.08748866), # tand(a) (degrees)
+                        cl(2.0), # anint(a/3)
+                    ])
+            
+            if real:
+                results.extend([
+                    cl(1), # a mod b
+                    True, # a > b
+                    True, # a >= b
+                    False, # a < b
+                    False, # a <= b
+                ])
+            
+            m.Data.execute('_a=5%s,_b=2%s' % tuple([suffix]*2))
+            a, b = cl(5), cl(2)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 self.assertEqual(int(cl(10)), 10)
                 self.assertAlmostEqual(float(cl(10)), 10.)
             warnings.resetwarnings()
             self._doTdiTest('[_a]', m.makeArray(a))
-            self._executeTests(self._doThreeTest, a, b, results, **kw)
+            self._executeTests(self._doThreeTest, a, b, results, **kwargs)
 
         doTest('BU', m.Uint8,  m.Int8,   m.Uint8)
         doTest('WU', m.Uint16, m.Int16,  m.Uint16)
@@ -217,46 +251,71 @@ class Tests(_common.Tests):
                m.Complex128, m.Uint64, almost=7, real=False)
 
     def arrays(self):
-        def doTest(suffix, cl, scl, ucl, **kw):
+        def doTest(suffix, cl, scl, ucl, **kwargs):
             """ test array and signal """
             def results(cl, scl, ucl):
                 from numpy import array
-                return [
-                    cl([13, 8, 7]), cl([7, 0, -3]), cl([30, 16, 10]
-                                                       ), cl([10./3, 1, .4]), cl([1000, 256, 32]),  # +,-,*,/,**
-                    ucl([11, 4, 7]), ucl([2, 4, 0]),  # |,&
-                    array([False, True, False]),  # ==
-                    array([True, False, True]),   # !=
-                    cl([80, 64, 64]), cl([1, 0, 0]), scl([-10, -4, -2]), scl([10,
-                                                                              4, 2]), scl([10, 4, 2]), scl([100, 16, 4]),  # <<,>>,-,abs
-                    cl([22026.4658,  54.5981500,  7.38905610]),  # exp
-                    cl([2.30258509,  1.38629436,  0.69314718]),  # log
-                    cl([-0.54402111, -0.7568025,  0.90929743]),  # sin
-                    cl([-0.83907153, -0.65364362, -0.41614684]),  # cos
-                    cl([0.64836083,  1.15782128, -2.18503986]),  # tan
-                    cl([1.57079633,  0.41151685,  0.20135792]),  # asin
-                    cl([0.,  1.15927948,  1.36943841]),  # acos
-                    cl([1.47112767,  1.32581766,  1.10714872]),  # atan
-                    cl([1.47112767,  1.32581766,  1.10714872]),  # atan2
-                    cl([3.32192809,  2.,  1.]),  # log2
-                    cl([1.,  0.60205999,  0.30103]),  # log10
-                    cl([0.17364818,  0.06975647,  0.0348995]),  # sind
-                    cl([0.98480775,  0.99756405,  0.99939083]),  # cosd
-                    cl([0.17632698,  0.06992681,  0.03492077]),  # tand
-                    cl([3, 1, 1]),  # anint
-                    cl([1, 0, 2]),  # %
-                    array([True, False, False]),  # >
-                    array([True, True, False]),   # >=
-                    array([False, False, True]),  # <
-                    array([False, True, True]),   # <=
+                almost = kwargs.get('almost', False)
+                real = kwargs.get('real', True)
+
+                results = [
+                    cl([7, 7, 7]), # a + b
+                    cl([3, 1, -3]), # a - b
+                    cl([10, 12, 10]), # a * b
+                    cl([5./2, 4./3, .4]), # a / b
+                    cl([25, 64, 32]), # a ** b
+                    ucl([7, 7, 7]), # a | b
+                    ucl([0, 0, 0]),  # a & b
+                    array([False, False, False]), # a == b
+                    array([True, True, True]), # a != b
+                    cl([20, 32, 64]), # a << b
+                    cl([1, 0, 0]), # a >> b
+                    scl([-5, -4, -2]), # -a
+                    scl([5, 4, 2]), # abs(-a)
+                    scl([5, 4, 2]), # abs1(-a)
+                    scl([25, 16, 4]), # abssq(-a)
                 ]
+            
+                if almost:
+                    results.extend([    
+                        cl([148.413159,  54.5981500,  7.38905610]),  # exp(a)
+                        cl([1.60943791,  1.38629436,  0.69314718]),  # log(a)
+                        cl([-0.95892427, -0.7568025,  0.90929743]),  # sin(a)
+                        cl([0.28366218,  -0.65364362, -0.41614684]),  # cos(a)
+                    ])
+
+                    if real:
+                        results.extend([
+                            cl([-3.38051500, 1.15782128, -2.18503986]),  # tan(a)
+                            cl([0.52359877,  0.41151685,  0.20135792]),  # asin(a/10)
+                            cl([1.04719755,  1.15927948,  1.36943841]),  # acos(a/10)
+                            cl([1.3734008,   1.32581766,  1.10714872]),  # atan(a)
+                            cl([1.3734008,   1.32581766,  1.10714872]),  # atan2(a, 1)
+                            cl([2.321928,  2.,  1.]),  # log2(a)
+                            cl([0.69897,  0.60205999,  0.30103]),  # log10(a)
+                            cl([0.08715574,  0.06975647,  0.0348995]),  # sind(a) (degrees)
+                            cl([0.99619469,  0.99756405,  0.99939083]),  # cosd(a) (degrees)
+                            cl([0.08748866,  0.06992681,  0.03492077]),  # tand(a) (degrees)
+                            cl([2, 1, 1]),  # anint(a/3)
+                        ])
+                
+                if real:
+                    results.extend([
+                        cl([1, 1, 2]), # a mod b
+                        array([True, True, False]), # a > b
+                        array([True, True, False]), # a >= b
+                        array([False, False, True]), # a < b
+                        array([False, False, True]), # a <= b
+                    ])
+                
+                return results
             """ test array """
-            m.Data.execute('_a=[10%s,4%s,2%s],_b=[3%s,4%s,5%s]' %
+            m.Data.execute('_a=[5%s,4%s,2%s],_b=[2%s,3%s,5%s]' %
                            tuple([suffix]*6))
-            a, b = cl([10, 4, 2]), cl([3, 4, 5])
+            a, b = cl([5, 4, 2]), cl([2, 3, 5])
             self._doThreeTestArray('_a', m.Array(a), m.Data(a))
             self._executeTests(self._doThreeTestArray, a, b,
-                               results(cl, scl, ucl), **kw)
+                               results(cl, scl, ucl), **kwargs)
             """ test signal """
             def Scl(v): return m.Signal(cl(v))
 
@@ -266,7 +325,7 @@ class Tests(_common.Tests):
             m.Data.execute('_a=Make_Signal(_a,*)')
             a = m.Signal(a)
             self._executeTests(self._doThreeTestArray, a, b,
-                               results(Scl, Sscl, Sucl), **kw)
+                               results(Scl, Sscl, Sucl), **kwargs)
 
         doTest('BU', m.Uint8Array,  m.Int8Array,   m.Uint8Array)
         doTest('WU', m.Uint16Array, m.Int16Array,  m.Uint16Array)
@@ -457,10 +516,8 @@ class Tests(_common.Tests):
         self._doTdiTest("Py('a=None')", 1)
         self._doTdiTest("Py('a=None','a')", None)
         self._doTdiTest("Py('a=123','a')", 123)
-        self._doTdiTest(
-            "Py('import MDSplus;a=MDSplus.Uint8(-1)','a')", m.Uint8(255))
-        self._doTdiTest(
-            'addfun("test","import __main__\n_file_=__main__.__file__\nstatic=[0]\ndef test():\n static[0]+=1\n return [1 if __main__.__file__==_file_ else 0]+static")', "TEST")
+        self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')", m.Uint8(255))
+        self._doTdiTest('addfun("test","import __main__\n_file_=__main__.__file__\nstatic=[0]\ndef test():\n static[0]+=1\n return [1 if __main__.__file__==_file_ else 0]+static")', "TEST")
         if not self.inThread:
             self._doTdiTest("TEST()", m.Array([1, 1]))
         self._doTdiTest("pyfun('Uint8','MDSplus',-1)", m.Uint8(255))

@@ -101,11 +101,23 @@ void XmdsManageWindow(Widget w)
     XmdsRaiseWindow(w);
 }
 
-void XmdsManageChildCallback(Widget w1, Widget *w2) { XmdsManageWindow(*w2); }
+void XmdsManageChildCallback(Widget w1 __attribute__((unused)),
+                             Widget *w2)
+{
+  XmdsManageWindow(*w2);
+}
 
-void XmdsUnmanageChildCallback(Widget w1, Widget *w2) { XtUnmanageChild(*w2); }
+void XmdsUnmanageChildCallback(Widget w1 __attribute__((unused)),
+                               Widget *w2)
+{
+  XtUnmanageChild(*w2);
+}
 
-void XmdsDestroyWidgetCallback(Widget w1, Widget *w2) { XtDestroyWidget(*w2); }
+void XmdsDestroyWidgetCallback(Widget w1 __attribute__((unused)),
+                               Widget *w2)
+{
+  XtDestroyWidget(*w2);
+}
 
 void XmdsRegisterWidgetCallback(Widget w1, Widget *w2) { *w2 = w1; }
 

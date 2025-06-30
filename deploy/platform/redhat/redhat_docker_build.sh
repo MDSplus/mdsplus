@@ -23,6 +23,10 @@ do_createrepo() {
   fi
   : && createrepo -q $update_args -o ${tmpdir} ${repodir}/${FLAVOR}/RPMS
   checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
+  rm -f ${tmpdir}/repodata/repomd.xml.asc
+  if [ -d /sign_keys/.gnupg ]; then
+    GNUPGHOME=/sign_keys/.gnupg gpg --local-user MDSplus --detach-sign --armor ${tmpdir}/repodata/repomd.xml
+  fi  
   : && rsync -a ${tmpdir}/repodata ${repodir}/${FLAVOR}/RPMS/
 }
 
@@ -85,7 +89,6 @@ buildrelease() {
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/
-    cp ${srcdir}/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/
     if [ -d /sign_keys/.gnupg ]; then
       GPGCHECK="1"
     else
@@ -101,6 +104,7 @@ name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${OS}/${FLAVOR}/RPMS
 enabled=1
 gpgcheck=${GPGCHECK}
+repo_gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF

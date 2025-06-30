@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <tcn.h>
 
+#include <tcn.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 //#include <mdsobjects.h>

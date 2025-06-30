@@ -91,7 +91,7 @@ public abstract class COMPLEXArray<T extends Number> extends NUMBERArray<Complex
 	@Override
 	protected final StringBuilder decompile(final StringBuilder pout, final Complex<T> t)
 	{
-		return COMPLEX.decompile(pout, t, this.dtype(), Descriptor.DECO_NRM);
+		return COMPLEX.decompile(mds, pout, t, this.dtype(), Descriptor.DECO_NRM);
 	}
 
 	public final T getImag(final int idx)

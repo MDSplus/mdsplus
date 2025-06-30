@@ -38,7 +38,7 @@ fi
 mkdir -p $2
 if (test "$4" = "")
 then
-  exec $MDSPLUS_DIR/bin/mdsip -s -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
+  exec $MDSPLUS_DIR/bin/mdsip -s -p $1 -h ${3:-/etc/mdsip.hosts} -c 0 >> $2/access 2>> $2/errors
 else
-  /usr/sbin/chroot $4 $MDSPLUS_DIR/bin/mdsip -s -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
+  /usr/sbin/chroot $4 $MDSPLUS_DIR/bin/mdsip -s -p $1 -h ${3:-/etc/mdsip.hosts} -c 0 >> $2/access 2>> $2/errors
 fi

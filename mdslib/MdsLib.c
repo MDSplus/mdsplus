@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <stdint.h>
 #include <strroutines.h>
+#include <libroutines.h>
 static int MdsCONNECTION = -1;
 #define NDESCRIP_CACHE 1024
 #ifndef _CLIENT_ONLY
@@ -38,15 +39,14 @@ extern int TreeClose();
 extern int TreeSetDefault();
 #endif
 extern int MdsFree1Dx();
-extern int TdiExecute();
-extern int TdiCompile();
-extern int TdiData();
-extern int TdiCvt();
-extern void *LibCallg();
+extern int TdiExecute(mdsdsc_t *, ...);
+extern int TdiCompile(mdsdsc_t *, ...);
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiCvt(mdsdsc_t *, ...);
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
-extern int TdiDebug();
+extern int TdiDebug(mdsdsc_t *, ...);
 
 short ArgLen(struct descrip *d);
 
@@ -135,6 +135,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
 
     va_start(incrmtr, dim1);
     dim = va_arg(incrmtr, int *);
+    va_end(incrmtr);
     if (*dim == 0)
     {
       GetDescriptorCache()[next] = malloc(sizeof(struct descriptor_a));
@@ -165,6 +166,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
+      va_end(incrmtr);
     }
     else
       dsc->length = dtype_length(
@@ -197,6 +199,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
     else
       dsc->length = dtype_length(
           dsc); /* must set length after dtype and data pointers are set */
+    va_end(incrmtr);
 
     if (ndim > 1)
     {
@@ -229,6 +232,7 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
         adsc->m[i] = *(va_arg(incrmtr, int *));
         totsize = totsize * adsc->m[i];
       }
+      va_end(incrmtr);
       for (i = ndim; i < MAX_DIMS; i++)
       {
         adsc->m[i] = 0;
@@ -288,6 +292,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 
     va_start(incrmtr, dim1);
     dim = va_arg(incrmtr, int *);
+    va_end(incrmtr);
     if (*dim == 0)
     {
       GetDescriptorCache()[next] = malloc(sizeof(struct descriptor_a));
@@ -319,6 +324,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
+      va_end(incrmtr);
     }
     else
       dsc->length = dtype_length(
@@ -351,6 +357,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
     else
       dsc->length = dtype_length(
           dsc); /* must set length after dtype and data pointers are set */
+    va_end(incrmtr);
 
     if (ndim > 1)
     {
@@ -382,6 +389,7 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
         adsc->m[i] = *(va_arg(incrmtr, int *));
         totsize = totsize * adsc->m[i];
       }
+      va_end(incrmtr);
       for (i = ndim; i < MAX_DIMS; i++)
       {
         adsc->m[i] = 0;
@@ -450,8 +458,10 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   static int clear = 0;
   static DESCRIPTOR_LONG(clear_d, &clear);
 #endif
+  // On entry, incrmtr points to the expression.  Save it so can scan the list of arguments later.
   va_copy(initial_incrmtr, incrmtr);
 
+  //loops: #0 = &status var above (ignored), #1 = &dsc arg, #2 = &dsc, etc, #<last> = null terminator.
   for (a_count = 0; *descnum != 0; a_count++)
   {
     descnum = va_arg(incrmtr, int *);
@@ -611,6 +621,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   }
 #else
   {
+    // Also includes overhead arguments, thus function called receives MAXARGS - 4 actual args
     void *arglist[MAXARGS];
     struct descriptor *dsc;
     struct descriptor dexpression = {0, DTYPE_T, CLASS_S, 0};
@@ -621,6 +632,12 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     int i;
     dexpression.length = strlen((char *)expression);
     dexpression.pointer = (char *)expression;
+    // Creates arglist vector as follows: 
+    // arglist[0]        = N (total number of args excluding first and last elements of vector)
+    // arglist[1]        = expression
+    // arglist[2 .. N-1] = variable args (pointer to descriptors)
+    // arglist[N]        = result xd1 descriptor
+    // arglist[N+1]      = NULL 
     arglist[argidx++] = (void *)&dexpression;
     va_copy(incrmtr, initial_incrmtr);
     for (i = 1; i < a_count; i++)
@@ -632,7 +649,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -645,7 +662,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
       if (STATUS_OK && xd2.pointer != 0 && xd2.pointer->pointer != 0)
       {
         int templen = (xd2.pointer)->length;
-        status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
+        status = TdiCvt((mdsdsc_t *)&xd2, dsc, &xd3 MDS_END_ARG);
         /**  get string length right if scalar string (if answer descriptor has
          *longer
          **  length than returned value, then make sure the length is the length
@@ -678,14 +695,18 @@ EXPORT int MdsValueR(int *connection, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value_vargs(incrmtr, *connection, expression);
+  int status = mds_value_vargs(incrmtr, *connection, expression); 
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsValue(char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value_vargs(incrmtr, MdsCONNECTION, expression);
+  int status = mds_value_vargs(incrmtr, MdsCONNECTION, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static inline int mds_value2_vargs(va_list incrmtr, int connection,
@@ -886,7 +907,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     arglist[argidx++] = (void *)&xd1;
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx - 1;
-    status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
+    status = LIB_CALL_G(arglist, TdiExecute, 1, MDS_FFI_RTN_INT32);
 
     if (STATUS_OK)
     {
@@ -900,7 +921,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
       if (STATUS_OK && xd2.pointer)
       {
         int templen = (xd2.pointer)->length;
-        status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
+        status = TdiCvt((mdsdsc_t *)&xd2, dsc, &xd3 MDS_END_ARG);
         /**  get string length right if scalar string (if answer descriptor has
          *longer
          **  length than returned value, then make sure the length is the length
@@ -931,14 +952,18 @@ EXPORT int MdsValue2R(int *connection, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value2_vargs(incrmtr, *connection, expression);
+  int status = mds_value2_vargs(incrmtr, *connection, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsValue2(char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_value2_vargs(incrmtr, MdsCONNECTION, expression);
+  int status = mds_value2_vargs(incrmtr, MdsCONNECTION, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
@@ -1046,7 +1071,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1066,14 +1091,18 @@ EXPORT int MdsPutR(int *connection, char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put_vargs(incrmtr, *connection, node, expression);
+  int status = mds_put_vargs(incrmtr, *connection, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsPut(char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
+  int status = mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
@@ -1185,7 +1214,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx - 1;
 
-      status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+      status = LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
 
       if (STATUS_OK)
       {
@@ -1205,14 +1234,18 @@ EXPORT int MdsPut2R(int *connection, char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put2_vargs(incrmtr, *connection, node, expression);
+  int status = mds_put2_vargs(incrmtr, *connection, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 EXPORT int MdsPut2(char *node, char *expression, ...)
 {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return mds_put2_vargs(incrmtr, MdsCONNECTION, node, expression);
+  int status = mds_put2_vargs(incrmtr, MdsCONNECTION, node, expression);
+  va_end(incrmtr);
+  return status;
 }
 
 static int dtype_length(struct descriptor *d)
@@ -1307,9 +1340,10 @@ extern EXPORT int *cdescr(int dtype, void *data, ...)
     dsc = va_arg(incrmtr, int);
     arglist[argidx++] = (void *)&dsc;
   }
+  va_end(incrmtr);
   arglist[argidx++] = MdsEND_ARG;
   *(int *)&arglist[0] = argidx - 1;
-  status = (int)(intptr_t)LibCallg(arglist, descr);
+  status = LIB_CALL_G(arglist, descr, 3, MDS_FFI_RTN_INT32);
   return (&status);
 }
 #endif

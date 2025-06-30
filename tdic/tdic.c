@@ -22,13 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef _WIN32
-#define DYNreadline "libreadline.so"
-#define DYNcurses "libcurses.so"
-#define DYNTdiShr "libTdiShr.so"
-#endif
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <tdishr.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -37,42 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#ifdef HAVE_READLINE_READLINE_H
 #include <readline/history.h>
 #include <readline/readline.h>
-#endif
-
-#include <dlfcn.h>
-#ifdef DYNTdiShr
-static void *TDIhandle = NULL;
-int (*BTdiExecute)() = NULL;
-#else
-extern int TdiExecute();
-#define BTdiExecute TdiExecute
-#endif
-
-#ifdef DYNreadline
-static void *READhandle = NULL;
-static void *CURSEShandle = NULL;
-#include <dlfcn.h>
-#ifndef PARAMS
-#define PARAMS(gub) gub
-#endif
-void(*Busing_history) PARAMS((void)) = NULL;
-int(*Bread_history) PARAMS((const char *)) = NULL;
-int(*Bwrite_history) PARAMS((const char *)) = NULL;
-void(*Badd_history) PARAMS((const char *)) = NULL;
-int(*Bhistory_truncate_file) PARAMS((const char *, int)) = NULL;
-char *(*Breadline)PARAMS((const char *)) = NULL;
-;
-#else
-#define Busing_history using_history
-#define Bread_history read_history
-#define Bwrite_history write_history
-#define Badd_history add_history
-#define Bhistory_truncate_file history_truncate_file
-#define Breadline readline
-#endif
 
 #define HFILE "/.tdic"
 
@@ -80,23 +42,6 @@ char *bfgets(char *s, int size, FILE *stream,
              char *prompt); /* fgets replacement */
 #define PROMPT "TDI> "
 #define MDSPATH "MDS_PATH"
-/*
-static void tdiputs(char *line);
-*/
-/* Lookup up entry point in shareable */
-void *dlsymget(void *handle, char *sym)
-{
-  char *error;
-  void *ret = NULL;
-  ret = dlsym(handle, sym);
-  dlerror(); /* Clear any existing error */
-  if ((error = dlerror()) != NULL)
-  {
-    fprintf(stderr, "%s\n", error);
-    exit(1);
-  }
-  return (ret);
-}
 
 #pragma GCC diagnostic ignored "-Wunused-result"
 
@@ -126,41 +71,7 @@ int main(int argc, char **argv)
   strcpy(hfile, getenv("HOME"));
   strcat(hfile, HFILE);
 #endif
-#ifdef DYNTdiShr
-  if (TDIhandle == NULL)
-  {
-    TDIhandle = dlopen(DYNTdiShr, RTLD_LAZY);
-    if (!TDIhandle)
-    {
-      fprintf(stderr, "%s\n", dlerror());
-      exit(1);
-    }
-    *(void **)(&BTdiExecute) = dlsymget(TDIhandle, "TdiExecute");
-  }
-#endif
-
-#ifdef DYNreadline
-  if (READhandle == NULL)
-  {
-    CURSEShandle = dlopen(DYNcurses, RTLD_NOW | RTLD_GLOBAL);
-    READhandle = dlopen(DYNreadline, RTLD_LAZY);
-    //      READhandle = dlopen(DYNreadline, RTLD_NOW);
-    //      READhandle = dlopen(DYNreadline, RTLD_NOW | RTLD_GLOBAL);
-    if (!READhandle)
-    {
-      fprintf(stderr, "%s\n", dlerror());
-      exit(1);
-    }
-    *(void **)(&Busing_history) = dlsymget(READhandle, "using_history");
-    *(void **)(&Bread_history) = dlsymget(READhandle, "read_history");
-    *(void **)(&Bwrite_history) = dlsymget(READhandle, "write_history");
-    *(void **)(&Badd_history) = dlsymget(READhandle, "add_history");
-    *(void **)(&Bhistory_truncate_file) =
-        dlsymget(READhandle, "history_truncate_file");
-    *(void **)(&Breadline) = dlsymget(READhandle, "readline");
-  }
-#endif
-  Busing_history();
+  using_history();
   *last_line = 0;
   /* get input from file */
   if (argc > 1)
@@ -178,14 +89,14 @@ int main(int argc, char **argv)
     struct descriptor out_d = {0, DTYPE_T, CLASS_S, 0};
     out_d.length = (unsigned short)strlen(argv[2]);
     out_d.pointer = argv[2];
-    BTdiExecute(&out_unit_other, &out_d, &output_unit MDS_END_ARG);
+    TdiExecute(&out_unit_other, &out_d, &output_unit MDS_END_ARG);
   }
   else
   {
-    BTdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
+    TdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
   }
   /* get history loaded */
-  Bread_history(hfile);
+  read_history(hfile);
   /* main loop to get characters */
   while (bfgets(line_in, MAXEXPR, in, PROMPT) != NULL)
   {
@@ -193,7 +104,7 @@ int main(int argc, char **argv)
     int len = strlen(line_in);       /* get first line of command */
     if (!comment)
     {
-      BTdiExecute(&reset_output_unit, &output_unit, &ans MDS_END_ARG);
+      TdiExecute(&reset_output_unit, &output_unit, &ans MDS_END_ARG);
       /*	 tdiputs(line_in);*/
     }
     /* if a continuation, keep getting the rest of the command */
@@ -223,19 +134,19 @@ int main(int argc, char **argv)
 #else
       if (*line_in && (*line_in != ' ') && strcmp(line_in, last_line))
       {
-        Badd_history(line_in);
+        add_history(line_in);
         strcpy(last_line, line_in);
       }
 #endif
       /* Check the special TDIC options */
       if (!strcmp(line_in, "exit") || !strcmp(line_in, "quit"))
       {
-        Bwrite_history(hfile);
+        write_history(hfile);
         if (getenv("HISTFILESIZE"))
         {
           int i;
           sscanf(getenv("HISTFILESIZE"), "%d", &i);
-          Bhistory_truncate_file(hfile, i);
+          history_truncate_file(hfile, i);
         }
         exit(1);
       }
@@ -378,54 +289,31 @@ int main(int argc, char **argv)
               expr[expr_dsc.length++] = ')';
               expr[expr_dsc.length++] = ')';
         */
-        status = BTdiExecute(&expr_dsc, &ans MDS_END_ARG);
+        status = TdiExecute(&expr_dsc, &ans MDS_END_ARG);
         if (STATUS_OK)
         {
           if (!comment)
-            BTdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+            TdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
         }
         else
-          BTdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
+          TdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
       }
     }
   }
   return (1);
 }
-/*
-static void tdiputs(char *line)
-{
-  static EMPTYXD(ans);
-  static DESCRIPTOR(write_it, "WRITE(_OUTPUT_UNIT,$)");
-  struct descriptor line_d = { 0, DTYPE_T, CLASS_S, 0 };
-  line_d.length = (unsigned short)strlen(line);
-  line_d.pointer = line;
-  if (line[line_d.length - 1] == '\n')
-    line_d.length--;
-  BTdiExecute(&write_it, &line_d, &ans MDS_END_ARG);
-}
-*/
-#ifndef HAVE_READLINE_READLINE_H
-/* Routine to replace fgets using readline on stdin */
-static char *Breadline(char *prompt)
-{
-  if (prompt)
-    printf("%s ", prompt);
-  return fgets(malloc(1024), 1023, stdin);
-}
 
-static void Badd_history(char *string) { return; }
-#endif
 char *bfgets(char *s, int size, FILE *stream, char *prompt)
 {
   char *rep;
   /* if not stdin, read from file */
   if (stream == stdin)
   {
-    rep = Breadline(prompt);
+    rep = readline(prompt);
     strncpy(s, rep ? rep : "", size - 1); /* Copy respecting the size limit */
 #ifdef OLDHIST
     if (rep && *rep) /* Add to history if interesting */
-      Badd_history(rep);
+      add_history(rep);
 #endif
     free(rep);
     s[size - 1] = '\0'; /* null terminate if necessary */

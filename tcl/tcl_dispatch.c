@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-extern int TdiData();
+extern int TdiData(mdsdsc_t *, ...);
 
 /**********************************************************************
  * TCL_DISPATCH.C --
@@ -64,7 +64,7 @@ extern int TdiData();
 
 extern int ServerFailedEssential();
 
-extern int TdiIdentOf();
+extern int TdiIdentOf(mdsdsc_t *, ...);
 #include "../treeshr/treeshrp.h"
 #define DBID_TABLE (((PINO_DATABASE *)TreeDbid())->dispatch_table)
 /****************************************************************
@@ -166,7 +166,7 @@ EXPORT int TclDispatch(void *ctx, char **error,
     struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, (char *)&nid};
     status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if (STATUS_OK)
-      status = TdiData(&xd, &svr MDS_END_ARG);
+      status = TdiData((mdsdsc_t *)&xd, &svr MDS_END_ARG);
     if (STATUS_OK)
     {
       static char treename[13];
@@ -436,8 +436,9 @@ typedef struct
   char *command;
 } DispatchedCommand;
 
-static void CommandDone(DispatchedCommand *command)
+static void CommandDone(void *arg, char *dummy __attribute__((unused)))
 {
+  DispatchedCommand *command = (DispatchedCommand *) arg;
   if (IS_NOT_OK(command->status))
   {
     char *msg = MdsGetMsg(command->status);
@@ -507,7 +508,7 @@ EXPORT int TclDispatch_command(void *ctx, char **error,
       iostatusp = &c.cmd->status;
     }
     status = ServerDispatchCommand(c.sid, c.svr, c.tab, c.cmd->command,
-                                   CommandDone, c.cmd, iostatusp, NULL, 0);
+                                   CommandDone, (void *)c.cmd, iostatusp, NULL, 0);
     if (STATUS_NOT_OK)
     {
       MDSMSG("ServerDispatchCommand failed.");

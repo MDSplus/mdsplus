@@ -38,7 +38,7 @@ int GetSupportedDevices(char ***devnames, int *number)
   int status;
   *number = 0;
   *devnames = 0;
-  status = TdiExecute((struct descriptor *)&expr, &dev_list MDS_END_ARG);
+  status = TdiExecute((mdsdsc_t *)&expr, &dev_list MDS_END_ARG);
   if (STATUS_OK)
   {
     int i;

@@ -47,10 +47,10 @@ newline \n
 %option prefix="yytreepath"
 %option extra-type="SEARCH_CTX *"
 %%
-^\\{alphaplus}{1,12}:{2}{alphaplus}{1,23}	{
+^\\{alphaplus}{1,12}:{2}{alphaplus}{1,24}	{
   addSearchTerm(yyscanner, TAG_TREE, yyget_text( yyscanner ));
 }
-^\\{alphaplus}{1,23} {
+^\\{alphaplus}{1,24} {
   addSearchTerm(yyscanner, TAG, yyget_text( yyscanner ));
 }
 {child_search} {

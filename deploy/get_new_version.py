@@ -67,8 +67,11 @@ else:
 
 if version_bump == 'MAJOR':
     major += 1
+    minor = 0
+    patch = 0
 elif version_bump == 'MINOR':
     minor += 1
+    patch = 0
 elif version_bump == 'PATCH':
     patch += 1
 

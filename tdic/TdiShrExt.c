@@ -62,7 +62,7 @@ ldconfig COMPILE*/
 #include <string.h>
 extern int MdsOpen(int conid, char *tree, int shot);
 extern int MdsClose(int conid);
-extern int TdiCvt();
+extern int TdiCvt(mdsdsc_t *, ...);
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
 extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
@@ -356,6 +356,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
     printf("Vararg [%d] for [0x%" PRIxPTR "]\n", nargs, (uintptr_t)tdiarg);
 #endif
   }
+  va_end(incrmtr);
   /* note minimum 1 arg I/P and 1 arg O/P */
   if (expression == NULL || nargs < 1)
   {
@@ -802,32 +803,6 @@ static void bTest(struct descriptor *desc)
     case DTYPE_GC: /*      29              G_floating complex */
       break;
     case DTYPE_HC: /*      30              H_floating complex */
-      break;
-    case DTYPE_CIT: /*      31              COBOL Intermediate Temporary */
-      break;
-    case DTYPE_VT: /*      37              varying character string;  16-bit
-                      count, followed by a string */
-      break;
-    case DTYPE_NU: /*      15              numeric string, unsigned */
-      break;
-    case DTYPE_NL: /*      16              numeric string, left separate sign */
-      break;
-    case DTYPE_NLO: /*      17              numeric string, left overpunched
-                       sign */
-      break;
-    case DTYPE_NR: /*      18              numeric string, right separate sign
-                    */
-      break;
-    case DTYPE_NRO: /*      19              numeric string, right overpunched
-                       sign */
-      break;
-    case DTYPE_NZ: /*      20              numeric string, zoned sign */
-      break;
-    case DTYPE_P: /*      21              packed decimal string */
-      break;
-    case DTYPE_V: /*      1               aligned bit string */
-      break;
-    case DTYPE_VU: /*      34              unaligned bit string */
       break;
     case DTYPE_FS: /*      52              IEEE float basic single S */
       pntF = (float *)desc->pointer;

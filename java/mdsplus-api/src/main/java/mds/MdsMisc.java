@@ -10,6 +10,7 @@ import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Uint8Array;
 import mds.data.descriptor_s.Float32;
+import mds.data.descriptor_s.Float64;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Int64;
 
@@ -227,6 +228,15 @@ public class MdsMisc extends Mdsdcl
 		final Request<Uint8Array> request = new MiscCall<>(Uint8Array.class, "GetXYSignal:DSC")//
 				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Float32(xmin))
 				.ref(new Float32(xmax)).ref(new Int32(num_samples)).fin();
+		return this.mds.getByteArray(ctx, request);
+	}
+
+	private final byte[] _miscGetXYSignalDoubleLimits(final CTX ctx, final String ydata, final String xdata, final double xmin,
+			final double xmax, final int num_samples) throws MdsException
+	{
+		final Request<Uint8Array> request = new MiscCall<>(Uint8Array.class, "GetXYSignalDoubleLimits:DSC")//
+				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Float64(xmin))
+				.ref(new Float64(xmax)).ref(new Int32(num_samples)).fin();
 		return this.mds.getByteArray(ctx, request);
 	}
 

@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ************************************************************************/
 
-extern int TdiDoTask();
+extern int TdiDoTask(mdsdsc_t *, ...);
 
 /***************************************************************
  * TclDoNode:

@@ -116,6 +116,13 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   const mdsdsc_t *pmask = &one;
   mds_signal_t *psig;
   signal_maxdim tmpsig;
+  aflags_t aflags_default = {
+    .binscale = 0,
+    .redim = 1,
+    .column = 1,
+    .coeff = 0,
+    .bounds = 0,
+  };
   array_bounds arr, *pa, *pd;
   mdsdsc_xd_t sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
@@ -293,13 +300,16 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     /** scalar to simple vector **/
     if (rank == 0) {
       memcpy((char *)&arr, (char *)pa, sizeof(struct descriptor));
+      arr.scale = 0;
+      arr.digits = 0;
+      arr.aflags = aflags_default;
       arr.dimct = 1;
-      arr.aflags.coeff = 0;
-      arr.a0 = arr.pointer;
       arr.arsize = arr.length;
-      arr.m[0] = 1;
-      arr.m[1] = 1;
-      arr.m[dim] = ncopies;
+      /* unused fields */
+      arr.a0 = arr.pointer;
+      arr.m[0] = ncopies; /* coeff */
+      arr.m[0 + 1] = 0; /* lower bound */
+      arr.m[0 + 2] = ncopies-1; /* upper bound */
     }
     /** simple and coefficient vector **/
     else
@@ -337,13 +347,16 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     /** scalar to simple vector **/
     if (rank == 0) {
       memcpy((char *)&arr, (char *)pa, sizeof(struct descriptor));
+      arr.scale = 0;
+      arr.digits = 0;
+      arr.aflags = aflags_default;
       arr.dimct = 1;
-      arr.aflags.coeff = 0;
-      arr.a0 = arr.pointer;
       arr.arsize = arr.length;
-      arr.m[0] = 1;
-      arr.m[1] = 1;
-      arr.m[dim] = ncopies;
+      /* unused fields */
+      arr.a0 = arr.pointer;
+      arr.m[0] = ncopies; /* coeff */
+      arr.m[0 + 1] = 0; /* lower bound */
+      arr.m[0 + 2] = ncopies-1; /* upper bound */
     }
     else if (rank >= MAX_DIMS)
       status = TdiNDIM_OVER;

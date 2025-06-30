@@ -7,7 +7,7 @@ get_mod_dir() {
   if ( ${python} -s -c 'import site' >/dev/null 2>&1 ); then
     opt='-s'
   fi
-  mdir=$(realpath $(${python} -E $opt -c 'import pkgutil;print(pkgutil.get_loader("'${module}'").filename)')) 2>/dev/null
+  mdir=$(realpath $(${python} -E $opt -c 'import pkgutil;print(pkgutil.get_loader("'${module}'").filename)' 2>/dev/null) 2>/dev/null) 2>/dev/null
   if (echo $mdir | grep "${mdsplus_dir}" >/dev/null); then
     echo $mdir >&2
     return  # imported form MDSPLUS_DIR

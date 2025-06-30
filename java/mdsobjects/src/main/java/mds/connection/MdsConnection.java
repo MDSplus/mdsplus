@@ -3,7 +3,6 @@ package mds.connection;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
 public class MdsConnection
 {
 	public static final int DEFAULT_PORT = 8000;
@@ -81,9 +80,15 @@ public class MdsConnection
 			if (MdsConnection.this.busy)
 				return;
 			if (eventName != null)
+			{
+				// TODO: Update this to work async
 				dispatchUpdateEvent(eventName);
+			}
 			else if (eventId != -1)
+			{
+				// TODO: Update this to work async
 				dispatchUpdateEvent(eventId);
+			}
 		}
 
 		public void SetEventid(int id)
@@ -236,7 +241,7 @@ public class MdsConnection
 	public String getProviderUser()
 	{ return (user != null ? user : DEFAULT_USER); }
 
-	public synchronized String getProviderHost()
+	public String getProviderHost()
 	{
 		if (provider == null)
 			return null;
@@ -252,7 +257,7 @@ public class MdsConnection
 		return address.trim();
 	}
 
-	public synchronized int getProviderPort() throws NumberFormatException
+	public int getProviderPort() throws NumberFormatException
 	{
 		if (provider == null)
 			return DEFAULT_PORT;
@@ -263,7 +268,7 @@ public class MdsConnection
 		return port;
 	}
 
-	public synchronized Descriptor getAnswer() throws IOException
+	public Descriptor getAnswer() throws IOException
 	{
 		final Descriptor out = new Descriptor();
 		final MdsMessage message = receiveThread.GetMessage();
@@ -506,7 +511,7 @@ public class MdsConnection
 		return eventid;
 	}
 
-	public synchronized void dispatchUpdateEvent(int eventid)
+	public void dispatchUpdateEvent(int eventid)
 	{
 		if (hashEventId.containsKey(eventid))
 		{
@@ -514,7 +519,7 @@ public class MdsConnection
 		}
 	}
 
-	public synchronized void dispatchUpdateEvent(String eventName)
+	public void dispatchUpdateEvent(String eventName)
 	{
 		if (hashEventName.containsKey(eventName))
 		{

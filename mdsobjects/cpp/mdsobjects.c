@@ -38,7 +38,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <usagedef.h>
 
-extern int TdiData(), TdiDecompile(), TdiCompile();
+extern int TdiData(mdsdsc_t *, ...);
+extern int TdiDecompile(mdsdsc_t *, ...); 
+extern int TdiCompile(mdsdsc_t *, ...);
 extern int CvtConvertFloat();
 extern int TreeBeginSegment(int nid, struct descriptor *start,
                             struct descriptor *end, struct descriptor *dim,
@@ -985,7 +987,7 @@ JNIEXPORT jobject JNICALL Java_mdsdata_Data_compileWithArgs(
   arglist[varIdx++] = (struct descriptor *)&outXd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-  LibCallg(arglist, TdiCompile);
+  LIB_CALL_G(arglist, TdiCompile, 1, MDS_FFI_RTN_INT32);
   for (i = 0; i < argLen; i++)
     freeDescrip(arglist[2 + i]);
   (*env)->ReleaseStringUTFChars(env, jexpr, expr);
