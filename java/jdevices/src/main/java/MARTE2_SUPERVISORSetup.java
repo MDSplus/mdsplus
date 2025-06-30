@@ -415,7 +415,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("GAMs:");
-        deviceField8.setNumCols(50);
+        deviceField8.setNumCols(100);
         deviceField8.setOffsetNid(13);
         jPanel9.add(deviceField8);
 
@@ -480,7 +480,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField184.setIdentifier("");
         deviceField184.setLabelString("GAMs:");
-        deviceField184.setNumCols(50);
+        deviceField184.setNumCols(100);
         deviceField184.setOffsetNid(21);
         jPanel114.add(deviceField184);
 
@@ -545,7 +545,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField192.setIdentifier("");
         deviceField192.setLabelString("GAMs:");
-        deviceField192.setNumCols(50);
+        deviceField192.setNumCols(100);
         deviceField192.setOffsetNid(29);
         jPanel118.add(deviceField192);
 
@@ -610,7 +610,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField200.setIdentifier("");
         deviceField200.setLabelString("GAMs:");
-        deviceField200.setNumCols(50);
+        deviceField200.setNumCols(100);
         deviceField200.setOffsetNid(37);
         jPanel122.add(deviceField200);
 
@@ -675,7 +675,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField208.setIdentifier("");
         deviceField208.setLabelString("GAMs:");
-        deviceField208.setNumCols(50);
+        deviceField208.setNumCols(100);
         deviceField208.setOffsetNid(45);
         jPanel126.add(deviceField208);
 
@@ -740,7 +740,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField216.setIdentifier("");
         deviceField216.setLabelString("GAMs:");
-        deviceField216.setNumCols(50);
+        deviceField216.setNumCols(100);
         deviceField216.setOffsetNid(53);
         jPanel130.add(deviceField216);
 
@@ -805,7 +805,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField224.setIdentifier("");
         deviceField224.setLabelString("GAMs:");
-        deviceField224.setNumCols(50);
+        deviceField224.setNumCols(100);
         deviceField224.setOffsetNid(61);
         jPanel134.add(deviceField224);
 
@@ -870,7 +870,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField232.setIdentifier("");
         deviceField232.setLabelString("GAMs:");
-        deviceField232.setNumCols(50);
+        deviceField232.setNumCols(100);
         deviceField232.setOffsetNid(69);
         jPanel138.add(deviceField232);
 

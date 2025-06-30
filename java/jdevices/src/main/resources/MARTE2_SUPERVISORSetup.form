@@ -313,7 +313,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="13"/>
                               </Properties>
                             </Component>
@@ -427,7 +427,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="21"/>
                               </Properties>
                             </Component>
@@ -541,7 +541,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="29"/>
                               </Properties>
                             </Component>
@@ -655,7 +655,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="37"/>
                               </Properties>
                             </Component>
@@ -769,7 +769,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="45"/>
                               </Properties>
                             </Component>
@@ -883,7 +883,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="53"/>
                               </Properties>
                             </Component>
@@ -997,7 +997,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="61"/>
                               </Properties>
                             </Component>
@@ -1111,7 +1111,7 @@
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="GAMs:"/>
-                                <Property name="numCols" type="int" value="50"/>
+                                <Property name="numCols" type="int" value="100"/>
                                 <Property name="offsetNid" type="int" value="69"/>
                               </Properties>
                             </Component>
