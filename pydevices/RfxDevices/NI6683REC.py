@@ -496,8 +496,6 @@ class NI6683REC(Device):
                 if status < 0 :  
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot enable pulse time timestamp for trigger %d'%(tr+1))
                     continue
-        """ 
-        return 1
 
 #Module in acquisition check
         try:
