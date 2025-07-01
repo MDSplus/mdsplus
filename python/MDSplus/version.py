@@ -187,7 +187,7 @@ def _encode(string):
 def hash64(bytes):
     import hashlib
     import numpy
-    return numpy.frombuffer(hashlib.md5(bytes.tostring()).digest(), numpy.uint64).sum()
+    return numpy.frombuffer(hashlib.md5(bytes).digest(), numpy.uint64).sum()
 
 
 def _tostring(string, targ, nptarg, conv, lstres):
