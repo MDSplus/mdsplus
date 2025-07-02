@@ -115,9 +115,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   on_error,2
   mds$disconnect,/quiet
   if n_elements(port) ne 0 then begin
-    setenv_,'mdsip='+strtrim(port,2)
-  endif else if getenv('mdsip') eq '' then begin
-    setenv_,'mdsip=8000'
+    host = host+':'+strtrim(port,2)
   endif
   if (!version.release ne '5.0.3') then !ERROR_STATE.MSG="About to connect"
   sock = call_external(MdsIPImage(),'IdlConnectToMds',host,value=[byte(!version.os ne 'windows')])
@@ -158,9 +156,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   if (not mds_keyword_set(socket=socket)) then $
     mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
-    setenv_,'mdsip='+strtrim(port,2)
-  endif else if getenv('mdsip') eq '' then begin
-    setenv_,'mdsip=8000'
+    host = host+':'+strtrim(port,2)
   endif
 
   sock = call_external(MdsIPImage(),'IdlConnectToMds',host,value=[byte(!version.os ne 'windows')])
