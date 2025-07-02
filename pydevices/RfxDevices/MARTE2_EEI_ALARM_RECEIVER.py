@@ -31,7 +31,6 @@ MC = __import__('MARTE2_COMPONENT', globals())
             '')
 class MARTE2_EEI_ALARM_RECEIVER(MC.MARTE2_COMPONENT):
     outputs = [
-        {'name': 'Time', 'type': 'int32', 'dimensions': 0, 'parameters': []},
         {'name': 'Data', 'type': 'float32', 'dimensions': 0, 'parameters': []},
 ]
     
