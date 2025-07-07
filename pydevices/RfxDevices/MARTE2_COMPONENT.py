@@ -883,8 +883,66 @@ class MARTE2_COMPONENT(MDSplus.Device):
         return outGam
  
 #****************OUTPUTS
+    # Build referenceInfo: check input/output references and stores in a dictionary: outputNid: [list of referring input nids]
+    def checkReferencesRec(self, inputNode):
+        try:
+            refOutput = inputNode.getNode('VALUE').getData()
+            if isinstance(refOutput, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refOutput):
+                refOutputNid = refOutput.getNid()
+                if refOutputNid in self.referenceInfo.keys():
+                    MARTE2_COMPONENT.referenceInfo[refOutputNid].append(inputNode.getNid())
+                else:
+                    MARTE2_COMPONENT.referenceInfo[refOutputNid] = [inputNode.getNid()]
+        except:
+            pass
+        fieldsNode = inputNode.getNode('FIELDS')
+        if fieldsNode.getNumChildren() > 0:
+            self.checkReferencesRec(fieldsNode)
+
+
+    def checkReferences(self, threadMap):
+        if hasattr(MARTE2_COMPONENT, 'referenceInfo'):
+            return
+        MARTE2_COMPONENT.referenceInfo = {}
+        for deviceNid in threadMap['DeviceInfo'].keys():
+            try:
+                inputsNode = MDSplus.TreeNode(deviceNid).getNode('INPUTS').getChildren()
+                for inputNode in inputsNode:
+                    self.checkReferencesRec(inputNode)
+            except:
+                pass #Input or Synchronized input device
+
+            try:
+                triggerNode = MDSplus.TreeNode(deviceNid).getNode('OUTPUTS').getNode('TRIGGER')
+                try:
+                    refTrigger = triggerNode.getData()
+                    if isinstance(refTrigger, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refTrigger):
+                        if refTrigger in self.referenceInfo.keys():
+                            MARTE2_COMPONENT.referenceInfo[refTrigger].append(inputNode.getNid())
+                        else:
+                            MARTE2_COMPONENT.referenceInfo[refTrigger] = [inputNode.getNid()]
+                except:
+                    pass  #Trigger not connected
+            except:
+                pass  #It is an Output device
+
+
+
+
     # Check if the passed output value node is referenced by any of the inputs passed in inputs
     def isReferenced(self, outValNode, inputNodes):
+        outValNid = outValNode.getNid()
+        if not outValNid in self.referenceInfo.keys():
+            return False
+        for inputNode in inputNodes:
+            inputNid = inputNode.getNid()
+            if inputNid in self.referenceInfo[outValNid]:
+                return True
+
+ 
+ 
+ 
+    def isReferencedOLD(self, outValNode, inputNodes):
         outValNid = outValNode.getNid()
         for currInputNode in inputNodes:
             if currInputNode.getName() == 'TRIGGER': 
@@ -1652,7 +1710,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         self.timerType = timerType
         self.timerPeriod = timerPeriod
         alias = self.getAlias()
-
+ 
         retGams = []
         retDataSources = []
 
@@ -1885,6 +1943,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             mode = self.getNode('MODE').data()
         except:
             raise Exception('No mode field defined for '+self.getPath())
+        self.checkReferences(threadMap)
         if mode == MARTE2_COMPONENT.MODE_GAM:
             return self.generateMarteGamConfiguration(threadMap, timerDDB, timerType, timerPeriod, typesDict)
         elif mode == MARTE2_COMPONENT.MODE_INPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
