@@ -212,7 +212,6 @@ public class DeviceFieldArea extends DeviceComponent
 			else
                         {
                                 java.lang.String outDataString = dataString.replace("\"", "\\\"");
-                                System.out.println( "\"" + dataString + "\"");
 				return "\"" + outDataString + "\"";
                         }
 		}
