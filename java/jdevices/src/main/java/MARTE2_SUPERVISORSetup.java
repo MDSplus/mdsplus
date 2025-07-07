@@ -268,12 +268,14 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceField353 = new DeviceField();
         jPanel200 = new javax.swing.JPanel();
         deviceField354 = new DeviceField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        deviceFieldArea1 = new DeviceFieldArea();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Supervisor");
         setDeviceType("MARTE2_SUPERVISOR");
         setHeight(400);
-        setWidth(1200);
+        setWidth(1300);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -415,7 +417,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("GAMs:");
-        deviceField8.setNumCols(100);
+        deviceField8.setNumCols(110);
         deviceField8.setOffsetNid(13);
         jPanel9.add(deviceField8);
 
@@ -1422,6 +1424,12 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jTabbedPane1.addTab("State2", jPanel139);
 
+        deviceFieldArea1.setOffsetNid(2050);
+        deviceFieldArea1.setTextOnly(true);
+        jScrollPane2.setViewportView(deviceFieldArea1);
+
+        jTabbedPane1.addTab("Description", jScrollPane2);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -1604,6 +1612,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
+    private DeviceFieldArea deviceFieldArea1;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel109;
@@ -1678,6 +1687,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane6;

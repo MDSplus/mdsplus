@@ -85,6 +85,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
     parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
+    parts.append({'path': ':DESCRIPTION', 'type': 'text'})
 
 
     parts.append({'path': ':INIT', 'type': 'action',
