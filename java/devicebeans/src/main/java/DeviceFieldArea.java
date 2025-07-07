@@ -17,7 +17,9 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import javax.swing.TransferHandler;
 import java.awt.datatransfer.DataFlavor;
+import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
+
 import java.util.*;
 
 public class DeviceFieldArea extends DeviceComponent
@@ -101,7 +103,7 @@ public class DeviceFieldArea extends DeviceComponent
 	{
 		initializing = true;
                 setLayout(new BorderLayout());
-		add(textF = new JTextArea(), "Center");
+		add(new JScrollPane(textF = new JTextArea()), "Center");
 		textF.setEnabled(editable);
 		textF.setEditable(editable);
 		origTH = textF.getTransferHandler();
@@ -184,7 +186,8 @@ public class DeviceFieldArea extends DeviceComponent
 			if (textString != null)
 			{
                                 textString = textString.replace("\\n", "\n");
-				if (textOnly && textString.charAt(0) == '"')
+                                textString = textString.replace("\\t", "\t");
+				if (textOnly && (textString.charAt(0) == '"' || textString.charAt(0) == '\''))
 					textF.setText(textString.substring(1, textString.length() - 1));
 				else
 					textF.setText(textString);
@@ -207,7 +210,11 @@ public class DeviceFieldArea extends DeviceComponent
 			if (dataString.trim().startsWith("[")) // If it begins with a [ it is assumed to be an array of strings
 				return dataString;
 			else
-				return "\"" + dataString + "\"";
+                        {
+                                java.lang.String outDataString = dataString.replace("\"", "\\\"");
+                                System.out.println( "\"" + dataString + "\"");
+				return "\"" + outDataString + "\"";
+                        }
 		}
 		else
 			return dataString;

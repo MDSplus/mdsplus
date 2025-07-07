@@ -268,7 +268,6 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceField353 = new DeviceField();
         jPanel200 = new javax.swing.JPanel();
         deviceField354 = new DeviceField();
-        jScrollPane2 = new javax.swing.JScrollPane();
         deviceFieldArea1 = new DeviceFieldArea();
 
         setDeviceProvider("localhost:8100");
@@ -1426,9 +1425,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceFieldArea1.setOffsetNid(2050);
         deviceFieldArea1.setTextOnly(true);
-        jScrollPane2.setViewportView(deviceFieldArea1);
-
-        jTabbedPane1.addTab("Description", jScrollPane2);
+        jTabbedPane1.addTab("Description", deviceFieldArea1);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -1687,7 +1684,6 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane6;
