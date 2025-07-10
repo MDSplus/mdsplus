@@ -15,41 +15,25 @@
 #
 # The following variables can be set as arguments
 #
-#   Sybase_ROOT_DIR
+#   Sybase_ROOT
 #
 
-find_package(PkgConfig QUIET)
+set(Sybase_COMPILE_DEFINITIONS SYBASE)
 
-if(WIN32)
+find_path(
+    Sybase_INCLUDE_DIRS
+    NAMES sybdb.h
+    PATH_SUFFIXES 
+        include
+        include/freetds
+)
 
-    # SET(Sybase_CFLAGS -DSYBASE)
-    # SET(Sybase_INCLUDE_DIRS "")
-    # SET(Sybase_LIBRARIES ntwdblib${arch})
-
-else()
-
-    set(Sybase_COMPILE_DEFINITIONS SYBASE)
-
-    find_path(
-        Sybase_INCLUDE_DIRS
-        NAMES sybdb.h
-        PATHS 
-            ${Sybase_ROOT_DIR}
-        PATH_SUFFIXES 
-            include
-            include/freetds
-    )
-
-    find_library(
-        Sybase_LIBRARIES
-        NAMES sybdb
-        PATHS 
-            ${Sybase_ROOT_DIR}
-        PATH_SUFFIXES 
-            lib
-    )
-
-endif()
+find_library(
+    Sybase_LIBRARIES
+    NAMES sybdb
+    PATH_SUFFIXES 
+        lib
+)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
@@ -57,12 +41,6 @@ find_package_handle_standard_args(
     REQUIRED_VARS 
         Sybase_LIBRARIES
         Sybase_INCLUDE_DIRS
-)
-
-mark_as_advanced(
-    Sybase_CFLAGS
-    Sybase_INCLUDE_DIRS
-    Sybase_LIBRARIES
 )
 
 if(Sybase_FOUND)
@@ -82,3 +60,10 @@ if(Sybase_FOUND)
     endif()
 
 endif()
+
+mark_as_advanced(
+    Sybase_ROOT
+    Sybase_COMPILE_DEFINITIONS
+    Sybase_INCLUDE_DIRS
+    Sybase_LIBRARIES
+)

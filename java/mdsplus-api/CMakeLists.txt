@@ -11,6 +11,7 @@ file(WRITE ${_manifest}
     "Specification-Version: ${RELEASE_VERSION}\n"
     "Implementation-Version: ${RELEASE_VERSION}\n"
     "Implementation-Vendor-Id: org.mdsplus\n"
+    "Class-Path: jsch-${JSCH_VERSION}.jar\n"
 )
 
 file(GLOB_RECURSE
@@ -21,7 +22,7 @@ file(GLOB_RECURSE
 add_jar(
     mdsplus-api
     SOURCES ${_source_list} # ${_jsch_source_list}
-    INCLUDE_JARS ${JSCH}
+    INCLUDE_JARS ${JSCH_JAR}
     MANIFEST ${_manifest}
 )
 

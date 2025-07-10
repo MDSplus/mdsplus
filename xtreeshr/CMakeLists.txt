@@ -21,7 +21,7 @@ target_link_libraries(
 target_compile_definitions(
     XTreeShr
     PRIVATE
-        -DLIBPREFIX=XTree
+        LIBPREFIX=XTree
 )
 
 mdsplus_add_static_copy(XTreeShr _static_target)

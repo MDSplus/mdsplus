@@ -91,14 +91,12 @@ target_include_directories(
     TdiShr
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-        TreeShr
 )
 
 target_compile_definitions(
     TdiShr
     PRIVATE
-        -DLIBPREFIX=Tdi
+        LIBPREFIX=Tdi
 )
 
 target_link_libraries(

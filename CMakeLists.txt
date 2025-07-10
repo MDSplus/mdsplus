@@ -4,7 +4,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "In-Source builds are no longer supported. Make a build directory, and run cmake from there instead.")
 endif()
 
-# Allow for custom CMake modules
+# Allow for custom CMake modules with include() and find_package()
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Disable "Built target" messages for Makefiles
@@ -13,6 +13,8 @@ mark_as_advanced(CMAKE_TARGET_MESSAGES)
 
 project(MDSplus)
 
+enable_language(C)
+enable_language(CXX)
 enable_language(Fortran)
 
 set(CMAKE_C_STANDARD 99)
@@ -21,6 +23,7 @@ set(CMAKE_CXX_STANDARD 98)
 # Query version and release information from git
 include(MDSplusGitRevision)
 
+# Custom wrapper for option() allowing defaults, types other than BOOL, and lists of values
 include(MDSplusOption)
 
 ###
@@ -37,7 +40,10 @@ if(DOWNLOAD_3RD_PARTY_APIS)
 
     set(_3rd_party_apis ${CMAKE_BINARY_DIR}/3rd-party-apis-master)
 
-    if(NOT EXISTS ${_3rd_party_apis})
+    # To protect in the case of a failed download/extraction, we check if there are any
+    # files/directories in the folder before trying to populate it
+    file(GLOB _3rd_party_file_list LIST_DIRECTORIES TRUE "${_3rd_party_apis}/*")
+    if(NOT _3rd_party_file_list)
 
         set(_3rd_party_apis_url "https://github.com/MDSplus/3rd-party-apis/archive/refs/heads/master.zip")
         set(_3rd_party_apis_zip ${CMAKE_BINARY_DIR}/3rd-party-apis-master.zip)
@@ -61,19 +67,40 @@ endif()
 ### Options
 ###
 
-# --x-includes=
-# --x-libraries=
-# --build=
-# --host= CMAKE_SYSTEM_NAME?
-# --target= CMAKE_SYSTEM_PROCESSOR?
-
-# TODO: Provide options
 mdsplus_option(
     PLATFORM STRING
     "Intended platform for building and packaging."
-    # TODO: Detect platform..?
-    # DEFAULT "${_platform_default}"
+    OPTIONS
+        auto
+        debian
+        redhat
+        windows
+        macosx
+    DEFAULT "auto"
 )
+
+if(PLATFORM STREQUAL "auto")
+    message(CHECK_START "Detecting packaging PLATFORM")
+
+    if(WIN32)
+        set(PLATFORM "windows")
+    elseif(APPLE)
+        set(PLATFORM "macosx")
+    elseif(EXISTS /etc/os-release)
+        file(READ /etc/os-release _os_release)
+        if(_os_release MATCHES "debian")
+            set(PLATFORM "debian")
+        elseif(_os_release MATCHES "redhat")
+            set(PLATFORM "redhat")
+        endif()
+    endif()
+
+    if(PLATFORM)
+        message(CHECK_PASS "${PLATFORM}")
+    else()
+        message(CHECK_FAIL "Failed")
+    endif()
+endif()
 
 # replaces --disable-shared
 mdsplus_option(
@@ -125,8 +152,7 @@ mdsplus_option(
     ${_override_install_dir}
 )
 
-# TODO: Remove?
-# Defines option(BUILD_TESTING)
+# Defines option(BUILD_TESTING) so can't be included in if(BUILD_TESTING)
 include(CTest)
 
 if(BUILD_TESTING)
@@ -163,21 +189,27 @@ if(BUILD_TESTING)
         "Location of the valgrind library"
     )
 
-    set(_sanitize_flavor_list
-        memory      # (msan)  https://clang.llvm.org/docs/MemorySanitizer.html
-        address     # (asan)  https://clang.llvm.org/docs/AddressSanitizer.html
-        thread      # (tsan)  https://clang.llvm.org/docs/ThreadSanitizer.html
-        undefined   # (ubsan) https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
-    )
+    # The sanitizer is only avaialable for GCC and Clang
+    if(NOT MSVC)
 
-    mdsplus_option(
-        ENABLE_SANITIZE STRING
-        "Enable compile sanitizer with flavor."
-        OPTIONS 
-            OFF
-            ${_sanitize_flavor_list}
-        DEFAULT OFF
-    )
+        set(_sanitize_flavor_list
+            memory      # (msan)  https://clang.llvm.org/docs/MemorySanitizer.html
+            address     # (asan)  https://clang.llvm.org/docs/AddressSanitizer.html
+            thread      # (tsan)  https://clang.llvm.org/docs/ThreadSanitizer.html
+            undefined   # (ubsan) https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+        )
+
+        # replaces --enable-sanitize=[FLAVOR]
+        mdsplus_option(
+            ENABLE_SANITIZE STRING
+            "Enable compile sanitizer with flavor."
+            OPTIONS 
+                OFF
+                ${_sanitize_flavor_list}
+            DEFAULT OFF
+        )
+
+    endif()
     
     mdsplus_option(
         GENERATE_VSCODE_LAUNCH_JSON BOOL
@@ -215,14 +247,19 @@ endif()
 
 mdsplus_option(
     ENABLE_SYBASE BOOL
-    "Build mdssql library, and Sybase support in TDI."
+    "Build mdssql library, and Sybase (FreeTDS) support in TDI."
     DEFAULT ${_enable_sybase_default}
 )
 
+set(_enable_hdf5_default OFF)
+if(DEFINED ENV{HDF5_DIR})
+    set(_enable_hdf5_default ON)
+endif()
+
 mdsplus_option(
     ENABLE_HDF5 BOOL
-    "Build HDF5 libraries and applications."
-    DEFAULT OFF
+    "Build HDF5 libraries and applications, this will default to ON if $HDF5_DIR is defined."
+    DEFAULT ${_enable_hdf5_default}
 )
 
 # replaces --enable-d3d
@@ -238,16 +275,6 @@ mdsplus_option(
     "Build java libraries and applications."
     DEFAULT ON
 )
-
-# (SLW) TODO
-# replaces --with-java_only
-#option(JAVA_ONLY "")
-
-# replaces --with-jars
-# set(JARS ""
-#     CACHE STRING
-#     "???"
-# )
 
 # replaces --with-jdk
 mdsplus_option(
@@ -315,14 +342,7 @@ mdsplus_option(
 # replaces --with-gsi=globus-location:flavor
 mdsplus_option(
     GSI STRING
-    "Set in the form of flavor or globus-location:flavor. Enables globus GSI for mdsip communications."
-)
-
-# TODO: Investigate
-# replaces --with-srb=
-mdsplus_option(
-    SRB_DIR STRING
-    "Location of SRB to build against."
+    "Set in the form of FLAVOR or LOCATION:FLAVOR. Enables globus GSI for mdsip communications."
 )
 
 mdsplus_option(
@@ -398,30 +418,15 @@ mdsplus_option(
     DEFAULT ON
 )
 
-# TODO:
-# replaces --with-x
-# option(ENABLE_X
-#     "" 
-#     OFF
-# )
-
-
-# TODO:
-# replaces --with-winebottle
-# set(WINEBOTTLE ""
-#     CACHE STRING
-#     ""
-# )
-
 ###
 ### Global Configuration
 ###
 
 # ${CMAKE_C_FLAGS_INIT} is set to $ENV{CFLAGS} by default
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT} ${CMAKE_C_FLAGS}")
 
 # ${CMAKE_CXX_FLAGS_INIT} is set to $ENV{CXXFLAGS} by default
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${CMAKE_CXX_FLAGS}")
 
 # ${CMAKE_Fortran_FLAGS_INIT} is set to $ENV{FFLAGS} by default
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS_INIT} ${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
@@ -435,6 +440,7 @@ if(PLATFORM STREQUAL "windows")
     set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
 
 elseif(PLATFORM STREQUAL "redhat")
+
     # Redhat requires the bits appended to lib and bin, e.g. lib32, bin64
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_bits 64)
@@ -447,6 +453,9 @@ elseif(PLATFORM STREQUAL "redhat")
 
     set(_bindir_symlink ${CMAKE_BINARY_DIR}/bin)
     set(_libdir_symlink ${CMAKE_BINARY_DIR}/lib)
+
+    # This will create relative symlinks, which can then be install()'d, because 
+    # CMAKE_INSTALL_[BIN/LIB]DIR are not paths
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E create_symlink
@@ -475,9 +484,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/_include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/mdsplus
-    # For mdsplus/mdsconfig.h
+
+    # For #include <_mdsversion.h>
     ${CMAKE_BINARY_DIR}/_include
+
+    # For #include <mdsplus/mdsconfig.h>
     ${CMAKE_BINARY_DIR}/include
+
+    # For #include <mdsconfig.h>
     ${CMAKE_BINARY_DIR}/include/mdsplus
 )
 
@@ -485,13 +499,7 @@ include_directories(
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 mark_as_advanced(CMAKE_EXPORT_COMPILE_COMMANDS)
 
-add_compile_definitions(
-    # (SLW) TODO: Move to testing/backends/check or remove altogether
-    HAVE_CONFIG_H # Do we have mdsplus/mdsconfig.h
-)
-
-include(MDSplusCheckFlags)
-include(MDSplusAddCompilerFlag)
+include(MDSplusCheckAddFlags)
 
 if(MINGW)
     # This is not filled in correctly for mingw
@@ -502,31 +510,48 @@ if(MINGW)
     set(CMAKE_STATIC_LIBRARY_PREFIX "")
 endif()
 
-if(BUILD_TESTING)
-    include(CTest)
-endif()
-
 if(ENABLE_TREE_PERF)
     add_compile_definitions(USE_TREE_PERF)
 endif()
 
 if(MSVC)
     add_compile_options(/Wall)
+    # TODO: Expand
 else()
 
     # TODO: Disable for flang (family: LLVMFlang)
 
-    mdsplus_add_compiler_flags(-Wall)
-    mdsplus_add_compiler_flags(-Wextra)
+    mdsplus_check_add_flags(
+        COMPILER -Wall
+    )
+
+    mdsplus_check_add_flags(
+        COMPILER -Wextra
+    )
 
     # We assume signed char everywhere
     # TODO: Remove once all char's have been updated
-    mdsplus_add_compiler_flags(-fsigned-char)
+    mdsplus_check_add_flags(
+        COMPILER -fsigned-char
+        LANGUAGES C CXX
+    )
+
+    # Hide symbols by default so that only ones marked as visible are exported
+    mdsplus_check_add_flags(
+        COMPILER -fvisibility=hidden
+        LANGUAGES C CXX
+    )
 
     # Disable warnings for argument type mismatches in Fortran
     # TODO: Investigate why both are needed
-    mdsplus_add_compiler_flags(-fallow-argument-mismatch)
-    mdsplus_add_compiler_flags(-Wno-argument-mismatch)
+    mdsplus_check_add_flags(
+        COMPILER -fallow-argument-mismatch
+        LANGUAGES Fortran
+    )
+    mdsplus_check_add_flags(
+        COMPILER -Wno-argument-mismatch
+        LANGUAGES Fortran
+    )
 
     if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
         set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
@@ -540,7 +565,9 @@ if(ENABLE_WERROR)
         add_compile_options(/WX)
     else()
 
-        mdsplus_add_compiler_flags(-Werror)
+        mdsplus_check_add_flags(
+            COMPILER -Werror
+        )
 
         if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
             set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn error")
@@ -557,17 +584,17 @@ if(ENABLE_GPROF)
         message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")    
     endif()
 
-    if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
-        NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
-        NOT CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
-
-        message(WARNING "Unable to build with support for gprof, -pg is only supported on GNU compilers")
-
-    else()
+    if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND
+        CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+        CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
 
         add_compile_options(-pg)
         add_link_options(-pg)
+
+    else()
         
+        message(WARNING "Unable to build with support for gprof, -pg is only supported on GNU compilers")
+
     endif()
 
 endif()
@@ -586,31 +613,23 @@ endif()
 
 if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
 
-    set(_prefix "_sanitize_${ENABLE_SANITIZE}")
-
-    mdsplus_check_flags(${_prefix}
+    mdsplus_check_add_flags(
         COMPILER -fsanitize=${ENABLE_SANITIZE}
         LINKER   -fsanitize=${ENABLE_SANITIZE}
+        LANGUAGES C CXX
     )
-
-    foreach(_lang IN ITEMS C CXX)
-        if(${_prefix}_${_lang})
-            set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -fsanitize=${ENABLE_SANITIZE}")
-        endif()
-    endforeach()
-
-    # TODO: Improve
-    add_link_options(-fsanitize=${ENABLE_SANITIZE})
 
     set(SANITIZER_ENV_MODS
         "LSAN_OPTIONS=set:G_SLICE=always-malloc:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/leak.supp"
     )
 
+    set(_result 0)
     if(ENABLE_SANITIZE STREQUAL "memory")
         # 
     elseif(ENABLE_SANITIZE STREQUAL "address")
         execute_process(
             COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so
+            RESULT_VARIABLE _result
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
@@ -620,6 +639,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     elseif(ENABLE_SANITIZE STREQUAL "thread")
         execute_process(
             COMMAND ${CMAKE_C_COMPILER} -print-file-name=libtsan.so
+            RESULT_VARIABLE _result
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
@@ -629,6 +649,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     elseif(ENABLE_SANITIZE STREQUAL "undefined")
         execute_process(
             COMMAND ${CMAKE_C_COMPILER} -print-file-name=libubsan.so
+            RESULT_VARIABLE _result
             OUTPUT_VARIABLE _ld_preload
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
@@ -637,12 +658,15 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
         )
     endif()
 
-    # TODO: Error checking
+    if(NOT _result EQUAL 0)
+        message(FATAL_ERROR "Failed to detect LD_PRELOAD value for ${ENABLE_SANITIZE}")
+    endif()
 
     set(LD_PRELOAD "${_ld_preload}")
 
 endif()
 
+# TODO: Possibly replace these with mdsplus_check_add_flags()
 foreach(_lang IN ITEMS C CXX)
     if((CMAKE_${_lang}_COMPILER_ID STREQUAL "Clang" AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "15") 
         OR (CMAKE_${_lang}_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "14"))
@@ -664,7 +688,7 @@ foreach(_lang IN ITEMS C CXX)
 endforeach()
 
 ###
-### RPATH Configuration, to remove dependence on [DY]LD_LIBRARY_PATH
+### RPATH/RUNPATH Configuration, to remove dependence on [DY]LD_LIBRARY_PATH
 ###
 
 file(RELATIVE_PATH
@@ -678,7 +702,7 @@ if(APPLE)
     list(APPEND CMAKE_INSTALL_RPATH
         "@loader_path"
         "@executable_path/${_rpath_relative}"
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} # TODO: Remove?
     )
 else()
     list(APPEND CMAKE_INSTALL_RPATH
@@ -698,7 +722,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 
 # Do not prefer system apple python
 if(APPLE)
-set(Python_FIND_FRAMEWORK LAST)
+    set(Python_FIND_FRAMEWORK LAST)
 endif()
 
 # In order for find_package(Python) to use the python specified with -DPYTHON or $PYTHON
@@ -733,12 +757,14 @@ if(TEST_WITH_WINE)
 
     set(WINEPREFIX "${CMAKE_BINARY_DIR}/.wine")
 
-    # Create the wineprefix
     if(NOT IS_DIRECTORY ${WINEPREFIX})
         message(STATUS "Creating wineprefix: ${WINEPREFIX}")
 
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/.wine)
 
+        # We run wine with a throwaway command in order to force it to make a WINEPREFIX that will
+        # then be used for all future commands. It's better to have it error out here and print a
+        # nice message, than to die on the first test that tries to run under wine
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E env
                 WINEARCH=${WINEARCH}
@@ -750,7 +776,7 @@ if(TEST_WITH_WINE)
         )
 
         if(NOT _result EQUAL 0)
-            message(FATAL_ERROR "Failed to create wineprefix ${WINEPREFIX}\n${_output}\n${_result}")
+            message(FATAL_ERROR "Failed to create wineprefix ${WINEPREFIX}\n${_output}\n${_error}")
         endif()
     endif()
 endif()
@@ -758,21 +784,25 @@ endif()
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
 
-# Finds the POSIX iconv() family of functions, which might be built into libc
-find_package(Iconv REQUIRED)
-
 # Finds the ZLIB compression library
 find_package(ZLIB REQUIRED)
 
-set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
-mark_as_advanced(LibXml2_ROOT_DIR)
+# Finds the POSIX iconv() family of functions, which might be built into libc
+# TODO: Possibly required by libxml2, can we remove it?
+find_package(Iconv REQUIRED)
+
+# Finds libxml2
+if(NOT DEFINED LibXml2_ROOT)
+    set(LibXml2_ROOT "${LIBXML2_DIR}")
+    mark_as_advanced(LibXml2_ROOT)
+endif()
 find_package(LibXml2 REQUIRED)
 
 if(USE_SYSTEM_BLAS)
     # Finds the Basic Linear Algebra Subprograms fortran functions
     find_package(BLAS)
     if(NOT TARGET BLAS::BLAS)
-        message(SEND_ERROR "Unable to find BLAS, if no package is available for your system, use -DNO_SYSTEM_BLAS=ON")
+        message(SEND_ERROR "Unable to find BLAS, if no package is available for your system, use -DUSE_SYSTEM_BLAS=OFF")
     endif()
 endif()
 
@@ -785,8 +815,7 @@ find_package(LibLZMA)
 find_package(LibM REQUIRED)
 
 # cmake/FindReadline.cmake
-set(Readline_ROOT_DIR "${READLINE_DIR}")
-mark_as_advanced(Readline_ROOT_DIR)
+set(Readline_ROOT "${READLINE_DIR}")
 find_package(Readline REQUIRED)
 
 # cmake/FindDC1394.cmake
@@ -799,14 +828,14 @@ if(ENABLE_MOTIF)
     find_package(Motif REQUIRED)
 endif()
 
-if(ENABLE_SYBASE)
+if(ENABLE_SYBASE AND NOT MINGW)
     # cmake/FindSybase.cmake
     find_package(Sybase REQUIRED)
 endif()
 
 if(ENABLE_HDF5)
     # cmake/FindHDF5.cmake
-    set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
+    set(HDF5_ROOT "$ENV{HDF5_DIR}")
     find_package(HDF5 REQUIRED)
 endif()
 
@@ -831,17 +860,17 @@ if(ENABLE_JAVA)
     find_package(Java ${JAVA_VERSION} COMPONENTS Runtime Development REQUIRED)
 
     if(WIN32)
+        if(DOWNLOAD_3RD_PARTY_APIS)
+            add_library(JNI::JNI INTERFACE IMPORTED)
 
-        add_library(JNI::JNI INTERFACE IMPORTED)
-
-        set_target_properties(
-            JNI::JNI
-            PROPERTIES
-                INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/windows-jdk;${_3rd_party_apis}/windows-jdk/win32"
-        )
-
+            set_target_properties(
+                JNI::JNI
+                PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/windows-jdk;${_3rd_party_apis}/windows-jdk/win32"
+            )
+        endif()
     else()
-    find_package(JNI REQUIRED)
+        find_package(JNI REQUIRED)
     endif()
 
     include(UseJava)
@@ -850,7 +879,9 @@ if(ENABLE_JAVA)
     mark_as_advanced(mvn_EXECUTABLE)
 
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -encoding UTF-8)
+
     # Compile as Java 8 (1.8) compatible
+    # TODO: Remove
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -target 8)
 
@@ -874,15 +905,18 @@ endif()
 if(ENABLE_IDL)
 
     if(IDL_DIR)
-        set(IDL_ROOT_DIR "${IDL_DIR}")
+        set(IDL_ROOT "${IDL_DIR}")
     else()
-        set(IDL_ROOT_DIR
+        set(IDL_ROOT
+            /usr/local/nv5/idl
             /usr/local/harris/idl
             /usr/local/exelis/idl
             /usr/local/itt/idl
             /usr/local/rsi/idl
-            ${_3rd_party_apis}/idl
         )
+        if(DOWNLOAD_3RD_PARTY_APIS)
+            list(APPEND IDL_ROOT ${_3rd_party_apis}/idl)
+        endif()
     endif()
 
     # cmake/FindIDL.cmake
@@ -905,13 +939,13 @@ endif()
 
 if(GSI)
 
-    string(REPLACE ":" ";" _gsi_list "${GSI}")
+    string(REPLACE ":" ";" _gsi_list "${GSI}") # location:flavor -> location;flavor
     list(LENGTH _gsi_list _gsi_list_length)
 
     if(_gsi_list_length LESS 2)
         set(Globus_FLAVOR ${_gsi_list})
     else()
-        list(GET _gsi_list 0 Globus_ROOT_DIR)
+        list(GET _gsi_list 0 Globus_ROOT)
         list(GET _gsi_list 1 Globus_FLAVOR)
     endif()
 
@@ -925,6 +959,7 @@ if(GSI)
 
 endif()
 
+# TODO: Remove
 if(BUILD_TESTING)
 
     find_library(LIBRT rt)
@@ -939,7 +974,7 @@ endif()
 if(ENABLE_VALGRIND)
 
     # cmake/FindValgrind.cmake
-    set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
+    set(Valgrind_ROOT "${VALGRIND_LIB_DIR}")
     string(REPLACE "," ";" Valgrind_REQUESTED_TOOL_LIST "${VALGRIND_TOOLS}")
     find_package(Valgrind REQUIRED)
 
@@ -947,10 +982,14 @@ if(ENABLE_VALGRIND)
         AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
         AND Valgrind_VERSION VERSION_LESS "3.20")
 
+        # dwarf is the format of compiled debug symbols
+        set(_force_dwarf4 "-fdebug-default-version=4")
         message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
 
-        set(_force_dwarf4 "-fdebug-default-version=4")
-        mdsplus_add_compiler_flags(${_force_dwarf4})
+        mdsplus_check_add_flags(
+            COMPILER ${_force_dwarf4}
+            LANGUAGES C CXX
+        )
     endif()
 
     set(Valgrind_FLAGS
@@ -981,13 +1020,17 @@ endif()
 ### Display user options and CMake configuration
 ###
 
-message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME} (Processor: ${CMAKE_SYSTEM_PROCESSOR})")
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
+string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(STRIP "${CMAKE_Fortran_FLAGS}" CMAKE_Fortran_FLAGS)
+
+message(STATUS "CMAKE_SYSTEM_NAME:      ${CMAKE_SYSTEM_NAME} (Processor: ${CMAKE_SYSTEM_PROCESSOR})")
+message(STATUS "CMAKE_C_COMPILER:       ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
+message(STATUS "CMAKE_CXX_COMPILER:     ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
 message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
-message(STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_Fortran_FLAGS: ${CMAKE_Fortran_FLAGS}")
+message(STATUS "CMAKE_C_FLAGS:          ${CMAKE_C_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS:        ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_Fortran_FLAGS:    ${CMAKE_Fortran_FLAGS}")
 
 mdsplus_print_options()
 
@@ -1021,6 +1064,7 @@ check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_
 set(HAVE_SYBASE ${Sybase_FOUND})
 
 # VxWorks Real-Time Operating System
+# TODO: Remove
 check_include_files("vxWorks.h" HAVE_VXWORKS_H)
 
 # Readline
@@ -1051,8 +1095,24 @@ else()
     set(SHARELIB_TYPE "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()
 
-# TODO HAVE_VISIBILITY
-set(HAVE_VISIBILITY ON)
+set(_visibility_test_file ${CMAKE_BINARY_DIR}/test_visibility.c)
+file(WRITE
+    ${_visibility_test_file}
+    "extern __attribute__((__visibility__(\"hidden\"))) int hiddenvar;\n"
+    "extern __attribute__((__visibility__(\"default\"))) int exportedvar;\n"
+    "extern __attribute__((__visibility__(\"hidden\"))) int hiddenfunc();\n"
+    "extern __attribute__((__visibility__(\"default\"))) int exportedfunc();\n"
+    "int main(int argc, char **argv) { return 0; }\n"
+)
+
+try_compile(
+    HAVE_VISIBILITY
+    ${CMAKE_BINARY_DIR}
+    SOURCES
+        ${_visibility_test_file}
+)
+
+file(REMOVE ${_visibility_test_file})
 
 # This must be placed in the binary directory as it contains information
 # specific to the OS/Compiler we're using
@@ -1070,57 +1130,57 @@ include(MDSplusGenerateFiles)
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-messages-exceptions.py
     GENERATED_FILES
-    include/treeshr_messages.h
-    include/tdishr_messages.h
-    include/mdsshr_messages.h
-    include/tcl_messages.h
-    include/camshr_messages.h
-    include/servershr_messages.h
-    include/mitdevices_messages.h
-    include/mdsdcl_messages.h
-    python/MDSplus/mdsExceptions.py
-    mdsshr/MdsGetStdMsg.c
-    java/mdsplus-api/src/main/java/mds/MdsException.java
+        include/treeshr_messages.h
+        include/tdishr_messages.h
+        include/mdsshr_messages.h
+        include/tcl_messages.h
+        include/camshr_messages.h
+        include/servershr_messages.h
+        include/mitdevices_messages.h
+        include/mdsdcl_messages.h
+        python/MDSplus/mdsExceptions.py
+        mdsshr/MdsGetStdMsg.c
+        java/mdsplus-api/src/main/java/mds/MdsException.java
 )
 
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-include-opcbuiltins.py
     GENERATED_FILES
-    include/opcbuiltins.h
+        include/opcbuiltins.h
 )
 
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-include-tdishr.py
     GENERATED_FILES
-    include/tdishr.h
+        include/tdishr.h
 )
 
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-python-MDSplus-compound.py
     GENERATED_FILES
-    python/MDSplus/compound.py
+        python/MDSplus/compound.py
 )
 
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-tdishr-TdiHash.py
     GENERATED_FILES
-    tdishr/TdiHash.c
+        tdishr/TdiHash.c
 )
 
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-yacc-lex.py
     GENERATED_FILES
-    mdsdcl/cmdParse.c
-    mdsdcl/cmdParseLex.c
-    mdsdcl/dcllex.h
-    mdsdcl/dclyacc.h
-    mdsdcl/mdsdclDeltatimeToSeconds.c
-    mdsdcl/ocldToXml.c
-    tdishr/TdiLex.c
-    tdishr/tdilex.h
-    tdishr/TdiYacc.c
-    tdishr/tdiyacc.h
-    treeshr/TreeFindNodeWild.c
+        mdsdcl/cmdParse.c
+        mdsdcl/cmdParseLex.c
+        mdsdcl/dcllex.h
+        mdsdcl/dclyacc.h
+        mdsdcl/mdsdclDeltatimeToSeconds.c
+        mdsdcl/ocldToXml.c
+        tdishr/TdiLex.c
+        tdishr/tdilex.h
+        tdishr/TdiYacc.c
+        tdishr/tdiyacc.h
+        treeshr/TreeFindNodeWild.c
 )
 
 ###
@@ -1180,8 +1240,8 @@ add_subdirectory(d3dshr)
 
 add_subdirectory(mdsshr)
 add_subdirectory(treeshr) # Requires MdsShr
-add_subdirectory(xtreeshr) # Requires TreeShr
 add_subdirectory(tdishr) # Requires TreeShr
+add_subdirectory(xtreeshr) # Requires TdiShr
 add_subdirectory(mdstcpip) # Requires TdiShr
 add_subdirectory(mdslib) # Requires TdiShr
 add_subdirectory(xmdsshr) # Requires TdiShr
@@ -1216,6 +1276,7 @@ add_subdirectory(dwscope)
 add_subdirectory(traverser)
 add_subdirectory(idlmdsevent)
 add_subdirectory(idlmdswidgets)
+# jScope, jTraverser, jTraverser2 are in java/
 
 # Device Support
 
@@ -1268,6 +1329,7 @@ if(BUILD_TESTING)
     add_subdirectory(mdslib/testing)
     add_subdirectory(mdstcpip/testing)
     add_subdirectory(tditest/testing)
+    add_subdirectory(wfevent/testing)
     add_subdirectory(mdsobjects/cpp/testing)
     add_subdirectory(python/MDSplus/tests)
 
@@ -1350,7 +1412,7 @@ if(Motif_FOUND)
 endif()
 
 # Generate Visual Studio compatible .lib files
-if(WIN32 AND BUILD_SHARED_LIBS)
+if(MINGW AND BUILD_SHARED_LIBS)
 
     # HACK: To find correct mingw-prefixed tools
     # e.g. "/usr/bin/x86_64-w64-mingw32-gcc" -> "/usr/bin/x86_64-w64-mingw32-"
@@ -1416,24 +1478,27 @@ endif()
 ### ChangeLog
 ###
 
+# TODO: Dedup with GitRevision
 find_package(Git)
 
 if(GIT_FOUND)
 
-git(GIT_CHANGELOG log --decorate=full --no-merges)
+    git(GIT_CHANGELOG log --decorate=full --no-merges)
 
-file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
+    file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
 
-install(
-    FILES ${CMAKE_BINARY_DIR}/ChangeLog
-    DESTINATION .
-)
+    install(
+        FILES ${CMAKE_BINARY_DIR}/ChangeLog
+        DESTINATION .
+    )
 
 endif()
 
 ###
 ### Install the remaining files and directories
 ###
+
+# TODO: Refactor and Cleanup
 
 install(
     DIRECTORY

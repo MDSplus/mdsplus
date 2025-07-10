@@ -5,8 +5,8 @@
 # This will define the following variables
 #
 #   MDSplus_FOUND
+#   MDSPLUS_DIR
 #   MDSplus_INCLUDE_DIRS
-#   MDSplus_LIBRARY_DIRS
 #   MDSplus_MdsShr_LIBRARY
 #   MDSplus_TreeShr_LIBRARY
 #   MDSplus_TdiShr_LIBRARY
@@ -31,14 +31,15 @@
 #   MDSplus::MdsShr
 #   MDSplus::TreeShr
 #   MDSplus::TdiShr
+#   MDSplus::MdsIpShr
 #   MDSplus::MdsLib
 #   MDSplus::MdsObjectsCppShr
 #
 # The following variables can be set as arguments
 #
-#   MDSplus_ROOT_DIR
+#   MDSplus_ROOT
 #
-# If MDSplus_ROOT_DIR is not set, the following sources will be searched for MDSplus
+# If MDSplus_ROOT is not set, the following sources will be searched for MDSplus
 #
 #   $ENV{MDSPLUS_DIR}
 #   file(READ /etc/.mdsplus_dir)
@@ -55,162 +56,167 @@ endif()
 mark_as_advanced(_MDSplus_lib_arch)
 mark_as_advanced(_MDSplus_bin_arch)
 
-if(NOT DEFINED MDSplus_ROOT_DIR)
+if(DEFINED MDSplus_ROOT)
+    set(MDSPLUS_DIR "${MDSplus_ROOT}")
+else()
     if(DEFINED ENV{MDSPLUS_DIR})
-        list(APPEND MDSplus_ROOT_DIR $ENV{MDSPLUS_DIR})
+        list(APPEND MDSPLUS_DIR $ENV{MDSPLUS_DIR})
     endif()
     
     if(EXISTS /etc/.mdsplus_dir)
         file(READ /etc/.mdsplus_dir _MDSplus_etc_mdsplus_dir)
-        list(APPEND MDSplus_ROOT_DIR ${_MDSplus_etc_mdsplus_dir})
+        list(APPEND MDSPLUS_DIR ${_MDSplus_etc_mdsplus_dir})
     endif()
 
-    list(APPEND MDSplus_ROOT_DIR "/usr/local/mdsplus")
+    if(MDSPLUS_DIR STREQUAL "")
+        set(MDSPLUS_DIR "/usr/local/mdsplus")
+    endif()
 endif()
 
 find_path(
     MDSplus_INCLUDE_DIRS
     NAMES mdsplus/mdsconfig.h
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES include
-)
-
-find_path(
-    MDSplus_LIBRARY_DIRS
-    NAMES lib ${_MDSplus_lib_arch}
-    PATHS ${MDSplus_ROOT_DIR}
 )
 
 find_library(
     MDSplus_MdsShr_LIBRARY
     NAMES MdsShr
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES lib ${_MDSplus_lib_arch}
 )
 
 find_library(
     MDSplus_TreeShr_LIBRARY
     NAMES TreeShr
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES lib ${_MDSplus_lib_arch}
 )
 
 find_library(
     MDSplus_TdiShr_LIBRARY
     NAMES TdiShr
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
+    PATH_SUFFIXES lib ${_MDSplus_lib_arch}
+)
+
+find_library(
+    MDSplus_MdsIpShr_LIBRARY
+    NAMES MdsIpShr
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES lib ${_MDSplus_lib_arch}
 )
 
 find_library(
     MDSplus_MdsLib_LIBRARY
     NAMES MdsLib
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES lib ${_MDSplus_lib_arch}
 )
 
 find_library(
     MDSplus_MdsObjectsCppShr_LIBRARY
     NAMES MdsObjectsCppShr
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES lib ${_MDSplus_lib_arch}
 )
 
 find_path(
     MDSplus_PYTHONPATH
     NAMES MDSplus/__init__.py
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES python
 )
 
 find_program(
     MDSplus_tditest_EXECUTABLE
     NAMES tditest
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_tdic_EXECUTABLE
     NAMES tdic
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_mdstcl_EXECUTABLE
     NAMES mdstcl
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_mdsdcl_EXECUTABLE
     NAMES mdsdcl
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_setevent_EXECUTABLE
     NAMES setevent
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_wfevent_EXECUTABLE
     NAMES wfevent
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_dwscope_EXECUTABLE
     NAMES dwscope
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_traverser_EXECUTABLE
     NAMES traverser
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_jScope_EXECUTABLE
     NAMES jScope
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_jTraverser_EXECUTABLE
     NAMES jTraverser
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
 
 find_program(
     MDSplus_jTraverser2_EXECUTABLE
     NAMES jTraverser2
-    PATHS ${MDSplus_ROOT_DIR}
+    PATHS ${MDSPLUS_DIR}
     PATH_SUFFIXES bin ${_MDSplus_bin_arch}
 )
-
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     MDSplus
     HANDLE_COMPONENTS
     REQUIRED_VARS
+        MDSPLUS_DIR
         MDSplus_INCLUDE_DIRS
-        MDSplus_LIBRARY_DIRS
         MDSplus_MdsShr_LIBRARY
         MDSplus_TreeShr_LIBRARY
         MDSplus_TdiShr_LIBRARY
+        MDSplus_MdsIpShr_LIBRARY
         MDSplus_MdsLib_LIBRARY
         MDSplus_MdsObjectsCppShr_LIBRARY
         MDSplus_tditest_EXECUTABLE
@@ -246,7 +252,16 @@ if(MDSplus_FOUND)
         MDSplus::TreeShr
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${MDSplus_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${MDSplus_TreeShr_LIBRARY}"
+            INTERFACE_LINK_LIBRARIES "${MDSplus_TreeShr_LIBRARY};${MDSplus_MdsShr_LIBRARY}"
+    )
+    
+    add_library(MDSplus::MdsIpShr INTERFACE IMPORTED)
+
+    set_target_properties(
+        MDSplus::MdsIpShr
+        PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${MDSplus_INCLUDE_DIRS}"
+            INTERFACE_LINK_LIBRARIES "${MDSplus_MdsIpShr_LIBRARY};${MDSplus_TdiShr_LIBRARY};${MDSplus_TreeShr_LIBRARY};${MDSplus_MdsShr_LIBRARY}"
     )
     
     add_library(MDSplus::TdiShr INTERFACE IMPORTED)
@@ -255,7 +270,7 @@ if(MDSplus_FOUND)
         MDSplus::TdiShr
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${MDSplus_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${MDSplus_TdiShr_LIBRARY}"
+            INTERFACE_LINK_LIBRARIES "${MDSplus_TdiShr_LIBRARY};${MDSplus_TreeShr_LIBRARY};${MDSplus_MdsShr_LIBRARY}"
     )
     
     add_library(MDSplus::MdsLib INTERFACE IMPORTED)
@@ -264,7 +279,7 @@ if(MDSplus_FOUND)
         MDSplus::MdsLib
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${MDSplus_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${MDSplus_MdsLib_LIBRARY}"
+            INTERFACE_LINK_LIBRARIES "${MDSplus_MdsLib_LIBRARY};${MDSplus_TdiShr_LIBRARY};${MDSplus_TreeShr_LIBRARY};${MDSplus_MdsShr_LIBRARY}"
     )
     
     add_library(MDSplus::MdsObjectsCppShr INTERFACE IMPORTED)
@@ -273,7 +288,30 @@ if(MDSplus_FOUND)
         MDSplus::MdsObjectsCppShr
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${MDSplus_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${MDSplus_MdsObjectsCppShr_LIBRARY}"
+            INTERFACE_LINK_LIBRARIES "${MDSplus_MdsObjectsCppShr_LIBRARY};${MDSplus_MdsIpShr_LIBRARY};${MDSplus_TdiShr_LIBRARY};${MDSplus_TreeShr_LIBRARY};${MDSplus_MdsShr_LIBRARY}"
     )
 
 endif()
+
+mark_as_advanced(
+    MDSPLUS_ROOT
+    MDSPLUS_DIR
+    MDSplus_INCLUDE_DIRS
+    MDSplus_MdsShr_LIBRARY
+    MDSplus_TreeShr_LIBRARY
+    MDSplus_TdiShr_LIBRARY
+    MDSplus_MdsLib_LIBRARY
+    MDSplus_MdsObjectsCppShr_LIBRARY
+    MDSplus_PYTHONPATH
+    MDSplus_tditest_EXECUTABLE
+    MDSplus_tdic_EXECUTABLE
+    MDSplus_mdstcl_EXECUTABLE
+    MDSplus_mdsdcl_EXECUTABLE
+    MDSplus_setevent_EXECUTABLE
+    MDSplus_wfevent_EXECUTABLE
+    MDSplus_dwscope_EXECUTABLE
+    MDSplus_traverser_EXECUTABLE
+    MDSplus_jScope_EXECUTABLE
+    MDSplus_jTraverser_EXECUTABLE
+    MDSplus_jTraverser2_EXECUTABLE
+)

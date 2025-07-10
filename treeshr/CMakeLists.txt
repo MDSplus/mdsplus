@@ -51,7 +51,6 @@ target_include_directories(
     TreeShr
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(
@@ -63,7 +62,7 @@ target_link_libraries(
 target_compile_definitions(
     TreeShr
     PRIVATE
-        -DLIBPREFIX=Tree
+        LIBPREFIX=Tree
 )
 
 mdsplus_add_static_copy(TreeShr _static_target)

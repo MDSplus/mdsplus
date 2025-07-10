@@ -47,9 +47,11 @@ if(TARGET Motif::Motif)
 
     install(TARGETS XmdsShr ${_static_target})
 
-    # ###
-    # ### wmdcreate
-    # ###
+    ###
+    ### wmdcreate
+    ###
+
+    # TODO: Investigate and Remove?
 
     # add_executable(
     #     wmdcreate
@@ -59,7 +61,13 @@ if(TARGET Motif::Motif)
     # target_link_libraries(
     #     wmdcreate
     #     PUBLIC
-    #         XmdsShr
+    #         Motif::Motif
+    # )
+
+    # target_compile_definitions(
+    #     wmdcreate
+    #     PRIVATE
+    #         MDS_EXTENSION
     # )
     
 endif()

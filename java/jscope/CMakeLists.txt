@@ -11,7 +11,7 @@ file(WRITE ${_manifest}
     "Specification-Version: ${RELEASE_VERSION}\n"
     "Implementation-Version: ${RELEASE_VERSION}\n"
     "Implementation-Vendor-Id: org.mdsplus\n"
-    "Class-Path: jsch-0.1.54.jar mdsobjects.jar\n"
+    "Class-Path: jsch-${JSCH_VERSION}.jar mdsobjects.jar\n"
 )
 
 file(GLOB_RECURSE
@@ -41,7 +41,7 @@ add_jar(
     RESOURCES
         NAMESPACE "mds/jscope" ${_jscope_resource_list}
         NAMESPACE "mds/wave" ${_wave_resource_list_jscope}
-    INCLUDE_JARS ${JSCH} mdsobjects
+    INCLUDE_JARS ${JSCH_JAR} mdsobjects
     ENTRY_POINT mds.jscope.jScope
     MANIFEST ${_manifest}
 )

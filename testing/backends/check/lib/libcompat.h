@@ -1,9 +1,7 @@
 #ifndef LIBCOMPAT_H
 #define LIBCOMPAT_H
 
-#if HAVE_CONFIG_H
 #include <mdsplus/mdsconfig.h>
-#endif
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 #define GCC_VERSION_AT_LEAST(major, minor) \
@@ -192,9 +190,7 @@ CK_DLL_EXP int timer_delete(timer_t timerid);
  * snprintf (or its variants) should be replaced with
  * the C99 compliant version in libcompat.
  */
-#if HAVE_CONFIG_H
 #include <mdsplus/mdsconfig.h>
-#endif
 
 //#if HAVE_STDARG_H
 //#include <stdarg.h>

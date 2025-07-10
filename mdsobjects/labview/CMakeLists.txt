@@ -1,38 +1,30 @@
 
 if(ENABLE_LABVIEW)
 
-    install(
-        DIRECTORY
-            MDSplus
-            MDSplus_LV2012
-            MDSplus_LV2015
-        DESTINATION LabView
-        USE_SOURCE_PERMISSIONS
-    )
+    ###
+    ### LV
+    ###
 
     if(WIN32)
+        if(DOWNLOAD_3RD_PARTY_APIS)
 
-        if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-            SET(_host_cpu "i686")
-        else()
-            SET(_host_cpu "x86_64")
+            if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+                SET(_arch "x86_64")
+            elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86")
+                SET(_arch "i686")
+            endif()
+
+            add_library(LV INTERFACE IMPORTED)
+
+            set_target_properties(
+                LV
+                PROPERTIES
+                    INTERFACE_LINK_LIBRARIES "${_3rd_party_apis}/labview/cintools/labview-${_arch}.lib"
+                    INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/labview/cintools"
+            )
+
         endif()
-
-        add_library(LV INTERFACE IMPORTED)
-
-        set_target_properties(
-            LV
-            PROPERTIES
-                INTERFACE_LINK_LIBRARIES "${_3rd_party_apis}/labview/cintools/labview-${_host_cpu}.lib"
-                INTERFACE_INCLUDE_DIRECTORIES "${_3rd_party_apis}/labview/cintools"
-        )
-
     else()
-
-        ###
-        ### LV
-        ###
-
         add_library(
             LV
             lv.c
@@ -44,6 +36,7 @@ if(ENABLE_LABVIEW)
                 MdsShr
         )
 
+        # TODO: Improve, replace with FindLV?
         if(LABVIEW_DIR)
             
             target_include_directories(
@@ -52,7 +45,7 @@ if(ENABLE_LABVIEW)
                     ${LABVIEW_DIR}
             )
 
-        else()
+        elseif(DOWNLOAD_3RD_PARTY_APIS)
             
             target_include_directories(
                 LV
@@ -107,5 +100,18 @@ if(ENABLE_LABVIEW)
             TYPE LIB
         )
     endif()
+
+    ###
+    ### LabView/
+    ###
+
+    install(
+        DIRECTORY
+            MDSplus
+            MDSplus_LV2012
+            MDSplus_LV2015
+        DESTINATION LabView
+        USE_SOURCE_PERMISSIONS
+    )
 
 endif()

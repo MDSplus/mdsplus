@@ -1,4 +1,6 @@
 
+# TODO: Remove duplication across loops?
+
 set(_test_source_list
     dtype_test.c
     mdslib_ctest.c

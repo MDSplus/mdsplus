@@ -19,7 +19,6 @@ file(GLOB_RECURSE
     "src/main/java/mds/jdispatcher/*.java"
 )
 
-
 add_jar(
     jDispatcher
     SOURCES ${_source_list}

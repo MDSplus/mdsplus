@@ -16,10 +16,18 @@ target_link_libraries(
         MdsIpShr
 )
 
+if(TARGET Globus::Globus)
+    target_link_libraries(
+        MdsLib
+        PUBLIC
+            Globus::Globus
+    )
+endif()
+
 target_compile_definitions(
     MdsLib
     PRIVATE
-        -DLIBPREFIX=MdsLib
+        LIBPREFIX=MdsLib
 )
 
 mdsplus_add_static_copy(MdsLib _static_target)
@@ -46,7 +54,7 @@ target_link_libraries(
 target_compile_definitions(
     MdsLib_client
     PRIVATE
-        -D_CLIENT_ONLY
+        _CLIENT_ONLY
 )
 
 mdsplus_add_static_copy(MdsLib_client _static_target)
@@ -73,7 +81,7 @@ target_link_libraries(
 target_compile_definitions(
     MdsLib_fortran
     PRIVATE
-        -DOLD_FORTRAN_API
+        OLD_FORTRAN_API
 )
 
 mdsplus_add_static_copy(MdsLib_fortran _static_target)

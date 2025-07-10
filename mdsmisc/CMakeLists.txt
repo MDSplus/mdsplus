@@ -32,7 +32,7 @@ target_link_libraries(
 target_compile_definitions(
     MdsMisc
     PRIVATE
-        -DLIBPREFIX=MdsMisc
+        LIBPREFIX=MdsMisc
 )
 
 mdsplus_add_static_copy(MdsMisc _static_target)

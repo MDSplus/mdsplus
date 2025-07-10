@@ -2,8 +2,9 @@
 if(TARGET HDF5::HDF5)
 
     # We are currently locked into the 1.6 API
+    # TODO: Upgrade and Remove
     add_compile_definitions(
-        -DH5_USE_16_API
+        H5_USE_16_API
     )
 
     ###

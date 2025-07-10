@@ -28,7 +28,6 @@ set(_should_fail_source_list
     example4.c
     example_assert.c
     fork_fail.c
-    timeout_fail.c
     py_fail.py
 
     # TODO: Support TAP error codes?
@@ -50,6 +49,10 @@ else()
 
     list(APPEND _test_source_list
         timeout_success.c
+    )
+
+    list(APPEND _should_fail_source_list
+        timeout_fail.c
     )
 
 endif()

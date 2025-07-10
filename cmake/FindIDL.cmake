@@ -13,14 +13,12 @@
 #
 # The following variables can be set as arguments
 #
-#   IDL_ROOT_DIR
+#   IDL_ROOT
 #
 
 find_path(
     IDL_INCLUDE_DIRS
     NAMES export.h
-    PATHS 
-        ${IDL_ROOT_DIR}
     PATH_SUFFIXES
         external
 )
@@ -28,7 +26,7 @@ find_path(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     IDL
-    REQUIRED_VARS # The first one is displayed in the message
+    REQUIRED_VARS
         IDL_INCLUDE_DIRS
 )
 
@@ -47,8 +45,9 @@ if(IDL_FOUND)
 
             # Apple does not support weak linking by default
             set_target_properties(
-                IDL::IDL PROPERTIES
-                INTERFACE_LINK_OPTIONS "LINKER:-undefined,dynamic_lookup,-no_fixup_chains"
+                IDL::IDL
+                PROPERTIES
+                    INTERFACE_LINK_OPTIONS "LINKER:-undefined,dynamic_lookup,-no_fixup_chains"
             )
 
         endif()
@@ -58,5 +57,6 @@ if(IDL_FOUND)
 endif()
 
 mark_as_advanced(
+    IDL_ROOT
     IDL_INCLUDE_DIRS
 )

@@ -16,7 +16,7 @@
 #
 # The following variables can be set as arguments
 #
-#   Readline_ROOT_DIR
+#   Readline_ROOT
 #
 
 find_package(PkgConfig QUIET)
@@ -27,7 +27,6 @@ find_path(
     Readline_INCLUDE_DIRS
     NAMES readline/readline.h
     PATHS 
-        ${Readline_ROOT_DIR}
         ${_Readline_PC_INCLUDE_DIRS}
     PATH_SUFFIXES 
         include
@@ -37,7 +36,6 @@ find_library(
     Readline_readline_LIBRARY
     NAMES readline
     PATHS 
-        ${Readline_ROOT_DIR}
         ${_Readline_PC_LIBRARY_DIRS}
     PATH_SUFFIXES 
         lib
@@ -47,7 +45,6 @@ find_library(
     Readline_history_LIBRARY
     NAMES history
     PATHS 
-        ${Readline_ROOT_DIR}
         ${_Readline_PC_LIBRARY_DIRS}
     PATH_SUFFIXES 
         lib
@@ -66,7 +63,7 @@ if(Readline_FOUND)
 
     set(Readline_LIBRARIES
         ${Readline_readline_LIBRARY}
-        # ${Readline_history_LIBRARY}
+        ${Readline_history_LIBRARY}
     )
 
     if(NOT TARGET Readline::Readline)
@@ -85,6 +82,7 @@ if(Readline_FOUND)
 endif()
 
 mark_as_advanced(
+    Readline_ROOT
     Readline_INCLUDE_DIRS
     Readline_LIBRARIES
     Readline_readline_LIBRARY

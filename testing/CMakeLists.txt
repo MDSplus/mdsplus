@@ -19,7 +19,7 @@ target_include_directories(
 target_compile_definitions(
     MdsTest
     PUBLIC
-        -D_TESTING
+        _TESTING
 )
 
 set_target_properties(
@@ -55,7 +55,7 @@ target_include_directories(
 target_compile_definitions(
     MdsTestBackend
     PUBLIC
-        -D_TESTING
+        _TESTING
 )
 
 set_target_properties(
@@ -87,7 +87,7 @@ add_library(
 target_compile_definitions(
     MdsTestShr
     PUBLIC
-        -D_TESTING
+        _TESTING
 )
 
 target_link_libraries(

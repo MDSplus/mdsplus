@@ -39,3 +39,8 @@ if(NOT TARGET LibM::LibM)
     endif()
 
 endif()
+
+mark_as_advanced(
+    LibM_ROOT
+    LibM_LIBRARIES
+)

@@ -33,7 +33,6 @@ target_include_directories(
     libMdsdcl
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(
@@ -53,22 +52,10 @@ target_compile_options(
 target_compile_definitions(
     libMdsdcl
     PRIVATE
-        -DLIBPREFIX=Mdsdcl
+        LIBPREFIX=Mdsdcl
 )
 
 install(TARGETS libMdsdcl)
-
-# set_source_files_properties(
-#     cmdParseLex.c
-#     PROPERTIES
-#         COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-parameter"
-# )
-
-# set_source_files_properties(
-#     mdsdclDeltatimeToSeconds.c
-#     PROPERTIES
-#         COMPILE_OPTIONS "-Wno-sign-compare"
-# )
 
 ###
 ### mdsdcl

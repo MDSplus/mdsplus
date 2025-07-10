@@ -1,8 +1,8 @@
 
 IF(TARGET XmdsShr)
 
-    add_definitions(
-        -D_NO_DXm
+    add_compile_definitions(
+        _NO_DXm
     )
 
     ###
@@ -25,7 +25,7 @@ IF(TARGET XmdsShr)
     target_compile_definitions(
         dwscope
         PRIVATE
-            -D_LOCAL_ACCESS
+            _LOCAL_ACCESS
     )
 
     install(TARGETS dwscope)

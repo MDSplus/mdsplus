@@ -53,8 +53,6 @@ set(MDSPLUS_TEST_ENV_MODS
 
     # Write all new tree files into the current directory
     "default_tree_path=set:."
-
-    ${SANITIZER_ENV_MODS}
 )
 
 if(WIN32)
@@ -84,6 +82,8 @@ else()
     # This is set for Apple as well for backwards compatibility
     list(APPEND MDSPLUS_TEST_ENV_MODS
         "LD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+
+        ${SANITIZER_ENV_MODS}
         
         # Sometimes required by the sanitizers
         "LD_PRELOAD=set:${LD_PRELOAD}"
@@ -101,6 +101,8 @@ endif()
 macro(_mdsplus_add_vscode_launch_target _target _command _env_mods _cwd)
     string(REPLACE "/" "-" _vscode_launch_target "generate-vscode-launch-json-${_target}")
 
+    message(STATUS "Adding generate-vscode-launch-json target for ${_target}")
+
     add_custom_target(
         "${_vscode_launch_target}"
         COMMENT "Adding ${_target} to .vscode/launch.json"
@@ -117,6 +119,7 @@ macro(_mdsplus_add_vscode_launch_target _target _command _env_mods _cwd)
     set(LAST_VSCODE_LAUNCH_JSON_TARGET "${_vscode_launch_target}" CACHE INTERNAL "" FORCE)
 endmacro()
 
+# TODO: Finish
 # Useful tools for debugging that shouldn't be added as actual tests
 if(GENERATE_VSCODE_LAUNCH_JSON)
     _mdsplus_add_vscode_launch_target("mdstcl" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mdsdcl;-prep;set command tcl_commands -history=.tcl" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})
@@ -205,12 +208,12 @@ function(mdsplus_add_test)
 
         foreach(_tool IN LISTS Valgrind_TOOL_LIST)
             set(_target_tool "${_target}-${_tool}")
-        list(APPEND _target_list "${_target_tool}")
+            list(APPEND _target_list "${_target_tool}")
 
             string(REPLACE "-" "_" _tool_no_dash ${_tool})
 
             file(MAKE_DIRECTORY ${ARGS_WORKING_DIRECTORY}/${_tool})
-
+            
             add_test(
                 NAME "${_target_tool}"
                 COMMAND ${Valgrind_EXECUTABLE} --tool=${_tool} --quiet ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${ARGS_COMMAND}
@@ -234,7 +237,7 @@ function(mdsplus_add_test)
                     FAIL_REGULAR_EXPRESSION "FAILED"
             )
 
-            # TODO: _mdsplus_add_vscode_launch_target
+            # valgrind is a shell script, so adding it as a launch target causes some issues
 
             math(EXPR _index "${_index} + 1")
             math(EXPR _test_port_offset "${_test_port_offset} + 1000")

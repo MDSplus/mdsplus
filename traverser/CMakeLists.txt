@@ -26,8 +26,8 @@ if(TARGET Motif::Motif)
     target_compile_definitions(
         traverser
         PRIVATE
-            -D_NO_DXm
-            -D_LOCAL_ACCESS
+            _NO_DXm
+            _LOCAL_ACCESS
     )
 
     install(TARGETS traverser)

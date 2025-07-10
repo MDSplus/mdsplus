@@ -61,15 +61,15 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-werror`                       | `ENABLE_WERROR=ON`                                      |
 | `--enable-wreturns`                     |                                                         |
 | `--enable-wconversion`                  |                                                         |
-| `--enable-sanitize=[FLAVOR]`            | `SANITIZE=[FLAVOR]`                                     |
+| `--enable-sanitize=[FLAVOR]`            | `ENABLE_SANITIZE=[FLAVOR]`                              |
 | `--enable-silent-rules`                 |                                                         |
 | `--disable-silent-rules`                |                                                         |
 | `--jars`                                | See below                                               |
-| `--with-jdk=[PATH]`                     | `JDK_DIR=[PATH]`                                        |
+| `--with-jdk=[PATH]`                     | `JAVA_HOME=[PATH]`                                      |
 | `--with-java_target=[TARGET]`           |                                                         |
 | `--with-java_bootclasspath=[CLASSPATH]` |                                                         |
 | `--with-gsi=[LOCATION]:[FLAVOR]`        | `GSI=[LOCATION]:[FLAVOR]` or `GSI=[FLAVOR]`             |
-| `--with-srb=[PATH]`                     | `SRB_DIR=[PATH]`                                        |
+| `--with-srb=[PATH]`                     |                                                         |
 | `--with-labview=[PATH]`                 | `ENABLE_LABVIEW=ON` or `LABVIEW_DIR=[PATH]`             |
 | `--with-idl=[PATH]`                     | `ENABLE_IDL=ON` or `IDL_DIR=[PATH]`*                    |
 | `--with-readline=[PATH]`                | `READLINE_DIR=[PATH]`                                   |

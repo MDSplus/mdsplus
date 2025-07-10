@@ -16,14 +16,12 @@
 #
 # The following variables can be set as arguments
 #
-#   DC1394_ROOT_DIR
+#   DC1394_ROOT
 #
 
 find_path(
     DC1394_INCLUDE_DIRS
     NAMES dc1394/dc1394.h
-    PATHS
-        ${DC1394_ROOT_DIR}
     PATH_SUFFIXES
         include
 )
@@ -31,8 +29,6 @@ find_path(
 find_library(
     DC1394_dc1394_LIBRARY
     NAMES dc1394
-    PATHS
-        ${DC1394_ROOT_DIR}
     PATH_SUFFIXES
         lib
 )
@@ -40,8 +36,6 @@ find_library(
 find_library(
     DC1394_raw1394_LIBRARY
     NAMES raw1394
-    PATHS
-        ${DC1394_ROOT_DIR}
     PATH_SUFFIXES
         lib
 )
@@ -78,6 +72,7 @@ if(DC1394_FOUND)
 endif()
 
 mark_as_advanced(
+    DC1394_ROOT
     DC1394_INCLUDE_DIRS
     DC1394_LIBRARIES
     DC1394_dc1394_LIBRARY

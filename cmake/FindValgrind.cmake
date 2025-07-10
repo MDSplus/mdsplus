@@ -12,20 +12,18 @@
 #   Valgrind_TOOL_LIST
 #   Valgrind_EXECUTABLE
 #   Valgrind_VERSION
-#   HAVE_VALGRIND_H
-#   HAVE_VALGRIND_MEMCHECK_H
 #
 # The following variables can be set as arguments
 #
-#   Valgrind_ROOT_DIR
+#   Valgrind_ROOT
 #   Valgrind_REQUESTED_TOOL_LIST
 #
 
 find_program(
     Valgrind_EXECUTABLE
     NAMES valgrind
-    PATHS ${Valgrind_ROOT_DIR}
-    PATH_SUFFIXES bin
+    PATH_SUFFIXES
+        bin
 )
 
 if(Valgrind_EXECUTABLE)
@@ -57,9 +55,7 @@ if(Valgrind_EXECUTABLE)
             if(_result EQUAL 0)
                 set(_found TRUE)
 
-                list(APPEND Valgrind_TOOL_LIST
-                    ${_tool}
-                )
+                list(APPEND Valgrind_TOOL_LIST ${_tool})
             else()
                 set(_found FALSE)
                 message(STATUS "Unable to find valgrind --tool ${_tool}")
@@ -75,11 +71,6 @@ if(Valgrind_EXECUTABLE)
 
 endif()
 
-include(CheckIncludeFiles)
-
-check_include_files("valgrind/valgrind.h" HAVE_VALGRIND_H)
-check_include_files("valgrind/memcheck.h" HAVE_VALGRIND_MEMCHECK_H)
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     Valgrind
@@ -89,6 +80,7 @@ find_package_handle_standard_args(
 )
 
 mark_as_advanced(
+    Valgrind_ROOT
     Valgrind_EXECUTABLE
     Valgrind_TOOL_LIST
 )

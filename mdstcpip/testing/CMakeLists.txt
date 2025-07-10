@@ -1,10 +1,6 @@
 
 # TODO: mdscp ?
 
-###
-### MdsIpTest
-###
-
 set(_test_source_list
     MdsIpTest.c
 )

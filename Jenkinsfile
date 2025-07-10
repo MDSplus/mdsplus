@@ -108,10 +108,10 @@ def distributions = OSList.collectEntries {
     }]
 }
 
-def localTest(name, testStages) {
+def localTest(name, label, testStages) {
     return {
         stage(name) {
-            node('linux-amd64') { // TODO: Improve
+            node(label) {
                 ansiColor('xterm') {
                     try {
                         setupStage().call()
@@ -131,7 +131,7 @@ def localTest(name, testStages) {
     }
 }
 
-distributions['IDL'] = localTest('IDL', {
+distributions['IDL'] = localTest('IDL', 'linux-amd64', {
     stage("Test") {
         try {
             withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace/install/usr/local/mdsplus"]) {
@@ -150,7 +150,7 @@ distributions['IDL'] = localTest('IDL', {
     }
 })
 
-distributions['MATLAB'] = localTest('MATLAB', {
+distributions['MATLAB'] = localTest('MATLAB', 'linux-amd64', {
     stage("Test") {
         withEnv(["MDSPLUS_DIR=${WORKSPACE}/workspace/install/usr/local/mdsplus"]) {
             sh """

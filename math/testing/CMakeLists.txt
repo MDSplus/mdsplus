@@ -26,8 +26,6 @@ if(NOT WIN32)
             COMMAND $<TARGET_FILE:${_test_name}>
         )
 
-        list(APPEND _test_target_list ${_test_name})
-
     endforeach()
 
 endif()

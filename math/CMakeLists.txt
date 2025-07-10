@@ -1,4 +1,14 @@
 
+if(Fortran_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_Fortran_FLAGS
+        "${CMAKE_Fortran_FLAGS} -Wno-maybe-uninitialized -Wno-compare-reals"
+    )
+elseif(Fortran_COMPILER_ID STREQUAL "Intel")
+    set(CMAKE_Fortran_FLAGS
+        "${CMAKE_Fortran_FLAGS} -warn noexternals -warn nodeclarations -warn notruncated_source"
+    )
+endif()
+
 ###
 ### MdsMath
 ###
@@ -62,28 +72,10 @@ else()
 
 endif()
 
-# (SLW) TODO: Check compatible fortran?
-target_compile_options(
-    MdsMath
-    PRIVATE
-        $<$<COMPILE_LANGUAGE:Fortran>:
-            $<$<Fortran_COMPILER_ID:GNU>:
-                -Wno-maybe-uninitialized
-                -Wno-compare-reals
-            >
-            $<$<Fortran_COMPILER_ID:Intel>:
-                # intel warnings needing suppression
-                "SHELL:-warn noexternals"
-                "SHELL:-warn nodeclarations"
-                "SHELL:-warn notruncated_source"
-            >
-        >
-)
-
 target_compile_definitions(
     MdsMath
     PRIVATE
-        -DLIBPREFIX=MdsMath
+        LIBPREFIX=MdsMath
 )
 
 install(TARGETS MdsMath)

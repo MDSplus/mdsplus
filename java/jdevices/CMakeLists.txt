@@ -1,6 +1,6 @@
 
 ###
-### DeviceBeans.jar
+### jDevices.jar
 ###
 
 file(GLOB_RECURSE

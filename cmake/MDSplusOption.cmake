@@ -15,6 +15,8 @@ set(MDSPLUS_OPTION_LIST "BUILD_TESTING")
 #
 function(mdsplus_option _name _type _description)
 
+    # The 3 means to skip the first three arguments: _name, _type, and, _description
+    # The ARGS is a prefix to all parsed argument variables
     cmake_parse_arguments(
         PARSE_ARGV 3 ARGS
         # Booleans
@@ -64,10 +66,28 @@ function(mdsplus_print_options)
     message(STATUS "Configuration Options:")
     list(APPEND CMAKE_MESSAGE_INDENT "    ")
 
+    # Determine the length of the longest option name
+    set(_max_option_name_length 0)
+    foreach(_name IN LISTS MDSPLUS_OPTION_LIST)
+        string(LENGTH "${_name}" _option_name_length)
+        if(_option_name_length GREATER _max_option_name_length)
+            set(_max_option_name_length ${_option_name_length})
+        endif()
+    endforeach()
+
     list(SORT MDSPLUS_OPTION_LIST)
 
     foreach(_name IN LISTS MDSPLUS_OPTION_LIST)
-        message(STATUS "${_name}: ${${_name}}")
+        string(LENGTH "${_name}" _option_name_length)
+
+        # Apply padding so that all the values are aligned in one column
+        set(_padding "")
+        while(_option_name_length LESS _max_option_name_length)
+            set(_padding "${_padding} ")
+            math(EXPR _option_name_length "${_option_name_length} + 1")
+        endwhile()
+        
+        message(STATUS "${_name}:${_padding} ${${_name}}")
     endforeach()
 
     list(POP_BACK CMAKE_MESSAGE_INDENT)

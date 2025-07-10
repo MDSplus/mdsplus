@@ -31,8 +31,8 @@ target_link_libraries(
     MdsShr
     PUBLIC
         ${CMAKE_DL_LIBS}
-        Iconv::Iconv
         LibM::LibM
+        Iconv::Iconv
         LibXml2::LibXml2
         Threads::Threads
         ZLIB::ZLIB
@@ -49,11 +49,11 @@ endif()
 target_compile_definitions(
     MdsShr
     PRIVATE
-        -DLIBPREFIX=Mds
+        LIBPREFIX=Mds
 )
 
 if(WIN32)
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         MdsShr
         PUBLIC
             iphlpapi

@@ -5,15 +5,15 @@ if(ENABLE_JAVA)
     ### Jars
     ###
 
-    set(JSCH ${CMAKE_CURRENT_BINARY_DIR}/jsch-0.1.54.jar)
-    if(NOT EXISTS ${JSCH})
+    # TODO: Move to 3rd-party-apis?
+    set(JSCH_VERSION 0.1.54)
+    set(JSCH_JAR ${CMAKE_CURRENT_BINARY_DIR}/jsch-${JSCH_VERSION}.jar)
+    if(NOT EXISTS ${JSCH_JAR})
         file(DOWNLOAD
-            "http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download"
-            ${JSCH}
+            "http://sourceforge.net/projects/jsch/files/jsch.jar/${JSCH_VERSION}/jsch-${JSCH_VERSION}.jar/download"
+            ${JSCH_JAR}
         )
     endif()
-
-    set(JAVAX_JSON "${CMAKE_CURRENT_SOURCE_DIR}/mdsobjects/src/main/resources/javax.json-1.0.4.jar")
 
     add_subdirectory(mdsplus)
     add_subdirectory(mdsplus-api)

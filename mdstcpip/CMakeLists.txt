@@ -25,7 +25,7 @@ target_link_libraries(
 target_compile_definitions(
     MdsIpShr
     PRIVATE
-        -DLIBPREFIX=MdsIp
+        LIBPREFIX=MdsIp
 )
 
 mdsplus_add_static_copy(MdsIpShr _static_target)
@@ -72,9 +72,6 @@ if(NOT WIN32)
     ### UDT4
     ###
 
-    # TODO: Investigate?
-    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
-
     file(GLOB
         _udt4_source_list
         "udt4/src/*.h"
@@ -91,8 +88,8 @@ if(NOT WIN32)
     target_include_directories(
         UDT4
         PUBLIC
-            "udt4/src/"
-            "udt4/udtc/"
+            udt4/src/
+            udt4/udtc/
     )
 
     set_target_properties(
@@ -105,7 +102,7 @@ if(NOT WIN32)
     target_compile_options(
         UDT4
         PRIVATE
-        -Wno-null-pointer-subtraction
+            -Wno-null-pointer-subtraction
     )
     
     ###
@@ -122,7 +119,6 @@ if(NOT WIN32)
         PUBLIC
             MdsIpShr
         PRIVATE
-            MdsIpShr
             UDT4
     )
 
@@ -142,7 +138,6 @@ if(NOT WIN32)
         PUBLIC
             MdsIpShr
         PRIVATE
-            MdsIpShr
             UDT4
     )
 
@@ -212,7 +207,7 @@ install(
 
 if(WIN32)
     set(_script_list
-        # mdsip_service.exe.manifest # TODO: ???
+        mdsip_service.exe.manifest
         mdsip-client-ssh.bat
         mdsip-client-sshp.bat
         mdsip-client-local.bat
@@ -246,8 +241,6 @@ if(TARGET Globus::Globus)
         PUBLIC
             MdsIpShr
             Globus::Globus
-        PRIVATE
-            MdsIpShr
     )
 
     install(TARGETS MdsIpGSI)
@@ -262,7 +255,8 @@ if(TARGET Globus::Globus)
 
 endif()
 
-file(COPY ${_script_list}
+file(
+    COPY ${_script_list}
     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 )
 

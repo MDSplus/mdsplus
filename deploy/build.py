@@ -253,9 +253,6 @@ if args.os is not None:
         os_alias = os.path.basename(opts_filename).replace('.opts', '')
     
     opts = open(opts_filename).read().strip().split()
-
-    # TODO: env files
-
     opts_args, cmake_opts_args = parser.parse_known_args(args=opts)
 
     # To allow command-line arguments to override those from .opts files, we need to parse them again after parsing the .opts ones
@@ -556,7 +553,6 @@ def do_interactive():
     
     setup_filename = os.path.join(args.workspace, 'setup.sh')
     with open(setup_filename, 'wt') as file:
-        file.write('#!/bin/bash\n') # TODO: Remove?
         file.write(f'export PYTHONPATH=\"{usr_local_mdsplus_dir}/python\"\n')
         file.write(f'export MDSPLUS_DIR=\"{usr_local_mdsplus_dir}\"\n')
         file.write('source $MDSPLUS_DIR/setup.sh\n')
@@ -584,6 +580,9 @@ def do_interactive():
 
     print()
     print('Spawning a new shell, type `exit` to leave.')
+    print()
+    print('You can run `./do-<stage>.sh` to run configure, build, install, or test.')
+    print('You can run `source setup.sh` to use the installation in `install/usr/local/mdsplus`.')
 
     # --login and --noprofile allow for $PS1 to be set and not overwritten
     subprocess.run(
@@ -839,7 +838,6 @@ def do_install():
 
     os.makedirs(usr_local_mdsplus_dir, exist_ok=True)
     
-    # TODO: Add parallel?
     print('Installing')
     result = subprocess.run(
         [ cmake, '--install', '.' ],
