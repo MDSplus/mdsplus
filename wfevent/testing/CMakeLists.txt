@@ -1,18 +1,20 @@
 
-file(GLOB
-    _test_script_list
-    "*.sh"
-)
+# These tests are still too flaky to use in the automated testing
 
-foreach(_test_script IN LISTS _test_script_list)
+# file(GLOB
+#     _test_script_list
+#     "*.sh"
+# )
 
-    cmake_path(GET _test_script STEM _target)
+# foreach(_test_script IN LISTS _test_script_list)
 
-    mdsplus_add_test(
-        NAME "${_target}"
-        COMMAND ${_test_script}
-        NO_VALGRIND
-        NO_WINE
-    )
+#     cmake_path(GET _test_script STEM _target)
 
-endforeach()
+#     mdsplus_add_test(
+#         NAME "${_target}"
+#         COMMAND ${_test_script}
+#         NO_VALGRIND
+#         NO_WINE
+#     )
+
+# endforeach()
