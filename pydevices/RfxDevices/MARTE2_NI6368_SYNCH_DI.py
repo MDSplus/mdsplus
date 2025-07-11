@@ -46,8 +46,9 @@ class MARTE2_NI6368_SYNCH_DI(MC.MARTE2_COMPONENT):
 
     def prepareMarteInfo(self):
         try:
-            self.timebase.putData(Data.compile('(build_path("\\'+self.getFullPath()+'.parameters:par_8:value"))' +
-                                               ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))'))
+            self.timebase.putData(Data.compile('(build_path("\\'+self.getFullPath()+'.parameters:par_7:value"))' +
+                                               ':1000000 : ' + '(build_path("\\'+self.getFullPath()+'.parameters:par_6:value"))'))
+            self.outputs_time_idx = 0  # The first produced signal is time
             self.outputs_time_idx = 0  # The first produced signal is time
         except Exception as inst:
             print(str(inst))
