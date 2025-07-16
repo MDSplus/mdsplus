@@ -1146,6 +1146,31 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 Function = StartNextStateExecution
             }
         }
+        +GOTORUN = {
+            Class = StateMachineEvent
+            NextState = "RUN"
+            NextStateError = "IDLE"
+            Timeout = 0 
+            +ChangeToRunMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                   Class = ConfigurationDatabase
+                    param1 = <FIRST_STATE>
+                }
+            }
+            +StopCurrentStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StopCurrentStateExecution
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }
     }
     +IDLE = {
         Class = ReferenceContainer
@@ -1356,7 +1381,7 @@ $<APP_NAME> = {
         gamClasses.append('RTNOut')
         return gamClasses
     
-    def buildStartScript(self):
+    def buildStartScript(self, startsSoon = False):
         gamClasses = self.getInvolvedGamClasses()
         fileContent = ''
         try:
@@ -1393,7 +1418,10 @@ $<APP_NAME> = {
         else:
             verb = 8191 #Remove three most significant bits in error mask
         fileName = '/tmp/'+self.getNode('name').data()+'_start.sh'
-        fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
+        if startsSoon:
+            fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:GOTORUN' + ' -e ' + str(verb) +'\n'
+        else:
+            fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
         print(fileContent)
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
@@ -1426,7 +1454,7 @@ $<APP_NAME> = {
         self.buildConfiguration()
 #        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
 #            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        subprocess.Popen([self.buildStartScript()], shell=True)
+        subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
 
     def startMarteIdleFromConfig(self):
         try:
@@ -1447,9 +1475,9 @@ $<APP_NAME> = {
         stateName = self.state_1_name.data()
 #        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
 #            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
-        subprocess.Popen([self.buildStartScript()], shell=True)
-        time.sleep(4)
-        self.gotorun()
+        subprocess.Popen([self.buildStartScript(startsSoon = True)], shell=True)
+#        time.sleep(4)
+#        self.gotorun()
 
     def gotorun(self):
         marteName = self.getNode('name').data()
