@@ -15,6 +15,9 @@ function [ status ] = mdsconnect( host )
     else
         if strcmpi(host, 'LOCAL') == 1
             MDSINFO.isConnected = false;
+            if ~MDSINFO.isPythonConnection
+                MDSINFO.connection.mdsdisconnect();
+            end
             MDSINFO.connection = [];
             MDSINFO.connectedHost = host;
             status = 1;

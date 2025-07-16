@@ -64,8 +64,7 @@ public class Connection
 		isConnected = true;
 	}
 
-	@Override
-	protected void finalize()
+	public void mdsdisconnect()
 	{
 		if (sockId >= 0)
 			disconnectFromMds(sockId);
