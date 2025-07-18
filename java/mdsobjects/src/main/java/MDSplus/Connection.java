@@ -71,6 +71,13 @@ public class Connection
 		isConnected = false;
 	}
 
+	// Deprecated in Java 9 to Java 22; will be removed in future Java.
+	@Override
+	protected void finalize()
+	{
+		mdsdisconnect();
+	}
+
 	public void openTree(java.lang.String name, int shot) throws MdsException
 	{
 		openTree(sockId, name, shot);
