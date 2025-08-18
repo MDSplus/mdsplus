@@ -119,7 +119,7 @@ macro(_mdsplus_add_vscode_launch_target _target _command _env_mods _cwd)
     set(LAST_VSCODE_LAUNCH_JSON_TARGET "${_vscode_launch_target}" CACHE INTERNAL "" FORCE)
 endmacro()
 
-# TODO: Finish
+# TODO: Ensure they use the right environment
 # Useful tools for debugging that shouldn't be added as actual tests
 if(GENERATE_VSCODE_LAUNCH_JSON)
     _mdsplus_add_vscode_launch_target("mdstcl" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mdsdcl;-prep;set command tcl_commands -history=.tcl" "${MDSPLUS_TEST_ENV_MODS}" ${CMAKE_BINARY_DIR})

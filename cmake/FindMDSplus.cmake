@@ -11,6 +11,7 @@
 #   MDSplus_TreeShr_LIBRARY
 #   MDSplus_TdiShr_LIBRARY
 #   MDSplus_MdsLib_LIBRARY
+#   MDSplus_MdsIpShr_LIBRARY
 #   MDSplus_MdsObjectsCppShr_LIBRARY
 #   MDSplus_PYTHONPATH
 #   MDSplus_tditest_EXECUTABLE
@@ -301,6 +302,7 @@ mark_as_advanced(
     MDSplus_TreeShr_LIBRARY
     MDSplus_TdiShr_LIBRARY
     MDSplus_MdsLib_LIBRARY
+    MDSplus_MdsIpShr_LIBRARY
     MDSplus_MdsObjectsCppShr_LIBRARY
     MDSplus_PYTHONPATH
     MDSplus_tditest_EXECUTABLE

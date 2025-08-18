@@ -38,6 +38,6 @@ const mdsdsc_t * GETRELEASEDSC()
 EXPORT
 const char *GETRELEASEDATE()
 {
-	static char release_date[64] = "@RELEASE_DATE@";
+	static char release_date[64] = "@BUILD_TIMESTAMP@";
 	return release_date;
 }

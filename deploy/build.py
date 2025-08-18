@@ -26,11 +26,11 @@ deploy_dir = os.path.dirname(os.path.abspath(__file__))
 source_dir = os.path.dirname(deploy_dir)
 
 os_options = {}
-for file in glob.glob(os.path.join(deploy_dir, 'os/*.opts')):
-    name = os.path.basename(file).replace('.opts', '')
+for filename in glob.glob(os.path.join(deploy_dir, 'os/*.opts')):
+    name = os.path.basename(filename).replace('.opts', '')
 
-    if os.path.islink(file):
-        real_file = os.path.realpath(file)
+    if os.path.islink(filename):
+        real_file = os.path.realpath(filename)
         real_name = os.path.basename(real_file).replace('.opts', '')
 
         if real_name not in os_options:
@@ -52,7 +52,7 @@ for name, alias_list in sorted(os_options.items()):
 parser = argparse.ArgumentParser(
     # Use a custom formatter class to allow our --os options to display properly in --help
     # Use max_help_position to increase the width of the left column in --help
-    formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(prog, max_help_position=40),
+    formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(prog, max_help_position=45),
     epilog=os_options_help_text,
 )
 
@@ -63,6 +63,7 @@ parser.add_argument(
     help='The OS definition to use (see below), which will reference `deploy/os/{--os}.opts` for additional parameters to this script and `deploy/os/{--os}.env` for additional environment variables. This will also change the default for --workspace to be `workspace-{--os}/`',
 )
 
+# TODO: Check/Remove
 parser.add_argument(
     '--toolchain',
     help='Path to the CMake toolchain file used for cross-compilation. This will be relative to the deploy/toolchains/ directory unless an absolute path is given.'
@@ -76,15 +77,17 @@ parser.add_argument(
 parser.add_argument(
     '-i', '--interactive',
     action='store_true',
-    help='Drop into an interactive shell, allowing you to configure/build/install/test. This will attempt to clean your environment of references to $MDSPLUS_DIR if any are found.',
+    help='Drop into an interactive shell, allowing you to configure/build/install/test. Any other stage arguments will be ignored. This will attempt to clean your environment of references to $MDSPLUS_DIR if any are found.',
 )
 
+# default= is the value used if the argument is not specified
+# const= is the value used if the argument is specified without a value
 parser.add_argument(
     '-j', '--parallel',
     nargs='?',
-    const=os.cpu_count(),
     default=1,
-    metavar='',
+    const=os.cpu_count(),
+    metavar='THREADS',
     help='The number of parallel files to build or tests to run, defaults to `os.cpu_count()` if no value is specified.',
 )
 
@@ -94,15 +97,15 @@ parser.add_argument(
     help='Configure `.vscode/settings.json` for use with the CMake and clangd extensions, and generate `.vscode/launch.json` entries for each test.',
 )
 
-# Stages
+# Building
 
-# TODO: Test with python < 3.9
 try:
     boolean_action = argparse.BooleanOptionalAction
 except:
     # Hack for python < 3.9
     boolean_action = 'store_true'
 
+# TODO: Improve resilience against failed initial configures, maybe add a cache variable called CONFIGURE_DONE and check the cache for that?
 parser.add_argument(
     '--configure',
     action=boolean_action,
@@ -129,8 +132,10 @@ parser.add_argument(
     '--clean',
     action='store_true',
     default=False,
-    help='Cleans the project in `{--workspace}/build` before building.'
+    help='Use with --build, will clean the project in `{--workspace}/build` before building.'
 )
+
+# Packaging
 
 parser.add_argument(
     '--install',
@@ -143,15 +148,32 @@ parser.add_argument(
     '--package',
     action=boolean_action,
     default=False,
-    help='Generates packages in `{--workspace}/package`.'
+    help='Generates native package files and repository metadata in `{--workspace}/dist`. Generates tar files in `{--workspace}/package`, one containing the native package files and the other containing `{--workspace}/install/usr/local/mdsplus`'
 )
 
 parser.add_argument(
     '--verify-packages',
-    action=boolean_action,
+    action='store_true',
     default=False,
     help='When used with --package, it validates the contents of the generated packages against `deploy/packaging/{--platform}/*`.'
 )
+
+parser.add_argument(
+    '--distname',
+    help='Used by --package to determine the directory to generate repository information into, `{--workspace}/dist/{--distname}.',
+)
+
+parser.add_argument(
+    '--platform',
+    help='The platform type to build for. This controls how directories are named in the build folder, in preparation for packaging for a given platform type. Sets PLATFORM.',
+)
+
+parser.add_argument(
+    '--arch',
+    help='The architecture to label packages as. This should be used in conjunction with --toolchain when cross-compiling. Will attempt to autodetect from the current architecture.'
+)
+
+# Testing
 
 parser.add_argument(
     '--test',
@@ -160,19 +182,17 @@ parser.add_argument(
     help='Run all tests and report the results. Use -j/--parallel to run tests in parallel. Use -R/--test-regex or --rerun-failed to control which tests are run.',
 )
 
-# TODO: Add fallback --no-* options for python < 3.9
-
-# Testing
-
 parser.add_argument(
     '--valgrind',
     nargs='?',
     const=True,
-    help='Specify valgrind tools to run for supported tests. An additional iteration of each test will be added for each tool. Leave blank to use all default tools. Cannot be used with --sanitize. Sets ENABLE_VALGRIND and VALGRIND_TOOLS.'
+    metavar='TOOL',
+    help='Specify a comma-separated list of valgrind tools to run for supported tests. An additional iteration of each test will be added for each tool. Leave blank to use all default tools. Cannot be used with --sanitize. Sets ENABLE_VALGRIND and VALGRIND_TOOLS.'
 )
 
 parser.add_argument(
     '--sanitize',
+    metavar='FLAVOR',
     help='Configures the build to use the specified sanitizer flavor. Cannot be used with --valgrind. Sets ENABLE_SANITIZE.',
 )
 
@@ -197,24 +217,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--junit-suite-name',
-    help='Use with --output-junit to set the name of the jUnit test suite. Defaults to "mdsplus" (or --os if specified).',
-)
-
-# Packaging
-
-parser.add_argument(
-    '--distname',
-    help='Used by --package to determine the directory to generate repository information into, `{--workspace}/dist/{--distname}.',
-)
-
-parser.add_argument(
-    '--platform',
-    help='The platform type to build for. This controls how directories are named in the build folder, in preparation for packaging for a given platform type. Sets PLATFORM.',
-)
-
-parser.add_argument(
-    '--arch',
-    help='The architecture to label packages as. This should be used in conjunction with --toolchain when cross-compiling. Will attempt to autodetect from the current architecture.'
+    help='Use with --output-junit to set the name of the jUnit test suite. Defaults to --os if specified, or "mdsplus" if not.',
 )
 
 # Docker
@@ -227,13 +230,13 @@ parser.add_argument(
 
 parser.add_argument(
     '--dockerimage',
-    metavar='',
+    metavar='IMAGE',
     help='Create a docker container with this image, and run the build inside there. Can be combined with -i/--interactive to get a shell inside the docker container.',
 )
 
 parser.add_argument(
     '--dockernetwork',
-    metavar='',
+    metavar='NETWORK',
     help='Create and use this docker network when creating the docker container.',
 )
 
@@ -253,11 +256,9 @@ if args.os is not None:
         os_alias = os.path.basename(opts_filename).replace('.opts', '')
     
     opts = open(opts_filename).read().strip().split()
-    opts_args, cmake_opts_args = parser.parse_known_args(args=opts)
 
     # To allow command-line arguments to override those from .opts files, we need to parse them again after parsing the .opts ones
-    args, cmake_args = parser.parse_known_args(namespace=opts_args)
-    cmake_args = cmake_opts_args + cmake_args
+    args, cmake_args = parser.parse_known_args(args=opts + sys.argv[1:])
 
     if os_alias is not None:
         print()
@@ -299,8 +300,8 @@ if args.platform is None and args.dockerimage is None:
         args.platform = 'macosx'
     elif os.path.exists('/etc/os-release'):
         id_list = []
-        with open('/etc/os-release', 'rt') as file:
-            lines = file.readlines()
+        with open('/etc/os-release', 'rt') as filename:
+            lines = filename.readlines()
             for line in lines:
                 if '=' in line:
                     key, value = line.replace('"', '').split('=', maxsplit=1)
@@ -316,12 +317,12 @@ if args.platform is None and args.dockerimage is None:
 
 # Directories
 
-build_dir = os.path.join(args.workspace, 'build')
-install_dir = os.path.join(args.workspace, 'install')
+build_dir             = os.path.join(args.workspace, 'build')
+install_dir           = os.path.join(args.workspace, 'install')
 usr_local_mdsplus_dir = os.path.join(install_dir, 'usr/local/mdsplus')
-testing_dir = os.path.join(args.workspace, 'testing')
-packages_dir = os.path.join(args.workspace, 'packages')
-dist_dir = os.path.join(args.workspace, 'dist')
+testing_dir           = os.path.join(args.workspace, 'testing')
+packages_dir          = os.path.join(args.workspace, 'packages')
+dist_dir              = os.path.join(args.workspace, 'dist')
 
 # System Configuration
 
@@ -335,6 +336,7 @@ if ctest is None and args.dockerimage is not None:
     print('Unable to find `ctest`')
     exit(1)
 
+# TODO: Don't require git
 git_executable = shutil.which('git')
 if git_executable is None and args.dockerimage is not None:
     print('Unable to find `git`')
@@ -412,6 +414,7 @@ cmake_cache = parse_cmake_cache()
 # --fresh tells CMake to disregard the current cache and start over, so we need to do the same
 if '--fresh' in cmake_args:
     cmake_cache = {}
+    args.configure = True
 
 def check_add_cmake_arg(arg):
     global args, cmake_args, cmake_cache
@@ -433,6 +436,8 @@ cmake_args = []
 for arg in cmake_args_unfiltered:
     check_add_cmake_arg(arg)
 
+
+# TODO: If the cache is unfinished, reconfigure. Add some sort of CONFIGURE_DONE variable to check here
 # If there is no CMake cache, we need to --configure
 if not args.configure and len(cmake_cache) == 0:
     args.configure = True
@@ -465,13 +470,249 @@ else:
 
 # Force --configure if no CMakeCache.txt is found or if new CMake options are specified
 if not args.configure and len(cmake_args) != 0:
-        args.configure = True
+    args.configure = True
 
 # Stages
 
+def do_docker():
+
+    docker = shutil.which('docker')
+    if docker is None:
+        print('Unable to find `docker`')
+        exit(1)
+
+    if args.dockerpull:
+        print()
+        print(f'Pulling docker image {args.dockerimage}')
+
+        subprocess.run([ docker, 'pull', args.dockerimage ])
+        # TODO: error checking
+    
+    os.makedirs(args.workspace, exist_ok=True)
+
+    docker_args = [
+        # Enable colors
+        '--tty', # TODO: Check to make sure *we* have colors enabled
+        
+        # Mount the workspace and source directory as absolute paths inside the docker
+        f'--volume={args.workspace}:{args.workspace}',
+        f'--volume={source_dir}:{source_dir}',
+        
+        # Working directory
+        f'--workdir={args.workspace}',
+        f'--env=HOME={args.workspace}',
+
+        # HACK: To allow publish.py to know what docker image to run for publishing packages
+        f'--env=DOCKERIMAGE={args.dockerimage}'
+    ]
+
+    if args.dockernetwork is not None:
+        subprocess.run([ docker, 'network', 'create', args.dockernetwork ])
+        # TODO: error checking
+
+        docker_args.append(f'--network={args.dockernetwork}')
+
+    # TODO: Improve errors from using --user
+    # if platform.system() != 'Windows':
+        # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
+    
+    if platform.system() != 'Windows':
+        docker_args.append(f'--user={os.getuid()}:{os.getgid()}')
+
+    docker_args.append(args.dockerimage)
+
+    print()
+    print('Docker arguments:')
+    for arg in docker_args:
+        print(f"    {arg}")
+
+    passthrough_args = []
+    for arg in build_command_line():
+
+        # We don't want the .opts files to be parsed recursively
+        if arg.startswith('--os='):
+            continue
+
+        # We don't want docker to run recursively
+        if arg.startswith('--docker'):
+            continue
+        
+        passthrough_args.append(arg)
+
+    passthrough_args.extend(cmake_args)
+
+    # TODO: Detect python3 instead of assuming it?
+    command = f"python3 {os.path.abspath(__file__)} {' '.join(passthrough_args)}"
+
+    # TODO: Switch to /bin/sh for maximum compatibility
+    docker_entrypoint = [ '/bin/bash', '-c', command ]
+
+    if args.interactive:
+
+        subprocess.run(
+            [
+                docker, 'run',
+                '--interactive',
+                '--rm',
+            ] + docker_args + docker_entrypoint,
+        )
+
+        if args.dockernetwork is not None:
+            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
+
+    else:
+
+        result = subprocess.run(
+            [
+                docker, 'run',
+                '--detach',
+            ] + docker_args + docker_entrypoint,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            print(f'Failed to run docker container: {result.stderr.decode()}')
+            exit(1)
+        
+        container_id = result.stdout.decode().strip()
+
+        docker_logs = subprocess.Popen(
+            [
+                docker, 'logs',
+                '--follow',
+                '--timestamps',
+                container_id
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        def kill_docker(signum, frame):
+            print()
+            print(f'Killing docker container {container_id}')
+            
+            subprocess.run([ docker, 'kill', container_id ])
+            subprocess.run([ docker, 'rm', container_id ])
+
+            if args.dockernetwork is not None:
+                subprocess.run([ 'docker', 'network', 'rm', args.dockernetwork ])
+
+            exit(0)
+
+        signal.signal(signal.SIGINT, kill_docker)
+
+        while True:
+            line = docker_logs.stdout.readline()
+            if not line:
+                break
+
+            print(line.decode().rstrip())
+
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        # Perform an autopsy
+        result = subprocess.run(
+            [
+                docker, 'inspect',
+                container_id,
+                '--format="{{.State.ExitCode}}"'
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        exit_code = int(result.stdout.decode().strip().strip('"'))
+        
+        subprocess.run([ docker, 'rm', container_id ])
+
+        if args.dockernetwork is not None:
+            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
+
+        exit(exit_code)
+
+def do_interactive():
+    global args, cmake_args
+
+    os.makedirs(args.workspace, exist_ok=True)
+
+    do_configure_filename = os.path.join(args.workspace, 'do-configure.sh')
+    with open(do_configure_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{build_dir}"\n')
+        file.write(f"{cmake} {source_dir} -DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir} {' '.join(cmake_args)} \"$@\"\n")
+    os.chmod(do_configure_filename, 0o755)
+
+    do_build_filename = os.path.join(args.workspace, 'do-build.sh')
+    with open(do_build_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{build_dir}"\n')
+        file.write(f'{cmake} --build "{build_dir}" "$@"\n')
+    os.chmod(do_build_filename, 0o755)
+
+    do_test_filename = os.path.join(args.workspace, 'do-test.sh')
+    with open(do_test_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'cd "{source_dir}"\n')
+        file.write(f'{sys.executable} "{__file__}" --workspace="{args.workspace}" --no-configure --no-build --test "$@"\n')
+    os.chmod(do_test_filename, 0o755)
+
+    do_install_filename = os.path.join(args.workspace, 'do-install.sh')
+    with open(do_install_filename, 'wt') as file:
+        file.write('#!/bin/bash\n')
+        file.write(f'{cmake} --install "{build_dir}" "$@"\n')
+    os.chmod(do_install_filename, 0o755)
+    
+    # TODO: Protect against calling /etc/mdsplus.conf and $HOME/.mdsplus
+    setup_filename = os.path.join(args.workspace, 'setup.sh')
+    with open(setup_filename, 'wt') as file:
+        file.write(f'export PYTHONPATH=\"{usr_local_mdsplus_dir}/python\"\n')
+        file.write(f'export MDSPLUS_DIR=\"{usr_local_mdsplus_dir}\"\n')
+        file.write('source $MDSPLUS_DIR/setup.sh\n')
+    os.chmod(setup_filename, 0o755)
+
+    shell = '/bin/bash'
+    # TODO: Support other shells?
+
+    # TODO: Check if we support colors
+    reset = '\\e[0m'
+    purple = '\\e[0;35m'
+    green = '\\e[0;32m'
+    turquoise = '\\e[0;36m'
+
+    # Start with a clean environment so we don't inherit anything pointing to the system MDSplus installation
+    interactive_env = dict()
+
+    if 'HOME' in os.environ:
+        interactive_env['HOME'] = os.environ['HOME']
+
+    if 'TERM' in os.environ:
+        interactive_env['TERM'] = os.environ['TERM']
+
+    if 'DISPLAY' in os.environ:
+        interactive_env['DISPLAY'] = os.environ['DISPLAY']
+
+    # Override shell prompt to ease confusion
+    # \w is the "current working directory"
+    git_tag_command = 'git describe --abbrev=0 --tag 2>/dev/null'
+    interactive_env['PS1'] = f'\n{purple}[interactive]{reset} {green}\\w{reset} {turquoise}($({git_tag_command})){reset}\n\\$ '
+
+    print()
+    print('Spawning a new shell, type `exit` to leave.')
+    print()
+    print('You can run `./do-<stage>.sh` to run configure, build, install, or test.')
+    print('You can run `source setup.sh` to use the installation in `install/usr/local/mdsplus`.')
+
+    # --login and --noprofile allow for $PS1 to be set and not overwritten
+    subprocess.run(
+        [ shell, '--login', '--noprofile' ],
+        cwd=args.workspace,
+        env=interactive_env,
+    )
+
 def do_setup_vscode():
     global source_dir, build_dir
-        
+    
     # Force a reconfigure to generate launch.json targets
     args.configure = True
     cmake_args.append('-DGENERATE_VSCODE_LAUNCH_JSON=ON')
@@ -519,227 +760,6 @@ def do_setup_vscode():
     import atexit
     atexit.register(print, '\nVisual Studio Code Settings Configured, Run "clangd: Restart language server" to apply')
 
-def do_interactive():
-    global args, cmake_args
-
-    os.makedirs(args.workspace, exist_ok=True)
-
-    do_install_filename = os.path.join(args.workspace, 'do-configure.sh')
-    with open(do_install_filename, 'wt') as file:
-        file.write('#!/bin/bash\n')
-        file.write(f'cd "{build_dir}"\n')
-        file.write(f"{cmake} {source_dir} -DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir} {' '.join(cmake_args)} \"$@\"\n")
-    os.chmod(do_install_filename, 0o755)
-
-    do_install_filename = os.path.join(args.workspace, 'do-build.sh')
-    with open(do_install_filename, 'wt') as file:
-        file.write('#!/bin/bash\n')
-        file.write(f'cd "{build_dir}"\n')
-        file.write(f'{cmake} --build "{build_dir}" "$@"\n')
-    os.chmod(do_install_filename, 0o755)
-
-    do_install_filename = os.path.join(args.workspace, 'do-test.sh')
-    with open(do_install_filename, 'wt') as file:
-        file.write('#!/bin/bash\n')
-        file.write(f'cd "{source_dir}"\n')
-        file.write(f'{sys.executable} "{__file__}" --workspace="{args.workspace}" --no-configure --no-build --test "$@"\n')
-    os.chmod(do_install_filename, 0o755)
-
-    do_install_filename = os.path.join(args.workspace, 'do-install.sh')
-    with open(do_install_filename, 'wt') as file:
-        file.write('#!/bin/bash\n')
-        file.write(f'{cmake} --install "{build_dir}" "$@"\n')
-    os.chmod(do_install_filename, 0o755)
-    
-    setup_filename = os.path.join(args.workspace, 'setup.sh')
-    with open(setup_filename, 'wt') as file:
-        file.write(f'export PYTHONPATH=\"{usr_local_mdsplus_dir}/python\"\n')
-        file.write(f'export MDSPLUS_DIR=\"{usr_local_mdsplus_dir}\"\n')
-        file.write('source $MDSPLUS_DIR/setup.sh\n')
-    os.chmod(setup_filename, 0o755)
-
-    shell = '/bin/bash'
-    # TODO: Support other shells?
-
-    reset = '\\e[0m'
-    purple = '\\e[0;35m'
-    green = '\\e[0;32m'
-    turquoise = '\\e[0;36m'
-
-    git_tag_command = 'git describe --abbrev=0 --tag'
-
-    # Start with a clean environment so we don't inherit anything pointing to the system MDSplus installation
-    interactive_env = dict()
-    interactive_env['HOME'] = os.environ['HOME']
-    interactive_env['TERM'] = os.environ['TERM']
-    interactive_env['DISPLAY'] = os.environ['DISPLAY']
-
-    # Override shell prompt to ease confusion
-    # \w is the "current working directory"
-    interactive_env['PS1'] = f'\n{purple}[interactive]{reset} {green}\\w{reset} {turquoise}($({git_tag_command})){reset}\n\\$ '
-
-    print()
-    print('Spawning a new shell, type `exit` to leave.')
-    print()
-    print('You can run `./do-<stage>.sh` to run configure, build, install, or test.')
-    print('You can run `source setup.sh` to use the installation in `install/usr/local/mdsplus`.')
-
-    # --login and --noprofile allow for $PS1 to be set and not overwritten
-    subprocess.run(
-        [ shell, '--login', '--noprofile' ],
-        cwd=args.workspace,
-        env=interactive_env,
-    )
-
-def do_docker():
-
-    docker = shutil.which('docker')
-    if docker is None:
-        print('Unable to find `docker`')
-        exit(1)
-
-    if args.dockerpull:
-        print()
-        print(f'Pulling docker image {args.dockerimage}')
-
-        subprocess.run([ docker, 'pull', args.dockerimage ])
-    
-    os.makedirs(args.workspace, exist_ok=True)
-
-    docker_args = [
-        # Enable colors
-        '--tty',
-        # Mount the workspace and source directory as absolute paths inside the docker
-        f'--volume={args.workspace}:{args.workspace}',
-        f'--volume={source_dir}:{source_dir}',
-        # Working directory
-        f'--workdir={args.workspace}',
-        f'--env=HOME={args.workspace}',
-        f'--env=DOCKERIMAGE={args.dockerimage}'
-    ]
-
-    if args.dockernetwork is not None:
-        subprocess.run([ docker, 'network', 'create', args.dockernetwork ])
-        # TODO: error checking
-        docker_args.append(f'--network={args.dockernetwork}')
-
-    # TODO: Improve errors from using --user
-    # if platform.system() != 'Windows':
-        # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
-    
-    if platform.system() != 'Windows':
-        docker_args.append(f'--user={os.getuid()}:{os.getgid()}')
-
-    docker_args.append(args.dockerimage)
-
-    print()
-    print('Docker arguments:')
-    for arg in docker_args:
-        print(f"    {arg}")
-
-    passthrough_args = []
-    for arg in build_command_line():
-
-        # We don't want the .opts files to be parsed recursively
-        if arg.startswith('--os='):
-            continue
-
-        # We don't want docker to run recursively
-        if arg.startswith('--docker'):
-            continue
-        
-        passthrough_args.append(arg)
-
-    passthrough_args.extend(cmake_args)
-
-    # TODO: Detect python3 instead of assuming it?
-    command = f"python3 {os.path.abspath(__file__)} {' '.join(passthrough_args)}"
-
-    docker_entrypoint = [ '/bin/bash', '-c', command ]
-
-    if args.interactive:
-
-        subprocess.run(
-            [
-                docker, 'run',
-                '--interactive',
-                '--rm',
-            ] + docker_args + docker_entrypoint,
-        )
-
-        if args.dockernetwork is not None:
-            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
-
-    else:
-
-        result = subprocess.run(
-            [
-                docker, 'run',
-                '--detach',
-            ] + docker_args + docker_entrypoint,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            print(f'Failed to run docker container: {result.stderr.decode()}')
-            exit(1)
-        
-        container_id = result.stdout.decode().strip()
-
-        docker_log = subprocess.Popen(
-            [
-                docker, 'logs',
-                '--follow',
-                '--timestamps',
-                container_id
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        def kill_docker(signum, frame):
-            print()
-            print(f'Killing docker container {container_id}')
-            
-            subprocess.run([ docker, 'kill', container_id ])
-            subprocess.run([ docker, 'rm', container_id ])
-
-            if args.dockernetwork is not None:
-                subprocess.run([ 'docker', 'network', 'rm', args.dockernetwork ])
-
-            exit(0)
-
-        signal.signal(signal.SIGINT, kill_docker)
-
-        while True:
-            line = docker_log.stdout.readline()
-            if not line:
-                break
-
-            print(line.decode().rstrip())
-
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        result = subprocess.run(
-            [
-                docker, 'inspect',
-                container_id,
-                '--format="{{.State.ExitCode}}"'
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        exit_code = int(result.stdout.decode().strip().strip('"'))
-        
-        subprocess.run([ docker, 'rm', container_id ])
-
-        if args.dockernetwork is not None:
-            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
-
-        exit(exit_code)
-
 def do_configure():
     global cmake_args, cmake_cache, cmake, source_dir, build_dir
 
@@ -754,6 +774,7 @@ def do_configure():
             if ninja is not None:
                 cmake_args.append('-GNinja')
 
+    # TODO: Move
     print()
     print('Combined build arguments:')
     for arg in build_command_line():
@@ -783,6 +804,7 @@ def do_build():
     os.makedirs(build_dir, exist_ok=True)
 
     # This will work everywhere, but we can't inform the number of concurrent jobs
+    # TODO: Test this w/ clean
     build_command = [ cmake, '--build', build_dir ]
 
     # If we know the generator, we can infer the build command
@@ -836,10 +858,12 @@ def do_generate_vscode_launch_json():
 def do_install():
     global args, cmake, build_dir, install_dir, usr_local_mdsplus_dir
 
+    # The install directory is set during configure with -DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir}
     os.makedirs(usr_local_mdsplus_dir, exist_ok=True)
     
     print('Installing')
     result = subprocess.run(
+        # The . tells CMake where to find the configuration to use during installation, not where to install to
         [ cmake, '--install', '.' ],
         cwd=build_dir,
     )
@@ -852,7 +876,7 @@ def do_package():
     global args, packages_dir, dist_dir
 
     os.makedirs(packages_dir, exist_ok=True)
-    os.makedirs(dist_dir, exist_ok=True)
+    os.makedirs(dist_dir, exist_ok=True) # mdsplus.org/dist/{--distname}/
     
     print('Packaging')
 
@@ -912,7 +936,7 @@ def do_package():
         print('Unable to autodetect --arch, manually specify --arch to use --package')
         exit(1)
 
-    # Replace these with standard arguments when the packaging scripts are rewritten
+    # TODO: Replace these with standard arguments when the packaging scripts are rewritten
     package_env = dict(os.environ)
     package_env['srcdir'] = source_dir
     package_env['ARCH'] = args.arch
@@ -931,7 +955,7 @@ def do_package():
         'version': release_version,
         'distname': args.distname,
         'platform': args.platform,
-        'dockerimage': os.environ['DOCKERIMAGE'],
+        'dockerimage': os.environ['DOCKERIMAGE'], # HACK: To determine what docker image we are in to pass to publish.py
         'packages': [],
     }
 
@@ -942,6 +966,7 @@ def do_package():
         pass
     elif args.platform == 'debian':
 
+        # TODO: Return the list of deb files so we don't have to guess
         result = subprocess.run(
             [ sys.executable, os.path.join(deploy_dir, 'packaging/debian/debian_build_debs.py') ],
             cwd=build_dir,
@@ -957,6 +982,7 @@ def do_package():
         for filename in deb_files:
             publish_info['packages'].append(os.path.relpath(filename, dist_dir))
 
+        # TODO: Verify verify is working
         if args.verify_packages:
             for filename in deb_files:
                 result = subprocess.run(
@@ -1001,6 +1027,7 @@ def do_package():
                     if '->' in install_filename:
                         install_filename = install_filename.split(' -> ')[0]
                     
+                    # Ignore directories
                     if install_filename[-1] == '/':
                         continue
                     
@@ -1029,7 +1056,8 @@ def do_package():
         os.makedirs(os.path.join(install_dir, 'etc/yum.repos.d'), exist_ok=True)
 
         rpm_gpg_key_url = 'http://www.mdsplus.org/dist/RPM-GPG-KEY-MDSplus'
-        _, result = request.urlretrieve(rpm_gpg_key_url, os.path.join(install_dir, 'etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus'), )
+        rpm_gpg_key_filename = os.path.join(install_dir, 'etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus')
+        _, result = request.urlretrieve(rpm_gpg_key_url, rpm_gpg_key_filename)
         # TODO: Error handling?
 
         with open(os.path.join(install_dir, f'etc/yum.repos.d/mdsplus{bname}.repo'), 'wt') as file:
@@ -1135,6 +1163,7 @@ def do_package():
 
     print(f'Creating {root_package_filename}')
     root_package_file = tarfile.open(root_package_filename, 'w:gz')
+    # Put the files in the root of the tarfile, arcname is "alternative name in the archive"
     root_package_file.add(usr_local_mdsplus_dir, arcname='.')
     root_package_file.close()
 
@@ -1348,7 +1377,7 @@ def do_test():
 if args.dockerimage is not None:
     do_docker()
 else:
-        
+
     if args.interactive:
         do_interactive()
 

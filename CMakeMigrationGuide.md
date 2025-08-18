@@ -64,7 +64,7 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-sanitize=[FLAVOR]`            | `ENABLE_SANITIZE=[FLAVOR]`                              |
 | `--enable-silent-rules`                 |                                                         |
 | `--disable-silent-rules`                |                                                         |
-| `--jars`                                | See below                                               |
+| `--jars`                                | Never implemented                                       |
 | `--with-jdk=[PATH]`                     | `JAVA_HOME=[PATH]`                                      |
 | `--with-java_target=[TARGET]`           |                                                         |
 | `--with-java_bootclasspath=[CLASSPATH]` |                                                         |
@@ -119,8 +119,6 @@ Run `ccmake` or the CMake GUI for a full list of possible values for your system
 **CMAKE_INSTALL_PREFIX**
 
 With the move to CMake, we no longer make a distinction between the `--prefix=PREFIX` and the `--exec-prefix=EPREFIX`. If this causes issues with your workflow, contact slwalsh@psfc.mit.edu.
-
-**--jars** ???
 
 **ENABLE_IDL** / **IDL_DIR**
 

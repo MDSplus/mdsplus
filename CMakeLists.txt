@@ -20,11 +20,11 @@ enable_language(Fortran)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 98)
 
-# Query version and release information from git
-include(MDSplusGitRevision)
-
 # Custom wrapper for option() allowing defaults, types other than BOOL, and lists of values
 include(MDSplusOption)
+
+# Query version and release information from git
+include(MDSplusProjectVersion)
 
 ###
 ### Download 3rd-party-apis
@@ -949,8 +949,6 @@ if(GSI)
         list(GET _gsi_list 1 Globus_FLAVOR)
     endif()
 
-    # (SLW) TODO: pthr???
-
     # cmake/FindGlobus.cmake
     find_package(Globus REQUIRED)
 
@@ -1075,6 +1073,26 @@ check_symbol_exists("rl_set_signals" "stdio.h;readline/readline.h" HAVE_RL_SET_S
 # Linux Kernel
 # We need to include <stddef.h> for <scsi/sg.h> to work on some systems
 check_include_files("stddef.h;scsi/sg.h" HAVE_SCSI_SG_H)
+
+###
+### Get the current timestamp to record when the build happened
+###
+
+find_program(date_EXECUTABLE date)
+mark_as_advanced(date_EXECUTABLE)
+
+# TODO: Decide that string(TIMESTAMP) is good enough and remove the call to `date`
+if(date_EXECUTABLE)
+    execute_process(
+        COMMAND "${date_EXECUTABLE}"
+        OUTPUT_VARIABLE BUILD_TIMESTAMP
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+else()
+    # STRING(TIMESTMAP) is missing AM/PM and the Timezone, but it is a sensible fallback
+    string(TIMESTAMP BUILD_TIMESTAMP "%a %d %b %Y %H:%M:%S UTC" UTC)
+endif()
+
 
 ###
 ### Generate _include/_mdsversion.h
