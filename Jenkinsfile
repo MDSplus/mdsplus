@@ -22,7 +22,6 @@ def OSList = [
     // ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
 ]
 
-
 def setupStage() {
     return {
         stage("Setup") {
@@ -55,7 +54,7 @@ def testStage(os) {
     return {
         stage("Build & Test") {
             try {
-                sh "deploy/build.py -j --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --output-junit ${extraArgs}"
+                sh "deploy/build.py -j --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --dockerpull --output-junit ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true

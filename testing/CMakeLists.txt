@@ -76,7 +76,7 @@ endif()
 ### MdsTestShr
 ###
 
-# TODO: Improve
+# TODO: Replace with googletest
 
 add_library(
     MdsTestShr

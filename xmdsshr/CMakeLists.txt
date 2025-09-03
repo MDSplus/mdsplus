@@ -51,7 +51,7 @@ if(TARGET Motif::Motif)
     ### wmdcreate
     ###
 
-    # TODO: Investigate and Remove?
+    # TODO: Remove
 
     # add_executable(
     #     wmdcreate

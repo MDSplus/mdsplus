@@ -51,7 +51,7 @@ if(LIBRT)
     )
 endif()
 
-# (SLW) TODO: Remove
+# TODO: Remove
 ###
 ### build_test
 ###
@@ -67,5 +67,4 @@ target_link_libraries(
         Check
 )
 
-# (SLW) TODO: Should we install this?
 install(TARGETS build_test)

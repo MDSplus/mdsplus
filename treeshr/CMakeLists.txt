@@ -3,7 +3,7 @@
 ### TreeShr
 ###
 
-# TODO: Investigate
+# TODO: Remove
 # find_program(_sed_EXECUTABLE sed)
 #
 # if(_sed_EXECUTABLE)

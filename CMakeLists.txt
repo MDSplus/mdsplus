@@ -1496,12 +1496,11 @@ endif()
 ### ChangeLog
 ###
 
-# TODO: Dedup with GitRevision
-find_package(Git)
+include(MDSplusGit)
 
 if(GIT_FOUND)
 
-    git(GIT_CHANGELOG log --decorate=full --no-merges)
+    mdsplus_git(GIT_CHANGELOG log --decorate=full --no-merges)
 
     file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
 
@@ -1582,3 +1581,5 @@ install(
     DIRECTORY
     DESTINATION local/tdi
 )
+
+set(MDSPLUS_CONFIGURE_COMPLETE TRUE CACHE BOOL "Inform build.py that at least one successful configure has happened" FORCE)

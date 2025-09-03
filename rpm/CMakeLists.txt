@@ -1,11 +1,9 @@
 
-# (SLW) TODO: GLOBUSLICENSE ?
-
 ###
 ### post_install_script / post_uninstall_script / python_module_install.sh / python_module_remove.sh
 ###
 
-# (SLW) TODO: HUP_TO_INETD, HUP_TO_INETD, HUP_TO_XINETD_SERVICE
+# TODO: systemctl
 if(NOT WIN32)
     set(HUP_TO_INETD "kill -HUP `/sbin/pidof inetd`")
     set(HUP_TO_XINETD "/etc/rc.d/init.d/xinetd restart")
@@ -77,6 +75,16 @@ install(
         mdsipsd.xinetd
     DESTINATION rpm
 )
+
+# TODO: Remove these files, or reimplement GLOBUSLICENSE
+# install(
+#     FILES
+#         fusiongrid-mdsip.xinetd
+#         fusiongrid-mdsips.xinetd
+#         globus-gatekeeper.xinetd
+#         globus-gridftp.xinetd
+#     DESTINATION rpm
+# )
 
 ###
 ### systemd
