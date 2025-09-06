@@ -1,9 +1,17 @@
 package mds.connection;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
-public class MdsConnection
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.NoSuchElementException;
+import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class MdsConnection implements AutoCloseable
 {
 	public static final int DEFAULT_PORT = 8000;
 	public static final String DEFAULT_USER = "JAVA_USER";
@@ -17,7 +25,7 @@ public class MdsConnection
 	protected DataOutputStream dos;
 	public String error;
 	protected MRT receiveThread;
-	protected boolean connected;
+	protected volatile boolean connected;
 	private int pending_count = 0;
 	private final Vector<ConnectionListener> connection_listener = new Vector<ConnectionListener>();
 	private final boolean event_flags[] = new boolean[MAX_NUM_EVENTS];
@@ -37,6 +45,10 @@ public class MdsConnection
 	public String getProvider()
 	{ return provider; }
 
+	/**
+	 * Use {@link #closeQuietly(AutoCloseable)} instead to avoid expansive reflection.
+	 */
+	@Deprecated
 	public static final void tryClose(final Object obj)
 	{
 		if (obj != null)
@@ -46,6 +58,27 @@ public class MdsConnection
 			}
 			catch (final Exception ignore)
 			{}
+	}
+
+	@Override
+	public void close() throws Exception
+	{
+		connected = false;
+		// Close socket first to unblock any blocking IO
+		closeQuietly(sock);
+		if (receiveThread != null)
+		{
+			receiveThread.interrupt();
+			try
+			{
+				receiveThread.join(1_200L); // TODO: need to be customizable?
+			}
+			catch (InterruptedException e)
+			{
+				Thread.currentThread().interrupt(); // Restore interrupt status
+			}
+		}
+		QuitFromMds();
 	}
 
 	static class EventItem
@@ -68,15 +101,33 @@ public class MdsConnection
 		}
 	}
 
-	class PMET extends Thread // Process Mds Event Thread
+	/**
+	 * Visible for test
+	 */
+	class PMET implements Runnable // Process Mds Event Thread
 	{
-		int eventId = -1;
-		String eventName;
+		private final int eventId;
+		private final String eventName;
+		private final String threadName;
+
+		public PMET(int id)
+		{
+			eventId = id;
+			eventName = null;
+			threadName = "Process Mds Event Thread - " + eventId;
+		}
+
+		public PMET(String name)
+		{
+			eventId = -1;
+			eventName = name;
+			threadName = "Process Mds Event Thread - " + name;
+		}
 
 		@Override
 		public void run()
 		{
-			setName("Process Mds Event Thread");
+			Thread.currentThread().setName(threadName);
 			if (MdsConnection.this.busy)
 				return;
 			if (eventName != null)
@@ -90,27 +141,20 @@ public class MdsConnection
 				dispatchUpdateEvent(eventId);
 			}
 		}
-
-		public void SetEventid(int id)
-		{
-			// System.out.println("Received Event ID " + id);
-			eventId = id;
-			eventName = null;
-		}
-
-		public void SetEventName(String name)
-		{
-//                    System.out.println("Received Event Name " + name);
-			eventId = -1;
-			eventName = name;
-		}
 	}// end PMET class
 
+	/**
+	 * Visible for test
+	 */
 	class MRT extends Thread // Mds Receive Thread
 	{
 		MdsMessage message;
-		boolean pending = false;
-		boolean killed = false;
+		private volatile boolean killed = false;
+		/**
+		 * Thread pool for PMET, aims to shut down graceful and succinct
+		 * TODO:newFixedThreadPool or VirtualThread
+		 */
+		private final ExecutorService executorService = Executors.newCachedThreadPool();
 
 		@Override
 		public void run()
@@ -125,9 +169,7 @@ public class MdsConnection
 					curr_message.Receive(dis);
 					if (curr_message.dtype == Descriptor.DTYPE_EVENT)
 					{
-						final PMET PMdsEvent = new PMET();
-						PMdsEvent.SetEventid(curr_message.body[12]);
-						PMdsEvent.start();
+						executorService.submit(createPMET(curr_message.body[12]));
 					}
 					else
 					{
@@ -147,6 +189,17 @@ public class MdsConnection
 				synchronized (this)
 				{
 					killed = true;
+					try
+					{
+						executorService.shutdown();
+						executorService.awaitTermination(1_000, TimeUnit.MILLISECONDS);
+					}
+					catch (Exception ignore)
+					{}
+					finally
+					{
+						executorService.shutdownNow();
+					}
 					notifyAll();
 				}
 				if (connected)
@@ -394,15 +447,22 @@ public class MdsConnection
 	public int DisconnectFromMds()
 	{
 		connection_listener.removeAllElements();
+		// TODO should we keep the EventItem even after Disconnect?
+		hashEventName.clear();
+		hashEventId.clear();
 		connected = false;
 		return 1;
 	}
 
+	/**
+	 * Use {@link #close()} instead
+	 */
 	public void QuitFromMds()
 	{
 		DisconnectFromMds();
-		tryClose(dos);
-		tryClose(dis);
+		closeQuietly(sock);
+		closeQuietly(dos);
+		closeQuietly(dis);
 	}
 
 	public void connectToServer() throws IOException
@@ -599,5 +659,27 @@ public class MdsConnection
 					break;
 				}
 		}
+	}
+
+	/**
+	 * Factory method for {@link PMET} as a workaround for inner classes.
+	 */
+	protected PMET createPMET(int id)
+	{
+		return new PMET(id);
+	}
+
+	/**
+	 * Close the given object quietly. <br/>
+	 * Eqivalent to {@link #tryClose(Object)} without expansive reflection.
+	 */
+	public static void closeQuietly(AutoCloseable obj)
+	{
+		try
+		{
+			obj.close();
+		}
+		catch (Exception ignore)
+		{}
 	}
 }

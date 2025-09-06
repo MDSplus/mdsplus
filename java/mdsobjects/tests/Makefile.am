@@ -6,11 +6,13 @@ java_srcdir = $(srcdir)/../src/test/java
 DEPENDENCIES += $(MDSOBJECTS_JAR)
 
 SOURCE = \
+    mds/connection/*.java\
     MDSplus/*.java
 
 TESTS_ENVIRONMENT += java_test_path=$(abs_builddir)
 
 TESTS = \
+ mds.connection.MdsConnectionMockTest\
  MDSplus.MdsDataTest\
  MDSplus.MdsConglomTest\
  MDSplus.MdsConnectionTest\
