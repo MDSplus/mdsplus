@@ -77,6 +77,9 @@ target/
 .settings/
 .classpath
 
+# intellij
+.idea/
+
 # vi
 *~
 *.swp
