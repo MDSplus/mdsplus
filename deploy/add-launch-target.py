@@ -114,7 +114,10 @@ if platform.system() == 'Windows':
     data['type'] = 'cppvsdbg'
     data['console'] = 'integratedTerminal'
 else:
-    data['externalConsole'] = False
+    if platform.system() == 'Darwin':
+        data['externalConsole'] = True
+    else:
+        data['externalConsole'] = False
 
 if platform.system() == 'Darwin':
     data['MIMode'] = 'lldb'

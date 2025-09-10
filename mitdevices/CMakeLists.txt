@@ -1,5 +1,5 @@
 
-if(TARGET XmdsShr)
+if(BUILD_MITDEVICES AND TARGET XmdsShr)
 
     ###
     ### MitDevices

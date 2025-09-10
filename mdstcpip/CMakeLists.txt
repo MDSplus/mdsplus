@@ -241,6 +241,8 @@ if(TARGET Globus::Globus)
         PUBLIC
             MdsIpShr
             Globus::Globus
+        PRIVATE
+            MdsIpShr
     )
 
     install(TARGETS MdsIpGSI)

@@ -97,6 +97,10 @@
 # define _DARWIN_USE_64_BIT_INODE
 #endif
 
+#if defined(__APPLE__) && defined(__aarch64__)
+   #define MACOS_ARM64
+#endif
+
 #ifdef HAVE_LL_CONSTANTS
 #define LONG_LONG_CONSTANT(value) value##ll
 #else

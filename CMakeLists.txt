@@ -387,6 +387,12 @@ if(IDL_DIR AND NOT ENABLE_IDL)
 
 endif()
 
+mdsplus_option(
+    BUILD_MITDEVICES BOOL
+    "Whether or not to build the mitdevices/ subdirectory"
+    DEFAULT ON
+)
+
 # replaces --with-readline=
 mdsplus_option(
     READLINE_DIR STRING
@@ -416,6 +422,17 @@ mdsplus_option(
     ENABLE_DOXYGEN BOOL
     "Generate doxygen documentation."
     DEFAULT ON
+)
+
+set(_use_libffi_default OFF)
+if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(_use_libffi_default ON)
+endif()
+
+mdsplus_option(
+    USE_LIBFFI BOOL
+    "Use libffi for calling external functions."
+    DEFAULT ${_use_libffi_default}
 )
 
 ###
@@ -702,7 +719,6 @@ if(APPLE)
     list(APPEND CMAKE_INSTALL_RPATH
         "@loader_path"
         "@executable_path/${_rpath_relative}"
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} # TODO: Remove?
     )
 else()
     list(APPEND CMAKE_INSTALL_RPATH
@@ -711,8 +727,18 @@ else()
     )
 endif()
 
+# TODO: Improve?
+# Add the install prefix (delayed evaluation until install)
+list(APPEND CMAKE_INSTALL_RPATH
+    $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>
+)
+
 # Automatically add libraries we depend on to RPATH
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+
+# Investigate
+# set(CMAKE_SKIP_BUILD_RPATH FALSE)
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 ###
 ### Dependencies
@@ -815,13 +841,22 @@ find_package(LibLZMA)
 find_package(LibM REQUIRED)
 
 # cmake/FindReadline.cmake
-set(Readline_ROOT "${READLINE_DIR}")
-find_package(Readline REQUIRED)
+if(NOT DEFINED Readline_ROOT)
+    set(Readline_ROOT "${READLINE_DIR}")
+endif()
+# We require at least version 5
+find_package(Readline 5 REQUIRED)
 
 # cmake/FindDC1394.cmake
 find_package(DC1394)
 
 # Configuration-dependent dependencies
+
+if(USE_LIBFFI)
+    add_compile_definitions(MDSPLUS_USE_FFI)
+
+    find_package(LibFFI REQUIRED)
+endif()
 
 if(ENABLE_MOTIF)
     # cmake/FindMotif.cmake
@@ -1319,6 +1354,7 @@ add_subdirectory(roam)
 add_subdirectory(rpm)
 add_subdirectory(scripts)
 add_subdirectory(manpages)
+add_subdirectory(macosx)
 
 # Examples
 

@@ -49,7 +49,7 @@ add_library(
 
 target_include_directories(
     TreeShr
-    PUBLIC
+    PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

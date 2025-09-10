@@ -64,6 +64,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--env-file',
+    help='Path to a file containing additional environment variables to set in the form of NAME=VALUE. For docker builds, this will be evaluated inside the docker container.'
+)
+
+parser.add_argument(
     '--workspace',
     help='The directory that will contain the default build/install directories and helper scripts, defaults to `workspace/` or `workspace-{--os}/` if --os is specified. This will be relative to the source directory unless an absolute path is given.',
 )
@@ -248,6 +253,7 @@ args, cmake_args = parser.parse_known_args()
 if args.os is not None:
 
     opts_filename = os.path.join(deploy_dir, f'os/{args.os}.opts')
+    env_filename = opts_filename.replace('.opts', '.env')
 
     if not os.path.exists(opts_filename):
         print(f'Unsupported --os={args.os}, ensure that deploy/os/{args.os}.opts exists.')
@@ -256,12 +262,19 @@ if args.os is not None:
     os_alias = None
     if os.path.islink(opts_filename):
         opts_filename = os.path.realpath(opts_filename)
+        env_filename = opts_filename.replace('.opts', '.env')
         os_alias = os.path.basename(opts_filename).replace('.opts', '')
     
     opts = open(opts_filename).read().strip().split()
 
     # To allow command-line arguments to override those from .opts files, we need to parse them again after parsing the .opts ones
     args, cmake_args = parser.parse_known_args(args=opts + sys.argv[1:])
+
+    if os.path.exists(env_filename):
+        args.env_file = env_filename
+
+    if os.path.exists(env_filename):
+        args.env_file = env_filename
 
     if os_alias is not None:
         print()
@@ -328,6 +341,21 @@ packages_dir          = os.path.join(args.workspace, 'packages')
 dist_dir              = os.path.join(args.workspace, 'dist')
 
 # System Configuration
+
+# Environment variables must be handled before finding any programs
+if args.env_file is not None and args.dockerimage is None:
+    lines = open(args.env_file).readlines()
+    for line in lines:
+        name, value = line.split('=', maxsplit=1)
+        
+        # TODO: Improve
+        result = subprocess.run(
+            ['/bin/bash', '-c', f"echo {value}"],
+            stdout=subprocess.PIPE,
+        )
+        value = result.stdout.decode().strip()
+
+        os.environ[name] = value
 
 cmake = shutil.which('cmake')
 if cmake is None and args.dockerimage is not None:
@@ -908,9 +936,16 @@ def do_package():
             )
             args.arch = result.stdout.decode().strip()
 
-        if args.platform == 'redhat':
+        elif args.platform == 'redhat':
             result = subprocess.run(
                 [ '/usr/bin/rpm', '-E', '%{_arch}' ],
+                stdout=subprocess.PIPE
+            )
+            args.arch = result.stdout.decode().strip()
+
+        elif args.platform.startswith('macosx'):
+            result = subprocess.run(
+                [ '/usr/bin/uname', '-m' ],
                 stdout=subprocess.PIPE
             )
             args.arch = result.stdout.decode().strip()

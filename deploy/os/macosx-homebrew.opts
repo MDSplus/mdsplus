@@ -1,0 +1,9 @@
+--distname macosx-homebrew
+-DBUILD_MITDEVICES=OFF
+-DReadline_ROOT=/opt/homebrew/opt/readline/
+-DZLIB_ROOT=/opt/homebrew/opt/zlib/
+-DLibLZMA_ROOT=/opt/homebrew/opt/xz/
+-DIconv_ROOT=/opt/homebrew/opt/libiconv/
+-DLibXml2_ROOT=/opt/homebrew/opt/libxml2/
+-DBLAS_ROOT=/opt/homebrew/opt/openblas/
+-DLibFFI_ROOT=/opt/homebrew/opt/libffi/

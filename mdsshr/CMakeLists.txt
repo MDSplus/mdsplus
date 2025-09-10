@@ -61,6 +61,14 @@ if(WIN32)
     )
 endif()
 
+if(TARGET LibFFI::LibFFI)
+    target_link_libraries(
+        MdsShr
+        PUBLIC
+            LibFFI::LibFFI
+    )
+endif()
+
 mdsplus_add_static_copy(MdsShr _static_target)
 
 install(TARGETS MdsShr ${_static_target})

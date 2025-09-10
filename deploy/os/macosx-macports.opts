@@ -1,0 +1,2 @@
+--distname macosx-macports
+-DBUILD_MITDEVICES=OFF

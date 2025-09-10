@@ -83,6 +83,9 @@ target/
 # emacs
 \#*#
 
+# OSX
+.DS_Store
+
 ###
 ### Misc
 ###

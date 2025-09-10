@@ -73,9 +73,10 @@ else:
 def load_library(name):
     import ctypes as C
     if isdarwin and not os.getenv('DYLD_LIBRARY_PATH'):
-        if os.getenv('MDSPLUS_DIR'):
-            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(
-                os.getenv('MDSPLUS_DIR'), 'lib')
+        if os.getenv('MDSPLUS_LIBRARY_PATH'):
+            os.environ['DYLD_LIBRARY_PATH'] = os.getenv('MDSPLUS_LIBRARY_PATH')
+        elif os.getenv('MDSPLUS_DIR'):
+            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'), 'lib')
         else:
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
     try:
@@ -85,7 +86,13 @@ def load_library(name):
             else:
                 return C.CDLL(name)
         if isdarwin:
+            for path in os.environ.get('DYLD_LIBRARY_PATH', '').split(':'):
+                try:
+                    return C.CDLL('%s/lib%s.dylib' % (path, name))
+                except:
+                    continue
             return C.CDLL('lib%s.dylib' % name)
+        
         return C.CDLL('lib%s.so' % name)
     except Exception:
         pass
