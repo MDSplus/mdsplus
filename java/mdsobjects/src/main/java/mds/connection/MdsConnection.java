@@ -46,7 +46,8 @@ public class MdsConnection implements AutoCloseable
 	{ return provider; }
 
 	/**
-	 * Use {@link #closeQuietly(AutoCloseable)} instead to avoid expansive reflection.
+	 * Use {@link #closeQuietly(AutoCloseable)} instead to avoid expansive
+	 * reflection.
 	 */
 	@Deprecated
 	public static final void tryClose(final Object obj)
@@ -68,7 +69,14 @@ public class MdsConnection implements AutoCloseable
 		closeQuietly(sock);
 		if (receiveThread != null)
 		{
-			receiveThread.interrupt();
+			try
+			{
+				receiveThread.interrupt();
+			}
+			catch (Exception ignore)
+			{
+				// Ignore interrupt failures - thread might already be dead or corrupted
+			}
 			try
 			{
 				receiveThread.join(1_200L); // TODO: need to be customizable?
@@ -145,10 +153,11 @@ public class MdsConnection implements AutoCloseable
 
 	/**
 	 * Visible for test
+	 * TODO: consider migration to Runnable with FixedThreadPool or VirtualThread
 	 */
 	class MRT extends Thread // Mds Receive Thread
 	{
-		MdsMessage message;
+		private MdsMessage message;
 		private volatile boolean killed = false;
 		/**
 		 * Thread pool for PMET, aims to shut down graceful and succinct
@@ -163,7 +172,7 @@ public class MdsConnection implements AutoCloseable
 			MdsMessage curr_message;
 			try
 			{
-				while (true)
+				while (!killed)
 				{
 					curr_message = new MdsMessage("", MdsConnection.this.connection_listener);
 					curr_message.Receive(dis);
