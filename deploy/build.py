@@ -537,9 +537,13 @@ def do_docker():
         f'--env=DOCKERIMAGE={args.dockerimage}'
     ]
 
-    # Enable colors
-    if sys.stdout.isatty():
-        docker_args.append('--tty')
+    # # Enable colors
+    # if sys.stdout.isatty():
+    #     docker_args.append('--tty')
+    
+    # TODO: Investigate
+    # Without this, we lose track of the processes
+    docker_args.append('--tty')
 
     if args.dockernetwork is not None:
         print(f'Creating docker network {args.dockernetwork}')
@@ -823,13 +827,6 @@ def do_configure():
             ninja = shutil.which('ninja')
             if ninja is not None:
                 cmake_args.append('-GNinja')
-
-    # TODO: Move
-    print()
-    print('Combined build arguments:')
-    for arg in build_command_line():
-        print(f"    {arg}")
-    print()
 
     print('CMake arguments:')
     for arg in cmake_args:
@@ -1402,6 +1399,13 @@ def do_test():
 if args.dockerimage is not None:
     do_docker()
 else:
+
+    # TODO: Move
+    print()
+    print('Combined build arguments:')
+    for arg in build_command_line():
+        print(f"    {arg}")
+    print()
 
     if args.interactive:
         do_interactive()
