@@ -54,7 +54,8 @@ def testStage(os) {
     return {
         stage("Build & Test") {
             try {
-                sh "deploy/build.py -j --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --dockerpull --output-junit ${extraArgs}"
+                // TODO: Adjust -j value
+                sh "deploy/build.py -j8 --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --dockerpull --output-junit ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -66,7 +67,8 @@ def testStage(os) {
 def packageStage(os) {
     return {
         stage("Build & Package") {
-            sh "deploy/build.py -j --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            // TODO: Adjust -j value
+            sh "deploy/build.py -j8 --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
@@ -116,7 +118,8 @@ def localTest(name, label, testStages) {
                         setupStage().call()
                         
                         stage("Build") {
-                            sh "deploy/build.py -j --build --install -DCMAKE_BUILD_TYPE=Debug"
+                            // TODO: Adjust -j value
+                            sh "deploy/build.py -j8 --build --install -DCMAKE_BUILD_TYPE=Debug"
                         }
                         
                         testStages.call()

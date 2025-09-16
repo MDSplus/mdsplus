@@ -542,10 +542,14 @@ def do_docker():
         docker_args.append('--tty')
 
     if args.dockernetwork is not None:
+        print(f'Creating docker network {args.dockernetwork}')
         result = subprocess.run([ docker, 'network', 'create', args.dockernetwork ])
         if result.returncode != 0:
-            print(f'Failed to create docker network {args.dockernetwork}')
-            exit(1)
+            result = subprocess.run([ docker, 'network', 'inspect', args.dockernetwork ])
+            if result.returncode != 0:
+                print(f'Failed to create docker network {args.dockernetwork}')
+                exit(1)
+            print(f'Docker network {args.dockernetwork} already exists')
 
         docker_args.append(f'--network={args.dockernetwork}')
 
