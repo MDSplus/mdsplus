@@ -48,9 +48,20 @@ if(DOWNLOAD_3RD_PARTY_APIS)
         set(_3rd_party_apis_url "https://github.com/MDSplus/3rd-party-apis/archive/refs/heads/master.zip")
         set(_3rd_party_apis_zip ${CMAKE_BINARY_DIR}/3rd-party-apis-master.zip)
 
-        message(STATUS "Downloading and extracting ${_3rd_party_apis_url}")
+        message(STATUS "Downloading ${_3rd_party_apis_url}")
 
-        file(DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip})
+        file(
+            DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip}
+            STATUS _status
+        )
+        list(GET _status 0 _result)
+        list(GET _status 1 _message)
+
+        if(NOT _result EQUAL 0)
+            message(FATAL_ERROR "Failed to download 3rd-party-apis: ${_message}")
+        endif()
+
+        message(STATUS "Extracting ${_3rd_party_apis_zip}")
 
         # We sadly have no control over the name of the folder it gets extracted to
         # For GitHub, it will always be "REPOSITORY_NAME-BRANCH"
