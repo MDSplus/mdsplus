@@ -5,11 +5,13 @@ import shutil
 
 import subprocess
 
+# TODO: Don't error about which if $YACC and $LEX is defined
+
 # For compatability with python < 3.3
 if not hasattr(shutil, 'which'):
     def which(cmd):
         try:
-            which_result = subprocess.check_output(['which', cmd])
+            which_result = subprocess.check_output(['/bin/sh', '-c', f'command -v {cmd}'])
         except subprocess.CalledProcessError:
             return None
         return which_result.strip()
@@ -35,7 +37,7 @@ if yacc is None:
     print('Please install bison or yacc, or set the YACC environment variable')
     have_tools = False
 
-# Flex/Lex Lexical Analyser Generator
+# Lex/Flex Lexical Analyser Generator
 
 if 'LEX' in os.environ:
     lex = os.environ['LEX']

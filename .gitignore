@@ -33,6 +33,7 @@ python/MDSplus/compound.py
 
 # deploy/gen-tdishr-TdiHash.py
 tdishr/TdiHash.c
+tdishr/TdiHash.c.in
 
 # deploy/gen-yacc-lex.py
 mdsdcl/cmdParse.c

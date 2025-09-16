@@ -27,8 +27,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# os_name = '' # This seems hacky, TODO replace with _{arch} or _version instead
-
 # This needs to contain all of the architectures that this platform builds for
 all_arches = [ 'amd64', 'arm64' ]
 
@@ -83,6 +81,7 @@ if not os.path.exists(distributions_filename):
     #     env=sign_env,
     # )
 
+# TODO: Take from mdsplus-publish.json ?
 release_deb_filenames = glob.glob(os.path.join(release_component_dir, f'DEBS/{args.arch}/*{args.version}_*.deb'))
 for deb in release_deb_filenames:
     print('Including', deb)
@@ -94,6 +93,8 @@ for deb in release_deb_filenames:
     if result.returncode != 0:
         print(f'Failure: Problem installing {deb} into repository.')
         exit(1)
+
+# TODO: Do we still need to do this to both /release and /publish?
 
 publish_deb_dir = os.path.join(publish_component_dir, f'DEBS/{args.arch}/')
 os.makedirs(publish_deb_dir, exist_ok=True)

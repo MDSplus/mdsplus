@@ -33,8 +33,10 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
         for line in reader:
             line['builtin'] = line['builtin'].replace("$", "d")
             has_m2 = int(eval(line['m2'].replace('MAX_DIMS', '8'))) > 0
-            line['min_args_def'] = (
-                '    min_args = %(m1)s\n' % line) if has_m2 else ''
+            if has_m2: # TODO: Check
+                line['min_args_def'] = '    min_args = %(m1)s\n' % line
+            else:
+                line['min_args_def'] = ''
 
             if line['builtin'] in FORCEREF_BUILTINS:
                 line['Function'] = '_dat.TreeRef, Function'
@@ -73,7 +75,7 @@ with open(OUTPUT_FILENAME, 'w+') as output_file:
     output_file.write(
         '_c = None\n'
         'for _c in globals().values():\n'
-        '     if isinstance(_c,Function.__class__) and issubclass(_c,Function) and _c is not Function:\n'
-        '         Function.opcodeToClass[_c.opcode]=_c\n'
+        '    if isinstance(_c,Function.__class__) and issubclass(_c,Function) and _c is not Function:\n'
+        '        Function.opcodeToClass[_c.opcode]=_c\n'
         'del(_c)\n'
     )

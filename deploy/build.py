@@ -575,7 +575,7 @@ def do_docker():
     passthrough_args.extend(cmake_args)
 
     result = subprocess.run(
-        [ docker, 'run', args.dockerimage, '/bin/sh', '-c', 'which python3' ],
+        [ docker, 'run', args.dockerimage, '/bin/sh', '-c', 'command -v python3' ],
         stdout=subprocess.PIPE,
     )
     if result.returncode != 0:

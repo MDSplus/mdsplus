@@ -5,11 +5,13 @@ import shutil
 
 import subprocess
 
+# TODO: Don't error about which if $GPERF is defined
+
 # For compatability with python < 3.3
 if not hasattr(shutil, 'which'):
     def which(cmd):
         try:
-            which_result = subprocess.check_output(['which', cmd])
+            which_result = subprocess.check_output(['/bin/sh', '-c', f'command -v {cmd}'])
         except subprocess.CalledProcessError:
             return None
         return which_result.strip()
@@ -89,7 +91,7 @@ with open(INTERMEDIARY_FILENAME, 'wt') as intermediary_file:
 
 # Process the input file with gperf
 proc = subprocess.Popen(
-    ['gperf', INTERMEDIARY_FILENAME],
+    [gperf, INTERMEDIARY_FILENAME],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
 )

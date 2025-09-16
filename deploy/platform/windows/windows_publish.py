@@ -36,7 +36,7 @@ publish_component_dir = os.path.join('/publish', args.flavor)
 
 os.makedirs(publish_component_dir, exist_ok=True)
 
-windows_package_version = '-'.join(args.version.rsplit('.', maxsplit=1)) # 1.2-3
+windows_package_version = '-'.join(args.version.rsplit('.', maxsplit=1)) # 1.2.3 -> 1.2-3
 
 bname = ''
 if args.flavor != 'stable':

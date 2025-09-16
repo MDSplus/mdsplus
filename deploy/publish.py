@@ -30,7 +30,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--publish-info',
-    help='Path to the mdsplus-publis.json file containing the information for this release.',
+    help='Path to the mdsplus-publish.json file containing the information for this release.',
     required=True,
 )
 
@@ -39,6 +39,7 @@ args = parser.parse_args()
 file = open(args.publish_info, 'rt')
 publish_info = json.load(file)
 
+# Don't error if publish_info['dockerimage'] is None
 docker = shutil.which('docker')
 if docker is None:
     print('Unable to find `docker`')

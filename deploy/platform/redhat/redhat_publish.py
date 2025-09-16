@@ -115,13 +115,17 @@ if result.returncode != 0:
 
 repomd_asc_filename = os.path.join(tempdir, 'repodata/repomd.xml.asc')
 if os.path.exists(repomd_asc_filename):
-    result = os.remove(repomd_asc_filename)
-    # TODO: Error handling?
+    os.remove(repomd_asc_filename)
 
 result = subprocess.run(
     [ gpg, '--local-user', 'MDSplus', '--detach-sign', '--armor', os.path.join(tempdir, 'repodata/repomd.xml') ],
     env=sign_env
 )
-# TODO: Error handling?
+if result.returncode != 0:
+    print('Failed to sign repodata/repomd.xml')
+    exit(1)
 
 subprocess.run([rsync, '-a', os.path.join(tempdir, 'repodata'), f'{publish_component_dir}/RPMS/'])
+if result.returncode != 0:
+    print('Failed to copy updated repodata/')
+    exit(1)
