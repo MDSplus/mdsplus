@@ -6,9 +6,11 @@ function mdsUsePython( varargin )
 %   bridge. This is not a permanent setting and only applies to the current
 %   invocation of matlab.
    if nargin == 0
-       mdsInfo(true);
-   else
+       mdsInfo(true, false);
+   elseif nargin == 1
        mdsInfo(varargin{1});
+   else
+       mdsInfo(varargin{1}, varargin{2});
    end
 end
 
