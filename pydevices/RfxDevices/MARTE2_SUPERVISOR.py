@@ -886,7 +886,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'Period': threadPeriod,
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
-                'DiscontinuityFactor': 10
+                'DiscontinuityFactor': 100
             }
         })
         sigIdx = 1
@@ -897,7 +897,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'Period': threadPeriod,
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
-                'DiscontinuityFactor': 10
+                'DiscontinuityFactor': 100
            })
 
         retDataSource['Signals'] = retSignals
@@ -1138,6 +1138,31 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     Class = ConfigurationDatabase
                     param1 = Idle
                 }
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }
+        +GOTORUN = {
+            Class = StateMachineEvent
+            NextState = "RUN"
+            NextStateError = "IDLE"
+            Timeout = 0 
+            +ChangeToRunMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                   Class = ConfigurationDatabase
+                    param1 = <FIRST_STATE>
+                }
+            }
+            +StopCurrentStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StopCurrentStateExecution
             }
             +StartNextStateExecutionMsg = {
                 Class = Message
@@ -1392,7 +1417,7 @@ $<APP_NAME> = {
         else:
             verb = 8191 #Remove three most significant bits in error mask
         fileName = '/tmp/'+self.getNode('name').data()+'_start.sh'
-        fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
+        fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:GOTORUN' + ' -e ' + str(verb) +'\n'
         print(fileContent)
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
