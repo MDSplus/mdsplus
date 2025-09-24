@@ -4,3 +4,6 @@ leak:python*/lib-dynload
 leak:libjvm.so
 leak:libjli.so
 leak:libz.so
+# https://github.com/MDSplus/mdsplus/issues/2605
+leak:send_response
+leak:GetMdsMsgTOC
