@@ -66,20 +66,25 @@ if not os.path.exists(distributions_filename):
         'Components: alpha stable cmake', # TODO: Remove cmake
         'Description: MDSplus packages',
         'SignWith: MDSplus',
-        ''
+        '',
+        'Origin: MDSplus Development Team', # TODO: Remove MDSplus-previous
+        'Label: MDSplus-previous',
+        'Codename: MDSplus-previous',
+        f"Architectures: {' '.join(all_arches)}",
+        'Components: alpha stable cmake', # TODO: Remove cmake
+        'Description: Previous MDSplus packages',
+        'SignWith: MDSplus',
+        '',
     ]
 
     with open(distributions_filename, 'wt') as file:
         file.write('\n'.join(distributions_lines))
 
-    # (SLW/TH) The original script also ran `reprepro clearvanished` which removes all references
-    # to packages that are no longer described in the distributions file. This seems excessive
-    # so we have removed it, but it might be necessary in the future.
-    # subprocess.run(
-    #     ['/usr/bin/reprepro', 'clearvanished'],
-    #     cwd=repo_dir,
-    #     env=sign_env,
-    # )
+    subprocess.run(
+        ['/usr/bin/reprepro', 'clearvanished'],
+        cwd='/release/repo',
+        env=sign_env,
+    )
 
 # TODO: Take from mdsplus-publish.json ?
 release_deb_filenames = glob.glob(os.path.join(release_component_dir, f'DEBS/{args.arch}/*{args.version}_*.deb'))
