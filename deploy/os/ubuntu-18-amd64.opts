@@ -1,1 +1,2 @@
---dockerimage=mdsplus/builder:ubuntu-18.04-amd64 --distname=Ubuntu18
+--dockerimage=mdsplus/builder:ubuntu-18.04-amd64 --distname=Ubuntu18 --platform=debian
+-DGSI=gcc64

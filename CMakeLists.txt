@@ -1365,7 +1365,10 @@ add_subdirectory(roam)
 add_subdirectory(rpm)
 add_subdirectory(scripts)
 add_subdirectory(manpages)
-add_subdirectory(macosx)
+
+if(APPLE)
+    add_subdirectory(macosx)
+endif()
 
 # Examples
 

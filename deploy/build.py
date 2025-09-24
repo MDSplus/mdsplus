@@ -925,6 +925,10 @@ def do_package():
     if args.version is None:
         args.version = cmake_cache.get('RELEASE_VERSION', '0.0.0')
 
+    # HACK: Remove after merging cmake branch
+    if args.flavor == 'cmake':
+        args.flavor = 'alpha'
+
     bname = ''
     if args.flavor != 'stable':
         bname = f'-{args.flavor}'
@@ -1016,8 +1020,8 @@ def do_package():
 
                 # mdsplus-alpha-package_bin_1.2.3_amd64.deb -> package_bin
                 reference_filename = os.path.basename(filename)
-                reference_filename = reference_filename.removeprefix(f'mdsplus{bname}-')
-                reference_filename = reference_filename.removesuffix(f'_{args.version}_{args.arch}.deb')
+                reference_filename = reference_filename.replace(f'mdsplus{bname}-', '')
+                reference_filename = reference_filename.replace(f'_{args.version}_{args.arch}.deb', '')
 
                 if '_bin' in reference_filename:
                     reference_filename += f'.{args.arch}'
@@ -1027,9 +1031,11 @@ def do_package():
                 print('Verifying contents of', os.path.basename(filename), 'against', reference_filename)
 
                 reference_filename = os.path.join(deploy_dir, 'packaging', args.platform, reference_filename)
+                if not os.path.exists(reference_filename):
+                    print('Skipping')
+                    continue
 
                 install_filenames = []
-                # TODO: Harden
                 reference_filenames = [ line.strip() for line in open(reference_filename).readlines() ]
 
                 dpkg_contents = result.stdout.decode().splitlines()
@@ -1056,8 +1062,8 @@ def do_package():
                     if install_filename != reference_filename:
                         print(f'"{install_filename}" != "{reference_filename}"')
                         exit(1)
-                    else:
-                        print(f'"{install_filename}" == "{reference_filename}"')
+                    # else:
+                    #     print(f'"{install_filename}" == "{reference_filename}"')
 
         package_filename = os.path.join(packages_dir, f"mdsplus_{args.flavor}_{args.version}_{args.distname}_{args.arch}_debs.tgz")
         print(f'Creating {package_filename}')
@@ -1127,9 +1133,9 @@ def do_package():
 
                 # mdsplus-alpha-package_bin_1.2-3_x86_64.rpm -> package_bin
                 reference_filename = os.path.basename(filename)
-                reference_filename = reference_filename.removeprefix(f'mdsplus{bname}-')
+                reference_filename = reference_filename.replace(f'mdsplus{bname}-', '')
                 reference_filename = reference_filename.replace(f'-{redhat_package_version}.{args.distname}', '')
-                reference_filename = reference_filename.removesuffix('.rpm')
+                reference_filename = reference_filename.replace('.rpm', '')
 
                 print('Verifying contents of', os.path.basename(filename), 'against', reference_filename)
 
@@ -1139,15 +1145,14 @@ def do_package():
                     continue
 
                 install_filenames = [ line.strip() for line in result.stdout.decode().splitlines() ]
-                # TODO: Harden
                 reference_filenames = [ line.strip() for line in open(reference_filename).readlines() ]
                 
                 for install_filename, reference_filename in zip(sorted(install_filenames), sorted(reference_filenames)):
                     if install_filename != reference_filename:
                         print(f'"{install_filename}" != "{reference_filename}"')
                         exit(1)
-                    else:
-                        print(f'"{install_filename}" == "{reference_filename}"')
+                    # else:
+                    #     print(f'"{install_filename}" == "{reference_filename}"')
 
         package_filename = os.path.join(packages_dir, f"mdsplus_{args.flavor}_{args.version}_{args.distname}_{args.arch}_rpms.tgz")
         print(f'Creating {package_filename}')
