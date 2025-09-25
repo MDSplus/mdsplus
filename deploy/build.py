@@ -343,9 +343,18 @@ dist_dir              = os.path.join(args.workspace, 'dist')
 # System Configuration
 
 # Environment variables must be handled before finding any programs
+env_file_vars = {} # TODO: Rename?
 if args.env_file is not None and args.dockerimage is None:
     lines = open(args.env_file).readlines()
     for line in lines:
+        line = line.strip()
+        
+        if len(line) == 0:
+            continue
+
+        if line[0] == '#':
+            continue
+
         name, value = line.split('=', maxsplit=1)
         
         # TODO: Improve
@@ -355,7 +364,9 @@ if args.env_file is not None and args.dockerimage is None:
         )
         value = result.stdout.decode().strip()
 
-        os.environ[name] = value
+        env_file_vars[name] = value
+
+os.environ.update(env_file_vars)
 
 cmake = shutil.which('cmake')
 if cmake is None and args.dockerimage is not None:
@@ -688,6 +699,7 @@ def do_interactive():
     do_configure_filename = os.path.join(args.workspace, 'do-configure.sh')
     with open(do_configure_filename, 'wt') as file:
         file.write('#!/bin/bash\n')
+        file.write(f'mkdir "{build_dir}"\n')
         file.write(f'cd "{build_dir}"\n')
         file.write(f"{cmake} {source_dir} -DCMAKE_INSTALL_PREFIX={usr_local_mdsplus_dir} {' '.join(cmake_args)} \"$@\"\n")
     os.chmod(do_configure_filename, 0o755)
@@ -740,6 +752,7 @@ def do_interactive():
 
     # Start with a clean environment so we don't inherit anything pointing to the system MDSplus installation
     interactive_env = dict()
+    interactive_env.update(env_file_vars) # from --env-file
 
     passthrough_env_names = ['HOME', 'TERM', 'DISPLAY', 'XAUTHORITY']
     for name in passthrough_env_names:
@@ -1384,8 +1397,14 @@ def do_test():
             system_out = xml.SubElement(testcase, 'system-out')
             system_out.text = open(test['log'], 'rt').read()
             
-            # The BEL character causes issues when loaded into Jenkins
-            system_out.text = system_out.text.replace('\x07', '')
+            # Characters like BEL or ESC causes issues when loaded into Jenkins
+            invalid_characters = [
+                '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', # \x09 is \t, \x0A is \n
+                '\x0B', '\x0C', # \x0D is \r
+                '\x0E', '\x0F', '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\x1E', '\x1F'
+            ]
+            for c in invalid_characters:
+                system_out.text = system_out.text.replace(c, '�')
 
             if not test['passed']:
                 failure = xml.SubElement(testcase, 'failure')
