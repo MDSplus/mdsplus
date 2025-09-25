@@ -13,13 +13,13 @@ def OSList = [
     ['Debian 12 (arm64)',               'debian-12-arm64',  'docker && linux-aarch64'],
     ['Windows (x86)',                   'windows-x86',      'docker && linux-amd64'],
     ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
-    // ['MacOSX (homebrew)',               'macosx-homebrew',  'macosx'],
-    // ['MacOSX (macports)',               'macosx-macports',  'macosx'],
-    // ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
-    // ['Thread Sanitizer',                'test-tsan',        'docker && linux-amd64'],
-    // ['Undefined Behavior Sanitizer',    'test-ubsan',       'docker && linux-amd64'],
-    // ['Helgrind',                        'test-helgrind',    'docker && linux-amd64'],
-    // ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
+    ['MacOSX (homebrew)',               'macosx-homebrew',  'macosx'],
+    ['MacOSX (macports)',               'macosx-macports',  'macosx'],
+    ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
+    ['Thread Sanitizer',                'test-tsan',        'docker && linux-amd64'],
+    ['Undefined Behavior Sanitizer',    'test-ubsan',       'docker && linux-amd64'],
+    ['Helgrind',                        'test-helgrind',    'docker && linux-amd64'],
+    ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
 ]
 
 def setupStage() {
