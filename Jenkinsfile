@@ -98,7 +98,9 @@ def distributions = OSList.collectEntries {
                     try {
                         setupStage().call()
                         testStage(os).call()
-                        packageStage(os).call()
+                        if (!os.startsWith("test-")) {
+                            packageStage(os).call()
+                        }
                     }
                     finally {
                         cleanStage().call()
@@ -219,6 +221,10 @@ pipeline {
                     ansiColor('xterm') {
                         for (info in OSList) {
                             def (name, os, label) = info
+
+                            if (!os.startsWith("test-")) {
+                                continue;
+                            }
 
                             unstash "packages-${os}"
                             unstash "dist-${os}"
