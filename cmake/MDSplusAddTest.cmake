@@ -160,7 +160,7 @@ function(mdsplus_add_test)
 
     set(_test_port_offset 0)
     if(NOT TEST_PORT_OFFSET STREQUAL "OFF")
-        set(_test_port_offset $ENV{TEST_PORT_OFFSET})
+        set(_test_port_offset "${TEST_PORT_OFFSET}")
     endif()
 
     set(_index ${MDSPLUS_TEST_INDEX})
