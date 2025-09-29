@@ -159,7 +159,7 @@ function(mdsplus_add_test)
     endif()
 
     set(_test_port_offset 0)
-    if(DEFINED $ENV{TEST_PORT_OFFSET})
+    if(NOT TEST_PORT_OFFSET STREQUAL "OFF")
         set(_test_port_offset $ENV{TEST_PORT_OFFSET})
     endif()
 
@@ -204,8 +204,8 @@ function(mdsplus_add_test)
 
     if(ENABLE_VALGRIND AND NOT ARGS_NO_VALGRIND)
 
-        if(DEFINED $ENV{TEST_PORT_OFFSET})
-            message(DEBUG "It is not recommended to use $TEST_PORT_OFFSET with valgrind tools, the port ranges can easily conflict")
+        if(NOT TEST_PORT_OFFSET STREQUAL "OFF")
+            message(DEBUG "It is not recommended to use TEST_PORT_OFFSET with valgrind tools, the port ranges can easily conflict")
         endif()
 
         set(_valgrind_flags ${Valgrind_FLAGS})

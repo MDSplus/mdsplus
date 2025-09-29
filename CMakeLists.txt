@@ -173,6 +173,12 @@ if(BUILD_TESTING)
         "Include the testing/selftest directory."
         DEFAULT OFF
     )
+
+    mdsplus_option(
+        TEST_PORT_OFFSET STRING
+        "Amount to offset all ports when configuring tests"
+        DEFAULT OFF
+    )
     
     # replaces --enable-valgrind
     mdsplus_option(
