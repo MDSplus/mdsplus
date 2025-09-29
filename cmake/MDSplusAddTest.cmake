@@ -158,14 +158,20 @@ function(mdsplus_add_test)
         endif()
     endif()
 
+    set(_test_port_offset 0)
+    if(DEFINED $ENV{TEST_PORT_OFFSET})
+        set(_test_port_offset $ENV{TEST_PORT_OFFSET})
+    endif()
+
     set(_index ${MDSPLUS_TEST_INDEX})
-    math(EXPR _event_port "4000 + ${_index}")
+    math(EXPR _event_port "4000 + ${_index} + ${_test_port_offset}")
 
     list(APPEND _env_mods ${ARGS_ENVIRONMENT_MODIFICATION})
 
     set(_base_env_mods
         ${_env_mods}
         "TEST_INDEX=set:${_index}"
+        "TEST_PORT_OFFSET=set:${_test_port_offset}"
         "mdsevent_port=set:${_event_port}"
         "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}-${_index}.log"
     )
@@ -198,13 +204,17 @@ function(mdsplus_add_test)
 
     if(ENABLE_VALGRIND AND NOT ARGS_NO_VALGRIND)
 
+        if(DEFINED $ENV{TEST_PORT_OFFSET})
+            message(DEBUG "It is not recommended to use $TEST_PORT_OFFSET with valgrind tools, the port ranges can easily conflict")
+        endif()
+
         set(_valgrind_flags ${Valgrind_FLAGS})
         foreach(_supp IN LISTS Valgrind_SUPPRESSION_FILES)
             list(APPEND _valgrind_flags "--suppressions=${_supp}")
         endforeach()
 
         # Each variant of tests gets a unique port range
-        set(_test_port_offset 1000)
+        math(EXPR _test_port_offset "${_test_port_offset} + 1000")
 
         foreach(_tool IN LISTS Valgrind_TOOL_LIST)
             set(_target_tool "${_target}-${_tool}")
@@ -220,7 +230,7 @@ function(mdsplus_add_test)
                 WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}/${_tool}
             )
 
-            math(EXPR _event_port "4000 + ${_index}")
+            math(EXPR _event_port "4000 + ${_index} + ${_test_port_offset}")
 
             set(_valgrind_env_mods
                 ${_env_mods}
@@ -240,7 +250,6 @@ function(mdsplus_add_test)
             # valgrind is a shell script, so adding it as a launch target causes some issues
 
             math(EXPR _index "${_index} + 1")
-            math(EXPR _test_port_offset "${_test_port_offset} + 1000")
         endforeach()
         
     endif()
