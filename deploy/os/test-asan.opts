@@ -1,1 +1,2 @@
---dockerimage=mdsplus/builder:ubuntu-24.04-amd64 --sanitize=address
+# When using LD_PRELOAD=tsan.so on Debian/Ubuntu, /bin/sh segfaults
+--dockerimage=mdsplus/builder:rocky-9-x86_64 --sanitize=address

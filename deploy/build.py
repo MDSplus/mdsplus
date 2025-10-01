@@ -265,7 +265,16 @@ if args.os is not None:
         env_filename = opts_filename.replace('.opts', '.env')
         os_alias = os.path.basename(opts_filename).replace('.opts', '')
     
-    opts = open(opts_filename).read().strip().split()
+    opts = []
+    for line in open(opts_filename).readlines():
+        if line.startswith('#'):
+            continue
+
+        for opt in line.split():
+            opt = opt.strip()
+            if opt == '':
+                continue
+            opts.append(opt)
 
     # To allow command-line arguments to override those from .opts files, we need to parse them again after parsing the .opts ones
     args, cmake_args = parser.parse_known_args(args=opts + sys.argv[1:])
@@ -1318,6 +1327,7 @@ def do_test():
             if test_regex is not None:
                 if test_regex.match(test['name']) is None:
                     print(f"Skipping: {test['name']}, does not match the --test-regex")
+                    test_count -= 1 # TODO: Improve
                     continue
             
             log_filename = os.path.join(testing_dir, f"{test['name']}.log")

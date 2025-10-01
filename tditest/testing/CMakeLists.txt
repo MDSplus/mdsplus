@@ -13,9 +13,16 @@ foreach(_test_script IN LISTS _test_script_list)
 
     cmake_path(GET _test_script STEM _target)
 
-    # Not supported on windows
-    if(WIN32 AND _target STREQUAL "test-dev-py")
-        continue()
+    if(_target STREQUAL "test-dev-py")
+        # Not supported on windows
+        if(WIN32)
+            continue()
+        endif()
+
+        # Hangs with the thread sanitizer in `Tcl('add node a12/model=a12')`
+        if(ENABLE_SANITIZE STREQUAL "thread")
+            continue()
+        endif()
     endif()
 
     mdsplus_add_test(
