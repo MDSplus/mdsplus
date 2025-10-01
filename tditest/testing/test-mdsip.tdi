@@ -62,4 +62,4 @@ MdsIpShr->CheckClient(ref(0),val(1),ref(_multi)),\
 };\
 _hostfile = MdsIpShr->GetHostfile:T();\
 free(MdsIpShr->SetHostfile:P(val(0)));\
-free(_multi);
+free(_multi);_hostfile
