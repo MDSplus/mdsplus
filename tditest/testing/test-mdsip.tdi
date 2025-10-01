@@ -22,9 +22,9 @@ treeputrecord('A',RANGE(3))
 tcl('deco A')
 WHILE(treeclose() & 1);mdsdisconnect()
 # test CheckClient
-@public _hostfile = "/tmp/test-mdsip.hosts";\
+@public _hostfile = "test-mdsip.hosts";\
 fun set_hostfile(in _lines) {\
-	WRITE(,"cat - > "//_hostfile//" << EOF");\
+	WRITE(,"cat - > test-mdsip.hosts << EOF");\
 	_f = FOPEN(_hostfile,"w+");\
 	_s = SIZE(_lines);\
 	for(_i=0;_i<_s;_i++) {\
@@ -62,4 +62,4 @@ MdsIpShr->CheckClient(ref(0),val(1),ref(_multi)),\
 };\
 _hostfile = MdsIpShr->GetHostfile:T();\
 free(MdsIpShr->SetHostfile:P(val(0)));\
-free(_multi);_hostfile
+free(_multi);
