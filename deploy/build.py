@@ -759,6 +759,10 @@ def do_interactive():
         if name in os.environ:
             interactive_env[name] = os.environ[name]
 
+    # TODO: Investigate
+    # Without a $PATH set, CMake's path_list_prepend: will behave like set:
+    interactive_env['PATH'] = os.path.defpath
+
     # Override shell prompt to ease confusion
     # \w is the "current working directory"
     git_tag_command = 'git describe --abbrev=0 --tag 2>/dev/null'

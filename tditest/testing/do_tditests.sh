@@ -13,12 +13,10 @@ if [ "$OS" == "windows" ]; then
   zdrv="Z:"
   PYTHON="wine python"
   TDITEST="wine tditest"
-  DIFF_Z=-Z
 else
   zdrv=""
   PYTHON=${PYTHON:-python}
   TDITEST=tditest
-  DIFF_Z=
 fi
 
 status=0
@@ -82,11 +80,11 @@ if [ ! -z $1 ]; then
     unset ok
     if diff --help 2>&1 | grep side-by-side &>/dev/null; then
       run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
-        diff $DIFF_Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
+        diff -Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
     else
       run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
-        diff $DIFF_Z /dev/stdin ${srcdir}/$test.ans && ok=1
+        diff -Z /dev/stdin ${srcdir}/$test.ans && ok=1
     fi
     echo ok=$ok
     if [ -z $ok ]; then
