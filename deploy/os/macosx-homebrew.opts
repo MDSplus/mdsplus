@@ -1,4 +1,4 @@
---distname macosx-homebrew
+--distname homebrew
 -DReadline_ROOT=/opt/homebrew/opt/readline/
 -DZLIB_ROOT=/opt/homebrew/opt/zlib/
 -DLibLZMA_ROOT=/opt/homebrew/opt/xz/

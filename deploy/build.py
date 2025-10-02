@@ -1011,8 +1011,22 @@ def do_package():
     # TODO: Move
     import tarfile
 
+
+    root_package_filename = os.path.join(packages_dir, f"mdsplus_{args.flavor}_{args.version}_{args.distname}_{args.arch}.tgz")
+
+    print(f'Creating {root_package_filename}')
+    root_package_file = tarfile.open(root_package_filename, 'w:gz')
+    # Put the files in the root of the tarfile, arcname is "alternative name in the archive"
+    root_package_file.add(usr_local_mdsplus_dir, arcname='.')
+    root_package_file.close()
+
+
     if args.platform == 'alpine':
         pass
+    elif args.platform == 'macosx':
+        # TODO: Improved packaging for OSX
+        shutil.copy2(root_package_filename, os.path.join(dist_dir, args.distname))
+
     elif args.platform == 'debian':
 
         # TODO: Return the list of deb files so we don't have to guess
@@ -1212,14 +1226,6 @@ def do_package():
 
     with open(publish_info_filename, 'wt') as file:
         file.write(json.dumps(publish_info, indent=2))
-
-    root_package_filename = os.path.join(packages_dir, f"mdsplus_{args.flavor}_{args.version}_{args.distname}_{args.arch}.tgz")
-
-    print(f'Creating {root_package_filename}')
-    root_package_file = tarfile.open(root_package_filename, 'w:gz')
-    # Put the files in the root of the tarfile, arcname is "alternative name in the archive"
-    root_package_file.add(usr_local_mdsplus_dir, arcname='.')
-    root_package_file.close()
 
 def do_test():
     global args, build_dir, testing_dir

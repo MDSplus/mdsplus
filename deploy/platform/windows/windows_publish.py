@@ -24,6 +24,24 @@ parser.add_argument(
     required=True,
 )
 
+parser.add_argument(
+    '--release-dir',
+    help='The directory containing packages from the build.',
+    required=True,
+)
+
+parser.add_argument(
+    '--publish-dir',
+    help='The directory to publish packages and repository information into.',
+    required=True,
+)
+
+parser.add_argument(
+    '--cert-dir',
+    help='The directory containing certificates for signing.',
+    required=True,
+)
+
 args = parser.parse_args()
 
 osslsigncode = shutil.which('osslsigncode')
@@ -31,8 +49,8 @@ if osslsigncode is None:
     print('Unable to find `osslsigncode`')
     exit(1)
 
-release_component_dir = os.path.join('/release', args.flavor)
-publish_component_dir = os.path.join('/publish', args.flavor)
+release_component_dir = os.path.join(args.release_dir, args.flavor)
+publish_component_dir = os.path.join(args.publish_dir, args.flavor)
 
 os.makedirs(publish_component_dir, exist_ok=True)
 
@@ -50,8 +68,8 @@ signed_installer_filename = os.path.join('/tmp', f'MDSplus-{args.flavor}-{window
 result = subprocess.run(
     [
         osslsigncode, 'sign',
-        '-certs', '/sign_keys/mdsplus.spc', # What is an spc?
-        '-key', '/sign_keys/mdsplus.pvk', # What is a pvk? Putty? Private Key?
+        '-certs', os.path.join(args.cert_dir, 'mdsplus.spc'), # What is an spc?
+        '-key', os.path.join(args.cert_dir, 'mdsplus.pvk'), # What is a pvk? Putty? Private Key?
         '-pass', 'mdsplus', # TODO: Don't.. do this
         '-n', 'MDSplus',
         '-i', 'http://www.mdsplus.org/',

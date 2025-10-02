@@ -26,6 +26,24 @@ parser.add_argument(
     required=True,
 )
 
+parser.add_argument(
+    '--release-dir',
+    help='The directory containing packages from the build.',
+    required=True,
+)
+
+parser.add_argument(
+    '--publish-dir',
+    help='The directory to publish packages and repository information into.',
+    required=True,
+)
+
+parser.add_argument(
+    '--cert-dir',
+    help='The directory containing certificates for signing.',
+    required=True,
+)
+
 args = parser.parse_args()
 
 # os_name = '' # This seems hacky, TODO replace with _{arch} or _version instead
@@ -63,15 +81,15 @@ deltas_args = []
 if '--deltas' in result.stdout.decode():
     deltas_args = [ '--deltas' ]
 
-# The /sign_keys directory is mounted read-only from docker, but GPG needs to have read-write access to it
+# The args.cert_dir directory is mounted read-only from docker, but GPG needs to have read-write access to it
 # for some stupid reason, so we copy .gnupg to /tmp/
-result = subprocess.run([rsync, '-a', '/sign_keys/.gnupg', '/tmp'])
+result = subprocess.run([rsync, '-a', os.path.join(args.cert_dir, '.gnupg'), '/tmp'])
 sign_env = os.environ.copy()
 sign_env['HOME'] = '/tmp'
 sign_env['GNUPGHOME'] = '/tmp/.gnupg'
 
-release_component_dir = os.path.join('/release', args.flavor)
-publish_component_dir = os.path.join('/publish', args.flavor)
+release_component_dir = os.path.join(args.release_dir, args.flavor)
+publish_component_dir = os.path.join(args.publish_dir, args.flavor)
 
 os.makedirs(publish_component_dir, exist_ok=True)
 
@@ -84,7 +102,7 @@ for filename in os.listdir(release_component_dir):
 print('Signing packages')
 
 redhat_package_version = '-'.join(args.version.rsplit('.', maxsplit=1)) # 1.2-3
-rpm_filenames = glob.glob(f'/publish/{args.flavor}/RPMS/*/*{redhat_package_version}*.rpm')
+rpm_filenames = glob.glob(os.path.join(publish_component_dir, f'RPMS/*/*{redhat_package_version}*.rpm'))
 
 result = subprocess.run(
     [ rpmsign, '--define', '_gpg_name MDSplus', '--addsign', *rpm_filenames ],
@@ -110,7 +128,7 @@ result = subprocess.run(
 )
 
 if result.returncode != 0:
-    print('Failure: Problem creating rpm repository in /publish!')
+    print(f'Failure: Problem creating rpm repository in {args.publish_dir}!')
     exit(1)
 
 repomd_asc_filename = os.path.join(tempdir, 'repodata/repomd.xml.asc')

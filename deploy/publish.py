@@ -17,13 +17,13 @@ source_dir = os.path.dirname(deploy_dir)
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    '--distdir',
+    '--dist-dir',
     help='The directory to publish repo information into.',
     required=True,
 )
 
 parser.add_argument(
-    '--certdir',
+    '--cert-dir',
     help='The directory containing certificates for signing packages and repo metadata.',
     required=True,
 )
@@ -47,7 +47,7 @@ if docker is None:
 
 # TODO:
 staging_dist_dir = os.path.join(os.getcwd(), 'dist', publish_info['distname'])
-publish_dist_dir = os.path.join(args.distdir, publish_info['distname'])
+publish_dist_dir = os.path.join(args.dist_dir, publish_info['distname'])
 
 release_version_filename = os.path.join(publish_dist_dir, f"{publish_info['flavor']}_{publish_info['arch']}_version")
 if os.path.exists(release_version_filename):
@@ -66,12 +66,27 @@ os.makedirs(publish_dist_dir, exist_ok=True)
 
 # TODO: Detect python3 instead of assuming it?
 platform_publish_script = os.path.join(deploy_dir, f"platform/{publish_info['platform']}/{publish_info['platform']}_publish.py")
-command = f"python3 {platform_publish_script} --flavor {publish_info['flavor']} --arch {publish_info['arch']} --version {publish_info['version']}"
+
+flavor = publish_info['flavor']
+arch = publish_info['arch']
+version = publish_info['version']
+
+command_args = [
+    platform_publish_script,
+    f'--flavor="{flavor}"',
+    f'--arch="{arch}"',
+    f'--version="{version}"',
+    f'--release-dir="{staging_dist_dir}"',
+    f'--publish-dir="{publish_dist_dir}"',
+    f'--cert-dir="{args.cert_dir}"',
+]
+command = f"python3 {' '.join(command_args)}"
 
 if publish_info['dockerimage'] is None:
 
     result = subprocess.run(
-        [ '/bin/bash', '-c', command ]
+        [ '/bin/bash', '-c', command ],
+        cwd=os.getcwd(),
     )
 
     if result.returncode != 0:
@@ -82,11 +97,11 @@ else:
 
     docker_args = [
         '--rm',
-        f'--volume={source_dir}:{source_dir}',
-        f'--volume={staging_dist_dir}:/release',
-        f'--volume={publish_dist_dir}:/publish',
-        f'--volume={args.certdir}:/sign_keys:ro',
-        f'--workdir={os.getcwd()}', # ?
+        f'--volume="{source_dir}":"{source_dir}"',
+        f'--volume="{staging_dist_dir}":"{staging_dist_dir}"', # Formerly /release
+        f'--volume="{publish_dist_dir}":"{publish_dist_dir}"', # Formerly /publish
+        f'--volume="{args.cert_dir}":"{args.cert_dir}":ro', # Formerly /sign_keys
+        f'--workdir="{os.getcwd()}"', # ?
     ]
 
     if platform.system() != 'Windows':

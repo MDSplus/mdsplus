@@ -229,7 +229,7 @@ pipeline {
                             unstash "packages-${os}"
                             unstash "dist-${os}"
 
-                            sh "deploy/publish.py --distdir=/opt/fakedist --certdir=/mdsplus/certs --publish-info=mdsplus-publish.json"
+                            sh "deploy/publish.py --dist-dir=/opt/fakedist --cert-dir=/mdsplus/certs --publish-info=mdsplus-publish.json"
                         }
                         
                         dir("packages") {
