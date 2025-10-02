@@ -167,7 +167,6 @@ static int WorkerThread(void *args)
   if (IS_OK(wc.wa->status))
     wc.wa->status = *(int *)xd.pointer->pointer;
   pthread_cleanup_pop(1);
-  printf("WorkerThread return %d\n", wc.wa->status);
   return wc.wa->status;
 }
 
@@ -224,10 +223,8 @@ static int StartWorker(struct descriptor_xd *task_xd,
   uint64_t ns = tp.tv_nsec + (uint64_t)(timeout * 1E9);
   tp.tv_nsec = ns % 1000000000;
   tp.tv_sec += (time_t)(ns / 1000000000);
-  printf("%ld, %ld\n", tp.tv_nsec, tp.tv_sec);
   int err =
       pthread_cond_timedwait(&WorkerRunning.cond, &WorkerRunning.mutex, &tp);
-  printf("%d\n", err);
   if (err)
   {
     fflush(stdout);
@@ -253,8 +250,6 @@ static int StartWorker(struct descriptor_xd *task_xd,
   pthread_join(Worker, &result);
   pthread_cond_destroy(&WorkerRunning.cond);
   pthread_mutex_destroy(&WorkerRunning.mutex);
-
-  printf("pthread_join result %p, canceled %p, err %d\n", result, PTHREAD_CANCELED, err);
 
   if (err && result == PTHREAD_CANCELED)
     status = (err == ETIMEDOUT ? TdiTIMEOUT : MDSplusFATAL);

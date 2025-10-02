@@ -1,0 +1,12 @@
+#!/bin/sh
+
+python3 deploy/gen-messages-exceptions.py
+python3 deploy/gen-include-opcbuiltins.py
+python3 deploy/gen-include-tdishr.py
+python3 deploy/gen-python-MDSplus-compound.py
+python3 deploy/gen-tdishr-TdiHash.py
+python3 deploy/gen-yacc-lex.py
+
+echo "=============================================================================================="
+echo "This is no longer required, please run CMake directly and files will be bootstrapped as needed"
+echo "=============================================================================================="
