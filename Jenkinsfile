@@ -266,16 +266,16 @@ pipeline {
         }
         
         stage('Publish') {
-            // when {
-            //     allOf {
-            //         anyOf {
-            //             branch 'alpha';
-            //             branch 'stable';
-            //         }
+            when {
+                allOf {
+                    anyOf {
+                        branch 'alpha';
+                        branch 'stable';
+                    }
 
-            //         triggeredBy 'TimerTrigger'
-            //     }
-            // }
+                    triggeredBy 'TimerTrigger'
+                }
+            }
 
             steps {
                 script {
@@ -298,8 +298,9 @@ pipeline {
                         dir("packages") {
                             sh "ls"
                             
+                            def prefix = pwd()
                             findFiles(glob: "*.tgz,*.exe").each {
-                                file -> release_file_list.add("${PWD}/${file.path}")
+                                file -> release_file_list.add("${prefix}/${file.path}")
                             }
 
                             archiveArtifacts artifacts: "*.tgz,*.exe", followSymlinks: false
@@ -309,7 +310,9 @@ pipeline {
 
                         echo "Creating GitHub Release and Tag for ${new_tag}"
 
-                        echo release_file_list
+                        release_file_list.each {
+                            item -> echo "${item}"
+                        }
 
                         // withCredentials([
                         //     usernamePassword(
