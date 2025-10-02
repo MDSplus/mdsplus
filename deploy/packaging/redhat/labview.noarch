@@ -12,7 +12,7 @@
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Get Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/New Connection DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Open Tree.vi
-./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Put  Data.vi
+./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Connection_Class/Set Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Data_Class
 ./usr/local/mdsplus/LabView/MDSplus/Classes/Data_Class/Array_Class
@@ -802,7 +802,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/Get Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/New Connection DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/Open Tree.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/Put  Data.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Connection_Class/Set Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Data_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2012/Classes/Data_Class/Array_Class
@@ -1595,7 +1595,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Get Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/New Connection DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Open Tree.vi
-./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Put  Data.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Put Data.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Connection_Class/Set Object Pointer.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/Array_Class

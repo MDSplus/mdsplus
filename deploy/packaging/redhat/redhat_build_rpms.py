@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -27,7 +27,7 @@ import traceback
 import subprocess
 import os
 import sys
-import pexpect
+# import pexpect
 import tempfile
 
 srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
@@ -58,6 +58,7 @@ pckspec = """
 %%clean
 %%files
 %%defattr(-,root,root)
+%%define _build_id_links none
 """
 
 def fixFilename(info, filename):
@@ -103,15 +104,12 @@ def build():
         attr = package.attrib
         if attr["arch"] == "noarch":
             # Unsigned builds don't create a "repo" package
-            if (has_key or attr["name"] != "repo"):
-                noarch_packages.append(package)
+            # if (has_key or attr["name"] != "repo"):
+            noarch_packages.append(package)
         else:
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
                       "bits": 64, "arch_t": ".x86_64"}]
-    if info['dist'] != 'el8' and info['dist'] != 'el9':
-        architectures.append(
-            {"target": "i686-linux", "bits": 32, "arch_t": ".i686"})
 
     for arch in architectures:
         info['target'] = arch['target']
@@ -158,10 +156,10 @@ def build():
                              info, shell=True).wait()
             for dir in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
                 try:
-                    os.mkdir(('/release/%(flavor)s/' % info) + dir)
+                    os.mkdir(('%(distroot)s/%(dist)s/%(flavor)s/' % info) + dir)
                 except OSError:
                     pass  # if exists
-            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
+            p = subprocess.Popen("rpmbuild -bb --define '_topdir %(distroot)s/%(dist)s/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
                                  info, stdout=subprocess.PIPE, shell=True)
             message = p.stdout.read()
             status = p.wait()
@@ -209,7 +207,7 @@ def build():
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
-        p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
+        p = subprocess.Popen("rpmbuild -bb --define '_topdir %(distroot)s/%(dist)s/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
                              info, stdout=subprocess.PIPE, shell=True)
         message = p.stdout.read()
         status = p.wait()
@@ -220,32 +218,32 @@ def build():
                 "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
         print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
-    if has_key:
-        try:
-            # The rsync is needed so that the .gnupg and .rpmmacros files are accessible to rpmsign
-            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
-            try:
-                if sys.version_info < (3,):
-                    bout = sys.stdout
-                else:
-                    bout = sys.stdout.buffer
-            except:
-                child = pexpect.spawn(cmd, timeout=60)
-            else:
-                child = pexpect.spawn(cmd, timeout=60, logfile=bout)
-            index = child.expect(["Enter pass phrase: ", pexpect.EOF])
-            if index == 0:
-                child.sendline("")
-                child.expect(pexpect.EOF)
-            child.close()
-            if child.status != 0:
-                sys.stdout.flush()
-                raise Exception("Error signing rpms. status=%d" % child.status)
-        except:
-            print("Got exception in rpm signing:")
-            traceback.print_exc()
-    else:
-        print("Sign keys unavailable. Not signing packages.")
+    # if has_key:
+    #     try:
+    #         # The rsync is needed so that the .gnupg and .rpmmacros files are accessible to rpmsign
+    #         cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+    #         try:
+    #             if sys.version_info < (3,):
+    #                 bout = sys.stdout
+    #             else:
+    #                 bout = sys.stdout.buffer
+    #         except:
+    #             child = pexpect.spawn(cmd, timeout=60)
+    #         else:
+    #             child = pexpect.spawn(cmd, timeout=60, logfile=bout)
+    #         index = child.expect(["Enter pass phrase: ", pexpect.EOF])
+    #         if index == 0:
+    #             child.sendline("")
+    #             child.expect(pexpect.EOF)
+    #         child.close()
+    #         if child.status != 0:
+    #             sys.stdout.flush()
+    #             raise Exception("Error signing rpms. status=%d" % child.status)
+    #     except:
+    #         print("Got exception in rpm signing:")
+    #         traceback.print_exc()
+    # else:
+    #     print("Sign keys unavailable. Not signing packages.")
 
 if __name__ == "__main__":
     build()

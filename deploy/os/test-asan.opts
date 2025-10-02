@@ -1,1 +1,2 @@
---platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --arch=amd64 --test=skip --sanitize --sanitize=address
+# When using LD_PRELOAD=tsan.so on Debian/Ubuntu, /bin/sh segfaults
+--dockerimage=mdsplus/builder:rocky-9-x86_64 --sanitize=address

@@ -1,1 +1,0 @@
---platform=alpine --dockerimage=mdsplus/builder:alpine-3.3-armhf --distname=alpine/3.3 --arch=armhf

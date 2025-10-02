@@ -1,0 +1,5 @@
+--dockerimage=mdsplus/builder:windows-x86-x64
+--platform=windows --arch=x64 --distname=Windows
+--toolchain=/usr/share/mingw/toolchain-mingw64.cmake
+-DTEST_WITH_WINE=ON -DWINE_PYTHON=/python27/python.exe
+-DENABLE_IDL=OFF

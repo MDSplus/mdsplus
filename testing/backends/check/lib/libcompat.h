@@ -1,9 +1,7 @@
 #ifndef LIBCOMPAT_H
 #define LIBCOMPAT_H
 
-#if HAVE_CONFIG_H
 #include <mdsplus/mdsconfig.h>
-#endif
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 #define GCC_VERSION_AT_LEAST(major, minor) \
@@ -174,6 +172,9 @@ struct __timer_t
 typedef struct __timer_t timer_t;
 #endif
 
+#ifdef __APPLE__
+#include "macos_timer.h"
+#else
 CK_DLL_EXP int clock_gettime(clockid_t clk_id, struct timespec *ts);
 CK_DLL_EXP int timer_create(clockid_t clockid, struct sigevent *sevp,
                             timer_t *timerid);
@@ -181,6 +182,7 @@ CK_DLL_EXP int timer_settime(timer_t timerid, int flags,
                              const struct itimerspec *new_value,
                              struct itimerspec *old_value);
 CK_DLL_EXP int timer_delete(timer_t timerid);
+#endif /* MACOS */
 #endif /* HAVE_LIBRT */
 
 /*
@@ -188,9 +190,7 @@ CK_DLL_EXP int timer_delete(timer_t timerid);
  * snprintf (or its variants) should be replaced with
  * the C99 compliant version in libcompat.
  */
-#if HAVE_CONFIG_H
 #include <mdsplus/mdsconfig.h>
-#endif
 
 //#if HAVE_STDARG_H
 //#include <stdarg.h>

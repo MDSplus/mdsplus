@@ -111,6 +111,16 @@ using namespace testing;
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
+  int test_index = 0;
+  char * test_index_env = getenv("TEST_INDEX");
+  if (test_index_env) {
+    test_index = atoi(test_index_env);
+  }
+
+  int shot_model = -1 + (test_index * 10);
+  int shot1 = shot_model + 2;
+  int shot2 = shot_model + 3;
+  
   // TEST_TIMEOUT(100);
   BEGIN_TESTING(Tree);
 
@@ -118,8 +128,8 @@ int main(int argc __attribute__((unused)),
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
 
-  setenv("t_tree_path", ".", 1);
-  setenv("t_tree2_path", ".", 1);
+  // setenv("t_tree_path", ".", 1);
+  // setenv("t_tree2_path", ".", 1);
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Constructors

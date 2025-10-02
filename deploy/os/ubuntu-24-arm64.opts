@@ -1,0 +1,2 @@
+--dockerimage=mdsplus/builder:ubuntu-24.04-arm64 --distname=Ubuntu24 --platform=debian
+-DENABLE_LABVIEW=OFF

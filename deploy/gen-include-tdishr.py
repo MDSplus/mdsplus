@@ -30,7 +30,7 @@ with open(OUTPUT_FILENAME, 'wt') as output_file:
         '\n'
         'extern int TdiGetLong(struct descriptor *indsc, int *out_int);\n'
         'extern int TdiGetFloat(struct descriptor *index, float *out_float);\n'
-        'extern int TdiConvert();\n'
+        'extern int TdiConvert(struct descriptor_a *, struct descriptor_a *);\n'
         'extern int TdiIntrinsic(\n'
         '    opcode_t opcode,\n'
         '    int narg,\n'

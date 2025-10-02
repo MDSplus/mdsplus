@@ -20,7 +20,7 @@ EXPORT int mdsdcl_show_version(void *ctx __attribute__((unused)),
                                char **output)
 {
   const char *tag = MdsRelease();
-  char *info = *output = malloc(1024);
+  char *info = *output = calloc(1, 1024);
   info += sprintf(info, "\n\n");
   info += sprintf(info, "MDSplus version: %d.%d.%d\n", MdsVersion.MAJOR, MdsVersion.MINOR, MdsVersion.MICRO);
   info += sprintf(info, "----------------------\n");

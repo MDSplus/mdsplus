@@ -4,6 +4,9 @@ import subprocess
 import shutil
 
 git_executable = shutil.which('git')
+if git_executable is None:
+    print('0.0.0')
+    exit(1)
 
 def git(command):
     proc = subprocess.Popen(

@@ -1,1 +1,0 @@
---platform=alpine --dockerimage=mdsplus/builder:alpine-3.9-x86 --distname=alpine/3.9 --arch=x86

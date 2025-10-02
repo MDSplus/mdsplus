@@ -1,62 +1,12 @@
-#! /bin/sh
-cd $(dirname $0)
+#!/bin/sh
 
-check() { which $1 > /dev/null 2>&1; }
-unset abort
-testprog() {
-# $1 prog, $2 package
-if ! check $1
-then
-	export abort=$?
-	echo "Please install package providing '$1' in order to bootstrap"
-	shift
-	echo "The required package may be named $@."
-	echo "We recommend using docker if available:"
-	echo "  deploy/build.sh --os=bootstrap"
-fi
-}
+python3 deploy/gen-messages-exceptions.py
+python3 deploy/gen-include-opcbuiltins.py
+python3 deploy/gen-include-tdishr.py
+python3 deploy/gen-python-MDSplus-compound.py
+python3 deploy/gen-tdishr-TdiHash.py
+python3 deploy/gen-yacc-lex.py
 
-
-if   check python3
-then PYTHON=python3
-elif check python2
-then PYTHON=python2
-else PYTHON=python
-fi
-
-testprog aclocal	automake
-testprog autoheader	autoconf
-testprog automake	automake
-testprog autoconf	autoconf
-testprog $PYTHON	python2 or python3
-testprog bison		bison
-testprog flex		flex
-export PYTHON
-
-if [ ! -z $abort ]
-then
-	exit $abort
-fi
-
-conf/update_submodules
-
-python/generate_tests
-
-deploy/git_revision.sh  # must be done before autoconf
-
-aclocal -I ./m4
-
-autoheader
-
-# libtoolize
-
-automake --add-missing
-
-autoconf
-
-$PYTHON deploy/gen-include-opcbuiltins.py
-$PYTHON deploy/gen-include-tdishr.py
-$PYTHON deploy/gen-messages-exceptions.py
-$PYTHON deploy/gen-python-MDSplus-compound.py
-$PYTHON deploy/gen-tdishr-TdiHash.py
-$PYTHON deploy/gen-yacc-lex.py
+echo "=============================================================================================="
+echo "This is no longer required, please run CMake directly and files will be bootstrapped as needed"
+echo "=============================================================================================="

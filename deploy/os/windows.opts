@@ -1,1 +1,1 @@
---platform=windows --distname=Windows --dockerimage=mdsplus/builder:windows
+windows-x64.opts

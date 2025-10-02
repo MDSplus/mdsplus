@@ -42,9 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   $Id$
 */
 
-#ifdef HAVE_CONFIG_H
 #include "mdsplus/mdsconfig.h"
-#endif
 
 #include "ext/standard/info.h"
 #include "php.h"

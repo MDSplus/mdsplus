@@ -1,54 +1,165 @@
 {
-   Race
+   Helgrind-Race-libjava
    Helgrind:Race
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
-   Race
+   Helgrind-Race-libjvm
    Helgrind:Race
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
 }
 {
-   Addr4
+   Helgrind-Race-libjli
+   Helgrind:Race
+   ...
+   obj:*/libjli*
+}
+{
+   Helgrind-Misc-libjava
+   Helgrind:Misc
+   ...
+   obj:*/libjava*
+}
+{
+   Helgrind-Misc-libjvm
+   Helgrind:Misc
+   ...
+   obj:*/libjvm*
+}
+{
+   Helgrind-Misc-libjli
+   Helgrind:Misc
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Addr4-libjava
    Memcheck:Addr4
-   obj:*
-   obj:*
+   ...
+   obj:*/libjava*
 }
 {
-   Addr8
+   Memcheck-Addr4-libjvm
+   Memcheck:Addr4
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Addr4-libjli
+   Memcheck:Addr4
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Addr8-libjava
    Memcheck:Addr8
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
-   Addr8
+   Memcheck-Addr8-libjvm
    Memcheck:Addr8
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
 }
 {
-   Value4
+   Memcheck-Addr8-libjli
+   Memcheck:Addr8
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Value4-libjava
    Memcheck:Value4
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
-   Value4
+   Memcheck-Value4-libjvm
    Memcheck:Value4
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
 }
 {
-   Value8
-   Memcheck:Value8
+   Memcheck-Value4-libjli
+   Memcheck:Value4
    ...
-   obj:*/libjava.so*
+   obj:*/libjli*
 }
 {
-   Value8
+   Memcheck-Value8-libjava
    Memcheck:Value8
    ...
-   obj:*/libjvm.so*
+   obj:*/libjava*
+}
+{
+   Memcheck-Value8-libjvm
+   Memcheck:Value8
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Value8-libjli
+   Memcheck:Value8
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Cond-libjvm
+   Memcheck:Cond
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Cond-libjava
+   Memcheck:Cond
+   ...
+   obj:*/libjava*
+}
+{
+   Memcheck-Cond-libjli
+   Memcheck:Cond
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Leak-libjvm
+   Memcheck:Leak
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Leak-libjava
+   Memcheck:Leak
+   ...
+   obj:*/libjava*
+}
+{
+   Memcheck-Leak-libjli
+   Memcheck:Leak
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Param-libjvm
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Param-libjava
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libjava*
+}
+{
+   Memcheck-Param-libjli
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libjli*
 }

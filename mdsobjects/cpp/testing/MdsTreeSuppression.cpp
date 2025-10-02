@@ -51,7 +51,7 @@ int main(int argc __attribute__((unused)),
 #ifdef _WIN32
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
-  setenv("t_treesupp_path", ".", 1);
+  // setenv("t_treesupp_path", ".", 1);
 
   Tree *tree = new Tree("t_treesupp", -1, "NEW");
   tree->write();

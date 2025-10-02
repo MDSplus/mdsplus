@@ -1,5 +1,6 @@
 #!/bin/bash
 TMP_LD_PRELOAD="$LD_PRELOAD"
+TEST_INDEX=${TEST_INDEX:-0}
 unset LD_PRELOAD
 test=$(basename "$1")
 test=${test%.tdi}
@@ -12,12 +13,10 @@ if [ "$OS" == "windows" ]; then
   zdrv="Z:"
   PYTHON="wine python"
   TDITEST="wine tditest"
-  DIFF_Z=-Z
 else
   zdrv=""
   PYTHON=${PYTHON:-python}
   TDITEST=tditest
-  DIFF_Z=
 fi
 
 status=0
@@ -39,16 +38,18 @@ if [ ! -z $1 ]; then
     cmd="$TDITEST $zdrv$srcdir/$test.tdi $zdrv$(pwd) 2 3"
   fi
 
+  echo $MDSPLUS_DIR
+
   if [ -z ${MDSPLUS_DIR} ]; then
     MDSPLUS_DIR=$(readlink -f ${srcdir}/../..)
   fi
-  # use tmpdir tobisolate shotdb.sys
+  # use tmpdir to isolate shotdb.sys
   tmpdir=$(mktemp -d)
   trap 'rm -Rf ${tmpdir}' EXIT
-  MDS_PATH=".;${MDSPLUS_DIR}/tdi;."
-  MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/python/MDSplus/tests/devices"
-  subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
-  main_path="${tmpdir};${MDSPLUS_DIR}/trees"
+  export MDS_PATH=".;${MDS_PATH}"
+  export MDS_PYDEVICE_PATH="${MDS_PYDEVICE_PATH}${MDSPLUS_DIR}/python/MDSplus/tests/devices"
+  export subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
+  export main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 
   if [[ $test == *"py"* ]]; then
     LD_PRELOAD="$TMP_LD_PRELOAD"
@@ -59,7 +60,7 @@ if [ ! -z $1 ]; then
   fi
   if [[ $test == *"dev"* ]]; then
     found=0
-    for path in ${LD_LIBRARY_PATH//:/ }; do
+    for path in ${MDSPLUS_LIBRARY_PATH//:/ }; do
       if [ -e $path/libMitDevices.so ] || [ -e $path/libMitDevices.dylib ]; then
         found=1
       fi
@@ -77,13 +78,13 @@ if [ ! -z $1 ]; then
     run "${cmd}" >"${srcdir}/$test.ans"
   else
     unset ok
-    if diff --help | grep side-by-side &>/dev/null; then
-      run "${cmd}" "${test}-out.log" |
-        diff $DIFF_Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
+    if diff --help 2>&1 | grep side-by-side &>/dev/null; then
+      run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
+        diff -Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
     else
-      run "${cmd}" "${test}-out.log" |
-        diff $DIFF_Z /dev/stdin ${srcdir}/$test.ans && ok=1
+      run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
+        diff -Z /dev/stdin ${srcdir}/$test.ans && ok=1
     fi
     echo ok=$ok
     if [ -z $ok ]; then

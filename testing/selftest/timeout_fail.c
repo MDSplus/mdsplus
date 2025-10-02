@@ -32,10 +32,6 @@ int main() { SKIP_TEST("current test is not performed on windows"); }
 #include <stdlib.h>
 #include <unistd.h>
 
-#ifdef HAVE_VALGRIND_H
-#include <valgrind/valgrind.h>
-#endif
-
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
@@ -48,11 +44,6 @@ int main(int argc __attribute__((unused)),
 
 #if __SANITIZE_ADDRESS__ || __SANITIZE_THREAD__
   SKIP_TEST("timeout test disabled on sanitizer");
-#endif
-
-#ifdef HAVE_VALGRIND_H
-  if (RUNNING_ON_VALGRIND)
-    SKIP_TEST("timeout test disabled on valgrind");
 #endif
 
   TEST_TIMEOUT(0.009);

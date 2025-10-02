@@ -35,4 +35,6 @@ fprintf("PASSED:     %3d\n", nnz(t.Passed))
 fprintf("FAILED:     %3d\n", nnz(t.Failed))
 fprintf("INCOMPLETE: %3d\n", nnz(t.Incomplete))
 
-
+if gt(t.Failed, 0)
+    error("Not all tests passed.\n Number of tests failing: %3d", nnz(t.Failed))
+end
