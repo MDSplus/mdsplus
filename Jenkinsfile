@@ -222,7 +222,7 @@ pipeline {
                         for (info in OSList) {
                             def (name, os, label) = info
 
-                            if (!os.startsWith("test-")) {
+                            if (os.startsWith("test-")) {
                                 continue;
                             }
 
