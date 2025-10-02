@@ -53,8 +53,8 @@ if(DOWNLOAD_3RD_PARTY_APIS)
         set(_retries 0)
 
         while(_retries LESS 5)
-            file(
-                DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip}
+            file(DOWNLOAD
+                ${_3rd_party_apis_url} ${_3rd_party_apis_zip}
                 STATUS _status
             )
             list(GET _status 0 _result)
