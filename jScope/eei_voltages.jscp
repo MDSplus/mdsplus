@@ -1,0 +1,213 @@
+Scope.geometry: 1260x847+385+53
+Scope.update.disable: false
+Scope.update.disable_when_icon: true
+Scope.font: java.awt.Font[family=Dialog,name=Dialog,style=plain,size=12]
+
+
+Scope.color_0: Black,java.awt.Color[r=0,g=0,b=0]
+Scope.color_1: Blue,java.awt.Color[r=0,g=0,b=255]
+Scope.color_2: Cyan,java.awt.Color[r=0,g=255,b=255]
+Scope.color_3: Green,java.awt.Color[r=0,g=255,b=0]
+Scope.color_4: Magenta,java.awt.Color[r=255,g=0,b=255]
+Scope.color_5: Orange,java.awt.Color[r=255,g=200,b=0]
+Scope.color_6: Pink,java.awt.Color[r=255,g=175,b=175]
+Scope.color_7: Red,java.awt.Color[r=255,g=0,b=0]
+Scope.color_8: Yellow,java.awt.Color[r=255,g=255,b=0]
+
+Scope.data_server_name: Local
+Scope.data_server_class: MdsDataProviderLocal
+Scope.reversed: false
+
+Scope.global_1_1.experiment: eei
+Scope.global_1_1.horizontal_offset: 0
+Scope.global_1_1.vertical_offset: 0
+
+Scope.columns: 2
+Scope.rows_in_column_1: 4
+
+
+Scope.plot_1_1.height: 181
+Scope.plot_1_1.grid_mode: 0
+Scope.plot_1_1.x_log: false
+Scope.plot_1_1.y_log: false
+Scope.plot_1_1.update_limits: true
+Scope.plot_1_1.palette: Green scale
+Scope.plot_1_1.bitShift: 0
+Scope.plot_1_1.bitClip: false
+Scope.plot_1_1.paletteMax: 0.0
+Scope.plot_1_1.paletteMin: 0.0
+Scope.plot_1_1.num_shot: 1
+Scope.plot_1_1.num_expr: 1
+Scope.plot_1_1.continuous_update: 0
+Scope.plot_1_1.global_defaults: 262017
+Scope.plot_1_1.x_expr_1: (0:30:0.005)
+Scope.plot_1_1.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[0,*])
+Scope.plot_1_1.mode_1D_1_1: Line
+Scope.plot_1_1.mode_2D_1_1: xz(y)
+Scope.plot_1_1.color_1_1: 0
+Scope.plot_1_1.marker_1_1: 0
+Scope.plot_1_1.step_marker_1_1: 1
+
+
+Scope.plot_2_1.height: 181
+Scope.plot_2_1.grid_mode: 0
+Scope.plot_2_1.x_log: false
+Scope.plot_2_1.y_log: false
+Scope.plot_2_1.update_limits: true
+Scope.plot_2_1.palette: Green scale
+Scope.plot_2_1.bitShift: 0
+Scope.plot_2_1.bitClip: false
+Scope.plot_2_1.paletteMax: 0.0
+Scope.plot_2_1.paletteMin: 0.0
+Scope.plot_2_1.num_shot: 1
+Scope.plot_2_1.num_expr: 1
+Scope.plot_2_1.continuous_update: 0
+Scope.plot_2_1.global_defaults: 262017
+Scope.plot_2_1.x_expr_1: (0:30:0.005)
+Scope.plot_2_1.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[1,*])
+Scope.plot_2_1.mode_1D_1_1: Line
+Scope.plot_2_1.mode_2D_1_1: xz(y)
+Scope.plot_2_1.color_1_1: 0
+Scope.plot_2_1.marker_1_1: 0
+Scope.plot_2_1.step_marker_1_1: 1
+
+
+Scope.plot_3_1.height: 181
+Scope.plot_3_1.grid_mode: 0
+Scope.plot_3_1.x_log: false
+Scope.plot_3_1.y_log: false
+Scope.plot_3_1.update_limits: true
+Scope.plot_3_1.palette: Green scale
+Scope.plot_3_1.bitShift: 0
+Scope.plot_3_1.bitClip: false
+Scope.plot_3_1.paletteMax: 0.0
+Scope.plot_3_1.paletteMin: 0.0
+Scope.plot_3_1.num_shot: 1
+Scope.plot_3_1.num_expr: 1
+Scope.plot_3_1.continuous_update: 0
+Scope.plot_3_1.global_defaults: 262017
+Scope.plot_3_1.x_expr_1: (0:30:0.005)
+Scope.plot_3_1.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[2,*])
+Scope.plot_3_1.mode_1D_1_1: Line
+Scope.plot_3_1.mode_2D_1_1: xz(y)
+Scope.plot_3_1.color_1_1: 0
+Scope.plot_3_1.marker_1_1: 0
+Scope.plot_3_1.step_marker_1_1: 1
+
+
+Scope.plot_4_1.height: 181
+Scope.plot_4_1.grid_mode: 0
+Scope.plot_4_1.x_log: false
+Scope.plot_4_1.y_log: false
+Scope.plot_4_1.update_limits: true
+Scope.plot_4_1.palette: Green scale
+Scope.plot_4_1.bitShift: 0
+Scope.plot_4_1.bitClip: false
+Scope.plot_4_1.paletteMax: 0.0
+Scope.plot_4_1.paletteMin: 0.0
+Scope.plot_4_1.num_shot: 1
+Scope.plot_4_1.num_expr: 1
+Scope.plot_4_1.continuous_update: 0
+Scope.plot_4_1.global_defaults: 262017
+Scope.plot_4_1.x_expr_1: (0:30:0.005)
+Scope.plot_4_1.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[3,*])
+Scope.plot_4_1.mode_1D_1_1: Line
+Scope.plot_4_1.mode_2D_1_1: xz(y)
+Scope.plot_4_1.color_1_1: 0
+Scope.plot_4_1.marker_1_1: 0
+Scope.plot_4_1.step_marker_1_1: 1
+Scope.rows_in_column_2: 4
+
+
+Scope.plot_1_2.height: 181
+Scope.plot_1_2.grid_mode: 0
+Scope.plot_1_2.x_log: false
+Scope.plot_1_2.y_log: false
+Scope.plot_1_2.update_limits: true
+Scope.plot_1_2.palette: Green scale
+Scope.plot_1_2.bitShift: 0
+Scope.plot_1_2.bitClip: false
+Scope.plot_1_2.paletteMax: 0.0
+Scope.plot_1_2.paletteMin: 0.0
+Scope.plot_1_2.num_shot: 1
+Scope.plot_1_2.num_expr: 1
+Scope.plot_1_2.continuous_update: 0
+Scope.plot_1_2.global_defaults: 262017
+Scope.plot_1_2.x_expr_1: (0:30:0.005)
+Scope.plot_1_2.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[4,*])
+Scope.plot_1_2.mode_1D_1_1: Line
+Scope.plot_1_2.mode_2D_1_1: xz(y)
+Scope.plot_1_2.color_1_1: 0
+Scope.plot_1_2.marker_1_1: 0
+Scope.plot_1_2.step_marker_1_1: 1
+
+
+Scope.plot_2_2.height: 181
+Scope.plot_2_2.grid_mode: 0
+Scope.plot_2_2.x_log: false
+Scope.plot_2_2.y_log: false
+Scope.plot_2_2.update_limits: true
+Scope.plot_2_2.palette: Green scale
+Scope.plot_2_2.bitShift: 0
+Scope.plot_2_2.bitClip: false
+Scope.plot_2_2.paletteMax: 0.0
+Scope.plot_2_2.paletteMin: 0.0
+Scope.plot_2_2.num_shot: 1
+Scope.plot_2_2.num_expr: 1
+Scope.plot_2_2.continuous_update: 0
+Scope.plot_2_2.global_defaults: 262017
+Scope.plot_2_2.x_expr_1: (0:30:0.005)
+Scope.plot_2_2.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[5,*])
+Scope.plot_2_2.mode_1D_1_1: Line
+Scope.plot_2_2.mode_2D_1_1: xz(y)
+Scope.plot_2_2.color_1_1: 0
+Scope.plot_2_2.marker_1_1: 0
+Scope.plot_2_2.step_marker_1_1: 1
+
+
+Scope.plot_3_2.height: 181
+Scope.plot_3_2.grid_mode: 0
+Scope.plot_3_2.x_log: false
+Scope.plot_3_2.y_log: false
+Scope.plot_3_2.update_limits: true
+Scope.plot_3_2.palette: Green scale
+Scope.plot_3_2.bitShift: 0
+Scope.plot_3_2.bitClip: false
+Scope.plot_3_2.paletteMax: 0.0
+Scope.plot_3_2.paletteMin: 0.0
+Scope.plot_3_2.num_shot: 1
+Scope.plot_3_2.num_expr: 1
+Scope.plot_3_2.continuous_update: 0
+Scope.plot_3_2.global_defaults: 262017
+Scope.plot_3_2.x_expr_1: (0:30:0.005)
+Scope.plot_3_2.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[6,*])
+Scope.plot_3_2.mode_1D_1_1: Line
+Scope.plot_3_2.mode_2D_1_1: xz(y)
+Scope.plot_3_2.color_1_1: 0
+Scope.plot_3_2.marker_1_1: 0
+Scope.plot_3_2.step_marker_1_1: 1
+
+
+Scope.plot_4_2.height: 181
+Scope.plot_4_2.grid_mode: 0
+Scope.plot_4_2.x_log: false
+Scope.plot_4_2.y_log: false
+Scope.plot_4_2.update_limits: true
+Scope.plot_4_2.palette: Green scale
+Scope.plot_4_2.bitShift: 0
+Scope.plot_4_2.bitClip: false
+Scope.plot_4_2.paletteMax: 0.0
+Scope.plot_4_2.paletteMin: 0.0
+Scope.plot_4_2.num_shot: 1
+Scope.plot_4_2.num_expr: 1
+Scope.plot_4_2.continuous_update: 0
+Scope.plot_4_2.global_defaults: 262017
+Scope.plot_4_2.x_expr_1: (0:30:0.005)
+Scope.plot_4_2.y_expr_1: set_range([200000],data(\EEI::TOP:EEI_RECV.OUTPUTS.PR_INV_VOLT:VALUE)[7,*])
+Scope.plot_4_2.mode_1D_1_1: Line
+Scope.plot_4_2.mode_2D_1_1: xz(y)
+Scope.plot_4_2.color_1_1: 0
+Scope.plot_4_2.marker_1_1: 0
+Scope.plot_4_2.step_marker_1_1: 1
+
+Scope.vpane_1: 500

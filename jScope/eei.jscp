@@ -1,0 +1,342 @@
+Scope.geometry: 1137x655+645+387
+Scope.update.disable: false
+Scope.update.disable_when_icon: true
+Scope.font: java.awt.Font[family=Dialog,name=Dialog,style=plain,size=12]
+
+
+Scope.color_0: Black,java.awt.Color[r=0,g=0,b=0]
+Scope.color_1: Blue,java.awt.Color[r=0,g=0,b=255]
+Scope.color_2: Cyan,java.awt.Color[r=0,g=255,b=255]
+Scope.color_3: Green,java.awt.Color[r=0,g=255,b=0]
+Scope.color_4: Magenta,java.awt.Color[r=255,g=0,b=255]
+Scope.color_5: Orange,java.awt.Color[r=255,g=200,b=0]
+Scope.color_6: Pink,java.awt.Color[r=255,g=175,b=175]
+Scope.color_7: Red,java.awt.Color[r=255,g=0,b=0]
+Scope.color_8: Yellow,java.awt.Color[r=255,g=255,b=0]
+
+Scope.data_server_name: Local
+Scope.data_server_class: MdsDataProviderLocal
+Scope.reversed: false
+
+Scope.global_1_1.experiment: eei
+Scope.global_1_1.horizontal_offset: 0
+Scope.global_1_1.vertical_offset: 0
+
+Scope.columns: 3
+Scope.rows_in_column_1: 6
+
+
+Scope.plot_1_1.height: 88
+Scope.plot_1_1.grid_mode: 0
+Scope.plot_1_1.x_log: false
+Scope.plot_1_1.y_log: false
+Scope.plot_1_1.update_limits: true
+Scope.plot_1_1.palette: Green scale
+Scope.plot_1_1.bitShift: 0
+Scope.plot_1_1.bitClip: false
+Scope.plot_1_1.paletteMax: 0.0
+Scope.plot_1_1.paletteMin: 0.0
+Scope.plot_1_1.experiment: EEI
+Scope.plot_1_1.num_shot: 1
+Scope.plot_1_1.num_expr: 1
+Scope.plot_1_1.continuous_update: 0
+Scope.plot_1_1.title: "CODAS Command"
+Scope.plot_1_1.global_defaults: 196353
+Scope.plot_1_1.y_expr_1: \EEI::TOP:MARTE_OPC_IN.OUTPUTS.OUT1:VALUE
+Scope.plot_1_1.mode_1D_1_1: Line
+Scope.plot_1_1.mode_2D_1_1: xz(y)
+Scope.plot_1_1.color_1_1: 0
+Scope.plot_1_1.marker_1_1: 0
+Scope.plot_1_1.step_marker_1_1: 1
+
+
+Scope.plot_2_1.height: 88
+Scope.plot_2_1.grid_mode: 0
+Scope.plot_2_1.x_log: false
+Scope.plot_2_1.y_log: false
+Scope.plot_2_1.update_limits: true
+Scope.plot_2_1.palette: Green scale
+Scope.plot_2_1.bitShift: 0
+Scope.plot_2_1.bitClip: false
+Scope.plot_2_1.paletteMax: 0.0
+Scope.plot_2_1.paletteMin: 0.0
+Scope.plot_2_1.experiment: EEI
+Scope.plot_2_1.num_shot: 1
+Scope.plot_2_1.num_expr: 1
+Scope.plot_2_1.continuous_update: 0
+Scope.plot_2_1.title: "CommandIn"
+Scope.plot_2_1.global_defaults: 196353
+Scope.plot_2_1.y_expr_1: \EEI::TOP:MARTE_DH_M.OUTPUTS.COMMANDOUT0:VALUE
+Scope.plot_2_1.mode_1D_1_1: Line
+Scope.plot_2_1.mode_2D_1_1: xz(y)
+Scope.plot_2_1.color_1_1: 0
+Scope.plot_2_1.marker_1_1: 0
+Scope.plot_2_1.step_marker_1_1: 1
+
+
+Scope.plot_3_1.height: 88
+Scope.plot_3_1.grid_mode: 0
+Scope.plot_3_1.x_log: false
+Scope.plot_3_1.y_log: false
+Scope.plot_3_1.update_limits: true
+Scope.plot_3_1.palette: Green scale
+Scope.plot_3_1.bitShift: 0
+Scope.plot_3_1.bitClip: false
+Scope.plot_3_1.paletteMax: 0.0
+Scope.plot_3_1.paletteMin: 0.0
+Scope.plot_3_1.experiment: EEI
+Scope.plot_3_1.num_shot: 1
+Scope.plot_3_1.num_expr: 1
+Scope.plot_3_1.continuous_update: 0
+Scope.plot_3_1.title: "CommandOut"
+Scope.plot_3_1.global_defaults: 196353
+Scope.plot_3_1.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT2:VALUE
+Scope.plot_3_1.mode_1D_1_1: Line
+Scope.plot_3_1.mode_2D_1_1: xz(y)
+Scope.plot_3_1.color_1_1: 0
+Scope.plot_3_1.marker_1_1: 0
+Scope.plot_3_1.step_marker_1_1: 1
+
+
+Scope.plot_4_1.height: 88
+Scope.plot_4_1.grid_mode: 0
+Scope.plot_4_1.x_log: false
+Scope.plot_4_1.y_log: false
+Scope.plot_4_1.update_limits: true
+Scope.plot_4_1.palette: Green scale
+Scope.plot_4_1.bitShift: 0
+Scope.plot_4_1.bitClip: false
+Scope.plot_4_1.paletteMax: 0.0
+Scope.plot_4_1.paletteMin: 0.0
+Scope.plot_4_1.experiment: EEI
+Scope.plot_4_1.num_shot: 1
+Scope.plot_4_1.num_expr: 1
+Scope.plot_4_1.continuous_update: 0
+Scope.plot_4_1.title: "State"
+Scope.plot_4_1.global_defaults: 196353
+Scope.plot_4_1.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT10:VALUE
+Scope.plot_4_1.mode_1D_1_1: Line
+Scope.plot_4_1.mode_2D_1_1: xz(y)
+Scope.plot_4_1.color_1_1: 0
+Scope.plot_4_1.marker_1_1: 0
+Scope.plot_4_1.step_marker_1_1: 1
+
+
+Scope.plot_5_1.height: 88
+Scope.plot_5_1.grid_mode: 0
+Scope.plot_5_1.x_log: false
+Scope.plot_5_1.y_log: false
+Scope.plot_5_1.update_limits: true
+Scope.plot_5_1.palette: Green scale
+Scope.plot_5_1.bitShift: 0
+Scope.plot_5_1.bitClip: false
+Scope.plot_5_1.paletteMax: 0.0
+Scope.plot_5_1.paletteMin: 0.0
+Scope.plot_5_1.experiment: EEI
+Scope.plot_5_1.num_shot: 1
+Scope.plot_5_1.num_expr: 1
+Scope.plot_5_1.continuous_update: 0
+Scope.plot_5_1.title: "SubState"
+Scope.plot_5_1.global_defaults: 196353
+Scope.plot_5_1.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT11:VALUE
+Scope.plot_5_1.mode_1D_1_1: Line
+Scope.plot_5_1.mode_2D_1_1: xz(y)
+Scope.plot_5_1.color_1_1: 0
+Scope.plot_5_1.marker_1_1: 0
+Scope.plot_5_1.step_marker_1_1: 1
+
+
+Scope.plot_6_1.height: 88
+Scope.plot_6_1.grid_mode: 0
+Scope.plot_6_1.x_log: false
+Scope.plot_6_1.y_log: false
+Scope.plot_6_1.update_limits: true
+Scope.plot_6_1.palette: Green scale
+Scope.plot_6_1.bitShift: 0
+Scope.plot_6_1.bitClip: false
+Scope.plot_6_1.paletteMax: 0.0
+Scope.plot_6_1.paletteMin: 0.0
+Scope.plot_6_1.experiment: EEI
+Scope.plot_6_1.num_shot: 1
+Scope.plot_6_1.num_expr: 1
+Scope.plot_6_1.continuous_update: 0
+Scope.plot_6_1.title: "MachineStatus_W1"
+Scope.plot_6_1.global_defaults: 196353
+Scope.plot_6_1.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT12:VALUE
+Scope.plot_6_1.mode_1D_1_1: Line
+Scope.plot_6_1.mode_2D_1_1: xz(y)
+Scope.plot_6_1.color_1_1: 0
+Scope.plot_6_1.marker_1_1: 0
+Scope.plot_6_1.step_marker_1_1: 1
+Scope.rows_in_column_2: 4
+
+
+Scope.plot_1_2.height: 133
+Scope.plot_1_2.grid_mode: 0
+Scope.plot_1_2.x_log: false
+Scope.plot_1_2.y_log: false
+Scope.plot_1_2.update_limits: true
+Scope.plot_1_2.palette: Green scale
+Scope.plot_1_2.bitShift: 0
+Scope.plot_1_2.bitClip: false
+Scope.plot_1_2.paletteMax: 0.0
+Scope.plot_1_2.paletteMin: 0.0
+Scope.plot_1_2.experiment: EEI
+Scope.plot_1_2.num_shot: 1
+Scope.plot_1_2.num_expr: 1
+Scope.plot_1_2.continuous_update: 0
+Scope.plot_1_2.title: "CommandSeg from  WINCCOA"
+Scope.plot_1_2.global_defaults: 196353
+Scope.plot_1_2.y_expr_1: \EEI::TOP:MARTE_OPC_IN.OUTPUTS.OUT2:VALUE
+Scope.plot_1_2.mode_1D_1_1: Line
+Scope.plot_1_2.mode_2D_1_1: xz(y)
+Scope.plot_1_2.color_1_1: 0
+Scope.plot_1_2.marker_1_1: 0
+Scope.plot_1_2.step_marker_1_1: 1
+
+
+Scope.plot_2_2.height: 133
+Scope.plot_2_2.grid_mode: 0
+Scope.plot_2_2.x_log: false
+Scope.plot_2_2.y_log: false
+Scope.plot_2_2.update_limits: true
+Scope.plot_2_2.palette: Green scale
+Scope.plot_2_2.bitShift: 0
+Scope.plot_2_2.bitClip: false
+Scope.plot_2_2.paletteMax: 0.0
+Scope.plot_2_2.paletteMin: 0.0
+Scope.plot_2_2.experiment: EEI
+Scope.plot_2_2.num_shot: 1
+Scope.plot_2_2.num_expr: 1
+Scope.plot_2_2.continuous_update: 0
+Scope.plot_2_2.title: "CommandSeg_In"
+Scope.plot_2_2.global_defaults: 196353
+Scope.plot_2_2.y_expr_1: \EEI::TOP:MARTE_DH_M.OUTPUTS.COMMANDOUT1:VALUE
+Scope.plot_2_2.mode_1D_1_1: Line
+Scope.plot_2_2.mode_2D_1_1: xz(y)
+Scope.plot_2_2.color_1_1: 0
+Scope.plot_2_2.marker_1_1: 0
+Scope.plot_2_2.step_marker_1_1: 1
+
+
+Scope.plot_3_2.height: 133
+Scope.plot_3_2.grid_mode: 0
+Scope.plot_3_2.x_log: false
+Scope.plot_3_2.y_log: false
+Scope.plot_3_2.update_limits: true
+Scope.plot_3_2.palette: Green scale
+Scope.plot_3_2.bitShift: 0
+Scope.plot_3_2.bitClip: false
+Scope.plot_3_2.paletteMax: 0.0
+Scope.plot_3_2.paletteMin: 0.0
+Scope.plot_3_2.experiment: EEI
+Scope.plot_3_2.num_shot: 1
+Scope.plot_3_2.num_expr: 1
+Scope.plot_3_2.continuous_update: 0
+Scope.plot_3_2.title: "CommandSeg_Out"
+Scope.plot_3_2.global_defaults: 196353
+Scope.plot_3_2.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT5:VALUE
+Scope.plot_3_2.mode_1D_1_1: Line
+Scope.plot_3_2.mode_2D_1_1: xz(y)
+Scope.plot_3_2.color_1_1: 0
+Scope.plot_3_2.marker_1_1: 0
+Scope.plot_3_2.step_marker_1_1: 1
+
+
+Scope.plot_4_2.height: 133
+Scope.plot_4_2.grid_mode: 0
+Scope.plot_4_2.x_log: false
+Scope.plot_4_2.y_log: false
+Scope.plot_4_2.update_limits: true
+Scope.plot_4_2.palette: Green scale
+Scope.plot_4_2.bitShift: 0
+Scope.plot_4_2.bitClip: false
+Scope.plot_4_2.paletteMax: 0.0
+Scope.plot_4_2.paletteMin: 0.0
+Scope.plot_4_2.num_shot: 1
+Scope.plot_4_2.num_expr: 1
+Scope.plot_4_2.continuous_update: 0
+Scope.plot_4_2.title: "CommandSeg_StateOut"
+Scope.plot_4_2.global_defaults: 196481
+Scope.plot_4_2.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT4:VALUE
+Scope.plot_4_2.mode_1D_1_1: Line
+Scope.plot_4_2.mode_2D_1_1: xz(y)
+Scope.plot_4_2.color_1_1: 0
+Scope.plot_4_2.marker_1_1: 0
+Scope.plot_4_2.step_marker_1_1: 1
+Scope.rows_in_column_3: 3
+
+
+Scope.plot_1_3.height: 177
+Scope.plot_1_3.grid_mode: 0
+Scope.plot_1_3.x_log: false
+Scope.plot_1_3.y_log: false
+Scope.plot_1_3.update_limits: true
+Scope.plot_1_3.palette: Green scale
+Scope.plot_1_3.bitShift: 0
+Scope.plot_1_3.bitClip: false
+Scope.plot_1_3.paletteMax: 0.0
+Scope.plot_1_3.paletteMin: 0.0
+Scope.plot_1_3.experiment: EEI
+Scope.plot_1_3.num_shot: 1
+Scope.plot_1_3.num_expr: 1
+Scope.plot_1_3.continuous_update: 0
+Scope.plot_1_3.title: "AuxCommands from WINCCOA"
+Scope.plot_1_3.global_defaults: 196353
+Scope.plot_1_3.y_expr_1: \EEI::TOP:MARTE_OPC_IN.OUTPUTS.OUT3:VALUE
+Scope.plot_1_3.mode_1D_1_1: Line
+Scope.plot_1_3.mode_2D_1_1: xz(y)
+Scope.plot_1_3.color_1_1: 0
+Scope.plot_1_3.marker_1_1: 0
+Scope.plot_1_3.step_marker_1_1: 1
+
+
+Scope.plot_2_3.height: 177
+Scope.plot_2_3.grid_mode: 0
+Scope.plot_2_3.x_log: false
+Scope.plot_2_3.y_log: false
+Scope.plot_2_3.update_limits: true
+Scope.plot_2_3.palette: Green scale
+Scope.plot_2_3.bitShift: 0
+Scope.plot_2_3.bitClip: false
+Scope.plot_2_3.paletteMax: 0.0
+Scope.plot_2_3.paletteMin: 0.0
+Scope.plot_2_3.experiment: EEI
+Scope.plot_2_3.num_shot: 1
+Scope.plot_2_3.num_expr: 1
+Scope.plot_2_3.continuous_update: 0
+Scope.plot_2_3.title: "AuxCommandIn"
+Scope.plot_2_3.global_defaults: 196353
+Scope.plot_2_3.y_expr_1: \EEI::TOP:MARTE_DH_M.OUTPUTS.COMMANDOUT2:VALUE
+Scope.plot_2_3.mode_1D_1_1: Line
+Scope.plot_2_3.mode_2D_1_1: xz(y)
+Scope.plot_2_3.color_1_1: 0
+Scope.plot_2_3.marker_1_1: 0
+Scope.plot_2_3.step_marker_1_1: 1
+
+
+Scope.plot_3_3.height: 177
+Scope.plot_3_3.grid_mode: 0
+Scope.plot_3_3.x_log: false
+Scope.plot_3_3.y_log: false
+Scope.plot_3_3.update_limits: true
+Scope.plot_3_3.palette: Green scale
+Scope.plot_3_3.bitShift: 0
+Scope.plot_3_3.bitClip: false
+Scope.plot_3_3.paletteMax: 0.0
+Scope.plot_3_3.paletteMin: 0.0
+Scope.plot_3_3.experiment: EEI
+Scope.plot_3_3.num_shot: 1
+Scope.plot_3_3.num_expr: 1
+Scope.plot_3_3.continuous_update: 0
+Scope.plot_3_3.title: "AuxCOmmandsOut"
+Scope.plot_3_3.global_defaults: 196353
+Scope.plot_3_3.y_expr_1: \EEI::TOP:EEI_OPC_IN.OUTPUTS.OUT8:VALUE
+Scope.plot_3_3.mode_1D_1_1: Line
+Scope.plot_3_3.mode_2D_1_1: xz(y)
+Scope.plot_3_3.color_1_1: 0
+Scope.plot_3_3.marker_1_1: 0
+Scope.plot_3_3.step_marker_1_1: 1
+
+Scope.vpane_1: 333
+Scope.vpane_2: 666
