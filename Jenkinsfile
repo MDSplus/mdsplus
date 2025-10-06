@@ -72,6 +72,8 @@ def packageStage(os) {
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
+                
+                archiveArtifacts artifacts: "packages/*.tgz,packages/*.exe", followSymlinks: false
             }
         }
     }
@@ -302,8 +304,6 @@ pipeline {
                             findFiles(glob: "*.tgz,*.exe").each {
                                 file -> release_file_list.add("${prefix}/${file.path}")
                             }
-
-                            archiveArtifacts artifacts: "*.tgz,*.exe", followSymlinks: false
                         }
                         
                         cleanWs disableDeferredWipeout: true, deleteDirs: true
