@@ -10,7 +10,7 @@ if(NOT DEFINED RELEASE_TAG OR RELEASE_TAG STREQUAL "")
 
     include(MDSplusGit)
 
-    if(GIT_FOUND)
+    if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
 
         mdsplus_git(GIT_TAG         describe --tag)
         mdsplus_git(GIT_BRANCH      rev-parse --abbrev-ref HEAD)

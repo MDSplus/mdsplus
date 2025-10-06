@@ -1567,7 +1567,7 @@ endif()
 
 include(MDSplusGit)
 
-if(GIT_FOUND)
+if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
 
     mdsplus_git(GIT_CHANGELOG log --decorate=full --no-merges)
 
