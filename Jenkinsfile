@@ -22,6 +22,13 @@ def OSList = [
     ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
 ]
 
+def getNumThreads() {
+    if (env.THREADS) {
+        return env.THREADS;
+    }
+    return "8";
+}
+
 def setupStage() {
     return {
         stage("Setup") {
@@ -48,14 +55,14 @@ def testStage(os) {
         extraArgs += "-DTEST_PORT_OFFSET=${offset}"
     }
     else {
-        extraArgs += "--dockernetwork=jenkins-${EXECUTOR_NUMBER}"
+        extraArgs += " --dockerpull --dockernetwork=jenkins-${EXECUTOR_NUMBER}"
     }
 
     return {
         stage("Build & Test") {
             try {
-                // TODO: Adjust -j value
-                sh "deploy/build.py -j8 --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --dockerpull --output-junit ${extraArgs}"
+                def threads = getNumThreads()
+                sh "deploy/build.py -j${threads} --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --output-junit ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -67,8 +74,8 @@ def testStage(os) {
 def packageStage(os) {
     return {
         stage("Build & Package") {
-            // TODO: Adjust -j value
-            sh "deploy/build.py -j8 --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            def threads = getNumThreads()
+            sh "deploy/build.py -j${threads} --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
@@ -122,8 +129,8 @@ def localTest(name, label, testStages) {
                         setupStage().call()
                         
                         stage("Build") {
-                            // TODO: Adjust -j value
-                            sh "deploy/build.py -j8 --build --install -DCMAKE_BUILD_TYPE=Debug"
+                            def threads = getNumThreads()
+                            sh "deploy/build.py -j${threads} --build --install -DCMAKE_BUILD_TYPE=Debug"
                         }
                         
                         testStages.call()
