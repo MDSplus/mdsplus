@@ -3,20 +3,20 @@
 ## We want to know who you are
 The MDSplus developers want to know who you are. If you or your site is using
 MDSplus please fill out the following survey. We promise not to share your contact
-information. Do not assume that others from your institution have also filled
+information. Please do not assume that others from your institution have also filled
 this out, we will combine the results. 
 
 [MDSplus User Survey](https://docs.google.com/forms/d/e/1FAIpQLScSsA-fY2yTsW076bBreJmNbBqY9jsd-m4vmAdPvfCxXidiOQ/viewform?usp=sf_link).
 
 ## Installing from Pre-built Packages
 
-We highly recommend you install MDSplus from our pre-built packages, avaialble
+We highly recommend you install MDSplus from our pre-built packages, available
 on [mdsplus.org](https://mdsplus.org/index.php?title=Downloads&open=110608406848219381791&page=Software%2FDownloads).
 However, if you need to customize the build you can follow the instructions below.
 
 ## Building MDSplus from Source
 
-To build and install MDSplus on unix systems, you will need to obtain the
+To build and install MDSplus, you will need to obtain the
 MDSplus distribution from github either as a git repository or as a 
 compressed tar file.
 
@@ -40,7 +40,7 @@ tar -xzf MDSplus.tgz
 cd MDSplus-mdsplus-<TAB>
 ```
 
-However, without git the build system cannot determine version information.
+However, without git, the build system cannot determine version information.
 You will need to specify the release tag in order to build with branch/version
 information. Add `-DRELEASE_TAG=alpha_release-1-2-3` (with the correct branch
 and version number, separated by dashes) to your `cmake-arguments` below.
