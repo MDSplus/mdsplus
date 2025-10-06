@@ -101,7 +101,7 @@ else:
         f'--volume={staging_dist_dir}:{staging_dist_dir}', # Formerly /release
         f'--volume={publish_dist_dir}:{publish_dist_dir}', # Formerly /publish
         f'--volume={args.cert_dir}:{args.cert_dir}:ro', # Formerly /sign_keys
-        f'--workdir="{os.getcwd()}"', # ?
+        f'--workdir={os.getcwd()}', # ?
     ]
 
     if platform.system() != 'Windows':
