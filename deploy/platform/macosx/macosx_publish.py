@@ -46,7 +46,7 @@ args = parser.parse_args()
 
 
 # * may be `macports` or `homebrew`
-package_filenames = glob.glob(os.path.join(args.release_dir, f'mdsplus_{args.flavor}_{args.version}-*-{args.arch}.tgz'))
+package_filenames = glob.glob(os.path.join(args.release_dir, f'mdsplus_{args.flavor}_{args.version}_*_{args.arch}.tgz'))
 
 for filename in package_filenames:
     shutil.copy2(filename, args.publish_dir)
