@@ -84,13 +84,13 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Storage CPUs: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(17);
+        deviceField7.setOffsetNid(22);
         jPanel2.add(deviceField7);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Seg. Length");
         deviceField6.setNumCols(8);
-        deviceField6.setOffsetNid(23);
+        deviceField6.setOffsetNid(28);
         jPanel2.add(deviceField6);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);

@@ -123,7 +123,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask:"/>
-                <Property name="offsetNid" type="int" value="3683"/>
+                <Property name="offsetNid" type="int" value="3688"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -8869,7 +8869,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3699"/>
+                        <Property name="offsetNid" type="int" value="3704"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice9">
@@ -8886,7 +8886,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3698"/>
+                        <Property name="offsetNid" type="int" value="3703"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -8908,7 +8908,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3709"/>
+                        <Property name="offsetNid" type="int" value="3714"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice10">
@@ -8925,7 +8925,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3708"/>
+                        <Property name="offsetNid" type="int" value="3713"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -8947,7 +8947,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3719"/>
+                        <Property name="offsetNid" type="int" value="3724"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice11">
@@ -8964,7 +8964,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3718"/>
+                        <Property name="offsetNid" type="int" value="3723"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -8986,7 +8986,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3729"/>
+                        <Property name="offsetNid" type="int" value="3734"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice12">
@@ -9003,7 +9003,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3728"/>
+                        <Property name="offsetNid" type="int" value="3733"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -9025,7 +9025,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3739"/>
+                        <Property name="offsetNid" type="int" value="3744"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice13">
@@ -9042,7 +9042,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3738"/>
+                        <Property name="offsetNid" type="int" value="3743"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -9064,7 +9064,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3749"/>
+                        <Property name="offsetNid" type="int" value="3754"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice14">
@@ -9081,7 +9081,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3748"/>
+                        <Property name="offsetNid" type="int" value="3753"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -9103,7 +9103,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3759"/>
+                        <Property name="offsetNid" type="int" value="3764"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice15">
@@ -9120,7 +9120,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3758"/>
+                        <Property name="offsetNid" type="int" value="3763"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -9142,7 +9142,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len.:"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="3769"/>
+                        <Property name="offsetNid" type="int" value="3774"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice16">
@@ -9159,7 +9159,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3768"/>
+                        <Property name="offsetNid" type="int" value="3773"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>

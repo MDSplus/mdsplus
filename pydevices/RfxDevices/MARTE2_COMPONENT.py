@@ -93,11 +93,20 @@ class MARTE2_COMPONENT(MDSplus.Device):
                       'type': 'numeric', 'value': 0})
         parts.append({'path': '.OUTPUTS:POST_TRIGGER',
                       'type': 'numeric', 'value': 100})
-        # reference time for the device valid for all devices except SynchInput
+        parts.append({'path': '.OUTPUTS:TIME_MODE',
+                      'type': 'text', 'value': 'Forced'})
+        #Time associated to first sample is no trigger defined or to the sample corresponing to the trigger otherwise
+        parts.append({'path': '.OUTPUTS:TRIGGER_TIME', 'type': 'numeric'})
+        #When defined forces use of beginSegment and putSegment
+        parts.append({'path': '.OUTPUTS:SEG_BLOCKS', 'type': 'numeric'})
+        # reference time for the device valid for all devices (except SynchInput???)
         parts.append({'path': '.OUTPUTS:OUT_TIME', 'type': 'signal'})
-        # Used only by SynchInput devices to identify which output is the time
-        parts.append({'path': '.OUTPUTS:TIME_IDX',
-                      'type': 'numeric', 'value': 0})
+        #When defined and different from 0 forces storing a resampled version of the signal in RES_VALUE. Valid only for 1D signals.
+        parts.append({'path': '.OUTPUTS:RES_FACTOR', 'type': 'numeric'})
+        #When defined and equal to 1 forces conversion of 2D signals into jpg (to be implemented).
+        parts.append({'path': '.OUTPUTS:JPG_CONV', 'type': 'numeric'})
+        #When not defined, it defaults to 100
+        parts.append({'path': '.OUTPUTS:DISC_FACTOR', 'type': 'numeric'})
         # CPU Mask for MdsWriter thread
         parts.append({'path': '.OUTPUTS:CPU_MASK',
                       'type': 'numeric', 'value': 15})
@@ -124,12 +133,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 parts.append({'path': prefix + '.'+sigName +
                               ':SEG_LEN', 'type': 'numeric', 'value': 0})
-            if 'stream' in output:
-                parts.append({'path': prefix + '.'+sigName+':STREAM',
-                              'type': 'text', 'value': output['stream']})
-            else:
-                parts.append({'path': prefix + '.'+sigName +
-                              ':STREAM', 'type': 'text'})
 
             if(output['type'] == 'string'):
                 parts.append(
@@ -137,6 +140,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 parts.append({'path': prefix + '.'+sigName +
                               ':VALUE', 'type': 'signal'})
+                parts.append({'path': prefix + '.'+sigName +
+                              ':RES_VALUE', 'type': 'signal'})
             try:
                 pars = output['parameters']
             except:
@@ -1375,6 +1380,29 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfBuffers'] = postTrigSamples + 10
         else:
             parameters['NumberOfBuffers'] = 10000
+####Parameters for new MDSWriter
+        try:
+            triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
+            parameters['TriggerTime'] = str(triggerTime).replace('D', 'E')
+        except:
+            pass
+        try:
+            discontinuityFactor = int(self.getNode('OUTPUTS:DISC_FACTOR').data())
+        except:
+            discontinuityFactor = 100
+        try:
+            resampleFactor = self.getNode('OUTPUTS:RES_FACTOR').data()
+        except:
+            resampleFactor = 0
+        try:
+            blocksInSegment = self.getNode('OUTPUTS:SEG_BLOCKS').data()
+        except:
+            blocksInSegment = 0
+        try:
+            convertToJpg = self.getNode('OUTPUTS:JPG_CONV').data() == 1
+        except:
+            convertToJpg = False
+####
         retDataSource['Parameters'] = parameters
 
         signals = []
@@ -1393,7 +1421,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 #            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
             'Period': str(self.timerPeriod).replace('D', 'E'),
             'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data(),
-            'DiscontinuityFactor': 10
+            'DiscontinuityFactor': discontinuityFactor
             })
         for sigNode in signalsToBeStored:
             sigName = self.getSignalName(sigNode)
@@ -1406,7 +1434,16 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
-            sigDef['DiscontinuityFactor'] = 10
+            sigDef['DiscontinuityFactor'] = discontinuityFactor
+###Additional parameters for new MDSWriter
+            if resampleFactor > 0:
+                sigDef['MinMaxResampleFactor'] = str(resampleFactor)
+                sigDef['DecimatedNodeName'] = sigNode.getNode('RES_VALUE').getFullPath()
+            if blocksInSegment > 0:
+                sigDef['BlocksInSegment'] = str(blocksInSegment)
+            if convertToJpg:
+                sigDef['ConvertToJPG'] = 1
+######
             signals.append(sigDef)
         retDataSource['Signals'] = signals
 

@@ -85,6 +85,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
     parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
+    parts.append({'path': ':LOGFILE', 'type': 'text'})
     parts.append({'path': ':DESCRIPTION', 'type': 'text'})
 
 
@@ -1452,10 +1453,17 @@ $<APP_NAME> = {
 
     def startMarteIdle(self):
         self.buildConfiguration()
-#        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
-#            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
 
+#        subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
+        try:
+            logfile = self.getNode('LOGFILE').data()
+        except:
+            logfile = None
+        if logfile == None:    
+            subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
+        else:
+            subprocess.Popen(['stdbuf -oL '+ self.buildStartScript(startsSoon = False) + ' > '+logfile], shell=True)
+           
     def startMarteIdleFromConfig(self):
         try:
             config = self.getNode('marte_config').data().tostring()

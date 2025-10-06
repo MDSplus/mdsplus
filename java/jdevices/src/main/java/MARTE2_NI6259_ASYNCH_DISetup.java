@@ -49,12 +49,12 @@ public class MARTE2_NI6259_ASYNCH_DISetup extends DeviceSetup {
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Storage CPU Mask: ");
-        deviceField2.setOffsetNid(20);
+        deviceField2.setOffsetNid(25);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("OutBits Seg. Len.: ");
-        deviceField3.setOffsetNid(1);
+        deviceField3.setOffsetNid(31);
         jPanel2.add(deviceField3);
 
         jPanel1.add(jPanel2);

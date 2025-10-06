@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Python Generic"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_PYTHON_GENERIC"/>
     <Property name="height" type="int" value="400"/>
@@ -21,7 +21,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,-19"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-67,0,0,4,54"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -48,24 +48,6 @@
         <Container class="javax.swing.JPanel" name="jPanel3">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase:"/>
-                <Property name="numCols" type="int" value="20"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase div (if from another thread):"/>
-                <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="160"/>
-              </Properties>
-            </Component>
-          </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 
@@ -84,7 +66,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="95"/>
+                <Property name="offsetNid" type="int" value="111"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton2">
@@ -148,7 +130,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="38"/>
+                            <Property name="offsetNid" type="int" value="41"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -166,7 +148,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="34"/>
+                            <Property name="offsetNid" type="int" value="37"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -175,7 +157,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="35"/>
+                            <Property name="offsetNid" type="int" value="46"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -189,7 +171,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="37"/>
+                            <Property name="offsetNid" type="int" value="48"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -218,7 +200,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="45"/>
+                            <Property name="offsetNid" type="int" value="49"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -236,7 +218,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="41"/>
+                            <Property name="offsetNid" type="int" value="45"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -245,7 +227,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="42"/>
+                            <Property name="offsetNid" type="int" value="46"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -259,7 +241,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="44"/>
+                            <Property name="offsetNid" type="int" value="48"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -288,7 +270,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="52"/>
+                            <Property name="offsetNid" type="int" value="57"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -306,7 +288,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="48"/>
+                            <Property name="offsetNid" type="int" value="53"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -315,7 +297,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="49"/>
+                            <Property name="offsetNid" type="int" value="54"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -329,7 +311,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="51"/>
+                            <Property name="offsetNid" type="int" value="64"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -358,7 +340,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="59"/>
+                            <Property name="offsetNid" type="int" value="65"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -376,7 +358,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="55"/>
+                            <Property name="offsetNid" type="int" value="61"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -385,7 +367,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="56"/>
+                            <Property name="offsetNid" type="int" value="62"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -399,7 +381,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="58"/>
+                            <Property name="offsetNid" type="int" value="64"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -428,7 +410,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="66"/>
+                            <Property name="offsetNid" type="int" value="73"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -446,7 +428,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="62"/>
+                            <Property name="offsetNid" type="int" value="69"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -455,7 +437,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="63"/>
+                            <Property name="offsetNid" type="int" value="70"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -469,7 +451,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="65"/>
+                            <Property name="offsetNid" type="int" value="72"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -498,7 +480,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="73"/>
+                            <Property name="offsetNid" type="int" value="81"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -516,7 +498,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="69"/>
+                            <Property name="offsetNid" type="int" value="77"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -525,7 +507,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="70"/>
+                            <Property name="offsetNid" type="int" value="78"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -539,7 +521,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="72"/>
+                            <Property name="offsetNid" type="int" value="80"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -568,7 +550,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="80"/>
+                            <Property name="offsetNid" type="int" value="89"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -586,7 +568,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="76"/>
+                            <Property name="offsetNid" type="int" value="85"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -595,7 +577,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="77"/>
+                            <Property name="offsetNid" type="int" value="86"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -609,7 +591,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="79"/>
+                            <Property name="offsetNid" type="int" value="88"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -638,7 +620,7 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Name: "/>
-                            <Property name="offsetNid" type="int" value="87"/>
+                            <Property name="offsetNid" type="int" value="97"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -656,7 +638,7 @@
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Type: "/>
-                            <Property name="offsetNid" type="int" value="83"/>
+                            <Property name="offsetNid" type="int" value="93"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
@@ -665,7 +647,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, array otherwise):"/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="84"/>
+                            <Property name="offsetNid" type="int" value="94"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -679,537 +661,11 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Value: "/>
                             <Property name="numCols" type="int" value="35"/>
-                            <Property name="offsetNid" type="int" value="86"/>
+                            <Property name="offsetNid" type="int" value="96"/>
                           </Properties>
                         </Component>
                       </SubComponents>
                     </Container>
-                  </SubComponents>
-                </Container>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JScrollPane" name="jScrollPane2">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Outputs">
-                <Property name="tabTitle" type="java.lang.String" value="Outputs"/>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-          <SubComponents>
-            <Container class="javax.swing.JPanel" name="jPanel29">
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-                <Property name="columns" type="int" value="1"/>
-                <Property name="rows" type="int" value="8"/>
-              </Layout>
-              <SubComponents>
-                <Container class="javax.swing.JPanel" name="jPanel30">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 1"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField29">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="97"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice9">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="98"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField30">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="100"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField31">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="101"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField69">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="102"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel31">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 2"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField32">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="106"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice10">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="107"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField33">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="109"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField34">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="110"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField70">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="111"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel32">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 3"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField35">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="115"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice11">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="116"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField36">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="118"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField37">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="119"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField71">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="120"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel33">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 4"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField38">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="124"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice12">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="125"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField39">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="127"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField40">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="128"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField72">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="129"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel34">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 5"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField41">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="133"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice13">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="134"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField42">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="136"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField43">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="137"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField73">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="138"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel35">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 6"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField44">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="142"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice14">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="143"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField45">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="145"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField46">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="146"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField74">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="147"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel36">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 7"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField47">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="151"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice15">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="152"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField48">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="154"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField49">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="155"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField75">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="156"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JPanel" name="jPanel37">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Output 8"/>
-                      </Border>
-                    </Property>
-                  </Properties>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField50">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="160"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceChoice" name="deviceChoice16">
-                      <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="6">
-                            <StringItem index="0" value="int8"/>
-                            <StringItem index="1" value="int16"/>
-                            <StringItem index="2" value="int32"/>
-                            <StringItem index="3" value="int64"/>
-                            <StringItem index="4" value="float32"/>
-                            <StringItem index="5" value="float64"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="161"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField51">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="163"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField52">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="164"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField76">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Stream Name:"/>
-                        <Property name="offsetNid" type="int" value="165"/>
-                        <Property name="textOnly" type="boolean" value="true"/>
-                      </Properties>
-                    </Component>
                   </SubComponents>
                 </Container>
               </SubComponents>
@@ -1462,6 +918,468 @@
                         <Property name="labelString" type="java.lang.String" value="Value: "/>
                         <Property name="numCols" type="int" value="15"/>
                         <Property name="offsetNid" type="int" value="31"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Outputs">
+                <Property name="tabTitle" type="java.lang.String" value="Outputs"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel29">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="8"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel30">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 1"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField29">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="113"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice9">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="114"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField30">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="116"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField31">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="117"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel31">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 2"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField32">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="123"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice10">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="124"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField33">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="126"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField34">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="127"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel32">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 3"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField35">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="133"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice11">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="134"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField36">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="136"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField37">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="137"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel33">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 4"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField38">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice12">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField39">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="146"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField40">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="147"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel34">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 5"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField41">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="153"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice13">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="154"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField42">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="156"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField43">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="157"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel35">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 6"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField44">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="163"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice14">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="164"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField45">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="166"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField46">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="167"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel36">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 7"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField47">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="173"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice15">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="174"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField48">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="176"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField49">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="177"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel37">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Output 8"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField50">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Name: "/>
+                        <Property name="offsetNid" type="int" value="183"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice16">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="6">
+                            <StringItem index="0" value="int8"/>
+                            <StringItem index="1" value="int16"/>
+                            <StringItem index="2" value="int32"/>
+                            <StringItem index="3" value="int64"/>
+                            <StringItem index="4" value="float32"/>
+                            <StringItem index="5" value="float64"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Type: "/>
+                        <Property name="offsetNid" type="int" value="184"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField51">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="186"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField52">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="187"/>
                       </Properties>
                     </Component>
                   </SubComponents>
