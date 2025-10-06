@@ -2,8 +2,8 @@
 
 ## We want to know who you are
 The MDSplus developers want to know who you are. If you or your site is using
-MDSplus please fill the following survey. We promise not to share your contact
-information. Do not assume that other's from your institution have also filled
+MDSplus please fill out the following survey. We promise not to share your contact
+information. Do not assume that others from your institution have also filled
 this out, we will combine the results. 
 
 [MDSplus User Survey](https://docs.google.com/forms/d/e/1FAIpQLScSsA-fY2yTsW076bBreJmNbBqY9jsd-m4vmAdPvfCxXidiOQ/viewform?usp=sf_link).
@@ -47,7 +47,7 @@ and version number, separated by dashes) to your `cmake-arguments` below.
 
 ### Building without Docker
 
-When building without docker, all required libraries, tools, and packages will
+When building without Docker, all required libraries, tools, and packages will
 need to be installed on your system. To build without installing dependencies,
 see the [Building with Docker](#building-with-docker) section below.
 
