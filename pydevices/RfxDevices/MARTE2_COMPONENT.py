@@ -1429,9 +1429,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
+            sigDef['Samples'] = numSamples
 #            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
-            sigDef['Period'] = str(self.timerPeriod).replace('D', 'E')
-            sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
+            sigDef['Period'] = str(self.timerPeriod/numSamples).replace('D', 'E')
+            sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()/numSamples
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
             sigDef['DiscontinuityFactor'] = discontinuityFactor

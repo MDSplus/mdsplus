@@ -150,27 +150,24 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
             self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))
 ######## Timebase expression
-        if clockMode == 'INTERNAL':
-            print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-            ' * 1E-8 * '+self.getNode('PARAMETERS.PAR_1:VALUE').getFullPath()+'))')
-            self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-            ' * 1E-8 * '+self.getNode('PARAMETERS.PAR_11:VALUE').getFullPath()+'))'))
-        else:
-            try:
-                extTimebase = self.getNode('CLOCK_SOURCE').getData()
-            except:
-                raise Exception('Missing or invalid ext clock for '+self.getPath())
-            self.getNode('TIMEBASE').putData(extTimebase)
-######### Enabled channels, segment len and samples
+        print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
+        ' * 1E-8 * '+self.getNode('PARAMETERS.PAR_1:VALUE').getFullPath()+'))')
+        self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
+        ' * 1E-8 * '+self.getNode('PARAMETERS.PAR_11:VALUE').getFullPath()+'))'))
+ ######## Enabled channels, segment len and samples
 # set samples equal to SEG_LEN / SEG_BLOCKS the same value of Samples and segment lengthin all output nodes
         try:
             segmentLen = self.getNode('SEGMENT_LEN').data()
         except:
             raise Exception('Missing or invalid segment length for '+self.getPath())
         try:
-            blocksInSegment = self.getNode('OUTPUTS:SEG_BLOCKS').data()
+            bufferLen = int(self.getNode('BUFFER_LEN').data())
         except:
-            blocksInSegment = 1
+            raise Exception('Missing or buffer segment length for '+self.getPath())
+        if (segmentLen % bufferLen) != 0:
+            raise Exception('Segment Len must be a multiple of buffer len')
+        blocksInSegment = segmentLen / bufferLen
+        self.getNode('OUTPUTS:SEG_BLOCKS').putData(MDSplus.Int32(blocksInSegment))
         samples = segmentLen/blocksInSegment
         for i in range(16):
             self.getNode('OUTPUTS:ADC%d_0.SAMPLES'%i).putData(MDSplus.Int32(samples))
@@ -186,9 +183,9 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
     @classmethod
     def postBuild(cls):
         cls.parts.append({'path': 'SEGMENT_LEN', 'type': 'numeric', 'value': 1000})
+        cls.parts.append({'path': 'BUFFER_LEN', 'type': 'numeric', 'value': 1000})
         cls.parts.append({'path': 'FREQUENCY', 'type': 'numeric'})
         cls.parts.append({'path': 'CLOCK_MODE', 'type': 'text', 'value':'INTERNAL'})
-        cls.parts.append({'path': 'CLOCK_SOURCE', 'type': 'numeric'})
         cls.parts.append({'path': '.CHANNELS', 'type': 'structure'})
         for i in range(16):
             cls.parts.extend([

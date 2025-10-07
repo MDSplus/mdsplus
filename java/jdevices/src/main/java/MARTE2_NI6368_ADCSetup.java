@@ -32,6 +32,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
+        deviceField6 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceChoice1 = new DeviceChoice();
         deviceField4 = new DeviceField();
@@ -91,7 +92,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         setDeviceTitle("MARTe2  NI6368 ADC");
         setDeviceType("MARTE2_NI6368_ADC");
         setHeight(700);
-        setWidth(900);
+        setWidth(1100);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel2.setLayout(new java.awt.GridLayout(2, 0));
@@ -109,30 +110,35 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         jPanel3.add(deviceField2);
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Segment blocks: ");
+        deviceField3.setLabelString("Buffer Size: ");
         deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(50);
+        deviceField3.setOffsetNid(337);
         jPanel3.add(deviceField3);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Resample Factor: ");
+        deviceField6.setOffsetNid(52);
+        jPanel3.add(deviceField6);
 
         jPanel2.add(jPanel3);
 
         deviceChoice1.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Clock Mode: ");
-        deviceChoice1.setOffsetNid(338);
+        deviceChoice1.setOffsetNid(339);
         deviceChoice1.setUpdateIdentifier("");
         jPanel4.add(deviceChoice1);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Frequency: ");
-        deviceField4.setNumCols(20);
-        deviceField4.setOffsetNid(337);
+        deviceField4.setNumCols(21);
+        deviceField4.setOffsetNid(338);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Ext. Clock: ");
+        deviceField5.setLabelString("Trigger Time: ");
         deviceField5.setNumCols(20);
-        deviceField5.setOffsetNid(339);
+        deviceField5.setOffsetNid(49);
         jPanel4.add(deviceField5);
 
         jPanel2.add(jPanel4);
@@ -493,6 +499,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
