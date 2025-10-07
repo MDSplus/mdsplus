@@ -60,6 +60,7 @@ static int set_node_parent_state(PINO_DATABASE *db, NODE *node, NCI *nci,
   TREE_INFO *info;
   int node_num;
   int status;
+  NID nid;
   for (info = db->tree_info;
        info &&
        ((node < info->node) || (node > (info->node + info->header->nodes)));
@@ -68,6 +69,12 @@ static int set_node_parent_state(PINO_DATABASE *db, NODE *node, NCI *nci,
   if (!info)
     return TreeNNF;
   node_num = (int)(node - info->node);
+  node_to_nid(db, node, &nid);
+
+   /* the top node of a tree's parent state is always on */
+  if (nid.node == 0)
+    return TreeSUCCESS;
+
   int locked = 0;
   status = tree_get_and_lock_nci(info, node_num, nci, &locked);
   if (STATUS_OK)
@@ -178,6 +185,8 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   NCI_ITM *itm_ptr;
   NCI nci;
   int putnci = 0;
+  int node_state = 0;
+  NODE *node;
 
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
@@ -199,7 +208,12 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   {
     switch (itm_ptr->code)
     {
+      /* 
+      When using SetNci on Flags the parent state of children 
+      and members is SET below.
+      */
     case NciSET_FLAGS:
+      node_state = nci.flags & NciM_STATE;
       nci.flags |= *(unsigned int *)itm_ptr->pointer;
       putnci = 1;
       break;
@@ -241,8 +255,16 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
       break;
     }
   }
-  if (STATUS_OK && putnci)
+  if (STATUS_OK && putnci) {
     status = tree_put_nci(tree_info, node_number, &nci, &locked);
+    if (STATUS_OK && (node_state != (nci.flags & NciM_STATE))) {
+      NODE *node_ptr = nid_to_node(dblist, nid_ptr);
+      if (node_ptr->child)
+        status = tree_set_parent_state(dblist, child_of(dblist, node_ptr), nci.flags & NciM_STATE);
+      if (node_ptr->member)
+        status = tree_set_parent_state(dblist, member_of(node_ptr), nci.flags & NciM_STATE);
+    }
+  }  
   else
     tree_unlock_nci(tree_info, 0, node_number, &locked);
   return status;
