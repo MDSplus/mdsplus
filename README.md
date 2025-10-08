@@ -17,7 +17,7 @@ However, if you need to customize the build you can follow the instructions belo
 ## Building MDSplus from Source
 
 To build and install MDSplus, you will need to obtain the
-MDSplus distribution from github either as a git repository or as a 
+MDSplus distribution from GitHub either as a Git repository or as a 
 compressed tar file.
 
 ### Cloning/Downloading
@@ -40,7 +40,7 @@ tar -xzf MDSplus.tgz
 cd MDSplus-mdsplus-<TAB>
 ```
 
-However, without git, the build system cannot determine version information.
+However, without Git, the build system cannot determine version information.
 You will need to specify the release tag in order to build with branch/version
 information. Add `-DRELEASE_TAG=alpha_release-1-2-3` (with the correct branch
 and version number, separated by dashes) to your `cmake-arguments` below.
@@ -93,6 +93,7 @@ more information.
 
 ### Building with Docker
 
+If you are building for Linux or Windows, you can build with Docker.
 When building with Docker, you don't need to install any special libraries or
 tools, however you will need `docker` installed and permission to run it on your system.
 
@@ -144,7 +145,7 @@ This map shows world fusion sites using MDSplus.
 https://drive.google.com/open?id=1Lt3r3dnAtx79anaLarJkKb4l0s5RWpPn&usp=sharing
 
 ---------------------------------------------------------------------------
-Special Notes
+# Special Notes
 
 LessTif conflicts:
 
@@ -152,22 +153,21 @@ LessTif conflicts:
 finds the real Motif package. LessTif is a marginal implementation of Motif
 and the MDSplus X applications will not build or run using LessTif package.
 
-To build on a system with LessTif installed, add `-DMotif_ROOT=/path/to/motif/`
+2) To build on a system with LessTif installed, add `-DMotif_ROOT=/path/to/motif/`
 to your `cmake-arguments` 
 
-SYBASE Open/CLient - IDL database connection
-Sites with IDL, SYBASE Open/CLient libraries and Microsoft SQLSERVER
-databases can use idlsql library for database connectivity.  The idl
-procedure in idl/Logbook/dbinfo.pro should be edited to reflect the
+Sybase Open/CLient - IDL database connection
+
+Sites with IDL, Sybase Open/CLient libraries and Microsoft SQL Server
+databases can use `idlsql` library for database connectivity.  The IDL
+procedure in `idl/Logbook/dbinfo.pro` should be edited to reflect the
 site specific database connectivity and security policies.  The default
-version assumes that the environment variable SYBASE_HOST contains
-the name of the host from the sybase interfaces file.  It looks for a
-file $HOME/xxx.sybase_login, where xxx is the name of the sybase host,
+version assumes that the environment variable `$SYBASE_HOST` contains
+the name of the host from the Sybase interfaces file.  It looks for a
+file `$HOME/xxx.sybase_login`, where xxx is the name of the Sybase host,
 if it finds it and can read it, it sends the first line as the username
 and the second for the password, if not it sends $USER and a default
 password.
-NOTE - the environment variable SYBASE must point at the sybase distribution
-in order for their libraries to function.
-NOTE - if the sybase distribution is not /usr/local/sybase, configure
-will not find the distribution unless you first set the environment
-variable SYBASE to point the the distribution directory.
+
+Note: To inform CMake of a non-standard installation directory for Sybase,
+add `-DSybase_ROOT=/path/to/sybase` to `cmake-arguments`.
