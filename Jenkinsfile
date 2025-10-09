@@ -300,7 +300,7 @@ pipeline {
                             unstash "packages-${os}"
                             unstash "dist-${os}"
 
-                            sh "deploy/publish.py --dist-dir=/opt/fakedist --cert-dir=/mdsplus/certs --publish-info=mdsplus-publish.json"
+                            sh "deploy/publish.py --dist-dir=/mnt/mdsplus_staging/dist --cert-dir=/mnt/mdsplus_staging/certs --publish-info=mdsplus-publish.json"
                         }
 
                         def release_file_list = [];
