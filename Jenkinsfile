@@ -15,7 +15,8 @@ def OSList = [
     ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
     ['MacOSX (homebrew)',               'macosx-homebrew',  'macosx'],
     ['MacOSX (macports)',               'macosx-macports',  'macosx'],
-    ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
+    // Disabled until https://github.com/MDSplus/mdsplus/issues/2605 is fixed
+    // ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
     ['Thread Sanitizer',                'test-tsan',        'docker && linux-amd64'],
     ['Undefined Behavior Sanitizer',    'test-ubsan',       'docker && linux-amd64'],
     ['Helgrind',                        'test-helgrind',    'docker && linux-amd64'],
