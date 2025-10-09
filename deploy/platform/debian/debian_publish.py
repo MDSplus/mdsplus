@@ -84,7 +84,7 @@ if not os.path.exists(distributions_filename):
         'Label: MDSplus',
         'Codename: MDSplus',
         f"Architectures: {' '.join(all_arches)}",
-        'Components: alpha stable cmake', # TODO: Remove cmake
+        'Components: alpha stable',
         'Description: MDSplus packages',
         'SignWith: MDSplus',
         '',
@@ -92,7 +92,7 @@ if not os.path.exists(distributions_filename):
         'Label: MDSplus-previous',
         'Codename: MDSplus-previous',
         f"Architectures: {' '.join(all_arches)}",
-        'Components: alpha stable cmake', # TODO: Remove cmake
+        'Components: alpha stable',
         'Description: Previous MDSplus packages',
         'SignWith: MDSplus',
         '',
