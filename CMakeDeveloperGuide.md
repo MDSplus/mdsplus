@@ -25,7 +25,7 @@ source setup.sh
 
 ## Building
 
-Building MDSplus can either be done directly with CMake, or by using `build.py`.
+Building MDSplus can either be done manually with `cmake`, or by using `build.py`.
 
 ### Building Manually
 
@@ -139,7 +139,7 @@ from `ctest` are also available, such as `-R` and `--rerun-failed`. We wrap
 
 ### Debugging with Visual Studio Code
 
-This is the recommended way to debug, please see 
+This is the recommended way to debug. Please see 
 [Visual Studio Code Integration](#visual-studio-code-integration) below.
 
 ### Debugging with `gdb`
@@ -152,7 +152,7 @@ mode.
 ./deploy/build.py --install <arguments>
 
 # This will enter the interactive build prompt
-# **Note:** If you are using a --os with a docker image, this prompt will be inside the docker
+# **Note:** If you are using a --os with a Docker Image, this prompt will be inside the Docker Container
 ./deploy/build.py -i <arguments>
 
 # This is a helper script that sources the setup.sh in workspace/install/usr/local/mdsplus
@@ -171,23 +171,22 @@ the interactive prompt, or use the helper scripts in the workspace.
 
 ## Packaging
 
-To generate packages, you have to use `build.py` with the `--package` option. 
+To generate packages, use `build.py` with the `--package` option. 
 This also requires several other options such as `--arch` and `--distname`, so 
 it is best run with a `--os` that is already configured for packaging.
 
-This will generate packages/installers for the given distribution. For `Debian` 
-variants this will be `.deb` files, for Red Hat variants `.rpm` files, and for 
-Windows it will be a `.exe`. Additionally, this will generate `.tgz` files of 
-`workspace/install/usr/local/mdsplus` and of whatever packages/installers were 
-generated.
+This will generate packages/installers for the given distribution: `.deb` files 
+for Debian variants, `.rpm` files for Red Hat variants, and `.exe` for Windows. 
+Additionally, this will generate `.tgz` files of `workspace/install/usr/local/mdsplus` 
+and of any packages/installers that were generated.
 
 ```sh
 ./deploy/build.py --os=ubuntu-24 --package
 
-# Installers will be placed in
+# Installers will be placed here:
 ls workspace-ubuntu-24-amd64/dist
 
-# Tarfiles will be placed in
+# Tarfiles will be placed here:
 ls workspace-ubuntu-24-amd64/packages
 ```
 
@@ -195,10 +194,10 @@ ls workspace-ubuntu-24-amd64/packages
 
 There are many options for controlling the build available through CMake. These 
 allow you to turn on/off features, indicate where to look for dependencies, or 
-activate tooling such as valgrind or the sanitizers.
+activate tooling such as `valgrind` or the sanitizers.
 
-To add an option, you must add a call to `mdsplus_option()` in the 
-root [CMakeLists.txt](CMakeLists.txt) in the options section towards the top. 
+To add an option, add a call to `mdsplus_option()` in the `Options` section 
+towards the top of the root [CMakeLists.txt](CMakeLists.txt). 
 When possible, try to group similar options together. CMake does provide an 
 `option()` function, however this has many limitations that are overcome
 by using `mdsplus_option()`. For additional information see 
@@ -244,8 +243,8 @@ mdsplus_option(
 
 These options will all be available when using the CMake GUI (`cmake-gui`) or
 TUI (`ccmake`), or when listing cache variables with `cmake`. `mdsplus_option()`
-will also include the default at the end of the description, so make sure you 
-don't write it twice.
+will also include the default at the end of the description, so make sure not 
+to repeat it.
 
 ```sh
 cmake-gui
@@ -253,7 +252,7 @@ ccmake
 cmake -LH ..
 ```
 
-Finally, all options registered with `mdsplus_option()` will be print during 
+Finally, all options registered with `mdsplus_option()` will be shown during 
 configure so that you always have a snapshot of the build configuration in the 
 same output as the build. This is especially helpful when looking at Jenkins 
 builds.
@@ -268,23 +267,23 @@ builds.
 3. Add a call to `add_subdirectory()` in the `Libraries, Executables` section 
    of the root [CMakeLists.txt](CMakeLists.txt) (if needed).
 
-4. Add the following to compile and link your new library, make sure to
+4. Add the following to compile and link your new library, making sure to
    replace the source files with your own.  
    **Note:** All libraries will be linked as shared unless otherwise specified if 
    `BUILD_SHARED_LIBS=ON`, which is the default.
 
-```cmake
-###
-### ExampleShr
-###
+    ```cmake
+    ###
+    ### ExampleShr
+    ###
 
-add_library(
-    ExampleShr
-    source1.c
-    source2.cpp
-    source3.f
-)
-```
+    add_library(
+        ExampleShr
+        source1.c
+        source2.cpp
+        source3.f
+    )
+    ```
 
 5. Linking other libraries not only adds `-lLibrary` to the linker command, but 
    also carries with it any `PUBLIC` settings the library had. This includes 
@@ -293,20 +292,20 @@ add_library(
 
    All MDSplus libraries can be linked just by their name, and external 
    libraries can be linked using their interface library name. For the 
-   dependencies that are built-in to CMake, you can find extensive 
+   dependencies that are built into CMake, you can find extensive 
    documentation on CMake's website, including what names to use here.
    
    See the `Dependencies` section of the root [CMakeLists.txt](CMakeLists.txt), 
    or in `cmake/Find*.cmake` for what libraries are available.
 
-```cmake
-target_link_libraries(
-    ExampleShr
-    PUBLIC
-        TreeShr
-        Threads::Threads
-)
-```
+    ```cmake
+    target_link_libraries(
+        ExampleShr
+        PUBLIC
+            TreeShr
+            Threads::Threads
+    )
+    ```
 
 6. Configuring other options such as include directories or compiler options 
    and defines can be done with several functions in the form `target_*()`. For 
@@ -314,45 +313,45 @@ target_link_libraries(
    **Note:** The include directories are marked `PUBLIC`, meaning that other 
    targets that link against this library will be able to find our header files.
 
-```cmake
-target_include_directories(
-    ExampleShr
-    PUBLIC
-        path/to/include # Relative to the current directory
-)
+    ```cmake
+    target_include_directories(
+        ExampleShr
+        PUBLIC
+            path/to/include # Relative to the current directory
+    )
 
-target_compile_definitions(
-    ExampleShr
-    PRIVATE
-        API_VERSION=1.2.3
-)
+    target_compile_definitions(
+        ExampleShr
+        PRIVATE
+            API_VERSION=1.2.3
+    )
 
-target_compile_options(
-    ExampleShr
-    PRIVATE
-        -Wno-specific-error
-)
-```
+    target_compile_options(
+        ExampleShr
+        PRIVATE
+            -Wno-specific-error
+    )
+    ```
 
 7. If you want both a static and shared version of your library, you need to 
-   define a separate library with a different name and all the same options. 
-   This is a bit cumbersome, so we added a function to help named `mdsplus_add_static_copy()`.
+   define a separate library with a different name but with all the same 
+   options. To help with this, we added `mdsplus_add_static_copy()`.
    If `BUILD_SHARED_LIBS=OFF`, then our library would already be static, and 
-   this function call becomes a noop.
+   this function call becomes a no-op.
 
-```cmake
-mdsplus_add_static_copy(ExampleShr _static_target)
+    ```cmake
+    mdsplus_add_static_copy(ExampleShr _static_target)
 
-# ${_static_target} will be the name of the static library if it was made, or ""
-```
+    # ${_static_target} will be the name of the static library if it was made, or ""
+    ```
 
 8. Installing a library is done by marking the targets for installation. If you 
    used `mdsplus_add_static_copy()`, then you will want to add `${_static_target}`
    to this call as well.
 
-```cmake
-install(TARGETS ExampleShr ${_static_target})
-```
+    ```cmake
+    install(TARGETS ExampleShr ${_static_target})
+    ```
 
 ## Adding an Executable
 
@@ -364,21 +363,21 @@ install(TARGETS ExampleShr ${_static_target})
 3. Add a call to `add_subdirectory()` in the `Libraries, Executables` section 
    of the root [CMakeLists.txt](CMakeLists.txt) (if needed).
 
-4. Add the following to compile and link your new executable, make sure to
+4. Add the following to compile and link your new executable, making sure to
    replace the source files with your own.  
 
-```cmake
-###
-### example
-###
+    ```cmake
+    ###
+    ### example
+    ###
 
-add_executable(
-    example
-    source1.c
-    source2.cpp
-    source3.f
-)
-```
+    add_executable(
+        example
+        source1.c
+        source2.cpp
+        source3.f
+    )
+    ```
 
 5. Configuring other options such as include directories or compiler options and
    defines can be done with several functions in the form `target_*()`. For more
@@ -386,25 +385,25 @@ add_executable(
    **Note:** Unlike with a library, all options should me marked as `PRIVATE` as 
    there is no good reason to link an executable as if it were a library.
 
-```cmake
-target_include_directories(
-    example
-    PRIVATE
-        path/to/include # Relative to the current directory
-)
+    ```cmake
+    target_include_directories(
+        example
+        PRIVATE
+            path/to/include # Relative to the current directory
+    )
 
-target_compile_definitions(
-    example
-    PRIVATE
-        API_VERSION=1.2.3
-)
+    target_compile_definitions(
+        example
+        PRIVATE
+            API_VERSION=1.2.3
+    )
 
-target_compile_options(
-    example
-    PRIVATE
-        -Wno-specific-error
-)
-```
+    target_compile_options(
+        example
+        PRIVATE
+            -Wno-specific-error
+    )
+    ```
 
 ## Adding a Java JAR
 
@@ -417,60 +416,60 @@ target_compile_options(
    (if needed). This will properly disable your JAR when `ENABLE_JAVA=OFF`, and 
    will ensure it is managed with the other Java projects.
 
-4. Create a `MANIFEST.MF` file, usually by generating it through cmake.
+4. Create a `MANIFEST.MF` file, usually by generating it through CMake.
 
-```cmake
-set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
+    ```cmake
+    set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
 
-file(WRITE ${_manifest}
-    "Specification-Version: ${RELEASE_VERSION}\n"
-    "Implementation-Version: ${RELEASE_VERSION}\n"
-    "Implementation-Vendor-Id: org.mdsplus\n"
-)
-```
+    file(WRITE ${_manifest}
+        "Specification-Version: ${RELEASE_VERSION}\n"
+        "Implementation-Version: ${RELEASE_VERSION}\n"
+        "Implementation-Vendor-Id: org.mdsplus\n"
+    )
+    ```
 
 5. Collect all sources and resources, usually done with `file(GLOB_RECURSE)`.
 
-```cmake
-file(GLOB_RECURSE
-    _source_list
-    "src/main/java/*.java"
-)
+    ```cmake
+    file(GLOB_RECURSE
+        _source_list
+        "src/main/java/*.java"
+    )
 
-file(GLOB_RECURSE
-    _example_resource_list
-    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "src/main/resources/example/*"
-)
-```
+    file(GLOB_RECURSE
+        _example_resource_list
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+        "src/main/resources/example/*"
+    )
+    ```
 
-5. Call `add_jar()` to register the JAR for building.
+6. Call `add_jar()` to register the JAR for building.
 
-```cmake
-add_jar(
-    jExample
-    SOURCES ${_source_list}
-    # If there are no resources, you can skip this
-    # If there are multiple namespaces, you can list them under RESOURCES
-    RESOURCES
-        NAMESPACE "example" ${_example_resource_list}
-    ENTRY_POINT mds.example.jExample
-    MANIFEST ${_manifest}
-    # If other MDSplus JAR files needed to be included:
-    # INCLUDE_JARS mdsobjects
-)
-```
+    ```cmake
+    add_jar(
+        jExample
+        SOURCES ${_source_list}
+        # If there are no resources, you can skip this
+        # If there are multiple namespaces, you can list them under RESOURCES
+        RESOURCES
+            NAMESPACE "example" ${_example_resource_list}
+        ENTRY_POINT mds.example.jExample
+        MANIFEST ${_manifest}
+        # If other MDSplus JAR files needed to be included:
+        # INCLUDE_JARS mdsobjects
+    )
+    ```
 
-6. Call `install_jar()` to register the JAR for installation.
+7. Call `install_jar()` to register the JAR for installation.
 
-```cmake
-install_jar(
-    jExample
-    DESTINATION java/classes
-)
-```
+    ```cmake
+    install_jar(
+        jExample
+        DESTINATION java/classes
+    )
+    ```
 
-7. Some Java tools come with scripts to easily run them, see the `Scripts` 
+8. Some Java tools come with scripts to easily run them, see the `Scripts` 
 section of [java/jtraverser/CMakeLists.txt](java/jtraverser/CMakeLists.txt) for 
 how to include them.
 
@@ -480,7 +479,7 @@ how to include them.
 
 2. Create a `CMakeLists.txt` in this directory to configure the tests (if needed).
 
-3. Add a call to `add_subdirectory()` in the `Testing` section towards the bottom
+3. Add a call to `add_subdirectory()` in the `Testing` section near the bottom
    of the root [CMakeLists.txt](CMakeLists.txt) (if needed).
 
 4. Create a loop to configure the tests (if needed). You can look at
@@ -489,16 +488,17 @@ how to include them.
    for reference. For most libraries, this loop already exists and you can simply 
    add your test source to the list. The important pieces are:
 
-  * A list of test sources, each will be compiled into an executable with the 
-    same name.
+  * A list of test sources, each of which will be compiled into an executable 
+    with the same name.
   * A loop over this source list.
-  * A call to `cmake_path()` to get the `STEM` of a source name, this is the name 
-    of a file without the directory or file extension. e.g. `MyTest.c` -> `MyTest`.
-  * A call to `add_executable()` to register the test executable, this allows us 
-    to reference it in future CMake calls, specifically `mdsplus_add_test()`. If 
-    you have additional sources that need to be compiled into each executable, 
-    such as a file containing utility functions, you can add additional sources 
-    to the call to `add_executable()`.
+  * A call to `cmake_path()` to get the `STEM` of a source name, which is the 
+    name of a file without the directory or file extension.
+    For example, `MyTest.c` -> `MyTest`.
+  * A call to `add_executable()` to register the test executable, which allows 
+    us to reference it in future CMake calls, specifically `mdsplus_add_test()`. 
+    If you have additional sources that need to be compiled into each 
+    executable, such as a file containing utility functions, you can add 
+    additional sources to the call to `add_executable()`.
   * A call to `target_link_libraries()` that links the executable against the 
     library you are intending to test. Most tests will want to link against 
     `MdsTestShr`, which contains our implementation of `check`. If you are trying 
@@ -514,7 +514,7 @@ how to include them.
     for more information.
 
 5. Add your test source code, and make sure it is in the list of test sources. The 
-   most important thing is the return code, if the test returns 0 then it is logged 
+   most important thing is the return code: if the test returns 0 then it is logged 
    as a success, and anything else is logged as failure. The logs from the test, 
    along with the environment variables it was run with, will all be logged in 
    Jenkins.  
@@ -524,15 +524,15 @@ how to include them.
     * `#include <testing.h>`.
     * A normal `int main(int argc, char * argv[])` function.
     * `BEGIN_TESTING(NAME)` and `END_TESTING`, with `NAME` being replaced by your 
-    test name. These allow multiple tests to be run in a single executable, and 
-    enforce the test timeout configured in `check`, the default is 20 minutes.
+      test name. These allow multiple tests to be run in a single executable, and 
+      enforce the test timeout configured in `check`, the default is 20 minutes.
     * `TEST1(EXPR)` and `TEST0(EXPR)` check that the expression equals 1 or 0, 
-    respectively.
+      respectively.
     * `TEST_ASSERT(EXPR)` is an alias for `TEST1`.
     * `TEST_TIMEOUT(TIMEOUT)` will change the test timeout in `check`, this will be 
-    removed when moving to `gtest` as CMake now controls the test timeout.
+      removed when moving to `gtest` as CMake now controls the test timeout.
     * **Note:** `SKIP_TEST` and `ABORT_TEST` no longer function as intended and 
-    will be removed, currently they appear as test failures.
+      will be removed; currently they appear as test failures.
 
 ### FAQ
 
@@ -540,8 +540,8 @@ how to include them.
 
 The `$default_tree_path` will be set to the test's `WORKING_DIRECTORY`, and the 
 default for that is `CMAKE_CURRENT_BINARY_DIR`. This is the "equivalent" directory 
-in the build tree to the current directory, e.g. the current binary dir for 
-`treeshr/testing/` would be `build/treeshr/testing`. This ensures all test 
+in the build tree to the current directory, For example, the current binary directory 
+for `treeshr/testing/` would be `build/treeshr/testing`. This ensures all test 
 artifacts get cleaned up when removing the build directory.
 
 The best way to include a tree is to open it for `NEW` and build the tree as part 
@@ -557,13 +557,13 @@ Ports are regulated by [testing/ports.csv](testing/ports.csv) in order to keep
 tests isolated when running in parallel. Find the next unused port/range in 
 `ports.csv` and mark it as in-use by your test.
 
-**What if my test breaks in valgrind?**
+**What if my test breaks in `valgrind`?**
 
-You can skip valgrind for a given test by passing `NO_VALGRIND` to `mdsplus_add_test()`.
+You can skip `valgrind` for a given test by passing `NO_VALGRIND` to `mdsplus_add_test()`.
 
-**What if my test breaks in wine?**
+**What if my test breaks in `wine`?**
 
-You can skip a test when running with wine by passing `NO_WINE` to `mdsplus_add_test()`.
+You can skip a test when running with `wine` by passing `NO_WINE` to `mdsplus_add_test()`.
 
 **What if my test needs additional environment variables?**
 
@@ -604,12 +604,12 @@ as `REQUIRED`, as the build will not succeed without them.
 find_package(MyLib REQUIRED)
 ```
 
-All find scripts will set CMake variables with their results, such as 
+All "find" scripts will set CMake variables with their results, such as 
 `MYLIB_INCLUDE_DIRS` and `MYLIB_LIBRARIES` for our example above. These can be used 
-directly, but it is preferable to use a interface target if available. These are 
-"fake" libraries that carry with them all of the config needed to use an external 
-library, as if it were a target built by our project. For our example, it would 
-probably look like `MyLib::MyLib`. These can then be used with 
+directly, but it is preferable to use an interface target if available. These are 
+"fake" libraries that carry with them all of the configuration needed to use an 
+external library, as if it were a target built by our project. For our example, it 
+would probably look like `MyLib::MyLib`. These can then be used with 
 `target_link_libraries()` like so:
 
 ```cmake
@@ -635,7 +635,7 @@ extension installed.
 Then, run `build.py` as you do normally, but with the `--setup-vscode` flag. This 
 should only be done once. If you are using a `--os` argument, make sure to keep it, 
 but note that debugging won't work unless your system is compatible with the 
-binaries built in docker. This will configure [.vscode/settings.json](.vscode/settings.json) 
+binaries built in Docker. This will configure [.vscode/settings.json](.vscode/settings.json) 
 for syntax highlighting and code completion, and [.vscode/launch.json](.vscode/launch.json) 
 for launching tests for debugging.
 
@@ -646,7 +646,7 @@ for launching tests for debugging.
 Make sure you follow the instructions at the end of the output, notably running 
 "clangd: Restart language server".
 
-To debug with vscode, go to the `Run and Debug` tab on the left, select the test 
+To debug with VS Code, go to the `Run and Debug` tab on the left, select the test 
 from the list at the top, and then click the `Start Debugging` button (the green 
 play icon). In addition to debugging tests, there are also several utility targets 
 available at the bottom of the list, including:
