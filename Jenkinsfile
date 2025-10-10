@@ -339,13 +339,12 @@ pipeline {
         }
     }
     
-    // TODO: UPDATE ALL DEVELOPERS
     post {
         failure {
             // if alpha/stable
             mail subject: 'Build is failing',
                 body: "Build is failing: ${BUILD_URL}",
-                to: 'slwalsh@psfc.mit.edu,heidcamp@mit.edu'
+                to: 'mdsplus-jenkins-alerts@lists.psfc.mit.edu'
         }
     }
 
