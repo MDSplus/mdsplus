@@ -674,7 +674,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     )
 
     set(SANITIZER_ENV_MODS
-        "LSAN_OPTIONS=set:G_SLICE=always-malloc:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/leak.supp"
+        "LSAN_OPTIONS=set:G_SLICE=always-malloc:suppressions=${CMAKE_SOURCE_DIR}/deploy/sanitizer.supp/leak.supp"
     )
 
     set(_result 0)
@@ -688,7 +688,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         list(APPEND SANITIZER_ENV_MODS
-            "ASAN_OPTIONS=set:start_deactivated=1:exitcode=1:use_sigaltstack=0:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/address.supp"
+            "ASAN_OPTIONS=set:start_deactivated=1:exitcode=1:use_sigaltstack=0:suppressions=${CMAKE_SOURCE_DIR}/deploy/sanitizer.supp/address.supp"
         )
     elseif(ENABLE_SANITIZE STREQUAL "thread")
         execute_process(
@@ -698,7 +698,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         list(APPEND SANITIZER_ENV_MODS
-            "TSAN_OPTIONS=set:start_deactivated=1:exitcode=1:second_deadlock_stack=1:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/thread.supp"
+            "TSAN_OPTIONS=set:start_deactivated=1:exitcode=1:second_deadlock_stack=1:suppressions=${CMAKE_SOURCE_DIR}/deploy/sanitizer.supp/thread.supp"
         )
     elseif(ENABLE_SANITIZE STREQUAL "undefined")
         execute_process(
@@ -708,7 +708,7 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         list(APPEND SANITIZER_ENV_MODS
-            "UBSAN_OPTIONS=set:start_deactivated=1:exitcode=1:suppressions=${CMAKE_SOURCE_DIR}/conf/sanitizer.supp/undefined.supp"
+            "UBSAN_OPTIONS=set:start_deactivated=1:exitcode=1:suppressions=${CMAKE_SOURCE_DIR}/deploy/sanitizer.supp/undefined.supp"
         )
     endif()
 
@@ -1081,7 +1081,7 @@ if(ENABLE_VALGRIND)
     )
 
     set(Valgrind_SUPPRESSION_FILES
-        ${CMAKE_SOURCE_DIR}/conf/valgrind.supp/mdsplus.supp
+        ${CMAKE_SOURCE_DIR}/deploy/valgrind.supp/mdsplus.supp
     )
 
 endif()
