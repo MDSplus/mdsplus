@@ -25,7 +25,8 @@ source setup.sh
 
 ## Building
 
-Building MDSplus can either be done manually with `cmake`, or by using `build.py`.
+Building MDSplus can be done most easily using `build.py`, or manually using `cmake` 
+directly.
 
 ### Building Manually
 
