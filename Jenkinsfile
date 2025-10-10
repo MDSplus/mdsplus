@@ -339,7 +339,6 @@ pipeline {
         }
     }
     
-    // TODO: UPDATE ALL DEVELOPERS
     post {
         failure {
             // if alpha/stable
