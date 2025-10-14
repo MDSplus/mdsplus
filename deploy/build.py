@@ -1025,7 +1025,9 @@ def do_package():
         pass
     elif args.platform == 'macosx':
         # TODO: Improved packaging for OSX
-        shutil.copy2(root_package_filename, os.path.join(dist_dir, args.distname))
+        macosx_dist_dir = os.path.join(dist_dir, args.distname)
+        os.makedirs(macosx_dist_dir, exist_ok=True)
+        shutil.copy2(root_package_filename, macosx_dist_dir)
 
     elif args.platform == 'debian':
 
