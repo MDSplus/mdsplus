@@ -318,21 +318,17 @@ pipeline {
 
                         echo "Creating GitHub Release and Tag for ${new_tag}"
 
-                        release_file_list.each {
-                            item -> echo "${item}"
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'MDSplusJenkins',
+                                usernameVariable: 'GITHUB_APP',
+                                passwordVariable: 'GITHUB_ACCESS_TOKEN'
+                            )]) {
+
+                            // TODO: Protect against spaces in filenames
+                            def release_file_list_arg = release_file_list.join(" ")
+                            sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
                         }
-
-                        // withCredentials([
-                        //     usernamePassword(
-                        //         credentialsId: 'MDSplusJenkins',
-                        //         usernameVariable: 'GITHUB_APP',
-                        //         passwordVariable: 'GITHUB_ACCESS_TOKEN'
-                        //     )]) {
-
-                        //     // TODO: Protect against spaces in filenames
-                        //     def release_file_list_arg = release_file_list.join(" ")
-                        //     sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
-                        // }
                     }
                 }
             }
