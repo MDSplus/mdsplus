@@ -41,6 +41,9 @@ set(MDSPLUS_TEST_ENV_MODS
     # Needed for `import MDSplus` in Python
     "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
 
+    # Ensure the system $CLASSPATH doesn't leak in
+    "CLASSPATH=unset:"
+
     # Needed to add Python drivers 
     "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
 
