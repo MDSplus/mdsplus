@@ -1,0 +1,3 @@
+./usr/local/mdsplus/bin/MDSplus2HDF5
+./usr/local/mdsplus/bin/hdf5ToMds
+./usr/local/mdsplus/lib/libhdf5tdi.so
