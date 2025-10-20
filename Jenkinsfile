@@ -76,7 +76,8 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             def threads = getNumThreads()
-            sh "deploy/build.py -j${threads} --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            // (SLW) This has been changed to Debug while we investigate Issue #2972
+            sh "deploy/build.py -j${threads} --os=${os} --build --package -DCMAKE_BUILD_TYPE=Debug" // -DCMAKE_BUILD_TYPE=Release
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
