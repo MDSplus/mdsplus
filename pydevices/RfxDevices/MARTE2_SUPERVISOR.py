@@ -66,6 +66,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1)+'.THREAD_' +
                           str(threadIdx+1)+':CPU_MASK', 'type': 'numeric', 'value': 15})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
+                          '.THREAD_'+str(threadIdx+1)+':TIME', 'type': 'signal'})
+            parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':CYCLE', 'type': 'signal'})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM1', 'type': 'signal'})
@@ -752,7 +754,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 gams += currGams
 
         #handle recording of timing information
-        timingDataSource, timingGam = self.getTimingInfo(stateIdx, threadIdx, retSyncInfo['TimerPeriod'])
+        timingDataSource, timingGam = self.getTimingInfo(stateIdx, threadIdx,  retSyncInfo['TimerDDB'], retSyncInfo['TimerType'], retSyncInfo['TimerPeriod'])
         if timingDataSource != None:
             dataSources.append(timingDataSource)
             gams.append(timingGam)
@@ -809,7 +811,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
 
     #return GAM and DataSource for handling the recording of execution times for this thread
-    def getTimingInfo(self, stateIdx, threadIdx, threadPeriod):
+    def getTimingInfo(self, stateIdx, threadIdx, threadTimeDDB, threadTimeType, threadTimePeriod):
         segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
                          (stateIdx+1, threadIdx+1)).data()
         if(segLen == 0):
@@ -841,6 +843,12 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         retGam['Class'] = 'IOGAM'
         gamInputs = []
         gamInputs.append({
+            'Name': 'Time',
+            'Alias': 'Time',
+            'DataSource': threadTimeDDB,
+            'Type': threadTimeType,
+        })
+        gamInputs.append({
             'Name': stateName+'_'+threadName+'_CycleTime',
             'Alias': stateName+'.'+threadName+'_CycleTime',
             'DataSource': 'Timings',
@@ -854,6 +862,11 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             })
         retGam['Inputs'] = gamInputs
         gamOutputs = []
+        gamOutputs.append({
+            'Name': 'Time',
+            'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
+            'Type': 'uint32'
+        })
         gamOutputs.append({
             'Name': 'CycleTime',
             'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
@@ -869,7 +882,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
         retDataSource = {}
         retDataSource['Name'] = 'State_%d_Thread_%d_TIMES_WRITER' % (stateIdx+1, threadIdx+1)
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Parameters'] = {
             'CPUMask': cpuMask,
             'NumberOfBuffers' : 20000,
@@ -882,10 +895,21 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         }
         retSignals = []
         retSignals.append({
+            'Name': 'Time',
+            'Parameters': {
+                'NodeName':  getattr(self, 'times_state_%d_thread_%d_time' % (stateIdx+1, threadIdx+1)).getFullPath(),
+                'Period': threadTimePeriod,
+                'MakeSegmentAfterNWrites': segLen,
+                'AutomaticSegmentation' : 0,
+                'DiscontinuityFactor': 10,
+                'TimeSignal': 1
+            }
+        })
+        retSignals.append({
             'Name': 'CycleTime',
             'Parameters': {
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_cycle' % (stateIdx+1, threadIdx+1)).getFullPath(),
-                'Period': threadPeriod,
+                'Period': threadTimePeriod,
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
                 'DiscontinuityFactor': 10
@@ -896,7 +920,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             retSignals.append({
                 'Name': timeSignal,
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_gam' % (stateIdx+1, threadIdx+1)+str(sigIdx)).getFullPath(),
-                'Period': threadPeriod,
+                'Period': threadTimePeriod,
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
                 'DiscontinuityFactor': 10
@@ -1373,7 +1397,7 @@ $<APP_NAME> = {
         gamClasses.append('ConstantGAM')
         gamClasses.append('PickSampleGAM')
         gamClasses.append('MDSEventManager')
-        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSDataSource::MDSplusWriter')
         gamClasses.append('MDSReaderGAM')
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')

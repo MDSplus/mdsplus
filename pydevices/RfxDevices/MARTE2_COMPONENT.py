@@ -1344,7 +1344,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     #Return the definitions of MDSWriter DataSource and ConversionGAM GAM for handling the stored outputs
     def handleOutputsStorage(self, signalsToBeStored, threadMap):
         retDataSource = {}
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_TreeOut'
         parameters = {}
         try:
@@ -1383,7 +1383,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
 ####Parameters for new MDSWriter
         try:
             triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
-            parameters['TriggerTime'] = str(triggerTime).replace('D', 'E')
+            if np.isscalar(triggerTime):
+                parameters['TriggerTime'] = str(triggerTime).replace('D', 'E')
+            else:
+                parameters['TriggerTime'] = self.toMarteArray(triggerTime)
         except:
             pass
         try:
@@ -1409,7 +1412,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         if trigger != None:
             signals.append({'Name': 'Trigger', 'Type': 'uint8'})
         try:
-            numSamples = signalsToBeStored[0].getNode('SAMPLES')
+            numSamples = signalsToBeStored[0].getNode('SAMPLES').data()
         except:
             numSamples = 1
         signals.append({
@@ -1420,10 +1423,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'TimeSignal': 1,
 #            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
             'Period': str(self.timerPeriod).replace('D', 'E'),
-            'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data(),
+            'MakeSegmentAfterNWrites': int(signalsToBeStored[0].getNode('SEG_LEN').data()),
             'DiscontinuityFactor': discontinuityFactor
             })
         for sigNode in signalsToBeStored:
+            try:
+                numSamples = sigNode.getNode('SAMPLES').data()
+            except:
+                numSamples = 1
             sigName = self.getSignalName(sigNode)
             if sigName == 'Time':   #Time signal has been already stored
                 continue
@@ -1431,8 +1438,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Name'] = sigName
             sigDef['Samples'] = numSamples
 #            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
-            sigDef['Period'] = str(self.timerPeriod/numSamples).replace('D', 'E')
-            sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()/numSamples
+            sigDef['Period'] = str(self.timerPeriod/float(numSamples)).replace('D', 'E')
+            sigDef['MakeSegmentAfterNWrites'] = int(sigNode.getNode('SEG_LEN').data()/numSamples)
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
             sigDef['DiscontinuityFactor'] = discontinuityFactor
@@ -1497,6 +1504,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
+            sigDef['Alias'] = sigName
             sigDef['Type'] = sigNode.getNode('Type').data()
 
             if sigNode.getParent().getName() == 'FIELDS': #If it is an expanded signal
@@ -1519,6 +1527,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                  'DataSource':self.getMarteDeviceName(self)+'_TreeOut'})
         outputs.append({
             'Name': 'Time', 
+            'Alias': 'Time', 
             'Type': self.timerType, 
             'DataSource': self.getMarteDeviceName(self)+'_TreeOut',
             'Samples' : timeSamples,
@@ -1530,6 +1539,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 continue
             sigDef = {}
             sigDef['Name'] = sigName
+            sigDef['Alias'] = sigName
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
@@ -1813,7 +1823,12 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam = {}
         retGam['Name'] = self.getMarteDeviceName(self)+'_IOGAM'
         retGam['Class'] = 'IOGAM'
+
         for currInput in inputs:
+#Prova: Forzo Frequency a ingressi Time            
+            if currInput['Name'] == 'Time':
+                currInput['Frequency'] = 1/timerPeriod
+                
             if alias == None:
                 currInput['DataSource'] = self.getMarteDeviceName(self)
             else:
