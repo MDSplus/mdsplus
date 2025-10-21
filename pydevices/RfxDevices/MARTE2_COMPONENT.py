@@ -95,8 +95,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
                       'type': 'numeric', 'value': 100})
         parts.append({'path': '.OUTPUTS:TIME_MODE',
                       'type': 'text', 'value': 'Forced'})
-        #Time associated to first sample is no trigger defined or to the sample corresponing to the trigger otherwise
+        #Time associated to first sample is no trigger defined time corresponing to the trigger otherwise
+        #It can be an array in case mutiple pulses are acquired
         parts.append({'path': '.OUTPUTS:TRIGGER_TIME', 'type': 'numeric'})
+        #TWhen Trigger time is an array, specify the number of segments corresponding to a given pulse
+        parts.append({'path': '.OUTPUTS:TRIGGER_SEGS', 'type': 'numeric'})
         #When defined forces use of beginSegment and putSegment
         parts.append({'path': '.OUTPUTS:SEG_BLOCKS', 'type': 'numeric'})
         # reference time for the device valid for all devices (except SynchInput???)
@@ -1387,6 +1390,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 parameters['TriggerTime'] = str(triggerTime).replace('D', 'E')
             else:
                 parameters['TriggerTime'] = self.toMarteArray(triggerTime)
+                try:
+                    triggerSegments = self.getNode('OUTPUTS:TRIGGER_SEGS').data()
+                    parameters['TriggerSegments'] = self.toMarteArray(triggerSegments)
+                except:
+                    pass #TriggerSegments is an optional parameter
         except:
             pass
         try:

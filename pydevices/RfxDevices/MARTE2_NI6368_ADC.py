@@ -122,7 +122,7 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
 
     def prepareMarteInfo(self):
 ######## Enabled channels, segment len and samples
-# set samples equal to SEG_LEN / SEG_BLOCKS the same value of Samples and segment lengthin all output nodes
+# set samples equal to SEG_LEN / SEG_BLOCKS and the same value of samples and segment lengthin all output nodes except time
         try:
             segmentLen = self.getNode('SEGMENT_LEN').data()
         except:
@@ -156,12 +156,12 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
         try:
             clockMode = self.getNode(':CLOCK_MODE').data().upper()
         except:
-            raise Exception('Invalid clock mode for '+self.getPath())
+            raise Exception('Cannot read clock mode for '+self.getPath())
         if clockMode == 'INTERNAL':
             try:
                 frequency = self.getNode('FREQUENCY').data()
             except:
-                raise Exception('Invalid frequency in internal clock  or '+self.getPath())
+                raise Exception('Invalid frequency in internal clock  on '+self.getPath())
 
             self.getNode('.PARAMETERS.PAR_5:VALUE').putData(MDSplus.String('INTERNALTIMING'))
             self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.String('COUNTER_TB3'))
@@ -175,22 +175,8 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                 clockSource = self.getNode('CLOCK_SOURCE').getData()
             except:
                 raise Exception('Cannot read clock source for '+self.getPath())
-        else:
-            print('Invalid clock mode: '+clockMode)
-            raise Exception('Invalid clock mode for '+self.getPath())
-        try:
-            acquisitionMode = self.getNode('ACQ_MODE').data().upper()
-        except:
-            raise Exception('Cannot read acquisition mode for '+self.getPath())
-
-        if clockMode == 'EXTERNAL':
-            try:
-                clockSource = self.getNode('CLOCK_SOURCE').evaluate()
-            except:
-                raise Exception('Cannot retrieve clock source for '+self.getPath())
             if not isinstance(clockSource, MDSplus.Range):
                 raise Exception('Invalid clock source for '+self.getPath()+' Must be a Range descriptor')
-
             begins = clockSource.getBegin()
             if begins != None:
                 try:
@@ -208,6 +194,12 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             except:
                 raise Exception('Cannot get delta time(s) for clock source in '+self.getPath())
 
+        else:
+            raise Exception('Invalid clock mode '+clockMode+' for '+self.getPath())
+        try:
+            acquisitionMode = self.getNode('ACQ_MODE').data().upper()
+        except:
+            raise Exception('Cannot read acquisition mode for '+self.getPath())
         if acquisitionMode == 'CONTINUOUS':
             self.getNode('.PARAMETERS.PAR_14:VALUE').putData(MDSplus.String('CONTINUOUS'))
             if clockMode == 'EXTERNAL':
@@ -222,15 +214,17 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                     if endings == None or len(endings) != len(begins):
                         raise Exception('Number of begin times different from number of end times for clock source in '+self.getPath())
                     currTrigs = []
+                    currTrigSegments = []
                     for currPulse in range(len(begins)):
                         currPulseSamples = (endings[currPulse] - begins[currPulse])/deltas[currPulse]
-                        segmentsPerPulse = currPulseSamples/segmentLen +1
-                        currTrig = begins[currPulse]
-                        for currSeg in range(segmentsPerPulse):
-                          currTrigs.append(currTrig)
-                          currTrig += deltas[currPulse] * segmentLen
-
-                    triggerTime = np.array(currTrigs, dtype=float)    
+                        if currPulseSamples % segmentLen != 0:
+                            raise Exception('The number of pulse samples must be a multiple of Segment len  in multi gated external clock in '+self.getPath())
+                        segmentsPerPulse = currPulseSamples/segmentLen
+                        currTrigs.append(begins[currPulse])
+                        currTrigSegments.append(segmentsPerPulse)
+ 
+                    triggerTime = np.array(currTrigs, dtype=float) 
+                    triggerSegments =  np.array(currTrigSegments, dtype=float)    
             else: #clock mode INTERNAL
                 try:
                     triggerTime = self.getNode('TRIG_TIME').data()
@@ -268,12 +262,12 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             if not np.isscalar(pulseTriggerTime):
                 segmentsPerPulse = postTriggerSamples / segmentLen
                 currTrigs = []
-                currTrig = pulseTriggerTime[0]
+                currTrigSegments = []
                 for currPulse in range(len(pulseTriggerTime)):
-                    for currSegment in segmentsPerPulse:
-                        currTrigs.append(currTrig)
-                        currTrig += segmentLen * period
+                    currTrigs.append(pulseTriggerTime[currPulse])
+                    currTrigSegments.append(segmentsPerPulse)
                 triggerTime = np.array(currTrigs, dtype=float) 
+                segmentsPerTrigger = np.array(currTrigSegments, dtype=float) 
             else:
                 triggerTime = pulseTriggerTime
 
@@ -282,6 +276,7 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             self.getNode('OUTPUTS:TRIGGER_TIME').putData(MDplus.Float64(triggerTime))
         else:
             self.getNode('OUTPUTS:TRIGGER_TIME').putData(MDplus.Float64Array(triggerTime))
+            self.getNode('OUTPUTS:TRIGGER_SEGS').putData(MDplus.Float64Array(segmentsPerTrigger))
 
 ####### Data expressions
         t = self.getTree()
