@@ -1179,7 +1179,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent,
    * make brother_nid volatile so that the optimizer does not
    * decide to optimize it out and replace it with a zero.
    */
-  volatile brother_nid = {0,0};
+  volatile NID brother_nid = {0,0};
   NODE *brother = brother_of(dblist, parent);
   parent->usage = TreeUSAGE_SUBTREE_REF;
   subtreetop->usage = TreeUSAGE_SUBTREE_TOP;
