@@ -1184,7 +1184,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent,
   parent->usage = TreeUSAGE_SUBTREE_REF;
   subtreetop->usage = TreeUSAGE_SUBTREE_TOP;
   node_to_nid(dblist, subtreetop, &child_nid);
-  node_to_nid(dblist, parent_of(dblist, parent), (NID *)&parent_nid);
+  node_to_nid(dblist, parent_of(dblist, parent), &parent_nid);
   parent->child = *(int *)&child_nid;
   if (brother) {
     node_to_nid(dblist, brother_of(dblist, parent), (NID *)&brother_nid);
