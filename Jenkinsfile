@@ -313,8 +313,6 @@ pipeline {
                                 file -> release_file_list.add("${prefix}/${file.path}")
                             }
                         }
-                        
-                        cleanWs disableDeferredWipeout: true, deleteDirs: true
 
                         echo "Creating GitHub Release and Tag for ${new_tag}"
 
@@ -329,6 +327,8 @@ pipeline {
                             def release_file_list_arg = release_file_list.join(" ")
                             sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
                         }
+                        
+                        cleanWs disableDeferredWipeout: true, deleteDirs: true
                     }
                 }
             }
