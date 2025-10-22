@@ -42,6 +42,11 @@ def setupStage() {
             cleanWs disableDeferredWipeout: true, deleteDirs: true
             
             unstash 'source'
+
+            // HACK: This should be done before stashing the source, but it causes issues with create_github_release
+            // so instead each distribution tags separately
+            def new_tag = readFile(file: "new_tag")
+            sh "git tag ${new_tag} || true"
         }
     }
 }
@@ -258,7 +263,9 @@ pipeline {
 
                         echo "Calculated new version to be ${new_version}"
 
-                        sh "git tag ${new_tag} || true"
+                        // NOTE: To avoid confusing create_github_release, we cannot create the tag now
+                        // so instead we write it to a file, and tag it during the setup stage of each distribution
+                        writeFile(file: "new_tag", text: new_tag)
                     }   
                 }
 
