@@ -40,6 +40,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         deviceChoice34 = new DeviceChoice();
         deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -94,7 +95,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2  NI6368 ADC");
         setDeviceType("MARTE2_NI6368_ADC");
-        setHeight(700);
+        setHeight(900);
         setWidth(1100);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
@@ -158,6 +159,12 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         deviceField7.setNumCols(25);
         deviceField7.setOffsetNid(349);
         jPanel1.add(deviceField7);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Post trigger samples: ");
+        deviceField8.setNumCols(15);
+        deviceField8.setOffsetNid(344);
+        jPanel1.add(deviceField8);
 
         jPanel2.add(jPanel1);
 
@@ -520,6 +527,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
