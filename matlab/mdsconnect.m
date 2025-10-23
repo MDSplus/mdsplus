@@ -21,6 +21,7 @@ function [ status ] = mdsconnect( host )
                 else
                     MDSINFO.connection.mdsdisconnect();
                 end
+            end
 
             if MDSINFO.usemdsthin
                 error("Using mdsconnect('local') with mdsthin is not supported")

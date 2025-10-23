@@ -4,10 +4,10 @@ function [ status ] = mdsdisconnect( )
 %      described routines to their local behaviors
     global MDSINFO
     if MDSINFO.usemdsthin
-        MDSINFO.connection = []
+        MDSINFO.connection = [];
         MDSINFO.connectedHost = '';
         MDSINFO.isConnected = false;
-        status = 1
+        status = 1;
     else
         status = mdsconnect('local');
     end

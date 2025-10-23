@@ -8,7 +8,7 @@ function mdsUsePython( varargin )
    if nargin == 0
        mdsInfo(true, false);
    elseif nargin == 1
-       mdsInfo(varargin{1});
+       mdsInfo(varargin{1}, false);
    else
        mdsInfo(varargin{1}, varargin{2});
    end
