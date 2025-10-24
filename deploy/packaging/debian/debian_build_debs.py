@@ -97,6 +97,9 @@ def build():
     root = common.get_root()
     debs = list()
     for package in root.iter('package'):
+        skiparch_list = package.get('skiparch', '').split(',')
+        if info['arch'] in skiparch_list:
+            continue
         pkg = package.attrib['name']
         if pkg == 'MDSplus':
             info['packagename'] = ""
