@@ -117,6 +117,9 @@ def build():
         info['arch'] = "bin"
         info['arch_t'] = arch['arch_t']
         for package in bin_packages:
+            skiparch_list = package.get('skiparch', '').split(',')
+            if info['arch'] in skiparch_list:
+                continue
             if package.attrib['name'] != "MDSplus":
                 info["packagename"] = "-%s" % package.attrib["name"]
             else:

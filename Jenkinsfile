@@ -81,7 +81,7 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             def threads = getNumThreads()
-            sh "deploy/build.py -j${threads} --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            sh "deploy/build.py -j${threads} --os=${os} --build --package --verify-packages -DCMAKE_BUILD_TYPE=Release"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
