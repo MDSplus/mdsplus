@@ -202,6 +202,7 @@ if (BRANCH_NAME == "stable") {
     schedule = "0 19 * * *";
 }
 
+def new_version = null;
 def new_tag = null;
 
 pipeline {
@@ -253,7 +254,7 @@ pipeline {
                 }
 
                 script {
-                    def new_version = sh(
+                    new_version = sh(
                         script: "/usr/bin/python3 deploy/get_new_version.py",
                         returnStdout: true
                     ).trim()
@@ -309,6 +310,9 @@ pipeline {
 
                             sh "deploy/publish.py --dist-dir=/mnt/mdsplus_staging/dist --cert-dir=/mnt/mdsplus_staging/certs --publish-info=mdsplus-publish.json"
                         }
+
+                        // Create a package containing only the MATLAB code, primarily for use with the mdsthin bridge
+                        tar(file: "packages/mdsplus_${BRANCH_NAME}_${new_version}_matlab.tgz", archive: true, compress: true, dir: "matlab/")
 
                         def release_file_list = [];
                         
