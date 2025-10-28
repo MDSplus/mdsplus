@@ -1143,21 +1143,7 @@ check_include_files("stddef.h;scsi/sg.h" HAVE_SCSI_SG_H)
 ### Get the current timestamp to record when the build happened
 ###
 
-find_program(date_EXECUTABLE date)
-mark_as_advanced(date_EXECUTABLE)
-
-# TODO: Decide that string(TIMESTAMP) is good enough and remove the call to `date`
-if(date_EXECUTABLE)
-    execute_process(
-        COMMAND "${date_EXECUTABLE}"
-        OUTPUT_VARIABLE BUILD_TIMESTAMP
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-else()
-    # STRING(TIMESTMAP) is missing AM/PM and the Timezone, but it is a sensible fallback
-    string(TIMESTAMP BUILD_TIMESTAMP "%a %d %b %Y %H:%M:%S UTC" UTC)
-endif()
-
+string(TIMESTAMP BUILD_TIMESTAMP "%a %b %d %H:%M:%S UTC %Y" UTC)
 
 ###
 ### Generate _include/_mdsversion.h
