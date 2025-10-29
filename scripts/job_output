@@ -1,3 +1,5 @@
+#!/bin/sh
+#
 # file: /usr/local/mdsplus/bin/job_output
 #
 # shell script to spawn a batch job for automatic intershot analysis.
