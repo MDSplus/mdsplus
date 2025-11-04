@@ -55,11 +55,6 @@ class CAENV1742(MDSplus.Device):
 
 
     def init(self):
-        try:
-            lib = CDLL('libCAENDigitizer.so')
-        except:
-            print('Error linking to CAENDigitizer library')
-            raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         samplingSpeedDict = {'5GHz':dgtz.DRS4Frequency.F_5GHz, '2.5GHz':dgtz.DRS4Frequency.F_2_5GHz, 
             '1GHz': dgtz.DRS4Frequency.F_1GHz, '750MHz':dgtz.DRS4Frequency.F_750MHz}
         try:
@@ -181,7 +176,7 @@ class CAENV1742(MDSplus.Device):
         for chan in range(32):
             device.set_channel_dc_offset(chan, chanOffsets[chan])
 
-        lib.CAEN_DGTZ_LoadDRS4CorrectionData(device.handle, samplingSpeed)
+        device.load_drs4_correction_data(samplingSpeed)
         device.enable_drs4_correction()
         try:
             device.free_readout_buffer()
