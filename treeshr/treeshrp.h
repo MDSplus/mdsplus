@@ -396,57 +396,6 @@ typedef struct
   unsigned char rfa[6];
 } RFA;
 
-#ifdef RFA_MACROS
-
-#include <stdint.h>
-/*
- * RFA layout (byte-packed, little-endian):
- * rfa[0..3] : uint32_t block_number_1based
- * rfa[4..5] : uint16_t offset (low 9 bits used)
- *
- * seek = (block - 1) * 512 + (offset & 0x1FF)
- */
-
-static inline uint32_t rfa_to_seek(const RFA *r)
-{
-    /* load 32-bit block number (little-endian) */
-    uint32_t blk =
-        ((uint32_t)r->rfa[0])        |
-        ((uint32_t)r->rfa[1] << 8)   |
-        ((uint32_t)r->rfa[2] << 16)  |
-        ((uint32_t)r->rfa[3] << 24);
-
-    if (blk == 0) {
-        /* matches old behavior if uninitialized */
-        return 0;
-    }
-
-    /* load 16-bit offset (little-endian) */
-    uint16_t off =
-        (uint16_t)r->rfa[4] |
-        (uint16_t)((uint16_t)r->rfa[5] << 8);
-
-    return (blk - 1U) * 512U + (uint32_t)(off & 0x1FFU);
-}
-
-static inline void seek_to_rfa(uint32_t seek, RFA *r)
-{
-    uint32_t blk = seek / 512U + 1U;
-    uint16_t off = (uint16_t)(seek % 512U);
-
-    /* store block, little-endian */
-    r->rfa[0] = (uint8_t)(blk & 0xFFU);
-    r->rfa[1] = (uint8_t)((blk >> 8) & 0xFFU);
-    r->rfa[2] = (uint8_t)((blk >> 16) & 0xFFU);
-    r->rfa[3] = (uint8_t)((blk >> 24) & 0xFFU);
-
-    /* store offset, little-endian */
-    r->rfa[4] = (uint8_t)(off & 0xFFU);
-    r->rfa[5] = (uint8_t)((off >> 8) & 0xFFU);
-}
-
-#endif
-
 /****************************************
 RECORD_HEADER
 VFC portion of file.
