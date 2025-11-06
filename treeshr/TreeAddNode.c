@@ -196,7 +196,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
                                          &scratch_nci, &ncilocked);
           if (STATUS_OK)
           {
-            if (_TreeIsOn(dblist, *(int *)&parent_nid) & 1)
+            if (_TreeIsOn(dblist, parent_nid) & 1)
               new_nci.flags &= (unsigned)~NciM_PARENT_STATE;
             else
               new_nci.flags |= NciM_PARENT_STATE;

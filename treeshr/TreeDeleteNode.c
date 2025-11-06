@@ -223,8 +223,8 @@ extern void _TreeDeleteNodeExecute(void *dbid)
   while (_TreeDeleteNodeGetNid(dbid, (int *)&nid) & 1)
   {
     int found = 0;
-    _TreeRemoveNodesTags(dbid, *(int *)&nid);
-    _TreeSetNoSubtree(dbid, *(int *)&nid);
+    _TreeRemoveNodesTags(dbid, nid_to_int(&nid));
+    _TreeSetNoSubtree(dbid, nid_to_int(&nid));
     node = nid_to_node(dblist, &nid);
     parent = parent_of(0, node);
     if (child_of(0, parent) == node)
