@@ -449,7 +449,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         for (node = child_of(dblist, node); node; count++,
             node = brother_of(dblist, node) ? brother_of(dblist, node) : 0)
           ;
-      memcpy(itm->pointer, &count, sizeof count);
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciNUMBER_OF_MEMBERS:
       break_on_no_node;
@@ -459,7 +459,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         for (node = member_of(node); node; count++,
             node = brother_of(dblist, node) ? brother_of(dblist, node) : 0)
           ;
-      memcpy(itm->pointer, &count, sizeof count);
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciNUMBER_OF_ELTS:
       break_on_no_node;
@@ -468,7 +468,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       for (count = 0; swapint16(&cng_node->conglomerate_elt) > count;
            count++, cng_node++)
         ;
-      memcpy(itm->pointer, &count, sizeof count);
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciCHILDREN_NIDS:
     {
@@ -667,7 +667,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       else
       {  
         int zero = 0;  
-        memcpy(itm->pointer, &zero, sizeof zero);  
+        memcpy(itm->pointer, &zero, sizeof(zero));  
       } 
       break;
     }
