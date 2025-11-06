@@ -65,10 +65,20 @@ def testStage(os) {
     }
 
     return {
-        stage("Build & Test") {
+        stage("Build & Test (Debug)") {
             try {
                 def threads = getNumThreads()
-                sh "deploy/build.py -j${threads} --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --output-junit ${extraArgs}"
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug --build --test --output-junit ${extraArgs}"
+            }
+            finally {
+                junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
+            }
+        }
+
+        stage("Build & Test (Release)") {
+            try {
+                def threads = getNumThreads()
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=RelWithDebInfo --build --test --output-junit --junit-suite-name '${os}-release' ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -81,7 +91,7 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             def threads = getNumThreads()
-            sh "deploy/build.py -j${threads} --os=${os} --build --package --verify-packages -DCMAKE_BUILD_TYPE=Release"
+            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Release --build --package --verify-packages"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
