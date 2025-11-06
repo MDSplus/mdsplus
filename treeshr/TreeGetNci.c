@@ -665,7 +665,10 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         *(NID *)itm->pointer = out_nid;
       }
       else
-        memcpy(itm->pointer, &count, sizeof count);
+      {  
+        int zero = 0;  
+        memcpy(itm->pointer, &zero, sizeof zero);  
+      } 
       break;
     }
     case NciDTYPE_STR:
