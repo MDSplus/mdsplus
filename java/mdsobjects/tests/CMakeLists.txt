@@ -13,6 +13,7 @@ if(ENABLE_JAVA AND NOT TEST_WITH_WINE AND NOT ENABLE_SANITIZE)
     )
 
     set(_test_class_list
+        mds.connection.MdsConnectionMockTest
         MDSplus.MdsDataTest
         MDSplus.MdsConglomTest
         MDSplus.MdsConnectionTest
