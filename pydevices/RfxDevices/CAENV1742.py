@@ -133,7 +133,7 @@ class CAENV1742(MDSplus.Device):
         chanOffsets = []
         for chan in range(32):
             try:
-                chanOffsetPerc = int(self.getNode('CHANNEL_%d:OFFSET' % (chan+1)).data())
+                chanOffsetPerc = int(self.getNode('CHANNEL_%02d:OFFSET' % (chan+1)).data())
             except:
                 print('Cannot read offset for channel'+str(chan + 1))
                 raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
@@ -243,7 +243,7 @@ class CAENV1742(MDSplus.Device):
             dgtz.DRS4Frequency.F_1GHz:1E-9, dgtz.DRS4Frequency.F_750MHz:1.333333333333333E-9}
         samplingPeriod = samplingPeriodDict[device.get_drs4_sampling_frequency()]
         for currChan in range(32):
-            self.getNode('CHANNEL_%d.RAW_DATA'%(currChan+1)).deleteData()
+            self.getNode('CHANNEL_%02d.RAW_DATA'%(currChan+1)).deleteData()
         self.getNode('FAST_TRIG_0').deleteData()
         self.getNode('FAST_TRIG_1').deleteData()
         fastTriggerAcquired = (self.getNode('FTRIG_MODE').data() == 'ENABLED&ACQUIRED')
@@ -266,7 +266,7 @@ class CAENV1742(MDSplus.Device):
                     firstSampleTime = firstTriggerTime + triggerTime - preTriggerSamples * samplingPeriod 
                     if evt.data_group[group] != None:
                         for currChan in range(8):
-                            currNode = self.getNode('CHANNEL_%d.RAW_DATA'%(group * 8 + currChan+1))
+                            currNode = self.getNode('CHANNEL_%02d.RAW_DATA'%(group * 8 + currChan+1))
                             segStart = MDSplus.Float64(firstSampleTime)
                             segEnd = MDSplus.Float64(firstSampleTime + 1024 * samplingPeriod)
                             segDim = MDSplus.Range(segStart, segEnd, MDSplus.Float64(samplingPeriod))
