@@ -1,6 +1,6 @@
 
 import MDSplus 
-from ctypes import CDLL, c_int
+from ctypes import CDLL, c_int, c_uint32
 from time import sleep
 try:
     from caen_libs import caendigitizer as dgtz
@@ -27,9 +27,9 @@ class CAENV1742(MDSplus.Device):
     ]
     for g in range(32):
         parts.extend([
-            {'path': 'CHANNEL_%d' % (g+1), 'type': 'structure'},
-            {'path': 'CHANNEL_%d:OFFSET' % (g+1), 'type': 'numeric', 'value': 50,  'options': ('no_write_shot',)},
-            {'path': 'CHANNEL_%d:RAW_DATA' % (g+1),  'type': 'signal', 'options': ('no_write_model',)},
+            {'path': 'CHANNEL_%02d' % (g+1), 'type': 'structure'},
+            {'path': 'CHANNEL_%02d:OFFSET' % (g+1), 'type': 'numeric', 'value': 50,  'options': ('no_write_shot',)},
+            {'path': 'CHANNEL_%02d:RAW_DATA' % (g+1),  'type': 'signal', 'options': ('no_write_model',)},
         ])
     parts.extend([
         {'path': 'FAST_TRIG_0',  'type': 'signal', 'options': ('no_write_model',)},
@@ -173,6 +173,11 @@ class CAENV1742(MDSplus.Device):
         device.set_drs4_sampling_frequency(samplingSpeed) 
         device.set_max_num_events_blt(maxEvents)
 
+#enable extended group trigger time tag
+        val = device.read_register(c_uint32(0x8000))
+        newVal = val | (1<<20)
+        device.write_register(c_uint32(0x8000), c_uint32(newVal))
+
         for chan in range(32):
             device.set_channel_dc_offset(chan, chanOffsets[chan])
 
@@ -248,21 +253,30 @@ class CAENV1742(MDSplus.Device):
             evt_info, buffer = device.get_event_info(currEvent)
             evt=device.decode_event(buffer)
             for group in range(4):
-                triggerTime = evt.data_group[group].trigger_time_tag * 8.5E-9
-                firstSampleTime = firstTriggerTime + triggerTime - preTriggerSamples * samplingPeriod 
                 if evt.data_group[group] != None:
-                    for currChan in range(8):
-                        currNode = self.getNode('CHANNEL_%d.RAW_DATA'%(group * 8 + currChan+1))
-                        segStart = MDSplus.Float64(firstSampleTime)
-                        segEnd = MDSplus.Float64(firstSampleTime + 1024 * samplingPeriod)
-                        segDim = MDSplus.Range(segStart, segEnd, MDSplus.Float64(samplingPeriod))
-                        segData = MDSplus.Float32Array(evt.data_group[group].data_channel[currChan])
-                        currNode.makeSegment(segStart, segEnd, segDim, segData)
-                    if group == 0 and fastTriggerAcquired:
-                        segData =  MDSplus.Float32Array(evt.data_group[group].data_channel[8])
-                        self.getNode('FAST_TRIG_0').makeSegment(segStart, segEnd, segDim, segData)
-                    if group == 2 and fastTriggerAcquired:
-                        segData =  MDSplus.Float32Array(evt.data_group[group].data_channel[8])
-                        self.getNode('FAST_TRIG_1').makeSegment(segStart, segEnd, segDim, segData)
+                    if group == 0 or group == 1:
+                        triggerTime = evt.data_group[0].trigger_time_tag 
+                        triggerTime += (evt.data_group[1].trigger_time_tag << 30)
+                    else:
+                        triggerTime = evt.data_group[2].trigger_time_tag 
+                        triggerTime += (evt.data_group[3].trigger_time_tag << 30)
+
+                    triggerTime *= 8.5E-9
+                    #print("TriggerTime: "+str(triggerTime))
+                    firstSampleTime = firstTriggerTime + triggerTime - preTriggerSamples * samplingPeriod 
+                    if evt.data_group[group] != None:
+                        for currChan in range(8):
+                            currNode = self.getNode('CHANNEL_%d.RAW_DATA'%(group * 8 + currChan+1))
+                            segStart = MDSplus.Float64(firstSampleTime)
+                            segEnd = MDSplus.Float64(firstSampleTime + 1024 * samplingPeriod)
+                            segDim = MDSplus.Range(segStart, segEnd, MDSplus.Float64(samplingPeriod))
+                            segData = MDSplus.Float32Array(evt.data_group[group].data_channel[currChan])
+                            currNode.makeSegment(segStart, segEnd, segDim, segData)
+                        if group == 0 and fastTriggerAcquired:
+                            segData =  MDSplus.Float32Array(evt.data_group[group].data_channel[8])
+                            self.getNode('FAST_TRIG_0').makeSegment(segStart, segEnd, segDim, segData)
+                        if group == 2 and fastTriggerAcquired:
+                            segData =  MDSplus.Float32Array(evt.data_group[group].data_channel[8])
+                            self.getNode('FAST_TRIG_1').makeSegment(segStart, segEnd, segDim, segData)
                         
         device.sw_stop_acquisition()
