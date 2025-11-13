@@ -91,7 +91,7 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             def threads = getNumThreads()
-            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug --build --package --verify-packages" // TODO: Revert to "Release" once the optimizer issues are solved
+            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Release --build --package --verify-packages"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
