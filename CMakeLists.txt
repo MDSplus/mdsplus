@@ -576,6 +576,13 @@ else()
         COMPILER -Wextra
     )
 
+    # There are currently many issues when using strict aliasing
+    # TODO: Remove once all strict aliasing is dealt with
+    mdsplus_check_add_flags(
+        COMPILER -fno-strict-aliasing
+        LANGUAGES C CXX
+    )
+
     # We assume signed char everywhere
     # TODO: Remove once all char's have been updated
     mdsplus_check_add_flags(
