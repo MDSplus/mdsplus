@@ -391,7 +391,7 @@ public class CAENV1742Setup extends DeviceSetup {
         jPanel32.setLayout(new java.awt.GridLayout(1, 2));
 
         deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Channel 1 7offset(%): ");
+        deviceField21.setLabelString("Channel 17offset(%): ");
         deviceField21.setNumCols(6);
         deviceField21.setOffsetNid(64);
         jPanel33.add(deviceField21);
@@ -471,7 +471,7 @@ public class CAENV1742Setup extends DeviceSetup {
         jPanel44.add(jPanel45);
 
         deviceField30.setIdentifier("");
-        deviceField30.setLabelString("Channel 2 6offset(%): ");
+        deviceField30.setLabelString("Channel 26 offset(%): ");
         deviceField30.setNumCols(6);
         deviceField30.setOffsetNid(91);
         jPanel46.add(deviceField30);
@@ -487,7 +487,7 @@ public class CAENV1742Setup extends DeviceSetup {
         jPanel44.add(jPanel48);
 
         deviceField32.setIdentifier("");
-        deviceField32.setLabelString("Channel 2 8offset(%): ");
+        deviceField32.setLabelString("Channel 28 offset(%): ");
         deviceField32.setNumCols(6);
         deviceField32.setOffsetNid(97);
         jPanel49.add(deviceField32);
