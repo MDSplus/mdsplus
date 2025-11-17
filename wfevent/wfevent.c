@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     {
       printf("Event %s occurred.\n", event);
     }
-    return (C_OK);
+    return C_OK;
   }
   else if (timeout > 0)
   {
