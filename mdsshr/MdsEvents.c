@@ -402,7 +402,7 @@ static void *handleRemoteAst(void *arg )
   for (idx = 0; idx < num_receive_servers; idx++)
   {
     receive_thread_ids[idx] = searchOpenServer(receive_servers[idx]);
-    if(receive_thread_ids[idx] < 0)
+    if(receive_thread_ids[idx] <= INVALID_CONNECTION_ID)
     {
       receive_thread_ids[idx] = ConnectToMds_(receive_servers[idx]);
     }
@@ -417,7 +417,7 @@ static void *handleRemoteAst(void *arg )
       receive_thread_sockets[idx] = 0;
       GetConnectionInfo_(receive_thread_ids[idx], 0, &receive_thread_sockets[idx], 0);
     }
-    if (receive_thread_ids[idx] >= 0)
+    if (receive_thread_ids[idx] > INVALID_CONNECTION_ID)
     {
       status = MdsEventAst_(receive_thread_ids[idx], eventInfo->eventnam, eventInfo->astadr, eventInfo->astprm,
                               &curr_eventid);
@@ -456,7 +456,7 @@ static void *handleRemoteAst(void *arg )
     for (i = 0; i < num_receive_servers; i++)
     {
 
-      if (receive_thread_ids[i] > 0 && FD_ISSET(receive_thread_sockets[i], &readfds))
+      if (receive_thread_ids[i] > INVALID_CONNECTION_ID && FD_ISSET(receive_thread_sockets[i], &readfds))
       {
         m = GetMdsMsg_(receive_thread_ids[i], &status);
         if (STATUS_OK &&
@@ -525,13 +525,13 @@ static void initializeRemote(int receive_events)
         if (receive_events)
         {
           receive_ids[i] = searchOpenServer(servers[i]);
-          if (receive_ids[i] < 0)
+          if (receive_ids[i] <= INVALID_CONNECTION_ID)
             receive_ids[i] = ConnectToMds_(servers[i]);
           if (receive_ids[i] == INVALID_CONNECTION_ID)
           {
             printf("\nError connecting to %s\n", servers[i]);
             perror("ConnectToMds_");
-            receive_ids[i] = 0;
+            receive_ids[i] = INVALID_CONNECTION_ID;
          }
           else
           {
@@ -545,13 +545,13 @@ static void initializeRemote(int receive_events)
         else
         {
           send_ids[i] = searchOpenServer(servers[i]);
-          if (send_ids[i] < 0)
+          if (send_ids[i] <= INVALID_CONNECTION_ID)
             send_ids[i] = ConnectToMds_(servers[i]);
           if (send_ids[i]  == INVALID_CONNECTION_ID)
           {
             printf("\nError connecting to %s\n", servers[i]);
             perror("ConnectToMds_");
-            send_ids[i] = 0;
+            send_ids[i] = INVALID_CONNECTION_ID;
           }
           else
           {
@@ -884,14 +884,14 @@ static int canEventRemote(const int eventid)
     KillHandler();
     for (i = 0; i < num_receive_servers; i++)
     {
-      if (receive_ids[i] < 0)
+      if (receive_ids[i] <= INVALID_CONNECTION_ID)
         receive_ids[i] = ConnectToMds_(receive_servers[i]);
       if(receive_ids[i]  == INVALID_CONNECTION_ID)
       {
         printf("\nError connecting to %s\n", receive_servers[i]);
         perror("ConnectToMds_");
       }
-      if (receive_ids[i] > 0)
+      if (receive_ids[i] > INVALID_CONNECTION_ID)
         status = MdsEventCan_(receive_ids[i], getRemoteId(eventid, i));
     }
   }
@@ -933,7 +933,7 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
     tmp_status = 0;
     for (i = 0; i < num_send_servers; i++)
     {
-      if (send_ids[i] > 0)
+      if (send_ids[i] > INVALID_CONNECTION_ID)
       {
         if (data_len > 0)
           tmp_status =
