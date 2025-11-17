@@ -942,11 +942,12 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
           tmp_status =
               MdsValue_(send_ids[i], expression, &ansarg, NULL, NULL);
       }
-      if (tmp_status & 1)
+      if (tmp_status & 1) {
         tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
+      }
+      status = tmp_status;
       if (!(tmp_status & 1))
       {
-        status = tmp_status;
         if (reconnects < 3)
         {
           ReconnectToServer(i, 0);
