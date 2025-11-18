@@ -1003,7 +1003,10 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 if isinstance(paramDict[paramKey], str):
                     paramConf += self.skipTabs(tabCount)+paramKey+' = \"'+str(paramDict[paramKey])+'\"\n'
                 else:
-                    currValue = str(paramDict[paramKey])
+                    if np.isscalar(paramDict[paramKey]):
+                        currValue = str(paramDict[paramKey])
+                    else:
+                        currValue = np.array2string(paramDict[paramKey], threshold = np.inf)
                     currValue = currValue.replace('[', '{')
                     currValue = currValue.replace(']', '}')
                     paramConf += self.skipTabs(tabCount)+paramKey+' = ('+self.getParamType(paramDict[paramKey])+')'+currValue+'\n'
