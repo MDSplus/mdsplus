@@ -100,7 +100,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Storage CPUs: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="17"/>
+            <Property name="offsetNid" type="int" value="22"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField6">
@@ -108,7 +108,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Seg. Length"/>
             <Property name="numCols" type="int" value="8"/>
-            <Property name="offsetNid" type="int" value="23"/>
+            <Property name="offsetNid" type="int" value="28"/>
           </Properties>
         </Component>
       </SubComponents>

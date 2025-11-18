@@ -106,7 +106,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Time Seg. Len.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="38"/>
+                <Property name="offsetNid" type="int" value="43"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField7">
@@ -114,7 +114,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Out Bits seg. len: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="48"/>
+                <Property name="offsetNid" type="int" value="53"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField8">
@@ -122,7 +122,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
                 <Property name="numCols" type="int" value="8"/>
-                <Property name="offsetNid" type="int" value="32"/>
+                <Property name="offsetNid" type="int" value="37"/>
               </Properties>
             </Component>
           </SubComponents>

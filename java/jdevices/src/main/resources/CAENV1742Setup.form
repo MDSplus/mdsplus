@@ -545,7 +545,7 @@
                     <Component class="DeviceField" name="deviceField21">
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Channel 1 7offset(%): "/>
+                        <Property name="labelString" type="java.lang.String" value="Channel 17offset(%): "/>
                         <Property name="numCols" type="int" value="6"/>
                         <Property name="offsetNid" type="int" value="64"/>
                       </Properties>
@@ -689,7 +689,7 @@
                     <Component class="DeviceField" name="deviceField30">
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Channel 2 6offset(%): "/>
+                        <Property name="labelString" type="java.lang.String" value="Channel 26 offset(%): "/>
                         <Property name="numCols" type="int" value="6"/>
                         <Property name="offsetNid" type="int" value="91"/>
                       </Properties>
@@ -717,7 +717,7 @@
                     <Component class="DeviceField" name="deviceField32">
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Channel 2 8offset(%): "/>
+                        <Property name="labelString" type="java.lang.String" value="Channel 28 offset(%): "/>
                         <Property name="numCols" type="int" value="6"/>
                         <Property name="offsetNid" type="int" value="97"/>
                       </Properties>
