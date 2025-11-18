@@ -908,7 +908,11 @@ int RemoteMDSEventCan(const int eventid)
 static int sendRemoteEvent(const char *const evname, const int data_len,
                            char *const data)
 {
-  int status = 1, i, tmp_status;
+  int status, i, send_status, ans_status;
+  int tries;
+  const int MAX_TRIES = 3;
+  int bad_server = FALSE;
+  int bad_status;
   char expression[256];
   struct descrip ansarg;
   struct descrip desc;
@@ -927,36 +931,49 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
   desc.dims[0] = data_len;
   ansarg.ptr = 0;
   sprintf(expression, "setevent(\"%s\"%s)", evname, data_len > 0 ? ",$" : "");
-  if (STATUS_OK)
+
+  for (i = 0; i < num_send_servers; i++)
   {
-    int reconnects = 0;
-    tmp_status = 0;
-    for (i = 0; i < num_send_servers; i++)
-    {
+    for (tries = 0; tries < MAX_TRIES; tries++) {
+      send_status = MDSplusERROR;
+      ans_status = MDSplusERROR;
+
       if (send_ids[i] > INVALID_CONNECTION_ID)
       {
-        if (data_len > 0)
-          tmp_status =
-              MdsValue_(send_ids[i], expression, &desc, &ansarg, NULL);
-        else
-          tmp_status =
-              MdsValue_(send_ids[i], expression, &ansarg, NULL, NULL);
-      }
-      if (tmp_status & 1) {
-        tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
-      }
-      status = tmp_status;
-      if (!(tmp_status & 1))
-      {
-        if (reconnects < 3)
-        {
-          ReconnectToServer(i, 0);
-          reconnects++;
-          i--;
+        if (data_len > 0) {
+          send_status = MdsValue_(send_ids[i], expression, &desc, &ansarg, NULL);
+        } else {
+          send_status = MdsValue_(send_ids[i], expression, &ansarg, NULL, NULL);
+        }
+        if (IS_OK(send_status)) {
+          ans_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : MDSplusERROR;
         }
       }
-      free(ansarg.ptr);
+
+      if (IS_OK(send_status) && IS_OK(ans_status)) {
+        break;
+      } else {
+          ReconnectToServer(i, 0);
+      }
     }
+
+    if (tries >= MAX_TRIES) {
+      bad_server = TRUE;
+      if (IS_NOT_OK(send_status)) {
+        bad_status = send_status;
+      } else {
+        bad_status = ans_status;
+      }
+    }
+    free(ansarg.ptr);
+  }
+
+  // If one or more of the servers in the list cannot be reached, display the status of
+  // the last bad server.   Otherwise, status is the answer from the last good server.
+  if (bad_server) {
+    status = bad_status;
+  } else {
+    status = ans_status;
   }
   return status;
 }
