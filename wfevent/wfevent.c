@@ -81,7 +81,7 @@ int main(int argc, char **argv)
       {
       case '?':
         printhelp(argv[0]);
-        return 0;
+        return C_OK;
         break;
       case 'd':
         showdata = 1;
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         break;
       default:
         printhelp(argv[0]);
-        return 1;
+        return C_ERROR;
         break;
       }
     }
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
       else
       {
         printhelp(argv[0]);
-        return 1;
+        return C_ERROR;
       }
     }
   }
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
     {
     case 'h':
       printhelp(argv[0]);
-      return 0;
+      return C_OK;
     case 'd':
       showdata = 1;
       break;
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
       break;
     default:
       printhelp(argv[0]);
-      return 1;
+      return C_ERROR;
     }
   }
 #endif
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
   {
     printf("Missing event-name\n");
     printhelp(argv[0]);
-    return 1;
+    return C_ERROR;
   }
   event = argv[optind];
   status = MDSWfeventTimed(event, MAXDATA, data, &len, timeout);
@@ -166,13 +166,13 @@ int main(int argc, char **argv)
           {
             printf("Event %s occurred with data = %.*s\n", event, ans.length,
                    ans.pointer);
-            return 0;
+            return C_OK;
           }
         }
         else
         {
           printf("Event %s occurred with invalid serialized data\n", event);
-          return 1;
+          return C_ERROR;
         }
       }
       if (len > MAXDATA)
@@ -205,16 +205,16 @@ int main(int argc, char **argv)
     {
       printf("Event %s occurred.\n", event);
     }
-    return (0);
+    return C_OK;
   }
   else if (timeout > 0)
   {
     printf("Event %s timed out.\n", event);
-    return 1;
+    return C_ERROR;
   }
   else
   {
     printf("Unknown error occurred\n");
-    return 1;
+    return C_ERROR;
   }
 }
