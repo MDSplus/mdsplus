@@ -6,8 +6,7 @@ function result = mdstest(varargin)
 %   mdstest(0)  % tests java bridge
 %   mdstest(1)  % tests python bridge
 
-    global MDSINFO;
-    mdsInfo(varargin{:}); % update MDSINFO
+    info = mdsInfo(varargin{:}); % update MDSINFO
     result = mdscheck('1BU', 'uint8', [1, 1]);
     result = result && mdscheck('1WU', 'uint16', [1, 1]);
     result = result && mdscheck('1LU', 'uint32', [1, 1]);
@@ -28,8 +27,12 @@ function result = mdstest(varargin)
     result = result && mdscheck('$ : $', 'int32', [100, 1], int32(1), int32(100));
     result = result && mdscheck('$ == $', 'uint8', [1, 1], 1, 2);
     result = result && mdscheck('QUADWORD_UNSIGNED(1:100)', 'uint64', [100, 1]);
-    if MDSINFO.usePython
-        result = result && mdscheck('"string test"', 'char', [1, 11]);
+    if info.usePython
+        if ismac
+            result = result && mdscheck('"string test"', 'py.str', [1, 11]);
+        else 
+            result = result && mdscheck('"string test"', 'char', [1, 11]);
+        end
         result = result && mdscheck('["a","b","c","d"]', 'cell', [4, 1]);
         result = result && mdscheck('set_range(2,3,["a","b","c long string","d","e","f"])', 'cell', [2, 3]);
     else
@@ -56,6 +59,9 @@ function result = mdscheck(exp, result_class, result_size, varargin)
         fprintf('Error %s: expected size %s got %s\n', exp, mat2str(result_size), mat2str(size(x)))
         result = 0;
         return
+    end
+    if strcmp(class(x), 'py.str')
+        x = string(x);
     end
     y = mdsvalue('$', x);
     if isa(x, 'cell')

@@ -15,7 +15,9 @@ else
 end
 for k = 1 : n
     argin = varargin(k);
-    if iscell(argin{1})
+    if iscell(argin) && isa(argin{1}, 'string')
+        argout = mdsFromMatlab(argin{1});
+    elseif iscell(argin{1})
         argout = mdsFromMatlab(argin{1});
     else
         argout = mdsFromMatlab(cell2mat(argin));
