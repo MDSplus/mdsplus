@@ -5,6 +5,7 @@ function result = mdstest(varargin)
 %   mdstest()   % tests current bridge
 %   mdstest(0)  % tests java bridge
 %   mdstest(1)  % tests python bridge
+%   mdstest(1,1)  % tests mdsthin bridge
 
     info = mdsInfo(varargin{:}); % update MDSINFO
     result = mdscheck('1BU', 'uint8', [1, 1]);
@@ -28,7 +29,7 @@ function result = mdstest(varargin)
     result = result && mdscheck('$ == $', 'uint8', [1, 1], 1, 2);
     result = result && mdscheck('QUADWORD_UNSIGNED(1:100)', 'uint64', [100, 1]);
     if info.usePython
-        if ismac
+        if ismac || ispc
             result = result && mdscheck('"string test"', 'py.str', [1, 11]);
         else 
             result = result && mdscheck('"string test"', 'char', [1, 11]);
