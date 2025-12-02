@@ -59,6 +59,9 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <tdishr_messages.h>
 
 extern int CvtConvertFloat();
+extern double WideIntToDouble();
+extern void DoubleToWideInt();
+
 static const int roprand = 0x8000;
 
 #define SetupArgs                                         \
@@ -110,83 +113,95 @@ static const int roprand = 0x8000;
     return TdiINVCLADSC;                                  \
   }
 
-#define Operate(type)                                \
-  {                                                  \
-    type *in1p = (type *)in1->pointer;               \
-    type *in2p = (type *)in2->pointer;               \
-    type *outp = (type *)out->pointer;               \
-    switch (scalars)                                 \
-    {                                                \
-    case 0:                                          \
-    case 3:                                          \
-      while (nout--)                                 \
-      {                                              \
-        *outp++ = (type)(*in2p ? *in1p / *in2p : 0); \
-        in1p++;                                      \
-        in2p++;                                      \
-      }                                              \
-      break;                                         \
-    case 1:                                          \
-      while (nout--)                                 \
-      {                                              \
-        *outp++ = (type)(*in2p ? *in1p / *in2p : 0); \
-        in2p++;                                      \
-      }                                              \
-      break;                                         \
-    case 2:                                          \
-      while (nout--)                                 \
-      {                                              \
-        *outp++ = (type)(*in2p ? *in1p / *in2p : 0); \
-        in1p++;                                      \
-      }                                              \
-      break;                                         \
-    }                                                \
-    break;                                           \
+#define Operate(type, operator)                             \
+  {                                                         \
+    type *in1p = (type *)in1->pointer;                      \
+    type *in2p = (type *)in2->pointer;                      \
+    type *outp = (type *)out->pointer;                      \
+    switch (scalars)                                        \
+    {                                                       \
+    case 0:                                                 \
+    case 3:                                                 \
+      while (nout--)                                        \
+      {                                                     \
+        if (*in2p) {                                        \
+          *outp++ = (type)(*in1p operator *in2p);           \
+        } else {                                            \
+          return TdiDIV_BY_ZERO;                            \
+        }                                                   \
+        in1p++;                                             \
+        in2p++;                                             \
+      }                                                     \
+      break;                                                \
+    case 1:                                                 \
+      while (nout--)                                        \
+      {                                                     \
+        if (*in2p) {                                        \
+          *outp++ = (type)(*in1p operator *in2p);           \
+        } else {                                            \
+          return TdiDIV_BY_ZERO;                            \
+        }                                                   \
+        in2p++;                                             \
+      }                                                     \
+      break;                                                \
+    case 2:                                                 \
+      while (nout--)                                        \
+      {                                                     \
+        if (*in2p) {                                        \
+          *outp++ = (type)(*in1p operator *in2p);           \
+        } else {                                            \
+          return TdiDIV_BY_ZERO;                            \
+        }                                                   \
+        in1p++;                                             \
+      }                                                     \
+      break;                                                \
+    }                                                       \
+    break;                                                  \
   }
 
-#define OperateFone(type, dtype, native)                       \
+#define OperateFloatOne(type, dtype, native, routine)          \
   if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&           \
       CvtConvertFloat(in2p, dtype, &b, native, 0) && b != 0.0) \
   {                                                            \
-    ans = a / b;                                               \
+    ans = routine(a, b);                                       \
     CvtConvertFloat(&ans, native, outp++, dtype, 0);           \
   }                                                            \
   else                                                         \
     CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);
 
-#define OperateF(type, dtype, native)            \
-  {                                              \
-    type *in1p = (type *)in1->pointer;           \
-    type *in2p = (type *)in2->pointer;           \
-    type *outp = (type *)out->pointer;           \
-    type a, b, ans;                              \
-    switch (scalars)                             \
-    {                                            \
-    case 0:                                      \
-    case 3:                                      \
-      while (nout--)                             \
-      {                                          \
-        OperateFone(type, dtype, native) in1p++; \
-        in2p++;                                  \
-      }                                          \
-      break;                                     \
-    case 1:                                      \
-      while (nout--)                             \
-      {                                          \
-        OperateFone(type, dtype, native) in2p++; \
-      }                                          \
-      break;                                     \
-    case 2:                                      \
-      while (nout--)                             \
-      {                                          \
-        OperateFone(type, dtype, native) in1p++; \
-      }                                          \
-      break;                                     \
-    }                                            \
-    break;                                       \
+#define OperateFloat(type, dtype, native, routine)            \
+  {                                                           \
+    type *in1p = (type *)in1->pointer;                        \
+    type *in2p = (type *)in2->pointer;                        \
+    type *outp = (type *)out->pointer;                        \
+    type a, b, ans;                                           \
+    switch (scalars)                                          \
+    {                                                         \
+    case 0:                                                   \
+    case 3:                                                   \
+      while (nout--)                                          \
+      {                                                       \
+        OperateFloatOne(type, dtype, native, routine) in1p++; \
+        in2p++;                                               \
+      }                                                       \
+      break;                                                  \
+    case 1:                                                   \
+      while (nout--)                                          \
+      {                                                       \
+        OperateFloatOne(type, dtype, native, routine) in2p++; \
+      }                                                       \
+      break;                                                  \
+    case 2:                                                   \
+      while (nout--)                                          \
+      {                                                       \
+        OperateFloatOne(type, dtype, native, routine) in1p++; \
+      }                                                       \
+      break;                                                  \
+    }                                                         \
+    break;                                                    \
   }
 
-#define Operate128(type)                       \
+#define Divide128(type)                        \
   {                                            \
     type##_t *in1p = (type##_t *)in1->pointer; \
     type##_t *in2p = (type##_t *)in2->pointer; \
@@ -212,7 +227,7 @@ static const int roprand = 0x8000;
     break;                                     \
   }
 
-#define OperateCone(type, dtype)                                      \
+#define DivideComplexOne(type, dtype)                                 \
   if (CvtConvertFloat(&in1p[0], dtype, &a, DTYPE_NATIVE_DOUBLE, 0) && \
       CvtConvertFloat(&in1p[1], dtype, &b, DTYPE_NATIVE_DOUBLE, 0) && \
       CvtConvertFloat(&in2p[0], dtype, &c, DTYPE_NATIVE_DOUBLE, 0) && \
@@ -244,65 +259,184 @@ static const int roprand = 0x8000;
     CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);             \
   }
 
-#define OperateC(type, dtype)               \
-  {                                         \
-    type *in1p = (type *)in1->pointer;      \
-    type *in2p = (type *)in2->pointer;      \
-    type *outp = (type *)out->pointer;      \
-    double a, b, c, d;                      \
-    switch (scalars)                        \
-    {                                       \
-    case 0:                                 \
-    case 3:                                 \
-      while (nout--)                        \
-      {                                     \
-        OperateCone(type, dtype) in1p += 2; \
-        in2p += 2;                          \
-      }                                     \
-      break;                                \
-    case 1:                                 \
-      while (nout--)                        \
-      {                                     \
-        OperateCone(type, dtype) in2p += 2; \
-      }                                     \
-      break;                                \
-    case 2:                                 \
-      while (nout--)                        \
-      {                                     \
-        OperateCone(type, dtype) in1p += 2; \
-      }                                     \
-      break;                                \
-    }                                       \
-    break;                                  \
+#define DivideComplex(type, dtype)                \
+  {                                               \
+    type *in1p = (type *)in1->pointer;            \
+    type *in2p = (type *)in2->pointer;            \
+    type *outp = (type *)out->pointer;            \
+    double a, b, c, d;                            \
+    switch (scalars)                              \
+    {                                             \
+    case 0:                                       \
+    case 3:                                       \
+      while (nout--)                              \
+      {                                           \
+        DivideComplexOne(type, dtype) in1p += 2; \
+        in2p += 2;                                \
+      }                                           \
+      break;                                      \
+    case 1:                                       \
+      while (nout--)                              \
+      {                                           \
+        DivideComplexOne(type, dtype) in2p += 2; \
+      }                                           \
+      break;                                      \
+    case 2:                                       \
+      while (nout--)                              \
+      {                                           \
+        DivideComplexOne(type, dtype) in1p += 2; \
+      }                                           \
+      break;                                      \
+    }                                             \
+    break;                                        \
   }
+
+#define divide(a, b) ((a) / (b))
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2,
                struct descriptor *out)
 {
-  SetupArgs switch (in1->dtype)
+  SetupArgs;
+  switch (in1->dtype)
   {
   case DTYPE_B:
-    Operate(char) case DTYPE_BU : Operate(unsigned char) case DTYPE_W
-        : Operate(short) case DTYPE_WU : Operate(unsigned short) case DTYPE_L
-        : Operate(int) case DTYPE_LU : Operate(unsigned int) case DTYPE_Q
-        : Operate(int64_t);
+    Operate(char, /);
+  case DTYPE_BU:
+    Operate(unsigned char, /);
+  case DTYPE_W:
+    Operate(short, /);
+  case DTYPE_WU:
+    Operate(unsigned short, /);
+  case DTYPE_L:
+    Operate(int, /);
+  case DTYPE_LU:
+    Operate(unsigned int, /);
+  case DTYPE_Q:
+    Operate(int64_t, /);
   case DTYPE_QU:
-    Operate(uint64_t);
+    Operate(uint64_t, /);
   case DTYPE_O:
-    Operate128(int128);
+    Divide128(int128);
   case DTYPE_OU:
-    Operate128(uint128);
+    Divide128(uint128);
   case DTYPE_F:
-    OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT) case DTYPE_FS
-        : OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT) case DTYPE_G
-        : OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE) case DTYPE_D
-        : OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE) case DTYPE_FT
-        : OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE) case DTYPE_FC
-        : OperateC(float, DTYPE_F) case DTYPE_FSC
-        : OperateC(float, DTYPE_FS) case DTYPE_GC
-        : OperateC(double, DTYPE_G) case DTYPE_DC
-        : OperateC(double, DTYPE_D) case DTYPE_FTC
-        : OperateC(double, DTYPE_FT) default : return TdiINVDTYDSC;
+    OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, divide)
+  case DTYPE_FS:
+    OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, divide);
+  case DTYPE_G:
+    OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, divide);
+  case DTYPE_D:
+    OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, divide);
+  case DTYPE_FT:
+    OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, divide);
+  case DTYPE_FC:
+    DivideComplex(float, DTYPE_F);
+  case DTYPE_FSC:
+    DivideComplex(float, DTYPE_FS);
+  case DTYPE_GC:
+    DivideComplex(double, DTYPE_G);
+  case DTYPE_DC:
+    DivideComplex(double, DTYPE_D);
+  case DTYPE_FTC:
+    DivideComplex(double, DTYPE_FT);
+  default:
+    return TdiINVDTYDSC;
+  }
+  return 1;
+}
+
+static inline double mod_float(double x, double m)
+{
+  if (m == 0.0)
+    return x;
+  double intpart;
+  modf(x / m, &intpart);
+  return x - intpart * m;
+}
+
+static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
+{
+  double in2_d = WideIntToDouble(in2, size / sizeof(int), is_signed);
+  double in1_d = WideIntToDouble(in1, size / sizeof(int), is_signed);
+  double ans = mod_float(in1_d, in2_d);
+  DoubleToWideInt(&ans, size / sizeof(int), out);
+}
+
+#define OperateBin(size, is_signed, routine)        \
+  {                                                 \
+    char *in1p = in1->pointer;                      \
+    char *in2p = in2->pointer;                      \
+    char *outp = out->pointer;                      \
+    switch (scalars)                                \
+    {                                               \
+    case 0:                                         \
+    case 3:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in1p += size;                               \
+        in2p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    case 1:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in2p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    case 2:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in1p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    }                                               \
+    break;                                          \
+  }
+
+int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
+            struct descriptor *out)
+{
+  SetupArgs;
+  switch (in1->dtype)
+  {
+  case DTYPE_B:
+    Operate(int8_t, %);
+  case DTYPE_BU:
+    Operate(uint8_t, %);
+  case DTYPE_W:
+    Operate(int16_t, %)
+  case DTYPE_WU:
+    Operate(uint16_t, %);
+  case DTYPE_L:
+    Operate(int32_t, %)
+  case DTYPE_LU:
+    Operate(uint32_t, %);
+  case DTYPE_Q:
+    Operate(int64_t, %)
+  case DTYPE_QU:
+    Operate(uint64_t, %);
+  case DTYPE_O:
+    OperateBin(in1->length, 1, mod_bin);
+  case DTYPE_OU:
+    OperateBin(in1->length, 0, mod_bin);
+  case DTYPE_F:
+    OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, mod_float);
+  case DTYPE_FS:
+    OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, mod_float);
+  case DTYPE_D:
+    OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, mod_float);
+  case DTYPE_G:
+    OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, mod_float);
+  case DTYPE_FT:
+    OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, mod_float);
+  default:
+    return TdiINVDTYDSC;
   }
   return 1;
 }
