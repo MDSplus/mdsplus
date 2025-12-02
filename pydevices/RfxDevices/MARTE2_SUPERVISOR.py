@@ -823,7 +823,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         gamNodes = self.getGamNodes(stateIdx, threadIdx)
         for gamNode in gamNodes:
             gamName = gamNode.getMarteDeviceName()
-            gamMode = gamNode.getData('MODE').getDevice()
+            gamMode = gamNode.getNode('MODE').data()
+            print('GAM NAME: ', gamName,   'GAM MODE:', gamMode)
             if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
                 timeSignals.append(gamName+'_ReadTime')
                 timeSignals.append(gamName+'_ExecTime')
@@ -899,7 +900,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
                 'DiscontinuityFactor': 10
-           })
+            })
+            sigIdx += 1 
 
         retDataSource['Signals'] = retSignals
         return retDataSource, retGam
