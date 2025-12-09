@@ -436,7 +436,10 @@ int Tdi1Read(opcode_t opcode __attribute__((unused)),
     ans = fgets(line, sizeof(line), unit);
     if (ans)
     {
-      line_d.length = strlen(line) - 1;
+      line_d.length = strlen(line);
+      if (line_d.length > 0 && line[line_d.length - 1] == '\n') {
+        --line_d.length;
+      }
       line_d.pointer = line;
       status = MdsCopyDxXd(&line_d, out_ptr);
     }
