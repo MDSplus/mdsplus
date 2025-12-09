@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -92,9 +93,17 @@ int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
       status = TdiNO_CMPLX;
       break;
     case DTYPE_F:
-      compute_exponent(F) case DTYPE_FS : compute_exponent(FS) case DTYPE_D
-          : compute_exponent(D) case DTYPE_G : compute_exponent(G) case DTYPE_FT
-          : compute_exponent(FT) default : status = TdiINVDTYDSC;
+      compute_exponent(F);
+    case DTYPE_FS:
+      compute_exponent(FS);
+    case DTYPE_D:
+      compute_exponent(D);
+    case DTYPE_G:
+      compute_exponent(G);
+    case DTYPE_FT:
+      compute_exponent(FT);
+    default:
+      status = TdiINVDTYDSC;
       break;
     }
   return status;
@@ -409,12 +418,14 @@ int Tdi3SetExponent(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
   if (STATUS_OK)
     switch (in1_ptr->dtype)
     {
-      do_setexponent(F, ;) do_setexponent(FS, ;)
-          do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];)
-              do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];)
-                  do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
-          : status = TdiINVDTYDSC;
-      break;
+      do_setexponent(F, ;);
+      do_setexponent(FS, ;);
+      do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];);
+      do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];);
+      do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];); 
+      default:
+        status = TdiINVDTYDSC;
+        break;
     }
   return status;
 }
@@ -450,11 +461,14 @@ int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
   N_ELEMENTS(out_ptr, n);
   if (STATUS_OK)
     switch (in_ptr->dtype)
-    {
-      do_spacing(F, ;) do_spacing(FS, ;) do_spacing(G, ((int *)outp)[1] = 0;)
-          do_spacing(D, ((int *)outp)[1] = 0;)
-              do_spacing(FT, ((int *)outp)[1] = 0;) default : status =
-                                                                  TdiINVDTYDSC;
+   {
+      do_spacing(F, ;); 
+      do_spacing(FS, ;); 
+      do_spacing(G, ((int *)outp)[1] = 0;);
+      do_spacing(D, ((int *)outp)[1] = 0;);
+      do_spacing(FT, ((int *)outp)[1] = 0;); 
+      default : 
+        status = TdiINVDTYDSC;
       break;
     }
   return status;

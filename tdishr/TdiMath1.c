@@ -182,12 +182,18 @@ static const int roprand = 0x8000;
   {                                                                            \
     SetupArgs switch (in->dtype)                                               \
     {                                                                          \
-    case DTYPE_F:                                                              \
-      Operate(float, DTYPE_F, function) case DTYPE_FS                          \
-          : Operate(float, DTYPE_FS, function) case DTYPE_G                    \
-          : Operate(double, DTYPE_G, function) case DTYPE_D                    \
-          : Operate(double, DTYPE_D, function) case DTYPE_FT                   \
-          : Operate(double, DTYPE_FT, function) default : return TdiINVDTYDSC; \
+      case DTYPE_F:                                                            \
+        Operate(float, DTYPE_F, function);                                     \
+      case DTYPE_FS:                                                           \
+        Operate(float, DTYPE_FS, function);                                    \
+      case DTYPE_G :                                                           \
+        Operate(double, DTYPE_G, function);                                    \
+      case DTYPE_D :                                                           \
+        Operate(double, DTYPE_D, function);                                    \
+      case DTYPE_FT:                                                           \
+        Operate(double, DTYPE_FT, function);                                   \
+      default :                                                                \
+        return TdiINVDTYDSC;                                                   \
     }                                                                          \
     return 1;                                                                  \
   }
@@ -198,35 +204,51 @@ static const int roprand = 0x8000;
   {                                                                            \
     SetupArgs switch (in->dtype)                                               \
     {                                                                          \
-    case DTYPE_F:                                                              \
-      Operate(float, DTYPE_F, function) case DTYPE_FS                          \
-          : Operate(float, DTYPE_FS, function) case DTYPE_G                    \
-          : Operate(double, DTYPE_G, function) case DTYPE_D                    \
-          : Operate(double, DTYPE_D, function) case DTYPE_FT                   \
-          : Operate(double, DTYPE_FT, function) default : return TdiINVDTYDSC; \
+      case DTYPE_F:                                                            \
+        Operate(float, DTYPE_F, function);                                     \
+      case DTYPE_FS:                                                           \
+        Operate(float, DTYPE_FS, function);                                    \
+      case DTYPE_G:                                                            \
+        Operate(double, DTYPE_G, function);                                    \
+      case DTYPE_D:                                                            \
+        Operate(double, DTYPE_D, function);                                    \
+      case DTYPE_FT:                                                           \
+        Operate(double, DTYPE_FT, function);                                   \
+      default :                                                                \
+        return TdiINVDTYDSC;                                                   \
     }                                                                          \
     return kind ? 1 : 1;                                                       \
   }
 
-#define mathboth(name, function)                                           \
-  int Tdi3##name(struct descriptor *in, struct descriptor *out)            \
-  {                                                                        \
-    SetupArgs switch (in->dtype)                                           \
-    {                                                                      \
-    case DTYPE_F:                                                          \
-      Operate(float, DTYPE_F, function) case DTYPE_FS                      \
-          : Operate(float, DTYPE_FS, function) case DTYPE_G                \
-          : Operate(double, DTYPE_G, function) case DTYPE_D                \
-          : Operate(double, DTYPE_D, function) case DTYPE_FT               \
-          : Operate(double, DTYPE_FT, function) case DTYPE_FC              \
-          : Operate(float, DTYPE_F, function) case DTYPE_FSC               \
-          : OperateC2C(float, DTYPE_FS, function##_complex) case DTYPE_GC  \
-          : OperateC2C(double, DTYPE_G, function##_complex) case DTYPE_DC  \
-          : OperateC2C(double, DTYPE_D, function##_complex) case DTYPE_FTC \
-          : OperateC2C(double, DTYPE_FT, function##_complex) default       \
-          : return TdiINVDTYDSC;                                           \
-    }                                                                      \
-    return 1;                                                              \
+#define mathboth(name, function)                                               \
+  int Tdi3##name(struct descriptor *in, struct descriptor *out)                \
+  {                                                                            \
+    SetupArgs switch (in->dtype)                                               \
+    {                                                                          \
+      case DTYPE_F:                                                            \
+        Operate(float, DTYPE_F, function);                                     \
+      case DTYPE_FS:                                                           \
+        Operate(float, DTYPE_FS, function);                                    \
+      case DTYPE_G:                                                            \
+        Operate(double, DTYPE_G, function);                                    \
+      case DTYPE_D:                                                            \
+        Operate(double, DTYPE_D, function);                                    \
+      case DTYPE_FT:                                                           \
+        Operate(double, DTYPE_FT, function);                                   \
+      case DTYPE_FC:                                                           \
+        Operate(float, DTYPE_F, function);                                     \
+      case DTYPE_FSC:                                                          \
+        OperateC2C(float, DTYPE_FS, function##_complex);                       \
+      case DTYPE_GC:                                                           \
+        OperateC2C(double, DTYPE_G, function##_complex);                       \
+      case DTYPE_DC:                                                           \
+        OperateC2C(double, DTYPE_D, function##_complex);                       \
+      case DTYPE_FTC:                                                          \
+        OperateC2C(double, DTYPE_FT, function##_complex);                      \
+      default:                                                                 \
+        return TdiINVDTYDSC;                                                   \
+    }                                                                          \
+    return 1;                                                                  \
   }
 
 #define mathcomplex(name, function)                              \
@@ -234,13 +256,18 @@ static const int roprand = 0x8000;
   {                                                              \
     SetupArgs switch (in->dtype)                                 \
     {                                                            \
-    case DTYPE_FC:                                               \
-      OperateC2S(float, DTYPE_F, function) case DTYPE_FSC        \
-          : OperateC2S(float, DTYPE_FS, function) case DTYPE_GC  \
-          : OperateC2S(double, DTYPE_G, function) case DTYPE_DC  \
-          : OperateC2S(double, DTYPE_D, function) case DTYPE_FTC \
-          : OperateC2S(double, DTYPE_FT, function) default       \
-          : return TdiINVDTYDSC;                                 \
+      case DTYPE_FC:                                             \
+        OperateC2S(float, DTYPE_F, function);                    \
+      case DTYPE_FSC:                                            \
+        OperateC2S(float, DTYPE_FS, function);                   \
+      case DTYPE_GC:                                             \
+        OperateC2S(double, DTYPE_G, function);                   \
+      case DTYPE_DC:                                             \
+        OperateC2S(double, DTYPE_D, function);                   \
+      case DTYPE_FTC:                                            \
+        OperateC2S(double, DTYPE_FT, function);                  \
+      default:                                                   \
+        return TdiINVDTYDSC;                                     \
     }                                                            \
     return 1;                                                    \
   }
@@ -373,23 +400,33 @@ static double atanh_Static(double in)
   return ans;
 }
 
-mathsingle(Atanh, atanh_Static) mathsingle(Cosh, cosh)
-    mathsingle(Log2, log2_Static) mathsingle(Sinh, sinh) mathsingle(Tanh, tanh)
-        mathsingle(Acos, acos) mathsingle(Acosd, acosd_Static)
-            mathsingle(Asin, asin) mathsingle(Asind, asind_Static)
-                mathsingle(Atan, atan) mathsingle(Atand, atand_Static)
-                    mathsingle(Cosd, cosd_Static) mathsingle(Floor, floor)
-                        mathsingle(Log10, log10) mathsingle(Sind, sind_Static)
-                            mathsingle(Tan, tan) mathsingle(Tand, tand_Static)
-                                mathsinglewithkind(Aint, trunc_Static)
-                                    mathsinglewithkind(Anint,
-                                                       anint) mathboth(Cos, cos)
-                                        mathboth(Exp, exp) mathboth(Log, log)
-                                            mathboth(Sin, sin) mathboth(Sqrt,
-                                                                        sqrt)
-                                                mathcomplex(Arg, atan2)
-                                                    mathcomplex(Argd,
-                                                                atand2_Static)
+mathsingle(Atanh, atanh_Static); 
+mathsingle(Cosh, cosh);
+mathsingle(Log2, log2_Static); 
+mathsingle(Sinh, sinh);
+mathsingle(Tanh, tanh);
+mathsingle(Acos, acos);
+mathsingle(Acosd, acosd_Static);
+mathsingle(Asin, asin);
+mathsingle(Asind, asind_Static);
+mathsingle(Atan, atan);
+mathsingle(Atand, atand_Static);
+mathsingle(Cosd, cosd_Static);
+mathsingle(Floor, floor);
+mathsingle(Log10, log10);
+mathsingle(Sind, sind_Static);
+mathsingle(Tan, tan);
+mathsingle(Tand, tand_Static);
+mathsinglewithkind(Aint, trunc_Static);
+mathsinglewithkind(Anint,anint);
+mathboth(Cos, cos);
+mathboth(Exp, exp);
+mathboth(Log, log);
+mathboth(Sin, sin);
+mathboth(Sqrt,sqrt);
+mathcomplex(Arg, atan2);
+mathcomplex(Argd,atand2_Static);
+  
     /*  CMS REPLACEMENT HISTORY, Element Tdi3MATH1.C */
     /*  *51   27-AUG-1996 07:42:11 TWF "Fix compile warnings" */
     /*  *50   21-AUG-1996 11:56:00 TWF "fix arg" */

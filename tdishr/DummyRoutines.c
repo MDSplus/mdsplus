@@ -30,4 +30,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     return 0;                                       \
   }
 /* dummy(LibConvertDateString) */
-dummy(LibFindVmZone) dummy(LibShowVmZone)
+dummy(LibFindVmZone);
+dummy(LibShowVmZone);
