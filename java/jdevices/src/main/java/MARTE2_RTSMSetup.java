@@ -923,7 +923,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
 
         deviceField59.setIdentifier("");
         deviceField59.setLabelString("Write CPU Mask:");
-        deviceField59.setOffsetNid(3683);
+        deviceField59.setOffsetNid(3688);
         jPanel219.add(deviceField59);
 
         jPanel2.add(jPanel219, java.awt.BorderLayout.PAGE_END);
@@ -4801,7 +4801,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Segment Len.:");
         deviceField42.setNumCols(6);
-        deviceField42.setOffsetNid(3699);
+        deviceField42.setOffsetNid(3704);
         jPanel220.add(deviceField42);
 
         deviceChoice9.setChoiceIntValues(new int[] {0, -1});
@@ -4809,7 +4809,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice9.setConvert(true);
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Output: ");
-        deviceChoice9.setOffsetNid(3698);
+        deviceChoice9.setOffsetNid(3703);
         deviceChoice9.setUpdateIdentifier("");
         jPanel220.add(deviceChoice9);
 
@@ -4820,7 +4820,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Segment Len.:");
         deviceField43.setNumCols(6);
-        deviceField43.setOffsetNid(3709);
+        deviceField43.setOffsetNid(3714);
         jPanel222.add(deviceField43);
 
         deviceChoice10.setChoiceIntValues(new int[] {0, -1});
@@ -4828,7 +4828,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice10.setConvert(true);
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Output: ");
-        deviceChoice10.setOffsetNid(3708);
+        deviceChoice10.setOffsetNid(3713);
         deviceChoice10.setUpdateIdentifier("");
         jPanel222.add(deviceChoice10);
 
@@ -4839,7 +4839,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField44.setIdentifier("");
         deviceField44.setLabelString("Segment Len.:");
         deviceField44.setNumCols(6);
-        deviceField44.setOffsetNid(3719);
+        deviceField44.setOffsetNid(3724);
         jPanel223.add(deviceField44);
 
         deviceChoice11.setChoiceIntValues(new int[] {0, -1});
@@ -4847,7 +4847,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice11.setConvert(true);
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Output: ");
-        deviceChoice11.setOffsetNid(3718);
+        deviceChoice11.setOffsetNid(3723);
         deviceChoice11.setUpdateIdentifier("");
         jPanel223.add(deviceChoice11);
 
@@ -4858,7 +4858,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Segment Len.:");
         deviceField45.setNumCols(6);
-        deviceField45.setOffsetNid(3729);
+        deviceField45.setOffsetNid(3734);
         jPanel224.add(deviceField45);
 
         deviceChoice12.setChoiceIntValues(new int[] {0, -1});
@@ -4866,7 +4866,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice12.setConvert(true);
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Output: ");
-        deviceChoice12.setOffsetNid(3728);
+        deviceChoice12.setOffsetNid(3733);
         deviceChoice12.setUpdateIdentifier("");
         jPanel224.add(deviceChoice12);
 
@@ -4877,7 +4877,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField46.setIdentifier("");
         deviceField46.setLabelString("Segment Len.:");
         deviceField46.setNumCols(6);
-        deviceField46.setOffsetNid(3739);
+        deviceField46.setOffsetNid(3744);
         jPanel225.add(deviceField46);
 
         deviceChoice13.setChoiceIntValues(new int[] {0, -1});
@@ -4885,7 +4885,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice13.setConvert(true);
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Output: ");
-        deviceChoice13.setOffsetNid(3738);
+        deviceChoice13.setOffsetNid(3743);
         deviceChoice13.setUpdateIdentifier("");
         jPanel225.add(deviceChoice13);
 
@@ -4896,7 +4896,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Segment Len.:");
         deviceField47.setNumCols(6);
-        deviceField47.setOffsetNid(3749);
+        deviceField47.setOffsetNid(3754);
         jPanel226.add(deviceField47);
 
         deviceChoice14.setChoiceIntValues(new int[] {0, -1});
@@ -4904,7 +4904,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice14.setConvert(true);
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Output: ");
-        deviceChoice14.setOffsetNid(3748);
+        deviceChoice14.setOffsetNid(3753);
         deviceChoice14.setUpdateIdentifier("");
         jPanel226.add(deviceChoice14);
 
@@ -4915,7 +4915,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField48.setIdentifier("");
         deviceField48.setLabelString("Segment Len.:");
         deviceField48.setNumCols(6);
-        deviceField48.setOffsetNid(3759);
+        deviceField48.setOffsetNid(3764);
         jPanel227.add(deviceField48);
 
         deviceChoice15.setChoiceIntValues(new int[] {0, -1});
@@ -4923,7 +4923,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice15.setConvert(true);
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Output: ");
-        deviceChoice15.setOffsetNid(3758);
+        deviceChoice15.setOffsetNid(3763);
         deviceChoice15.setUpdateIdentifier("");
         jPanel227.add(deviceChoice15);
 
@@ -4934,7 +4934,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Segment Len.:");
         deviceField49.setNumCols(6);
-        deviceField49.setOffsetNid(3769);
+        deviceField49.setOffsetNid(3774);
         jPanel228.add(deviceField49);
 
         deviceChoice16.setChoiceIntValues(new int[] {0, -1});
@@ -4942,7 +4942,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice16.setConvert(true);
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Output: ");
-        deviceChoice16.setOffsetNid(3768);
+        deviceChoice16.setOffsetNid(3773);
         deviceChoice16.setUpdateIdentifier("");
         jPanel228.add(deviceChoice16);
 

@@ -86,19 +86,19 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Time Seg. Len.:");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(38);
+        deviceField6.setOffsetNid(43);
         jPanel4.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Out Bits seg. len: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(48);
+        deviceField7.setOffsetNid(53);
         jPanel4.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Write CPU Mask: ");
         deviceField8.setNumCols(8);
-        deviceField8.setOffsetNid(32);
+        deviceField8.setOffsetNid(37);
         jPanel4.add(deviceField8);
 
         jPanel1.add(jPanel4);

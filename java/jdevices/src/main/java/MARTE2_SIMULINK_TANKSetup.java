@@ -61,13 +61,13 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Out Segment len (0 to disable writing): ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(44);
+        deviceField4.setOffsetNid(49);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Out CPUs");
         deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(38);
+        deviceField5.setOffsetNid(43);
         jPanel4.add(deviceField5);
 
         jPanel1.add(jPanel4);

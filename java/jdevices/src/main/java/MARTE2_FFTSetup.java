@@ -42,12 +42,10 @@ public class MARTE2_FFTSetup extends DeviceSetup
         deviceChoice2 = new DeviceChoice();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField6 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 FFT GAM");
         setDeviceType("MARTE2_FFT");
         setHeight(300);
@@ -59,13 +57,13 @@ public class MARTE2_FFTSetup extends DeviceSetup
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Num. Samples");
         deviceField1.setNumCols(4);
-        deviceField1.setOffsetNid(7);
+        deviceField1.setOffsetNid(32);
         jPanel5.add(deviceField1);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("MdsWriter CPU Mask: ");
         deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(22);
+        deviceField5.setOffsetNid(28);
         jPanel5.add(deviceField5);
 
         jPanel2.add(jPanel5);
@@ -73,7 +71,7 @@ public class MARTE2_FFTSetup extends DeviceSetup
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Out Segment len (0 to disable writing in tree):");
         deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(28);
+        deviceField4.setOffsetNid(34);
         jPanel6.add(deviceField4);
 
         deviceChoice2.setChoiceItems(new String[] {"int16", "int32", "float32", "float64"});
@@ -88,19 +86,6 @@ public class MARTE2_FFTSetup extends DeviceSetup
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase: ");
-        deviceField2.setNumCols(35);
-        deviceField2.setOffsetNid(3);
-        jPanel3.add(deviceField2);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Timebase div:");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(41);
-        jPanel3.add(deviceField6);
-
         jPanel1.add(jPanel3);
 
         deviceField3.setIdentifier("");
@@ -120,11 +105,9 @@ public class MARTE2_FFTSetup extends DeviceSetup
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
-    private DeviceField deviceField6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
