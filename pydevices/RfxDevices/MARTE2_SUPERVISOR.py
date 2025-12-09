@@ -222,7 +222,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
-    #Return the target timebase reference dor DERIVED and EXT_DERIVED mode
+    #Return the target timebase reference for DERIVED and EXT_DERIVED mode
     def getExtTimebaseRef(self, timebaseMode, stateIdx, threadIdx): 
         if timebaseMode == 'DERIVED':
             try:
@@ -854,6 +854,12 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         retGam['Inputs'] = gamInputs
         gamOutputs = []
         gamOutputs.append({
+            'Name': 'Time',
+            'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
+            'Type': threadTimeType,
+        })
+        gamOutputs.append({
+
             'Name': 'CycleTime',
             'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
             'Type': 'uint32'
@@ -868,7 +874,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
         retDataSource = {}
         retDataSource['Name'] = 'State_%d_Thread_%d_TIMES_WRITER' % (stateIdx+1, threadIdx+1)
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Parameters'] = {
             'CPUMask': cpuMask,
             'NumberOfBuffers' : 20000,
@@ -1372,7 +1378,7 @@ $<APP_NAME> = {
         gamClasses.append('ConstantGAM')
         gamClasses.append('PickSampleGAM')
         gamClasses.append('MDSEventManager')
-        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSDataSource::MDSplusWriter')
         gamClasses.append('MDSReaderGAM')
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')

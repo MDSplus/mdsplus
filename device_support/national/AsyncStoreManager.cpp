@@ -269,7 +269,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
       {
       case SHORT:
       {
-        // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
+        //printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
         Int16Array *data = new Int16Array((short *)buffer, bufSize);
 
         pthread_mutex_lock(&segmentMutex);

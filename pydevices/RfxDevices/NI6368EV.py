@@ -5,8 +5,7 @@ from MDSplus import Int32, Float32, Float32Array, Float64
 from ctypes import POINTER,CDLL,Structure,c_int,c_double,c_uint,c_char,c_byte,c_ubyte,c_float,byref,c_char_p,c_void_p,c_short,c_ulonglong
 #from ctypes import *
 from threading import Thread
-from MDSplus.mdsExceptions import DevCOMM_ERROR
-from MDSplus.mdsExceptions import DevBAD_PARAMETER
+from MDSplus.mdsExceptions import DevCOMM_ERROR, DevBAD_PARAMETER, PyUNHANDLED_EXCEPTION
 import time
 import os
 import errno
@@ -167,6 +166,18 @@ class NI6368EV(Device):
     ni6368chanPostTimes = {}
 
     currShot = 0
+
+    def thread_alive(self, thread):
+        if getattr(thread, "is_alive", None):
+            alive = thread.is_alive()
+        elif getattr(thread, "isAlive", None):
+            alive = thread.isAlive()
+        else:
+            print("Python version error")
+            # emsg = 'ERROR: Python version error'
+            # Data.execute('DevLogErr($1)', emsg)
+            # raise PyUNHANDLED_EXCEPTION
+        return alive
 
     def debugPrint(self, msg='', obj=''):
         print (self.name + ':' + msg, obj)
@@ -368,6 +379,8 @@ class NI6368EV(Device):
             else:
                 c = segmentSize/bufSize
                 if (segmentSize % bufSize > 0):
+                    # import math
+                    # c = math.ceil(c)
                     c = c+1
                 segmentSize = c*bufSize
             
@@ -452,7 +465,7 @@ class NI6368EV(Device):
         if self.restoreInfo() == self.DEV_IS_OPEN:
             try:
                 if self.restoreWorker():
-                    if self.worker.isAlive():
+                    if self.thread_alive(self.worker):
                         print ('stopping Store...')
                         self.stop_store()
                         self.restoreInfo()
@@ -686,7 +699,7 @@ class NI6368EV(Device):
         # check module in acquisition state
         try:
             if self.restoreWorker():
-                if self.worker.isAlive():
+                if self.thread_alive(self.worker):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module is in acquisition')
                     return
         except:
@@ -727,7 +740,7 @@ class NI6368EV(Device):
             self.worker.error = self.worker.ACQ_NOERROR 
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        if not self.worker.isAlive():
+        if not self.thread_alive(self.worker):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread not started')
             raise mdsExceptions.TclFAILED_ESSENTIAL
  
@@ -748,7 +761,7 @@ class NI6368EV(Device):
             return
 
         """
-        if self.worker.isAlive():
+        if self.thread_alive(self.worker):
             print("Try to stopping...")
             self.debugPrint("PXI 6368 stop_worker")
             self.worker.stop()
@@ -760,7 +773,7 @@ class NI6368EV(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread stopped')
         """
 
-        if self.worker.isAlive():
+        if self.thread_alive(self.worker):
             print("Try to stopping...")
             self.worker.stop()
             error = self.worker.hasError()
@@ -793,7 +806,7 @@ class NI6368EV(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-        if self.worker.isAlive():
+        if self.thread_alive(self.worker):
             self.worker.stop()
             self.worker.join()
             self.debugPrint("PXI 6368 EV worker thread stopped")

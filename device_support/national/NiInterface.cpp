@@ -125,6 +125,9 @@ extern "C" int64_t NI6683_get_TCN_time();
 extern "C" int NI6683_stop(int devFd, int* activeFds, int size);
 extern "C" int NI6683_close(int devFd, int* Fds,int size);
 
+extern "C" int xseries_trigger(int devFd);
+
+
 void pxi6259_create_ai_conf_ptr(void **confPtr)
 {
   pxi6259_ai_conf_t *conf =
@@ -242,7 +245,7 @@ int xseries_set_ai_conf_ptr(int fd, void *conf_ptr)
 
   xseries_ai_conf_t conf;
   memcpy(&conf, conf_ptr, sizeof(xseries_ai_conf_t));
-
+  printf("ORA CARICO AI CONGIF\n");
   retval = xseries_load_ai_conf(fd, *(xseries_ai_conf_t *)conf_ptr);
   if (retval)
   {
@@ -250,6 +253,7 @@ int xseries_set_ai_conf_ptr(int fd, void *conf_ptr)
            errno);
     return -1;
   }
+  printf("CARICATO\n");
 
   // wait for descriptors
   sleep(1);
@@ -691,14 +695,18 @@ int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr,
       // Functions waiting for data or timeout
       if (saveConv)
         // number fo data to red is expresse in samples
+	// printf("LEGGO 2\n\n");
         currReadSamples = xseries_read_ai(
             chanFd[chan], &buffers_f[chan][bufReadChanSmp[chan]],
             (currDataToRead - bufReadChanSmp[chan]));
+	if (currReadSamples > 0){printf ("LETTO %d\n\n", currReadSamples);}
       else
         // number of sample to read must be in byte
+	// printf("LEGGO 3\n\n");
         currReadSamples =
             read(chanFd[chan], &buffers_s[chan][bufReadChanSmp[chan]],
                  (currDataToRead - bufReadChanSmp[chan]) << 1);
+	if (currReadSamples > 0){printf ("LETTO %d\n\n", currReadSamples);}
       
       //lastReadTime = currReadTime;
 
@@ -1372,6 +1380,7 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
 
   // open AI file descriptor
   sprintf(filename, "%s.%u.ai", DEVICE_FILE, deviceNum);
+  printf("APRO %s\n");
   devFD = open(filename, O_RDWR);
   if (devFD < 0)
   {
@@ -2940,7 +2949,7 @@ public:
 
   void processSample(float sample)
   {
-    // std::cout << "CALLING FLOAT PROCESS SAMPLE" << std::endl;
+    std::cout << "CALLING FLOAT PROCESS SAMPLE" << std::endl;
     buffer_f[bufferIdx] = sample;
     sampleCount++; // fill the buffer before elaborating it
     if (sampleCount >= bufSize - 1)
@@ -2980,7 +2989,7 @@ public:
       for (size_t i = 0; i < bufSize - 2; i++)
       {
         if (saveConv){
-          // std::cout << "TERMINATING FLOAT SAMPLE DELAYED" << std::endl;
+          //std::cout << "TERMINATING FLOAT SAMPLE DELAYED" << std::endl;
           processSampleDelayed(&buffer_f[oldestBufferIdx]);
         }
         else{
@@ -3096,7 +3105,7 @@ public:
     double currTime = startTime + basePeriod * baseSampleCount;
     baseSampleCount++;
     currBaseSampleCount++;
-    // std::cout << "CurrBase Sample Count: " << currBaseSampleCount<< std::endl;
+    //std::cout << "CurrBase Sample Count: " << currBaseSampleCount<< std::endl;
 
     if (currBaseSampleCount % f12Div[currDivIdx] == 0)
     {
@@ -3107,7 +3116,7 @@ public:
         segBuffer_f[segBufSampleCount++] = *reinterpret_cast<double*>(sample);
 
 
-
+      // printf("segBufSampleCount: %d, segBufSize: %d\n", segBufSampleCount, segBufSize);
       if (segBufSampleCount >= segBufSize) // buffer filled
       {
         // std::cout << "STO SALVANDO BUFFER CON COUNTER: " << shotSampleCount << std::endl;
@@ -3148,7 +3157,7 @@ public:
         if (bufferCount >= numBuffersInSegment) // Need to possibly adjust segment end and
                                                 // dimension and create a new segment
         {
-          //std::cout << "SEGMENT FILLED FOR " << dataNid << std:: endl;
+          // std::cout << "SEGMENT FILLED FOR " << dataNid << std:: endl;
           numSegments ++;
           bufStartTime = startTime + basePeriod * baseSampleCount;
           // std::cout << "BUF_START_TIME: " << bufStartTime << " startTime: " << startTime << " basePeriod: " << basePeriod << " f12Div[currDivIdx]: " << f12Div[currDivIdx] << " baseSampleCount: " << baseSampleCount << std::endl;
@@ -3733,11 +3742,20 @@ int pxi6368EV_readAndSaveAllChannels(
     for (chan = 0; chan < nChan; chan++)
     {
       // Reading samples from the analog input channels
-      if (saveConv){
+      if (saveConv)
+      {
+	      // printf("LEGGO 1\n\n");
         currReadSamples = xseries_read_ai(chanFd[chan], buffers_f[chan], bufSize);
+	if (currReadSamples > 0)
+  {
+	printf("LETTO %d\n\n", currReadSamples);
+	}
       }
-      else{
+      else
+      {
+	      // printf("LEGGO 4\n\n");
         currReadSamples = read(chanFd[chan], buffers_s[chan], bufSize);
+	      // if(currReadSamples > 0){printf("\nGood currReadSamples = %d\n", currReadSamples);}
       }
 
       if (currReadSamples <= 0)
@@ -3774,16 +3792,18 @@ int pxi6368EV_readAndSaveAllChannels(
       }
       else
       {
-        // std::cout<< "READ AND SAVE 2.1 " << std::endl;
-
-        if (saveConv){
-
-          for (int sampleIdx = 0; sampleIdx < currReadSamples;  sampleIdx++){
+        //std::cout<< "READ AND SAVE 2.1 " << std::endl;
+        if (saveConv)
+        {
+          for (int sampleIdx = 0; sampleIdx < currReadSamples;  sampleIdx++)
+          {
             bufferHandlers[chan]->processSample(&buffers_f[chan][sampleIdx]);
           }
         }
-        else{
-          for (int sampleIdx = 0; sampleIdx < currReadSamples/sizeof(short);  sampleIdx++){
+        else
+        {
+          for (int sampleIdx = 0; sampleIdx < currReadSamples/sizeof(short);  sampleIdx++)
+          {
             bufferHandlers[chan]->processSample(&buffers_s[chan][sampleIdx]);
           }
         }
@@ -3901,5 +3921,14 @@ int NI6683_close(int devFd, int* Fds,int size)
   return 0;
 }
 
-
+int xseries_trigger(int devFd)
+{
+    int status;
+    status = xseries_pulse_ai(devFd, XSERIES_START_TRIGGER);
+    if(status < 0)
+    {
+      printf("Error %d %s\n", errno, strerror(errno));
+      return -1;
+   }
+}
 
