@@ -153,7 +153,7 @@ mdsplus_option(
     CMAKE_BUILD_TYPE STRING
     "Type of build to configure."
     OPTIONS ${CMAKE_CONFIGURATION_TYPES}
-    DEFAULT "Release"
+    DEFAULT "RelWithDebInfo"
     ${_force_build_type}
 )
 

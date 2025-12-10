@@ -133,6 +133,20 @@ parser.add_argument(
     help='Use with --build, will clean the project in `{--workspace}/build` before building.'
 )
 
+parser.add_argument(
+    '--debug',
+    action='store_true',
+    default=False,
+    help='Shorthand for `-DCMAKE_BUILD_TYPE=Debug`.',
+)
+
+parser.add_argument(
+    '--release',
+    action='store_true',
+    default=False,
+    help='Shorthand for `-DCMAKE_BUILD_TYPE=Release`.',
+)
+
 # Packaging
 
 parser.add_argument(
@@ -290,6 +304,16 @@ if args.os is not None:
         print(f'Using aliased --os={args.os} -> --os={os_alias}')
         
         args.os = os_alias
+
+if args.debug and args.release:
+    print('You cannot use both --debug and --release at the same time')
+    exit(1)
+
+if args.debug:
+    cmake_args.append('-DCMAKE_BUILD_TYPE=Debug')
+
+if args.release:
+    cmake_args.append('-DCMAKE_BUILD_TYPE=Release')
 
 # Defaults
 
