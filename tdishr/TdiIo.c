@@ -182,6 +182,27 @@ int Tdi1Fclose(opcode_t opcode __attribute__((unused)),
   return TdiPutLong((int *)&err, out_ptr);
 }
 
+mdsdsc_t * Tdi3SeekSet()
+{
+    static const int value = SEEK_SET;
+    static const mdsdsc_t constant = { sizeof(value), DTYPE_L, CLASS_S, (char *)&value };
+    return (mdsdsc_t *)&constant;
+}
+
+mdsdsc_t * Tdi3SeekCur()
+{
+    static const int value = SEEK_CUR;
+    static const mdsdsc_t constant = { sizeof(value), DTYPE_L, CLASS_S, (char *)&value };
+    return (mdsdsc_t *)&constant;
+}
+
+mdsdsc_t * Tdi3SeekEnd()
+{
+    static const int value = SEEK_END;
+    static const mdsdsc_t constant = { sizeof(value), DTYPE_L, CLASS_S, (char *)&value };
+    return (mdsdsc_t *)&constant;
+}
+
 /*----------------------------------------------
         Specify position of file pointer.
         err = FSEEK(unit, offset, origin)

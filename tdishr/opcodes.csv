@@ -460,3 +460,6 @@
 "458","List","LIST","List","undef","undef","XX","YY","XX","YY","0","254","OK+I+S","%f9+ [a..z1:z2:dz..n@[this]]"
 "459","Squeeze","SQUEEZE","Reshape","undef","undef","XX","YY","XX","YY","1","2","OK","%f9+ squeeze(array, [min ndim]) "
 "460","Flatten","FLATTEN","Reshape","undef","undef","XX","YY","XX","YY","1","1","OK","%f9+ flatten(array) "
+"461","SeekSet","$SEEK_SET","Constant","undef","SeekSet","VV","VV","VV","VV","0","0","CONST","SEEK_SET"
+"462","SeekCur","$SEEK_CUR","Constant","undef","SeekCur","VV","VV","VV","VV","0","0","CONST","SEEK_CUR"
+"463","SeekEnd","$SEEK_END","Constant","undef","SeekEnd","VV","VV","VV","VV","0","0","CONST","SEEK_END"
