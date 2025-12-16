@@ -111,6 +111,7 @@ pro Mds$SendArg,sock,n,idx,arg
   return
 end
 
+; This procedure is likely obsolete
 pro mds$connect,host,status=status,quiet=quiet,port=port
   on_error,2
   mds$disconnect,/quiet
@@ -141,13 +142,11 @@ pro mds$disconnect,status=status,quiet=quiet
   return
 end
 
-
+; This procedure is likely obsolete
 pro connect,host,_EXTRA=e
 	mds$connect,host,_EXTRA=e
 return
 end
-
-;*/
 
 
 pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
@@ -163,9 +162,8 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
-    if not mds_keyword_set(socket=socket) then $
-      !MDS_SOCKET = sock $
-    else $
+    !MDS_SOCKET = sock
+    if mds_keyword_set(socket=socket) then $
       socket = sock
   endif else begin
     if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
