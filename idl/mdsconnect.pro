@@ -164,7 +164,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
     status = 1
     defsysv, '!MDS_SOCKET', exists=conn
     if not conn then begin
-       defsysv, !MDS_SOCKET, sock
+       defsysv, '!MDS_SOCKET', sock
     endif else begin
       !MDS_SOCKET = sock
     endelse
