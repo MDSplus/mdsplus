@@ -162,7 +162,12 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
-    !MDS_SOCKET = sock
+    defsysv, '!MDS_SOCKET', exists=conn
+    if not conn then begin
+       defsysv, !MDS_SOCKET, sock
+    endif else begin
+      !MDS_SOCKET = sock
+    endelse
     if mds_keyword_set(socket=socket) then $
       socket = sock
   endif else begin
