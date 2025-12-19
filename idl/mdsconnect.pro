@@ -149,7 +149,8 @@ return
 end
 
 
-pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
+; This procedure is used to connect to MDSplus archive servers and to database servers
+pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket,database=database
   forward_function mds_keyword_set
   on_error,2
   if (not mds_keyword_set(socket=socket)) then $
@@ -162,12 +163,15 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
-    defsysv, '!MDS_SOCKET', exists=conn
-    if not conn then begin
-       defsysv, '!MDS_SOCKET', fix(sock)
-    endif else begin
-      !MDS_SOCKET = fix(sock)
-    endelse
+    ; The !MDS_SOCKET only tracks connections to MDSplus archive servers.   See MDSDbConnect for database connections.
+    if not keyword_set(database) then begin
+      defsysv, '!MDS_SOCKET', exists=conn
+      if not conn then begin
+        defsysv, '!MDS_SOCKET', fix(sock)
+      endif else begin
+        !MDS_SOCKET = fix(sock)
+      endelse
+    endif
     if mds_keyword_set(socket=socket) then $
       socket = sock
   endif else begin
