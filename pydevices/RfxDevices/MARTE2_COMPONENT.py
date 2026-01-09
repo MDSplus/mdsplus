@@ -105,12 +105,15 @@ class MARTE2_COMPONENT(MDSplus.Device):
         parts.append({'path': '.OUTPUTS:SEG_BLOCKS', 'type': 'numeric'})
         # reference time for the device valid for all devices (except SynchInput???)
         parts.append({'path': '.OUTPUTS:OUT_TIME', 'type': 'signal'})
-        # Used only by SynchInput devices to identify which output is the time
-        parts.append({'path': '.OUTPUTS:TIME_IDX',
-                      'type': 'numeric', 'value': 0})
         # CPU Mask for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:CPU_MASK',
-                      'type': 'numeric', 'value': 15})
+        parts.append({'path': '.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value': 15})
+        # Discontinuity Factor for MdsWriter thread
+        parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        # Resampling Factor for MdsWriter thread
+        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric', 'value': 1000})
+        # JPG Flag 
+        parts.append({'path': '.OUTPUTS:JPG_CONV','type': 'numeric'})
+
         nameList = []
         cls.buildOutputsRec(parts, currOutputs = cls.outputs, prefix = '.OUTPUTS')
 
@@ -145,8 +148,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 parts.append(
                     {'path': prefix + '.'+sigName+':VALUE', 'type': 'text'})
             else:
-                parts.append({'path': prefix + '.'+sigName +
-                              ':VALUE', 'type': 'signal'})
+                parts.append({'path': prefix + '.'+sigName +':VALUE', 'type': 'signal'})
+                parts.append({'path': prefix + '.'+sigName +':RES_VALUE', 'type': 'signal'})
             try:
                 pars = output['parameters']
             except:
