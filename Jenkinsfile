@@ -223,6 +223,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(daysToKeepStr: '90', artifactNumToKeepStr: '90'))
     }
     
     triggers {
