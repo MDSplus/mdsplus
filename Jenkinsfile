@@ -15,12 +15,20 @@ def OSList = [
     ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
     ['MacOSX (homebrew)',               'macosx-homebrew',  'macosx'],
     ['MacOSX (macports)',               'macosx-macports',  'macosx'],
-    ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
+    // Disabled until https://github.com/MDSplus/mdsplus/issues/2605 is fixed
+    // ['Address Sanitizer',               'test-asan',        'docker && linux-amd64'],
     ['Thread Sanitizer',                'test-tsan',        'docker && linux-amd64'],
     ['Undefined Behavior Sanitizer',    'test-ubsan',       'docker && linux-amd64'],
     ['Helgrind',                        'test-helgrind',    'docker && linux-amd64'],
     ['Memcheck',                        'test-memcheck',    'docker && linux-amd64'],
 ]
+
+def getNumThreads() {
+    if (env.THREADS) {
+        return env.THREADS;
+    }
+    return "8";
+}
 
 def setupStage() {
     return {
@@ -34,6 +42,11 @@ def setupStage() {
             cleanWs disableDeferredWipeout: true, deleteDirs: true
             
             unstash 'source'
+
+            // HACK: This should be done before stashing the source, but it causes issues with create_github_release
+            // so instead each distribution tags separately
+            def new_tag = readFile(file: "new_tag")
+            sh "git tag ${new_tag} || true"
         }
     }
 }
@@ -48,14 +61,24 @@ def testStage(os) {
         extraArgs += "-DTEST_PORT_OFFSET=${offset}"
     }
     else {
-        extraArgs += "--dockernetwork=jenkins-${EXECUTOR_NUMBER}"
+        extraArgs += " --dockerpull --dockernetwork=jenkins-${EXECUTOR_NUMBER}"
     }
 
     return {
-        stage("Build & Test") {
+        stage("Build & Test (Debug)") {
             try {
-                // TODO: Adjust -j value
-                sh "deploy/build.py -j8 --os=${os} --build --test -DCMAKE_BUILD_TYPE=Debug --dockerpull --output-junit ${extraArgs}"
+                def threads = getNumThreads()
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug --build --test --output-junit ${extraArgs}"
+            }
+            finally {
+                junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
+            }
+        }
+
+        stage("Build & Test (Release)") {
+            try {
+                def threads = getNumThreads()
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=RelWithDebInfo --build --test --output-junit --junit-suite-name '${os}-release' ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -67,8 +90,8 @@ def testStage(os) {
 def packageStage(os) {
     return {
         stage("Build & Package") {
-            // TODO: Adjust -j value
-            sh "deploy/build.py -j8 --os=${os} --build --package -DCMAKE_BUILD_TYPE=Release"
+            def threads = getNumThreads()
+            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Release --build --package --verify-packages"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
@@ -122,8 +145,8 @@ def localTest(name, label, testStages) {
                         setupStage().call()
                         
                         stage("Build") {
-                            // TODO: Adjust -j value
-                            sh "deploy/build.py -j8 --build --install -DCMAKE_BUILD_TYPE=Debug"
+                            def threads = getNumThreads()
+                            sh "deploy/build.py -j${threads} --build --install -DCMAKE_BUILD_TYPE=Debug"
                         }
                         
                         testStages.call()
@@ -189,6 +212,7 @@ if (BRANCH_NAME == "stable") {
     schedule = "0 19 * * *";
 }
 
+def new_version = null;
 def new_tag = null;
 
 pipeline {
@@ -240,7 +264,7 @@ pipeline {
                 }
 
                 script {
-                    def new_version = sh(
+                    new_version = sh(
                         script: "/usr/bin/python3 deploy/get_new_version.py",
                         returnStdout: true
                     ).trim()
@@ -250,7 +274,9 @@ pipeline {
 
                         echo "Calculated new version to be ${new_version}"
 
-                        sh "git tag ${new_tag} || true"
+                        // NOTE: To avoid confusing create_github_release, we cannot create the tag now
+                        // so instead we write it to a file, and tag it during the setup stage of each distribution
+                        writeFile(file: "new_tag", text: new_tag)
                     }   
                 }
 
@@ -292,8 +318,11 @@ pipeline {
                             unstash "packages-${os}"
                             unstash "dist-${os}"
 
-                            sh "deploy/publish.py --dist-dir=/opt/fakedist --cert-dir=/mdsplus/certs --publish-info=mdsplus-publish.json"
+                            sh "deploy/publish.py --dist-dir=/mnt/mdsplus_staging/dist --cert-dir=/mnt/mdsplus_staging/certs --publish-info=mdsplus-publish.json"
                         }
+
+                        // Create a package containing only the MATLAB code, primarily for use with the mdsthin bridge
+                        tar(file: "packages/mdsplus_${BRANCH_NAME}_${new_version}_matlab.tgz", archive: true, compress: true, dir: "matlab/")
 
                         def release_file_list = [];
                         
@@ -305,39 +334,34 @@ pipeline {
                                 file -> release_file_list.add("${prefix}/${file.path}")
                             }
                         }
-                        
-                        cleanWs disableDeferredWipeout: true, deleteDirs: true
 
                         echo "Creating GitHub Release and Tag for ${new_tag}"
 
-                        release_file_list.each {
-                            item -> echo "${item}"
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'MDSplusJenkins',
+                                usernameVariable: 'GITHUB_APP',
+                                passwordVariable: 'GITHUB_ACCESS_TOKEN'
+                            )]) {
+
+                            // TODO: Protect against spaces in filenames
+                            def release_file_list_arg = release_file_list.join(" ")
+                            sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
                         }
-
-                        // withCredentials([
-                        //     usernamePassword(
-                        //         credentialsId: 'MDSplusJenkins',
-                        //         usernameVariable: 'GITHUB_APP',
-                        //         passwordVariable: 'GITHUB_ACCESS_TOKEN'
-                        //     )]) {
-
-                        //     // TODO: Protect against spaces in filenames
-                        //     def release_file_list_arg = release_file_list.join(" ")
-                        //     sh "./deploy/create_github_release.py --tag ${new_tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
-                        // }
+                        
+                        cleanWs disableDeferredWipeout: true, deleteDirs: true
                     }
                 }
             }
         }
     }
     
-    // TODO: UPDATE ALL DEVELOPERS
     post {
         failure {
             // if alpha/stable
             mail subject: 'Build is failing',
                 body: "Build is failing: ${BUILD_URL}",
-                to: 'slwalsh@psfc.mit.edu,heidcamp@mit.edu'
+                to: 'mdsplus-jenkins-alerts@lists.psfc.mit.edu'
         }
     }
 

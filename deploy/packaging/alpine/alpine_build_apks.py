@@ -194,6 +194,9 @@ def build():
         os.system("rm -Rf %s" % noarchdir)
         os.system("mkdir -p %s" % noarchdir)
     for package in root.iter('package'):
+        skiparch_list = package.get('skiparch', '').split(',')
+        if info['arch'] in skiparch_list:
+            continue
         pkg = package.attrib['name']
         if pkg in pkg_exclusions:
             continue

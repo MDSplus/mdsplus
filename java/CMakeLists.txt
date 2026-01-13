@@ -7,33 +7,8 @@ if(ENABLE_JAVA)
 
     # TODO: Move to 3rd-party-apis?
     set(JSCH_VERSION 0.1.54)
-    set(JSCH_JAR ${CMAKE_CURRENT_BINARY_DIR}/jsch-${JSCH_VERSION}.jar)
-    if(NOT EXISTS ${JSCH_JAR})
+    set(JSCH_JAR ${CMAKE_CURRENT_SOURCE_DIR}/jsch-${JSCH_VERSION}.jar)
     
-        set(_jsch_jar_url "http://sourceforge.net/projects/jsch/files/jsch.jar/${JSCH_VERSION}/jsch-${JSCH_VERSION}.jar/download")
-        message(STATUS "Downloading ${_jsch_jar_url}")
-
-        set(_retries 0)
-
-        while(_retries LESS 5)
-            file(DOWNLOAD
-                ${_jsch_jar_url} ${JSCH_JAR}
-                STATUS _status
-            )
-            list(GET _status 0 _result)
-            list(GET _status 1 _message)
-        
-            if(_result EQUAL 0)
-                break()
-            endif()
-
-            execute_process(COMMAND ${CMAKE_COMMAND} -E sleep 1)
-
-            message(WARNING "Failed to download jsch.jar: ${_message}")
-            math(EXPR _retries "_retries + 1")
-        endwhile()
-    endif()
-
     add_subdirectory(mdsplus)
     add_subdirectory(mdsplus-api)
     add_subdirectory(mdsobjects)

@@ -182,7 +182,7 @@ typedef struct vars
 } vars_t;
 #define INIT_VARS                                                         \
   vars_t _vars = {0};                                                     \
-  vars_t *vars = &_vars;                                                  \
+  volatile vars_t *vars = &_vars;                                         \
   _vars.dblist = (PINO_DATABASE *)dbid;                                   \
   _vars.nid_ptr = (NID *)&nid;                                            \
   _vars.xnci = xnci;                                                      \

@@ -153,7 +153,7 @@ mdsplus_option(
     CMAKE_BUILD_TYPE STRING
     "Type of build to configure."
     OPTIONS ${CMAKE_CONFIGURATION_TYPES}
-    DEFAULT "Release"
+    DEFAULT "RelWithDebInfo"
     ${_force_build_type}
 )
 
@@ -574,6 +574,13 @@ else()
 
     mdsplus_check_add_flags(
         COMPILER -Wextra
+    )
+
+    # There are currently many issues when using strict aliasing
+    # TODO: Remove once all strict aliasing is dealt with
+    mdsplus_check_add_flags(
+        COMPILER -fno-strict-aliasing
+        LANGUAGES C CXX
     )
 
     # We assume signed char everywhere
@@ -1143,21 +1150,7 @@ check_include_files("stddef.h;scsi/sg.h" HAVE_SCSI_SG_H)
 ### Get the current timestamp to record when the build happened
 ###
 
-find_program(date_EXECUTABLE date)
-mark_as_advanced(date_EXECUTABLE)
-
-# TODO: Decide that string(TIMESTAMP) is good enough and remove the call to `date`
-if(date_EXECUTABLE)
-    execute_process(
-        COMMAND "${date_EXECUTABLE}"
-        OUTPUT_VARIABLE BUILD_TIMESTAMP
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-else()
-    # STRING(TIMESTMAP) is missing AM/PM and the Timezone, but it is a sensible fallback
-    string(TIMESTAMP BUILD_TIMESTAMP "%a %d %b %Y %H:%M:%S UTC" UTC)
-endif()
-
+string(TIMESTAMP BUILD_TIMESTAMP "%a %b %d %H:%M:%S UTC %Y" UTC)
 
 ###
 ### Generate _include/_mdsversion.h
@@ -1567,7 +1560,7 @@ endif()
 
 include(MDSplusGit)
 
-if(GIT_FOUND)
+if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
 
     mdsplus_git(GIT_CHANGELOG log --decorate=full --no-merges)
 

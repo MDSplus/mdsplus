@@ -8,11 +8,18 @@ else
     info.connection = [];
     info.connectedHost = '';
     info.usePython = false;
+    info.usemdsthin = false;
     info.isPythonConnection = false;
     MDSINFO = info;
 end
 if nargin > 0
     MDSINFO.usePython = logical(varargin{1});
+    if ~MDSINFO.usePython
+        MDSINFO.usemdsthin = false;
+    end 
+    if (nargin > 1) && MDSINFO.usePython
+        MDSINFO.usemdsthin = logical(varargin{2});
+    end
 end
 err = {true, true};
 if MDSINFO.usePython
@@ -43,12 +50,14 @@ if ~all(ok)
         disp(strcat(' Java error: ', err{2}.message))
         disp(strcat(' Python error: ', err{1}.message))
         info = [];
-        MDSINFO = info;
+        MDSINFO = info; 
     elseif ~ok(2)
         disp('Unable to connect to MDSplus using java bridge, using python bridge instead')
         disp(strcat(' Java error: ', err{2}.message))
     else % ~ok(1)
-        disp('Unable to connect to MDSplus using python bridge, using python bridge instead')
+        disp('Unable to connect to MDSplus using python bridge, using java bridge instead')
         disp(strcat(' Python error: ', err{1}.message))
     end
 end
+
+info = MDSINFO; % success, so return updated structure

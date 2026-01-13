@@ -1,5 +1,5 @@
 function result = pythonToMatlab(value, info)
-if strncmp(class(value), 'py.MDSplus', 10)
+if strncmp(class(value), 'py.MDSplus', 10) || strncmp(class(value), 'py.mdsthin', 10)
     value = value.data();
 end
 if ~strncmp(class(value), 'py.numpy', 8)

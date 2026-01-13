@@ -220,13 +220,13 @@ fi
 
   </package>
 
-  <package name="labview" arch="noarch" summary="National Instruments Labview extensions" description="National Instruments Labview extensions">
+  <package name="labview" arch="noarch" skiparch="armhf,arm64" summary="National Instruments Labview extensions" description="National Instruments Labview extensions">
     <requires package="labview_bin"/>
     <requires package="kernel"/>
     <include dir="/usr/local/mdsplus/LabView"/>
   </package>
 
-  <package name="labview_bin" arch="bin" summary="Libraries required for LabView interface" description="Libraries required for LabView interface">
+  <package name="labview_bin" arch="bin" skiparch="armhf,arm64" summary="Libraries required for LabView interface" description="Libraries required for LabView interface">
     <include file="/usr/local/mdsplus/lib/*LV*"/>
     <exclude_staticlibs/>
     <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>

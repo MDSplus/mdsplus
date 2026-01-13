@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdio.h>
 #include <string.h>
+#include <status.h>
 extern int MDSEvent(char *eventname, int len, char *data);
 
 int main(int argc, char **argv)
@@ -32,12 +33,17 @@ int main(int argc, char **argv)
   if (argc < 2)
   {
     printf("Usage: %s <event> [optional-data-string]\n", argv[0]);
-    status = 0;
+    status = C_OK;
   }
   else
   {
     int len = (int)((argc > 2) ? strlen(argv[2]) : 0);
     status = MDSEvent(argv[1], len, argv[2]);
+    if (STATUS_OK) {
+      status = C_OK;
+    } else {
+      status = C_ERROR;
+    }
   }
   return (status);
 }
