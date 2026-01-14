@@ -134,8 +134,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   }
 
   /************************************************
-    Make sure that a node with a non-STRUCTURE usage is
-    not being renamed into a son.
+    Make sure that a node with a non-STRUCTURE/SUBTREE 
+    usage is not being renamed into a son.
    ************************************************/
   if (is_child)
   {
