@@ -16,15 +16,6 @@
 ./usr/local/mdsplus/idl/Logbook/make_entry_display_sav.pro
 ./usr/local/mdsplus/idl/Logbook/rollback.pro
 ./usr/local/mdsplus/idl/Logbook/sql_finish.pro
-./usr/local/mdsplus/idl/PreIDL52
-./usr/local/mdsplus/idl/PreIDL52/lon64arr.pro
-./usr/local/mdsplus/idl/PreIDL52/long64.pro
-./usr/local/mdsplus/idl/PreIDL52/uint.pro
-./usr/local/mdsplus/idl/PreIDL52/uintarr.pro
-./usr/local/mdsplus/idl/PreIDL52/ulon64arr.pro
-./usr/local/mdsplus/idl/PreIDL52/ulonarr.pro
-./usr/local/mdsplus/idl/PreIDL52/ulong.pro
-./usr/local/mdsplus/idl/PreIDL52/ulong64.pro
 ./usr/local/mdsplus/idl/cw_base.pro
 ./usr/local/mdsplus/idl/cw_wvedit.pro
 ./usr/local/mdsplus/idl/dsql.pro
