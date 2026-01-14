@@ -139,7 +139,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
    ************************************************/
   if (is_child)
   {
-    if (oldnode_ptr->usage != TreeUSAGE_STRUCTURE)
+    if ((oldnode_ptr->usage != TreeUSAGE_STRUCTURE) && (oldnode_ptr->usage != TreeUSAGE_SUBTREE))
     {
       status = TreeINVPATH;
       goto cleanup;
