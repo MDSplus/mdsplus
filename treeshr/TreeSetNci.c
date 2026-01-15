@@ -591,8 +591,11 @@ int _TreeTurnOn(void *dbid, int nid_in)
   if (nci.flags & NciM_STATE)
   {
     bitassign(0, nci.flags, NciM_STATE);
+    if (node_num == 0)
+      bitassign(0, nci.flags, NciM_PARENT_STATE);
     RETURN_IF_NOT_OK(tree_put_nci(info, node_num, &nci, &locked));
-    if (!(nci.flags & NciM_PARENT_STATE))
+    /* if it is \top then do it regardless */
+    if (!(nci.flags & NciM_PARENT_STATE) || ( node_num == 0))
     {
       node = nid_to_node(dblist, nid);
       if (node->child)
