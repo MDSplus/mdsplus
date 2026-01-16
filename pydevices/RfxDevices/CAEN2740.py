@@ -133,6 +133,11 @@ class CAEN2740(MDSplus.Device):
         endpoints[ip] = digs[ip].endpoint[decoded_endpoint_path]
         data[ip] =  endpoints[ip].set_read_data_format(data_format)
         digs[ip].endpoint.par.ACTIVEENDPOINT.value = decoded_endpoint_path
+
+        for chan in range(numChans):
+            offset = self.getNode('CHANNEL_%02d:OFFSET' % (chan+1)).data()
+            digs[ip].ch[chan].par.dcoffset.value = f'{offset}'
+
         # Start acquisition
         digs[ip].cmd.ARMACQUISITION()
         digs[ip].cmd.SWSTARTACQUISITION()
@@ -190,9 +195,11 @@ class CAEN2740(MDSplus.Device):
                 None, None, MDSplus.Float64(delta)))
         convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/65536. - '+str(inputRange/2))
         for chan in range(64):
-            dataNode = self.getNode('CHANNEL_%02d:DATA' % (chan+1))
-            rawData = MDSplus.Uint16Array(waveform[chan])
-            dataSignal = MDSplus.Signal(convExpr, rawData, dim)
-            dataNode.putData(dataSignal)
-        
+            enabled = self.getNode('CHANNEL_%02d:ENABLED' % (chan+1)).data()
+            if enabled == 'YES':
+                dataNode = self.getNode('CHANNEL_%02d:DATA' % (chan+1))
+                rawData = MDSplus.Uint16Array(waveform[chan])
+                dataSignal = MDSplus.Signal(convExpr, rawData, dim)
+                dataNode.putData(dataSignal)
+            
         digs[ip].cmd.DISARMACQUISITION()
