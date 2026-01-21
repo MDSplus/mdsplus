@@ -581,7 +581,8 @@ def BUILDER(cls):
  #                   paramDict = dict(name='Parameters.'+retrievedName,
  #                                   type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
                     paramDict = dict(name=retrievedName,
-                                    type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
+                                    type=MARTe2Typename, dimensions=dimension)
+#                                    type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
 
                     # dictionary is appended to the MDSplus-style list
                     paramList.append(paramDict)
@@ -917,7 +918,8 @@ def BUILDER(cls):
                         raise Exception('Unsupported parameter datatype.')
                       
                 paramDict = dict(name=fieldName,
-                            type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
+                            type=fieldMARTe2Typename, dimensions=fieldDimension)
+#                            type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
               # dictionary is appended to the MDSplus-style list
                 paramList.append(paramDict)
             return paramList
