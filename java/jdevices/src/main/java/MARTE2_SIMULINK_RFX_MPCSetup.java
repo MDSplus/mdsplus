@@ -40,10 +40,10 @@ public class MARTE2_SIMULINK_RFX_MPCSetup extends DeviceSetup {
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceInputs1.setOffsetNid(50);
+        deviceInputs1.setOffsetNid(47);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
-        deviceOutputs1.setOffsetNid(91);
+        deviceOutputs1.setOffsetNid(88);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
         deviceParameters1.setNumParameters(10);
