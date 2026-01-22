@@ -28,6 +28,7 @@ class CAEN2740(MDSplus.Device):
             {'path': 'CHANNEL_%02d:DATA' % (g+1),  'type': 'signal', 'options': ('no_write_model',)},
         ])
     parts.extend([
+        {'path': ':CLOCK_MODE', 'type': 'text', 'value':'INTERNAL'},
         {'path': ':INIT_ACTION', 'type': 'action',
             'valueExpr': "Action(Dispatch('CAEN_SERVER','INIT' ,50,None),Method(None,'INIT' ,head))", 'options': ('no_write_shot',)},
         {'path': ':STORE_ACTION', 'type': 'action',
@@ -53,6 +54,11 @@ class CAEN2740(MDSplus.Device):
 
 
         digs[ip].cmd.DISARMACQUISITION()
+        try:
+            clockMode = self.getNode('CLOCK_MODE').data()
+        except:
+            print('Cannot get Clock Mode')   
+            raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         try:
             preSamples = self.getNode('PRE_TRIG').data()
         except:
@@ -98,8 +104,19 @@ class CAEN2740(MDSplus.Device):
         try:
             digs[ip].par.ACQTRIGGERSOURCE.value = 'SWTRG|TRGIN'  # Enable software triggers
         except:
-            print('Cannot trigger source')   
+            print('Cannot set trigger source')   
             raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        try:
+            if clockMode == 'INTERNAL':
+                digs[ip].par.CLOCKSOURCE.value = 'Internal'
+            else:
+                digs[ip].par.CLOCKSOURCE.value = 'FPClkIn'
+            digs[ip].par.ENCLOCKOUTFP.value = 'True'
+        except:
+            print('Cannot set clock mode')   
+            raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
 
         numChans = int(digs[ip].par.NUMCH.value)
         if numChans != 64:
@@ -193,7 +210,7 @@ class CAEN2740(MDSplus.Device):
 
         dim = MDSplus.Dimension(MDSplus.Window(MDSplus.Int32(-preSamples), MDSplus.Int32(postSamples), MDSplus.Float64(triggerTime)), MDSplus.Range(
                 None, None, MDSplus.Float64(delta)))
-        convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/65536. - '+str(inputRange/2))
+        convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/32768. - '+str(inputRange/2))
         for chan in range(64):
             enabled = self.getNode('CHANNEL_%02d:ENABLED' % (chan+1)).data()
             if enabled == 'YES':
