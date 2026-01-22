@@ -207,10 +207,10 @@ class CAEN2740(MDSplus.Device):
         postSamples = self.getNode('POST_TRIG').data()
 
         inputRange = int(digs[ip].par.INPUTRANGE.value)
-
+ 
         dim = MDSplus.Dimension(MDSplus.Window(MDSplus.Int32(-preSamples), MDSplus.Int32(postSamples), MDSplus.Float64(triggerTime)), MDSplus.Range(
                 None, None, MDSplus.Float64(delta)))
-        convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/32768. - '+str(inputRange/2))
+        convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/32768. - '+str(inputRange))
         for chan in range(64):
             enabled = self.getNode('CHANNEL_%02d:ENABLED' % (chan+1)).data()
             if enabled == 'YES':
