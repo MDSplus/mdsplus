@@ -1,3 +1,12 @@
+#!/bin/sh
+#
+# file: /usr/local/mdsplus/bin/job_functions
+#
+# utilities for signal completion of async daq task.
+#
+# called by job_finish.fun
+#
+#
 set_mds_logs()
 {
   if [ "x$MDS_LOGS" = "x" ]; then

@@ -1,3 +1,5 @@
+#!/bin/sh
+#
 if [ "x$MDS_LOGS" = "x" ]; then
     MDS_LOGS="/var/log/mdsplus";
 fi
