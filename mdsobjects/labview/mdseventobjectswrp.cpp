@@ -95,8 +95,9 @@ EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut,
     *timeoutOccurred = 0;
     Event *eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
     // 1 Second timeout
-    Data *dataPtrOut = eventPtr->waitData(1);
-    *lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
+      eventPtr->wait(1);
+      Data *dataPtrOut = eventPtr->getData();
+      *lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
   }
   catch (const MdsException &e)
   {

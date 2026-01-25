@@ -97,22 +97,6 @@ public class Event
 		return getData();
 	}
 
-	public synchronized Data waitData(int milliseconds) throws MdsException
-	{
-		timeout = true;
-		try
-		{
-			wait(milliseconds);
-		}
-		catch (final InterruptedException exc)
-		{
-			return null;
-		}
-		if (timeout)
-			throw new MdsException("Timeout occurred in Event wait");
-		return getData();
-	}
-
 	public void dispose()
 	{
 		if (disposed)
