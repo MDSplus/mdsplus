@@ -854,11 +854,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         retGam['Inputs'] = gamInputs
         gamOutputs = []
         gamOutputs.append({
-            'Name': 'Time',
-            'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
-            'Type': threadTimeType,
-        })
-        gamOutputs.append({
 
             'Name': 'CycleTime',
             'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),

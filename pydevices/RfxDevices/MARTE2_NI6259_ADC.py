@@ -404,7 +404,7 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
             self.getNode('.PARAMETERS.PAR_12:VALUE').putData(MDSplus.Int32(postTriggerSamples))
         else:
             raise  Exception('Invalid Acquisition Mode for '+self.getPath())
-        self.getNode('.PARAMETERS.PAR_12:VALUE').putData(MDSplus.String(acquisitionMode))
+        self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String(acquisitionMode))
 
 #At this point triggerTime contains the (array of) trigger time(s)
         if acquisitionMode == 'TRIGGERED' or np.isscalar(triggerTime):
@@ -419,11 +419,16 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
             dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
             self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))
 ######## Timebase expression
-        print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-        ' / '+self.getNode('PARAMETERS.PAR_9:VALUE').getFullPath()+'))')
-        self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-        ' /  float('+self.getNode('PARAMETERS.PAR_9:VALUE').getFullPath()+')))'))
-            
+        if clockMode == 'INTERNAL':
+            print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
+            ' / '+self.getNode('FREQUENCY').getFullPath()+'))')
+            self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
+            ' /  float('+self.getNode('FREQUENCY').getFullPath()+')))'))
+        else:
+            print(clockSource)
+            self.getNode('TIMEBASE').putData(clockSource)
+
+
     def init(self):
         try:
             niInterfaceLib = CDLL("libNiInterface.so")

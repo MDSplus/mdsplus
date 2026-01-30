@@ -137,12 +137,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 parts.append({'path': prefix + '.'+sigName +
                               ':SEG_LEN', 'type': 'numeric', 'value': 0})
-            if 'stream' in output:
-                parts.append({'path': prefix + '.'+sigName+':STREAM',
-                              'type': 'text', 'value': output['stream']})
-            else:
-                parts.append({'path': prefix + '.'+sigName +
-                              ':STREAM', 'type': 'text'})
 
             if(output['type'] == 'string'):
                 parts.append(
@@ -1404,6 +1398,20 @@ class MARTE2_COMPONENT(MDSplus.Device):
             timebaseDescr = self.getNode('OUTPUTS:TIME_MODE').data().upper()
         except:
             timebaseDescr = 'FORCED'
+
+        if timebaseDescr == 'FORCED':
+            parameters['TimingSource'] = 'Internal'
+            parameters['TimebaseMode'] = 'Expression'
+        elif timebaseDescr == 'DERIVED':
+            parameters['TimingSource'] = 'External'
+            parameters['TimebaseMode'] = 'Expression'
+        elif timebaseDescr == 'PRECISE':
+            parameters['TimingSource'] = 'External'
+            parameters['TimebaseMode'] = 'Precise'
+        #Others not supported falls to default
+
+
+
         try:
             discontinuityFactor = int(self.getNode('OUTPUTS:DISC_FACTOR').data())
         except:
@@ -1442,7 +1450,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Period': str(self.timerPeriod).replace('D', 'E'),
 
             'MakeSegmentAfterNWrites': segmentLen,
-            'DiscontinuityFactor': discontinuityFactor
+            'DiscontinuityFactor': discontinuityFactor,
+            'TimeSignalMultiplier': 1E-6
             })
         for sigNode in signalsToBeStored:
             sigName = self.getSignalName(sigNode)
@@ -1459,16 +1468,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
 
             sigDef['DiscontinuityFactor'] = discontinuityFactor
-            if timebaseDescr == 'FORCED':
-                sigDef['TimingSource'] = 'Internal'
-                sigDef['TimebaseMode'] = 'Expression'
-            elif timebaseDescr == 'DERIVED':
-                sigDef['TimingSource'] = 'External'
-                sigDef['TimebaseMode'] = 'Expression'
-            elif timebaseDescr == 'PRECISE':
-                sigDef['TimingSource'] = 'External'
-                sigDef['TimebaseMode'] = 'Precise'
-            #Others not supported falls to default
+            sigDef['TimeSignalMultiplier'] = 1E-6
 
 ###Additional parameters for new MDSWriter
             if resampleFactor > 0:
@@ -1572,8 +1572,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-#            sigDef['NumberOfDimensions'] = numDims  Set to 1 as current MDSWriter does not support matrixes
-            sigDef['NumberOfDimensions'] = 1
+            sigDef['NumberOfDimensions'] = numDims  
             sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()
