@@ -222,13 +222,13 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Segment Size: ");
         deviceField2.setNumCols(6);
-        deviceField2.setOffsetNid(819);
+        deviceField2.setOffsetNid(785);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Buffer Size:");
         deviceField3.setNumCols(8);
-        deviceField3.setOffsetNid(820);
+        deviceField3.setOffsetNid(786);
         jPanel2.add(deviceField3);
 
         deviceField4.setIdentifier("");
@@ -242,20 +242,20 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice1.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Clock Mode: ");
-        deviceChoice1.setOffsetNid(822);
+        deviceChoice1.setOffsetNid(788);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Frequency: ");
         deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(821);
+        deviceField5.setOffsetNid(787);
         jPanel3.add(deviceField5);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Trigger Time: ");
         deviceField6.setNumCols(15);
-        deviceField6.setOffsetNid(824);
+        deviceField6.setOffsetNid(790);
         jPanel3.add(deviceField6);
 
         jPanel1.add(jPanel3);
@@ -263,26 +263,26 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"CONTINUOUS", "TRIGGERED"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Acquisition Mode: ");
-        deviceChoice2.setOffsetNid(816);
+        deviceChoice2.setOffsetNid(782);
         deviceChoice2.setUpdateIdentifier("");
         jPanel4.add(deviceChoice2);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Clock Source: ");
         deviceField7.setNumCols(15);
-        deviceField7.setOffsetNid(823);
+        deviceField7.setOffsetNid(789);
         jPanel4.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Pre Trig Samp: ");
         deviceField8.setNumCols(6);
-        deviceField8.setOffsetNid(817);
+        deviceField8.setOffsetNid(783);
         jPanel4.add(deviceField8);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Post Trig Samp: ");
         deviceField9.setNumCols(6);
-        deviceField9.setOffsetNid(818);
+        deviceField9.setOffsetNid(784);
         jPanel4.add(deviceField9);
 
         jPanel1.add(jPanel4);
@@ -296,7 +296,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("State: ");
-        deviceChoice3.setOffsetNid(828);
+        deviceChoice3.setOffsetNid(794);
         deviceChoice3.setUpdateIdentifier("");
         jPanel5.add(deviceChoice3);
 
@@ -304,21 +304,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice4.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Input Range(V): ");
-        deviceChoice4.setOffsetNid(88);
+        deviceChoice4.setOffsetNid(85);
         deviceChoice4.setUpdateIdentifier("");
         jPanel5.add(deviceChoice4);
 
         deviceChoice5.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Polarity: ");
-        deviceChoice5.setOffsetNid(94);
+        deviceChoice5.setOffsetNid(91);
         deviceChoice5.setUpdateIdentifier("");
         jPanel5.add(deviceChoice5);
 
         deviceChoice6.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Mode: ");
-        deviceChoice6.setOffsetNid(97);
+        deviceChoice6.setOffsetNid(94);
         deviceChoice6.setUpdateIdentifier("");
         jPanel5.add(deviceChoice6);
 
@@ -330,7 +330,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice7.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("State: ");
-        deviceChoice7.setOffsetNid(832);
+        deviceChoice7.setOffsetNid(798);
         deviceChoice7.setUpdateIdentifier("");
         jPanel7.add(deviceChoice7);
 
@@ -338,21 +338,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Input Range(V): ");
-        deviceChoice8.setOffsetNid(111);
+        deviceChoice8.setOffsetNid(107);
         deviceChoice8.setUpdateIdentifier("");
         jPanel7.add(deviceChoice8);
 
         deviceChoice9.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Polarity: ");
-        deviceChoice9.setOffsetNid(117);
+        deviceChoice9.setOffsetNid(113);
         deviceChoice9.setUpdateIdentifier("");
         jPanel7.add(deviceChoice9);
 
         deviceChoice10.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Mode: ");
-        deviceChoice10.setOffsetNid(120);
+        deviceChoice10.setOffsetNid(116);
         deviceChoice10.setUpdateIdentifier("");
         jPanel7.add(deviceChoice10);
 
@@ -364,7 +364,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice11.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("State: ");
-        deviceChoice11.setOffsetNid(836);
+        deviceChoice11.setOffsetNid(802);
         deviceChoice11.setUpdateIdentifier("");
         jPanel8.add(deviceChoice11);
 
@@ -372,21 +372,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice12.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Input Range(V): ");
-        deviceChoice12.setOffsetNid(134);
+        deviceChoice12.setOffsetNid(129);
         deviceChoice12.setUpdateIdentifier("");
         jPanel8.add(deviceChoice12);
 
         deviceChoice13.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Polarity: ");
-        deviceChoice13.setOffsetNid(140);
+        deviceChoice13.setOffsetNid(135);
         deviceChoice13.setUpdateIdentifier("");
         jPanel8.add(deviceChoice13);
 
         deviceChoice14.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Mode: ");
-        deviceChoice14.setOffsetNid(143);
+        deviceChoice14.setOffsetNid(138);
         deviceChoice14.setUpdateIdentifier("");
         jPanel8.add(deviceChoice14);
 
@@ -398,7 +398,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("State: ");
-        deviceChoice15.setOffsetNid(840);
+        deviceChoice15.setOffsetNid(806);
         deviceChoice15.setUpdateIdentifier("");
         jPanel9.add(deviceChoice15);
 
@@ -406,21 +406,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice16.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Input Range(V): ");
-        deviceChoice16.setOffsetNid(157);
+        deviceChoice16.setOffsetNid(151);
         deviceChoice16.setUpdateIdentifier("");
         jPanel9.add(deviceChoice16);
 
         deviceChoice17.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Polarity: ");
-        deviceChoice17.setOffsetNid(163);
+        deviceChoice17.setOffsetNid(157);
         deviceChoice17.setUpdateIdentifier("");
         jPanel9.add(deviceChoice17);
 
         deviceChoice18.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Mode: ");
-        deviceChoice18.setOffsetNid(166);
+        deviceChoice18.setOffsetNid(160);
         deviceChoice18.setUpdateIdentifier("");
         jPanel9.add(deviceChoice18);
 
@@ -432,7 +432,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice19.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("State: ");
-        deviceChoice19.setOffsetNid(844);
+        deviceChoice19.setOffsetNid(810);
         deviceChoice19.setUpdateIdentifier("");
         jPanel10.add(deviceChoice19);
 
@@ -440,21 +440,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice20.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Input Range(V): ");
-        deviceChoice20.setOffsetNid(180);
+        deviceChoice20.setOffsetNid(173);
         deviceChoice20.setUpdateIdentifier("");
         jPanel10.add(deviceChoice20);
 
         deviceChoice21.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Polarity: ");
-        deviceChoice21.setOffsetNid(186);
+        deviceChoice21.setOffsetNid(179);
         deviceChoice21.setUpdateIdentifier("");
         jPanel10.add(deviceChoice21);
 
         deviceChoice22.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Mode: ");
-        deviceChoice22.setOffsetNid(189);
+        deviceChoice22.setOffsetNid(182);
         deviceChoice22.setUpdateIdentifier("");
         jPanel10.add(deviceChoice22);
 
@@ -466,7 +466,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice23.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("State: ");
-        deviceChoice23.setOffsetNid(848);
+        deviceChoice23.setOffsetNid(814);
         deviceChoice23.setUpdateIdentifier("");
         jPanel11.add(deviceChoice23);
 
@@ -474,21 +474,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice24.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Input Range(V): ");
-        deviceChoice24.setOffsetNid(203);
+        deviceChoice24.setOffsetNid(195);
         deviceChoice24.setUpdateIdentifier("");
         jPanel11.add(deviceChoice24);
 
         deviceChoice25.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Polarity: ");
-        deviceChoice25.setOffsetNid(209);
+        deviceChoice25.setOffsetNid(201);
         deviceChoice25.setUpdateIdentifier("");
         jPanel11.add(deviceChoice25);
 
         deviceChoice26.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Mode: ");
-        deviceChoice26.setOffsetNid(212);
+        deviceChoice26.setOffsetNid(204);
         deviceChoice26.setUpdateIdentifier("");
         jPanel11.add(deviceChoice26);
 
@@ -500,7 +500,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice27.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("State: ");
-        deviceChoice27.setOffsetNid(852);
+        deviceChoice27.setOffsetNid(818);
         deviceChoice27.setUpdateIdentifier("");
         jPanel12.add(deviceChoice27);
 
@@ -508,21 +508,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice28.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Input Range(V): ");
-        deviceChoice28.setOffsetNid(226);
+        deviceChoice28.setOffsetNid(217);
         deviceChoice28.setUpdateIdentifier("");
         jPanel12.add(deviceChoice28);
 
         deviceChoice29.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice29.setIdentifier("");
         deviceChoice29.setLabelString("Polarity: ");
-        deviceChoice29.setOffsetNid(232);
+        deviceChoice29.setOffsetNid(223);
         deviceChoice29.setUpdateIdentifier("");
         jPanel12.add(deviceChoice29);
 
         deviceChoice30.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("Mode: ");
-        deviceChoice30.setOffsetNid(235);
+        deviceChoice30.setOffsetNid(226);
         deviceChoice30.setUpdateIdentifier("");
         jPanel12.add(deviceChoice30);
 
@@ -534,7 +534,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice31.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice31.setIdentifier("");
         deviceChoice31.setLabelString("State: ");
-        deviceChoice31.setOffsetNid(856);
+        deviceChoice31.setOffsetNid(822);
         deviceChoice31.setUpdateIdentifier("");
         jPanel13.add(deviceChoice31);
 
@@ -542,21 +542,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice32.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice32.setIdentifier("");
         deviceChoice32.setLabelString("Input Range(V): ");
-        deviceChoice32.setOffsetNid(249);
+        deviceChoice32.setOffsetNid(239);
         deviceChoice32.setUpdateIdentifier("");
         jPanel13.add(deviceChoice32);
 
         deviceChoice33.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice33.setIdentifier("");
         deviceChoice33.setLabelString("Polarity: ");
-        deviceChoice33.setOffsetNid(255);
+        deviceChoice33.setOffsetNid(245);
         deviceChoice33.setUpdateIdentifier("");
         jPanel13.add(deviceChoice33);
 
         deviceChoice34.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice34.setIdentifier("");
         deviceChoice34.setLabelString("Mode: ");
-        deviceChoice34.setOffsetNid(258);
+        deviceChoice34.setOffsetNid(248);
         deviceChoice34.setUpdateIdentifier("");
         jPanel13.add(deviceChoice34);
 
@@ -568,7 +568,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice35.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice35.setIdentifier("");
         deviceChoice35.setLabelString("State: ");
-        deviceChoice35.setOffsetNid(860);
+        deviceChoice35.setOffsetNid(826);
         deviceChoice35.setUpdateIdentifier("");
         jPanel14.add(deviceChoice35);
 
@@ -576,21 +576,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice36.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice36.setIdentifier("");
         deviceChoice36.setLabelString("Input Range(V): ");
-        deviceChoice36.setOffsetNid(272);
+        deviceChoice36.setOffsetNid(261);
         deviceChoice36.setUpdateIdentifier("");
         jPanel14.add(deviceChoice36);
 
         deviceChoice37.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice37.setIdentifier("");
         deviceChoice37.setLabelString("Polarity: ");
-        deviceChoice37.setOffsetNid(278);
+        deviceChoice37.setOffsetNid(267);
         deviceChoice37.setUpdateIdentifier("");
         jPanel14.add(deviceChoice37);
 
         deviceChoice38.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice38.setIdentifier("");
         deviceChoice38.setLabelString("Mode: ");
-        deviceChoice38.setOffsetNid(281);
+        deviceChoice38.setOffsetNid(270);
         deviceChoice38.setUpdateIdentifier("");
         jPanel14.add(deviceChoice38);
 
@@ -602,7 +602,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice39.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice39.setIdentifier("");
         deviceChoice39.setLabelString("State: ");
-        deviceChoice39.setOffsetNid(864);
+        deviceChoice39.setOffsetNid(830);
         deviceChoice39.setUpdateIdentifier("");
         jPanel15.add(deviceChoice39);
 
@@ -610,21 +610,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice40.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice40.setIdentifier("");
         deviceChoice40.setLabelString("Input Range(V): ");
-        deviceChoice40.setOffsetNid(295);
+        deviceChoice40.setOffsetNid(283);
         deviceChoice40.setUpdateIdentifier("");
         jPanel15.add(deviceChoice40);
 
         deviceChoice41.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice41.setIdentifier("");
         deviceChoice41.setLabelString("Polarity: ");
-        deviceChoice41.setOffsetNid(301);
+        deviceChoice41.setOffsetNid(289);
         deviceChoice41.setUpdateIdentifier("");
         jPanel15.add(deviceChoice41);
 
         deviceChoice42.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice42.setIdentifier("");
         deviceChoice42.setLabelString("Mode: ");
-        deviceChoice42.setOffsetNid(304);
+        deviceChoice42.setOffsetNid(292);
         deviceChoice42.setUpdateIdentifier("");
         jPanel15.add(deviceChoice42);
 
@@ -636,7 +636,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice43.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice43.setIdentifier("");
         deviceChoice43.setLabelString("State: ");
-        deviceChoice43.setOffsetNid(868);
+        deviceChoice43.setOffsetNid(834);
         deviceChoice43.setUpdateIdentifier("");
         jPanel16.add(deviceChoice43);
 
@@ -644,21 +644,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice44.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice44.setIdentifier("");
         deviceChoice44.setLabelString("Input Range(V): ");
-        deviceChoice44.setOffsetNid(318);
+        deviceChoice44.setOffsetNid(305);
         deviceChoice44.setUpdateIdentifier("");
         jPanel16.add(deviceChoice44);
 
         deviceChoice45.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice45.setIdentifier("");
         deviceChoice45.setLabelString("Polarity: ");
-        deviceChoice45.setOffsetNid(324);
+        deviceChoice45.setOffsetNid(311);
         deviceChoice45.setUpdateIdentifier("");
         jPanel16.add(deviceChoice45);
 
         deviceChoice46.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice46.setIdentifier("");
         deviceChoice46.setLabelString("Mode: ");
-        deviceChoice46.setOffsetNid(327);
+        deviceChoice46.setOffsetNid(314);
         deviceChoice46.setUpdateIdentifier("");
         jPanel16.add(deviceChoice46);
 
@@ -670,7 +670,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice47.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice47.setIdentifier("");
         deviceChoice47.setLabelString("State: ");
-        deviceChoice47.setOffsetNid(872);
+        deviceChoice47.setOffsetNid(838);
         deviceChoice47.setUpdateIdentifier("");
         jPanel17.add(deviceChoice47);
 
@@ -678,21 +678,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice48.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice48.setIdentifier("");
         deviceChoice48.setLabelString("Input Range(V): ");
-        deviceChoice48.setOffsetNid(341);
+        deviceChoice48.setOffsetNid(327);
         deviceChoice48.setUpdateIdentifier("");
         jPanel17.add(deviceChoice48);
 
         deviceChoice49.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice49.setIdentifier("");
         deviceChoice49.setLabelString("Polarity: ");
-        deviceChoice49.setOffsetNid(347);
+        deviceChoice49.setOffsetNid(333);
         deviceChoice49.setUpdateIdentifier("");
         jPanel17.add(deviceChoice49);
 
         deviceChoice50.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice50.setIdentifier("");
         deviceChoice50.setLabelString("Mode: ");
-        deviceChoice50.setOffsetNid(350);
+        deviceChoice50.setOffsetNid(336);
         deviceChoice50.setUpdateIdentifier("");
         jPanel17.add(deviceChoice50);
 
@@ -704,7 +704,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice51.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice51.setIdentifier("");
         deviceChoice51.setLabelString("State: ");
-        deviceChoice51.setOffsetNid(876);
+        deviceChoice51.setOffsetNid(842);
         deviceChoice51.setUpdateIdentifier("");
         jPanel18.add(deviceChoice51);
 
@@ -712,21 +712,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice52.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice52.setIdentifier("");
         deviceChoice52.setLabelString("Input Range(V): ");
-        deviceChoice52.setOffsetNid(364);
+        deviceChoice52.setOffsetNid(349);
         deviceChoice52.setUpdateIdentifier("");
         jPanel18.add(deviceChoice52);
 
         deviceChoice53.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice53.setIdentifier("");
         deviceChoice53.setLabelString("Polarity: ");
-        deviceChoice53.setOffsetNid(370);
+        deviceChoice53.setOffsetNid(355);
         deviceChoice53.setUpdateIdentifier("");
         jPanel18.add(deviceChoice53);
 
         deviceChoice54.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice54.setIdentifier("");
         deviceChoice54.setLabelString("Mode: ");
-        deviceChoice54.setOffsetNid(373);
+        deviceChoice54.setOffsetNid(358);
         deviceChoice54.setUpdateIdentifier("");
         jPanel18.add(deviceChoice54);
 
@@ -738,7 +738,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice55.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice55.setIdentifier("");
         deviceChoice55.setLabelString("State: ");
-        deviceChoice55.setOffsetNid(880);
+        deviceChoice55.setOffsetNid(846);
         deviceChoice55.setUpdateIdentifier("");
         jPanel19.add(deviceChoice55);
 
@@ -746,21 +746,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice56.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice56.setIdentifier("");
         deviceChoice56.setLabelString("Input Range(V): ");
-        deviceChoice56.setOffsetNid(387);
+        deviceChoice56.setOffsetNid(371);
         deviceChoice56.setUpdateIdentifier("");
         jPanel19.add(deviceChoice56);
 
         deviceChoice57.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice57.setIdentifier("");
         deviceChoice57.setLabelString("Polarity: ");
-        deviceChoice57.setOffsetNid(393);
+        deviceChoice57.setOffsetNid(377);
         deviceChoice57.setUpdateIdentifier("");
         jPanel19.add(deviceChoice57);
 
         deviceChoice58.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice58.setIdentifier("");
         deviceChoice58.setLabelString("Mode: ");
-        deviceChoice58.setOffsetNid(396);
+        deviceChoice58.setOffsetNid(380);
         deviceChoice58.setUpdateIdentifier("");
         jPanel19.add(deviceChoice58);
 
@@ -772,7 +772,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice59.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice59.setIdentifier("");
         deviceChoice59.setLabelString("State: ");
-        deviceChoice59.setOffsetNid(884);
+        deviceChoice59.setOffsetNid(850);
         deviceChoice59.setUpdateIdentifier("");
         jPanel20.add(deviceChoice59);
 
@@ -780,21 +780,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice60.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice60.setIdentifier("");
         deviceChoice60.setLabelString("Input Range(V): ");
-        deviceChoice60.setOffsetNid(410);
+        deviceChoice60.setOffsetNid(393);
         deviceChoice60.setUpdateIdentifier("");
         jPanel20.add(deviceChoice60);
 
         deviceChoice61.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice61.setIdentifier("");
         deviceChoice61.setLabelString("Polarity: ");
-        deviceChoice61.setOffsetNid(416);
+        deviceChoice61.setOffsetNid(399);
         deviceChoice61.setUpdateIdentifier("");
         jPanel20.add(deviceChoice61);
 
         deviceChoice62.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice62.setIdentifier("");
         deviceChoice62.setLabelString("Mode: ");
-        deviceChoice62.setOffsetNid(419);
+        deviceChoice62.setOffsetNid(402);
         deviceChoice62.setUpdateIdentifier("");
         jPanel20.add(deviceChoice62);
 
@@ -806,7 +806,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice63.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice63.setIdentifier("");
         deviceChoice63.setLabelString("State: ");
-        deviceChoice63.setOffsetNid(888);
+        deviceChoice63.setOffsetNid(854);
         deviceChoice63.setUpdateIdentifier("");
         jPanel21.add(deviceChoice63);
 
@@ -814,21 +814,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice64.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice64.setIdentifier("");
         deviceChoice64.setLabelString("Input Range(V): ");
-        deviceChoice64.setOffsetNid(433);
+        deviceChoice64.setOffsetNid(415);
         deviceChoice64.setUpdateIdentifier("");
         jPanel21.add(deviceChoice64);
 
         deviceChoice65.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice65.setIdentifier("");
         deviceChoice65.setLabelString("Polarity: ");
-        deviceChoice65.setOffsetNid(439);
+        deviceChoice65.setOffsetNid(421);
         deviceChoice65.setUpdateIdentifier("");
         jPanel21.add(deviceChoice65);
 
         deviceChoice66.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice66.setIdentifier("");
         deviceChoice66.setLabelString("Mode: ");
-        deviceChoice66.setOffsetNid(442);
+        deviceChoice66.setOffsetNid(424);
         deviceChoice66.setUpdateIdentifier("");
         jPanel21.add(deviceChoice66);
 
@@ -840,7 +840,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice67.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice67.setIdentifier("");
         deviceChoice67.setLabelString("State: ");
-        deviceChoice67.setOffsetNid(892);
+        deviceChoice67.setOffsetNid(858);
         deviceChoice67.setUpdateIdentifier("");
         jPanel22.add(deviceChoice67);
 
@@ -848,21 +848,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice68.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice68.setIdentifier("");
         deviceChoice68.setLabelString("Input Range(V): ");
-        deviceChoice68.setOffsetNid(456);
+        deviceChoice68.setOffsetNid(437);
         deviceChoice68.setUpdateIdentifier("");
         jPanel22.add(deviceChoice68);
 
         deviceChoice69.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice69.setIdentifier("");
         deviceChoice69.setLabelString("Polarity: ");
-        deviceChoice69.setOffsetNid(462);
+        deviceChoice69.setOffsetNid(443);
         deviceChoice69.setUpdateIdentifier("");
         jPanel22.add(deviceChoice69);
 
         deviceChoice70.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice70.setIdentifier("");
         deviceChoice70.setLabelString("Mode: ");
-        deviceChoice70.setOffsetNid(465);
+        deviceChoice70.setOffsetNid(446);
         deviceChoice70.setUpdateIdentifier("");
         jPanel22.add(deviceChoice70);
 
@@ -874,7 +874,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice71.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice71.setIdentifier("");
         deviceChoice71.setLabelString("State: ");
-        deviceChoice71.setOffsetNid(896);
+        deviceChoice71.setOffsetNid(862);
         deviceChoice71.setUpdateIdentifier("");
         jPanel23.add(deviceChoice71);
 
@@ -882,21 +882,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice72.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice72.setIdentifier("");
         deviceChoice72.setLabelString("Input Range(V): ");
-        deviceChoice72.setOffsetNid(479);
+        deviceChoice72.setOffsetNid(459);
         deviceChoice72.setUpdateIdentifier("");
         jPanel23.add(deviceChoice72);
 
         deviceChoice73.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice73.setIdentifier("");
         deviceChoice73.setLabelString("Polarity: ");
-        deviceChoice73.setOffsetNid(485);
+        deviceChoice73.setOffsetNid(465);
         deviceChoice73.setUpdateIdentifier("");
         jPanel23.add(deviceChoice73);
 
         deviceChoice74.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice74.setIdentifier("");
         deviceChoice74.setLabelString("Mode: ");
-        deviceChoice74.setOffsetNid(488);
+        deviceChoice74.setOffsetNid(468);
         deviceChoice74.setUpdateIdentifier("");
         jPanel23.add(deviceChoice74);
 
@@ -908,7 +908,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice75.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice75.setIdentifier("");
         deviceChoice75.setLabelString("State: ");
-        deviceChoice75.setOffsetNid(900);
+        deviceChoice75.setOffsetNid(866);
         deviceChoice75.setUpdateIdentifier("");
         jPanel24.add(deviceChoice75);
 
@@ -916,21 +916,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice76.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice76.setIdentifier("");
         deviceChoice76.setLabelString("Input Range(V): ");
-        deviceChoice76.setOffsetNid(502);
+        deviceChoice76.setOffsetNid(481);
         deviceChoice76.setUpdateIdentifier("");
         jPanel24.add(deviceChoice76);
 
         deviceChoice77.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice77.setIdentifier("");
         deviceChoice77.setLabelString("Polarity: ");
-        deviceChoice77.setOffsetNid(508);
+        deviceChoice77.setOffsetNid(487);
         deviceChoice77.setUpdateIdentifier("");
         jPanel24.add(deviceChoice77);
 
         deviceChoice78.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice78.setIdentifier("");
         deviceChoice78.setLabelString("Mode: ");
-        deviceChoice78.setOffsetNid(511);
+        deviceChoice78.setOffsetNid(490);
         deviceChoice78.setUpdateIdentifier("");
         jPanel24.add(deviceChoice78);
 
@@ -942,7 +942,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice79.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice79.setIdentifier("");
         deviceChoice79.setLabelString("State: ");
-        deviceChoice79.setOffsetNid(904);
+        deviceChoice79.setOffsetNid(870);
         deviceChoice79.setUpdateIdentifier("");
         jPanel25.add(deviceChoice79);
 
@@ -950,21 +950,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice80.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice80.setIdentifier("");
         deviceChoice80.setLabelString("Input Range(V): ");
-        deviceChoice80.setOffsetNid(525);
+        deviceChoice80.setOffsetNid(503);
         deviceChoice80.setUpdateIdentifier("");
         jPanel25.add(deviceChoice80);
 
         deviceChoice81.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice81.setIdentifier("");
         deviceChoice81.setLabelString("Polarity: ");
-        deviceChoice81.setOffsetNid(531);
+        deviceChoice81.setOffsetNid(509);
         deviceChoice81.setUpdateIdentifier("");
         jPanel25.add(deviceChoice81);
 
         deviceChoice82.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice82.setIdentifier("");
         deviceChoice82.setLabelString("Mode: ");
-        deviceChoice82.setOffsetNid(534);
+        deviceChoice82.setOffsetNid(512);
         deviceChoice82.setUpdateIdentifier("");
         jPanel25.add(deviceChoice82);
 
@@ -976,7 +976,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice83.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice83.setIdentifier("");
         deviceChoice83.setLabelString("State: ");
-        deviceChoice83.setOffsetNid(908);
+        deviceChoice83.setOffsetNid(874);
         deviceChoice83.setUpdateIdentifier("");
         jPanel26.add(deviceChoice83);
 
@@ -984,21 +984,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice84.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice84.setIdentifier("");
         deviceChoice84.setLabelString("Input Range(V): ");
-        deviceChoice84.setOffsetNid(548);
+        deviceChoice84.setOffsetNid(525);
         deviceChoice84.setUpdateIdentifier("");
         jPanel26.add(deviceChoice84);
 
         deviceChoice85.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice85.setIdentifier("");
         deviceChoice85.setLabelString("Polarity: ");
-        deviceChoice85.setOffsetNid(554);
+        deviceChoice85.setOffsetNid(531);
         deviceChoice85.setUpdateIdentifier("");
         jPanel26.add(deviceChoice85);
 
         deviceChoice86.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice86.setIdentifier("");
         deviceChoice86.setLabelString("Mode: ");
-        deviceChoice86.setOffsetNid(557);
+        deviceChoice86.setOffsetNid(534);
         deviceChoice86.setUpdateIdentifier("");
         jPanel26.add(deviceChoice86);
 
@@ -1010,7 +1010,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice87.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice87.setIdentifier("");
         deviceChoice87.setLabelString("State: ");
-        deviceChoice87.setOffsetNid(912);
+        deviceChoice87.setOffsetNid(878);
         deviceChoice87.setUpdateIdentifier("");
         jPanel27.add(deviceChoice87);
 
@@ -1018,21 +1018,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice88.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice88.setIdentifier("");
         deviceChoice88.setLabelString("Input Range(V): ");
-        deviceChoice88.setOffsetNid(571);
+        deviceChoice88.setOffsetNid(547);
         deviceChoice88.setUpdateIdentifier("");
         jPanel27.add(deviceChoice88);
 
         deviceChoice89.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice89.setIdentifier("");
         deviceChoice89.setLabelString("Polarity: ");
-        deviceChoice89.setOffsetNid(577);
+        deviceChoice89.setOffsetNid(553);
         deviceChoice89.setUpdateIdentifier("");
         jPanel27.add(deviceChoice89);
 
         deviceChoice90.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice90.setIdentifier("");
         deviceChoice90.setLabelString("Mode: ");
-        deviceChoice90.setOffsetNid(580);
+        deviceChoice90.setOffsetNid(556);
         deviceChoice90.setUpdateIdentifier("");
         jPanel27.add(deviceChoice90);
 
@@ -1044,7 +1044,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice91.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice91.setIdentifier("");
         deviceChoice91.setLabelString("State: ");
-        deviceChoice91.setOffsetNid(916);
+        deviceChoice91.setOffsetNid(882);
         deviceChoice91.setUpdateIdentifier("");
         jPanel28.add(deviceChoice91);
 
@@ -1052,21 +1052,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice92.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice92.setIdentifier("");
         deviceChoice92.setLabelString("Input Range(V): ");
-        deviceChoice92.setOffsetNid(594);
+        deviceChoice92.setOffsetNid(569);
         deviceChoice92.setUpdateIdentifier("");
         jPanel28.add(deviceChoice92);
 
         deviceChoice93.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice93.setIdentifier("");
         deviceChoice93.setLabelString("Polarity: ");
-        deviceChoice93.setOffsetNid(600);
+        deviceChoice93.setOffsetNid(575);
         deviceChoice93.setUpdateIdentifier("");
         jPanel28.add(deviceChoice93);
 
         deviceChoice94.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice94.setIdentifier("");
         deviceChoice94.setLabelString("Mode: ");
-        deviceChoice94.setOffsetNid(603);
+        deviceChoice94.setOffsetNid(578);
         deviceChoice94.setUpdateIdentifier("");
         jPanel28.add(deviceChoice94);
 
@@ -1078,7 +1078,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice95.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice95.setIdentifier("");
         deviceChoice95.setLabelString("State: ");
-        deviceChoice95.setOffsetNid(920);
+        deviceChoice95.setOffsetNid(886);
         deviceChoice95.setUpdateIdentifier("");
         jPanel29.add(deviceChoice95);
 
@@ -1086,21 +1086,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice96.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice96.setIdentifier("");
         deviceChoice96.setLabelString("Input Range(V): ");
-        deviceChoice96.setOffsetNid(617);
+        deviceChoice96.setOffsetNid(591);
         deviceChoice96.setUpdateIdentifier("");
         jPanel29.add(deviceChoice96);
 
         deviceChoice97.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice97.setIdentifier("");
         deviceChoice97.setLabelString("Polarity: ");
-        deviceChoice97.setOffsetNid(623);
+        deviceChoice97.setOffsetNid(597);
         deviceChoice97.setUpdateIdentifier("");
         jPanel29.add(deviceChoice97);
 
         deviceChoice98.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice98.setIdentifier("");
         deviceChoice98.setLabelString("Mode: ");
-        deviceChoice98.setOffsetNid(626);
+        deviceChoice98.setOffsetNid(600);
         deviceChoice98.setUpdateIdentifier("");
         jPanel29.add(deviceChoice98);
 
@@ -1112,7 +1112,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice99.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice99.setIdentifier("");
         deviceChoice99.setLabelString("State: ");
-        deviceChoice99.setOffsetNid(924);
+        deviceChoice99.setOffsetNid(890);
         deviceChoice99.setUpdateIdentifier("");
         jPanel30.add(deviceChoice99);
 
@@ -1120,21 +1120,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice100.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice100.setIdentifier("");
         deviceChoice100.setLabelString("Input Range(V): ");
-        deviceChoice100.setOffsetNid(640);
+        deviceChoice100.setOffsetNid(613);
         deviceChoice100.setUpdateIdentifier("");
         jPanel30.add(deviceChoice100);
 
         deviceChoice101.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice101.setIdentifier("");
         deviceChoice101.setLabelString("Polarity: ");
-        deviceChoice101.setOffsetNid(646);
+        deviceChoice101.setOffsetNid(619);
         deviceChoice101.setUpdateIdentifier("");
         jPanel30.add(deviceChoice101);
 
         deviceChoice102.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice102.setIdentifier("");
         deviceChoice102.setLabelString("Mode: ");
-        deviceChoice102.setOffsetNid(649);
+        deviceChoice102.setOffsetNid(622);
         deviceChoice102.setUpdateIdentifier("");
         jPanel30.add(deviceChoice102);
 
@@ -1146,7 +1146,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice103.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice103.setIdentifier("");
         deviceChoice103.setLabelString("State: ");
-        deviceChoice103.setOffsetNid(928);
+        deviceChoice103.setOffsetNid(894);
         deviceChoice103.setUpdateIdentifier("");
         jPanel31.add(deviceChoice103);
 
@@ -1154,21 +1154,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice104.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice104.setIdentifier("");
         deviceChoice104.setLabelString("Input Range(V): ");
-        deviceChoice104.setOffsetNid(663);
+        deviceChoice104.setOffsetNid(635);
         deviceChoice104.setUpdateIdentifier("");
         jPanel31.add(deviceChoice104);
 
         deviceChoice105.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice105.setIdentifier("");
         deviceChoice105.setLabelString("Polarity: ");
-        deviceChoice105.setOffsetNid(669);
+        deviceChoice105.setOffsetNid(641);
         deviceChoice105.setUpdateIdentifier("");
         jPanel31.add(deviceChoice105);
 
         deviceChoice106.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice106.setIdentifier("");
         deviceChoice106.setLabelString("Mode: ");
-        deviceChoice106.setOffsetNid(672);
+        deviceChoice106.setOffsetNid(644);
         deviceChoice106.setUpdateIdentifier("");
         jPanel31.add(deviceChoice106);
 
@@ -1180,7 +1180,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice107.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice107.setIdentifier("");
         deviceChoice107.setLabelString("State: ");
-        deviceChoice107.setOffsetNid(932);
+        deviceChoice107.setOffsetNid(898);
         deviceChoice107.setUpdateIdentifier("");
         jPanel32.add(deviceChoice107);
 
@@ -1188,21 +1188,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice108.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice108.setIdentifier("");
         deviceChoice108.setLabelString("Input Range(V): ");
-        deviceChoice108.setOffsetNid(686);
+        deviceChoice108.setOffsetNid(657);
         deviceChoice108.setUpdateIdentifier("");
         jPanel32.add(deviceChoice108);
 
         deviceChoice109.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice109.setIdentifier("");
         deviceChoice109.setLabelString("Polarity: ");
-        deviceChoice109.setOffsetNid(692);
+        deviceChoice109.setOffsetNid(663);
         deviceChoice109.setUpdateIdentifier("");
         jPanel32.add(deviceChoice109);
 
         deviceChoice110.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice110.setIdentifier("");
         deviceChoice110.setLabelString("Mode: ");
-        deviceChoice110.setOffsetNid(695);
+        deviceChoice110.setOffsetNid(666);
         deviceChoice110.setUpdateIdentifier("");
         jPanel32.add(deviceChoice110);
 
@@ -1214,7 +1214,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice111.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice111.setIdentifier("");
         deviceChoice111.setLabelString("State: ");
-        deviceChoice111.setOffsetNid(936);
+        deviceChoice111.setOffsetNid(902);
         deviceChoice111.setUpdateIdentifier("");
         jPanel33.add(deviceChoice111);
 
@@ -1222,21 +1222,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice112.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice112.setIdentifier("");
         deviceChoice112.setLabelString("Input Range(V): ");
-        deviceChoice112.setOffsetNid(709);
+        deviceChoice112.setOffsetNid(679);
         deviceChoice112.setUpdateIdentifier("");
         jPanel33.add(deviceChoice112);
 
         deviceChoice113.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice113.setIdentifier("");
         deviceChoice113.setLabelString("Polarity: ");
-        deviceChoice113.setOffsetNid(715);
+        deviceChoice113.setOffsetNid(685);
         deviceChoice113.setUpdateIdentifier("");
         jPanel33.add(deviceChoice113);
 
         deviceChoice114.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice114.setIdentifier("");
         deviceChoice114.setLabelString("Mode: ");
-        deviceChoice114.setOffsetNid(718);
+        deviceChoice114.setOffsetNid(688);
         deviceChoice114.setUpdateIdentifier("");
         jPanel33.add(deviceChoice114);
 
@@ -1248,7 +1248,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice115.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice115.setIdentifier("");
         deviceChoice115.setLabelString("State: ");
-        deviceChoice115.setOffsetNid(940);
+        deviceChoice115.setOffsetNid(906);
         deviceChoice115.setUpdateIdentifier("");
         jPanel34.add(deviceChoice115);
 
@@ -1256,21 +1256,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice116.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice116.setIdentifier("");
         deviceChoice116.setLabelString("Input Range(V): ");
-        deviceChoice116.setOffsetNid(732);
+        deviceChoice116.setOffsetNid(701);
         deviceChoice116.setUpdateIdentifier("");
         jPanel34.add(deviceChoice116);
 
         deviceChoice117.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice117.setIdentifier("");
         deviceChoice117.setLabelString("Polarity: ");
-        deviceChoice117.setOffsetNid(738);
+        deviceChoice117.setOffsetNid(707);
         deviceChoice117.setUpdateIdentifier("");
         jPanel34.add(deviceChoice117);
 
         deviceChoice118.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice118.setIdentifier("");
         deviceChoice118.setLabelString("Mode: ");
-        deviceChoice118.setOffsetNid(741);
+        deviceChoice118.setOffsetNid(710);
         deviceChoice118.setUpdateIdentifier("");
         jPanel34.add(deviceChoice118);
 
@@ -1282,7 +1282,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice119.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice119.setIdentifier("");
         deviceChoice119.setLabelString("State: ");
-        deviceChoice119.setOffsetNid(944);
+        deviceChoice119.setOffsetNid(910);
         deviceChoice119.setUpdateIdentifier("");
         jPanel35.add(deviceChoice119);
 
@@ -1290,21 +1290,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice120.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice120.setIdentifier("");
         deviceChoice120.setLabelString("Input Range(V): ");
-        deviceChoice120.setOffsetNid(755);
+        deviceChoice120.setOffsetNid(723);
         deviceChoice120.setUpdateIdentifier("");
         jPanel35.add(deviceChoice120);
 
         deviceChoice121.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice121.setIdentifier("");
         deviceChoice121.setLabelString("Polarity: ");
-        deviceChoice121.setOffsetNid(761);
+        deviceChoice121.setOffsetNid(729);
         deviceChoice121.setUpdateIdentifier("");
         jPanel35.add(deviceChoice121);
 
         deviceChoice122.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice122.setIdentifier("");
         deviceChoice122.setLabelString("Mode: ");
-        deviceChoice122.setOffsetNid(764);
+        deviceChoice122.setOffsetNid(732);
         deviceChoice122.setUpdateIdentifier("");
         jPanel35.add(deviceChoice122);
 
@@ -1316,7 +1316,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice123.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice123.setIdentifier("");
         deviceChoice123.setLabelString("State: ");
-        deviceChoice123.setOffsetNid(948);
+        deviceChoice123.setOffsetNid(914);
         deviceChoice123.setUpdateIdentifier("");
         jPanel36.add(deviceChoice123);
 
@@ -1324,21 +1324,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice124.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice124.setIdentifier("");
         deviceChoice124.setLabelString("Input Range(V): ");
-        deviceChoice124.setOffsetNid(778);
+        deviceChoice124.setOffsetNid(745);
         deviceChoice124.setUpdateIdentifier("");
         jPanel36.add(deviceChoice124);
 
         deviceChoice125.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice125.setIdentifier("");
         deviceChoice125.setLabelString("Polarity: ");
-        deviceChoice125.setOffsetNid(784);
+        deviceChoice125.setOffsetNid(751);
         deviceChoice125.setUpdateIdentifier("");
         jPanel36.add(deviceChoice125);
 
         deviceChoice126.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice126.setIdentifier("");
         deviceChoice126.setLabelString("Mode: ");
-        deviceChoice126.setOffsetNid(787);
+        deviceChoice126.setOffsetNid(754);
         deviceChoice126.setUpdateIdentifier("");
         jPanel36.add(deviceChoice126);
 
@@ -1350,7 +1350,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice127.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice127.setIdentifier("");
         deviceChoice127.setLabelString("State: ");
-        deviceChoice127.setOffsetNid(952);
+        deviceChoice127.setOffsetNid(918);
         deviceChoice127.setUpdateIdentifier("");
         jPanel37.add(deviceChoice127);
 
@@ -1358,21 +1358,21 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice128.setChoiceItems(new String[] {"10", "5", "2", "1", "0.2", "0.1"});
         deviceChoice128.setIdentifier("");
         deviceChoice128.setLabelString("Input Range(V): ");
-        deviceChoice128.setOffsetNid(801);
+        deviceChoice128.setOffsetNid(767);
         deviceChoice128.setUpdateIdentifier("");
         jPanel37.add(deviceChoice128);
 
         deviceChoice129.setChoiceItems(new String[] {"Unipolar", "Bipolar"});
         deviceChoice129.setIdentifier("");
         deviceChoice129.setLabelString("Polarity: ");
-        deviceChoice129.setOffsetNid(807);
+        deviceChoice129.setOffsetNid(773);
         deviceChoice129.setUpdateIdentifier("");
         jPanel37.add(deviceChoice129);
 
         deviceChoice130.setChoiceItems(new String[] {"RSE", "NRSE"});
         deviceChoice130.setIdentifier("");
         deviceChoice130.setLabelString("Mode: ");
-        deviceChoice130.setOffsetNid(810);
+        deviceChoice130.setOffsetNid(776);
         deviceChoice130.setUpdateIdentifier("");
         jPanel37.add(deviceChoice130);
 
