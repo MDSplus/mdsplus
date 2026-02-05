@@ -44,6 +44,7 @@ import numpy as np
 import select
 from collections import OrderedDict
 import errno
+import time
 
 
 class NI6683(Device):
@@ -445,6 +446,24 @@ class NI6683(Device):
                 # setting the terminal level to 0 before the trigger
                 NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_LOW))
 
+            # HIGH initialization at level high mode
+            if (mode == 'HIGH'):
+                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
+                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
+                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
+                self.checkStatus(status, "Cannot enable future time events ")
+                # setting the terminal level to 0 before the trigger
+                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_HIGH))
+
+            # LOW initialization at level high mode
+            if (mode == 'LOW'):
+                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
+                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
+                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
+                self.checkStatus(status, "Cannot enable future time events ")
+                # setting the terminal level to 0 before the trigger
+                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_LOW))
+
             # retrieving the terminal frequency    
             try:
                 freq = getattr(self, termName.lower()+'_frequency').data()
@@ -495,7 +514,10 @@ class NI6683(Device):
             
             if (mode == 'CLOCK'):
                 #Stores terminal start times, end times and freqencies
-                clockSource = Range(NI6683.ni6683TermStarts[termNameNid], NI6683.ni6683TermEnds[termNameNid], NI6683.ni6683Frequencies[termNameNid])
+                rangeEnd = NI6683.ni6683TermEnds[termNameNid]
+                if rangeEnd <= NI6683.ni6683TermStarts[termNameNid]:
+                    rangeEnd = None
+                clockSource = Range(NI6683.ni6683TermStarts[termNameNid], rangeEnd, 1./NI6683.ni6683Frequencies[termNameNid])
                 getattr(self, termName.lower()+'_clock_source').putData(clockSource)
 
         self.saveInfo()
@@ -651,22 +673,30 @@ class NI6683(Device):
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
+
                 if enabled.value != 0:
                     print('DISABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable timestamp triggers')
 
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
+
                 self.checkStatus(status, 'Cannot inquire future events in "HIGH" mode')
+
+                #time.sleep(10) # Starts at 18s
+                
                 if enabled.value == 0:
                     print('ENABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot enable future events')
 
+                #time.sleep(10) # Starts at 8s
+
                 # status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
                 # self.checkStatus(status, 'Cannot abort FTEs')
                 status = NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_HIGH))
                 self.checkStatus(status, 'Cannot set terminal level')
+
 
             # in the LOW mode:
             #   - the terminal timestamp triggers are disabled (PERCHE? riguardare!!! TODO)

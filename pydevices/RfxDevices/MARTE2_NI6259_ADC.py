@@ -36,7 +36,7 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
     outputs = [
         {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
-        {'name': 'Time', 'type': 'uint64', 'dimensions': 0, 'parameters': []},
+        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
         {'name': 'ADC0_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
                                                                             {'name': 'ChannelId', 'type': 'int', 'value': 0},
                                                                             {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
@@ -299,6 +299,7 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                     numEnabledChannels += 1
                 else:
                     self.getNode('OUTPUTS.ADC%d_0:SEG_LEN'%(i)).putData(MDSplus.Int32(0))
+                    self.getNode('OUTPUTS.ADC%d_0:DIMENSIONS'%(i)).putData(MDSplus.Int32(-1))
             except:
                 raise Exception('Missing or invalid enable specification for channel %d of '%(i+1) + self.getPath())
 #force segmentUpdate for time in step with channel segment update
@@ -319,7 +320,6 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                 raise Exception('Invalid frequency in internal clock  on '+self.getPath())
 
             self.getNode('.PARAMETERS.PAR_4:VALUE').putData(MDSplus.String('SI_TC'))
-            self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.Int32(frequency * numEnabledChannels))
         elif clockMode == 'EXTERNAL':
             self.getNode('.PARAMETERS.PAR_4:VALUE').putData(MDSplus.String('PFI0'))
             try:
@@ -337,7 +337,7 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
             endings = clockSource.getEnding()
             if not endings is None:
                 try:
-                    ending = endings.data()
+                    endings = endings.data()
                 except:
                     raise Exception('Cannot get end time(s) for clock source in '+self.getPath())
             try:
@@ -376,11 +376,21 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
  
                     triggerTime = np.array(currTrigs, dtype=float) 
                     samplesPerTrigger = np.array(currTrigSamples, dtype=float)  
+
+                if np.isscalar(deltas):
+                    period = deltas
+                else:
+                    for delta in deltas:
+                        if delta != deltas[0]:
+                            raise Exception ('In multiple clock runs mode the external clock speed must be the same for '+self.getPath())
+                    period = deltas[0]
+                frequency = 1/period
             else: #clock mode INTERNAL
                 try:
                     triggerTime = self.getNode('TRIG_TIME').data()
                 except:
                     triggerTime = 0
+                period = 1./frequency
         elif acquisitionMode == 'TRIGGERED':
             if clockMode == 'INTERNAL':
                 period = 1./frequency
@@ -388,6 +398,7 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                 if not np.isscalar(deltas):
                     raise Exception('In TRIGGERED acquisition mode the external clock must be single speed for '+self.getPath())
                 period = deltas
+                frequency = 1./period
             try:
                 triggerTime = self.getNode('TRIG_TIME').data()
             except:
@@ -396,17 +407,20 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                 preTriggerSamples = self.getNode('PRE_TRIG').data()
             except:
                 raise  Exception('Cannot get the number of pre trigger samples for '+self.getPath())
-            self.getNode('.PARAMETERS.PAR_11:VALUE').putData(MDSplus.Int32(postTriggerSamples))
+            self.getNode('.PARAMETERS.PAR_11:VALUE').putData(MDSplus.Int32(preTriggerSamples))
             try:
                 postTriggerSamples = self.getNode('POST_TRIG').data()
             except:
                 raise  Exception('Cannot get the number of post trigger samples for '+self.getPath())
             self.getNode('.PARAMETERS.PAR_12:VALUE').putData(MDSplus.Int32(postTriggerSamples))
+            triggerTime -= period * preTriggerSamples
         else:
             raise  Exception('Invalid Acquisition Mode for '+self.getPath())
         self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String(acquisitionMode))
 
+
 #At this point triggerTime contains the (array of) trigger time(s)
+        print('SCRIVO TRIGGER TIME', triggerTime)
         if acquisitionMode == 'TRIGGERED' or np.isscalar(triggerTime):
             self.getNode('OUTPUTS:TRIGGER_TIME').putData(MDSplus.Float64(triggerTime))
         else:
@@ -415,21 +429,33 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
 
 ####### Data expressions
         t = self.getTree()
-        for i in range(16):
+        for i in range(32):
             dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
+            print('SCRIVO ', dataExpr)
             self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))
 ######## Timebase expression
-        if clockMode == 'INTERNAL':
-            print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-            ' / '+self.getNode('FREQUENCY').getFullPath()+'))')
-            self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
-            ' /  float('+self.getNode('FREQUENCY').getFullPath()+')))'))
-        else:
-            print(clockSource)
-            self.getNode('TIMEBASE').putData(clockSource)
+        print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+' * 1./'+str(frequency)+'))')
+        self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
+        ' * 1./'+str(frequency)+'))'))
+#Write SamplingFrequency
+        self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.Int32(frequency * numEnabledChannels))
 
+####################################### Non MARTe2 Methods #############################################
 
     def init(self):
+        AI_POLARITY_BIPOLAR = c_int(0)
+        AI_POLARITY_UNIPOLAR = c_int(1)
+        AI_CHANNEL_TYPE_DIFFERENTIAL = c_int(1)
+        AI_CHANNEL_TYPE_NRSE = c_int(2)
+        AI_CHANNEL_TYPE_RSE = c_int(3)
+        AI_SAMPLE_SELECT_SI_TC = c_int(0)
+        AI_SAMPLE_POLARITY_RISING_EDGE = c_int(0)
+
+
+        polarityDict = {'Unipolar': AI_POLARITY_UNIPOLAR,
+                        'Bipolar': AI_POLARITY_BIPOLAR}
+        inputModeDict = {'RSE': AI_CHANNEL_TYPE_RSE, 'NRSE': AI_CHANNEL_TYPE_NRSE,
+                        'Differential': AI_CHANNEL_TYPE_DIFFERENTIAL}
         try:
             niInterfaceLib = CDLL("libNiInterface.so")
         except:
@@ -443,6 +469,29 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
 
         boardId = self.getNode('PARAMETERS.PAR_2:VALUE').data()
         gainDict = {10.: c_int(1), 5.: c_int(2), 2.: c_int(3), 1.: c_int(4), 0.5: c_int(5), 0.2: c_int(6), 0.1: c_int(7)}
+
+        try:
+            devName =  '/dev/pxi6259.'+str(boardId)+'.ai'
+            dfd = os.open(devName, os.O_RDWR)
+        except:
+            raise Exception('Cannot open device for '+self.getPath())
+        
+        aiConf = c_void_p(0)
+        niInterfaceLib.pxi6259_create_ai_conf_ptr(byref(aiConf))
+
+        for chan in range(32):
+            gain = self.getNode('OUTPUTS:ADC%d_0.PARAMETERS.PAR_1:VALUE'%(chan)).data() 
+            polarity = polarityDict[self.getNode('OUTPUTS:ADC%d_0.PARAMETERS.PAR_3:VALUE'%(chan)).data()]
+            inputMode = inputModeDict[self.getNode('OUTPUTS:ADC%d_0.PARAMETERS.PAR_4:VALUE'%(chan)).data()]
+            status = niLib.pxi6259_add_ai_channel(aiConf, c_byte(chan), polarity, gainDict[gain], inputMode, c_byte(0))
+            if(status != 0):
+                raise Exception('Cannot add channel '+str(currChan + 1)+' in '+self.getPath())
+
+        status = niLib.pxi6259_load_ai_conf(c_int(dfd), aiConf)
+        if(status != 0):
+            raise Exception('Cannot load configuration for '+self.getPath())        
+
+
         for chan in range(32):
             try:
                 currFd = os.open('/dev/pxi6259.'+str(boardId)+'.ai.'+str(chan), os.O_RDWR | os.O_NONBLOCK)
@@ -458,19 +507,20 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                     errno = niInterfaceLib.getErrno()
                     msg = 'Error (%d) %s' % (errno, os.strerror(errno))
                     print('Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536)' % (chan))
-                    gainValue = self.device.gainValueDict[gain] * 2.
-                    coeff[0] = coeff[2] = coeff[3] = 0
-                    coeff[1] = c_float(gainValue / 65536.)
-
-                    self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM'%(chan + 1)).putData(MDSplus.Float32Array(coeff))
+                #gainValue = gainValueDict[gain] * 2.
+                gainValue = currGain * 2.
+                coeff[0] = coeff[2] = coeff[3] = 0
+                coeff[1] = c_float(gainValue / 65536.)
+                self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM'%(chan + 1)).putData(MDSplus.Float32Array(coeff))
                 os.close(currFd)
             except:
                 print('Cannot get calibration parameters for '+self.getPath()) 
                 raise  Exception(MDSplus.mdsExceptions.TclFAILED_ESSENTIAL) 
+        os.close(dfd)
 
     # get card info
         try:
-            devName = '/dev/pxi6259.'+str(boardId)
+            devName =  '/dev/pxi6259.'+str(boardId)
             dfd = os.open(devName, os.O_RDWR)
             serialNum = c_int(0)
             if niLib.pxi6259_get_board_serial_number(dfd, byref(serialNum)) == 0:

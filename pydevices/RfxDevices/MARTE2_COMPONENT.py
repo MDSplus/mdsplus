@@ -1379,9 +1379,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 raise Exception('When trigger defined, pre and post trigger must be set in device '+self.getPath())
             parameters['NumberOfPreTriggers'] = preTrigSamples
             parameters['NumberOfPostTriggers'] = postTrigSamples
-            parameters['NumberOfBuffers'] = postTrigSamples + 10
+            parameters['NumberOfBuffers'] = postTrigSamples + 10 * len(signalsToBeStored)
         else:
-            parameters['NumberOfBuffers'] = 10
+            parameters['NumberOfBuffers'] = 10 * len(signalsToBeStored)
 ####Parameters for new MDSWriter
         try:
             triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()

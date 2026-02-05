@@ -137,8 +137,6 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             raise Exception('Missing or buffer segment length for '+self.getPath())
         if (segmentLen % bufferLen) != 0:
             raise Exception('Segment Len must be a multiple of buffer len')
-        print('SEGMENT LEN: ', segmentLen)
-        print('BUFFER LEN: ', bufferLen)
         blocksInSegment = segmentLen / bufferLen
         if blocksInSegment > 1:
             self.getNode('OUTPUTS:SEG_BLOCKS').putData(MDSplus.Int32(blocksInSegment))
@@ -153,6 +151,7 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                     self.getNode('OUTPUTS.ADC%d_0:SEG_LEN'%(i)).putData(MDSplus.Int32(blocksInSegment))
                 else:
                     self.getNode('OUTPUTS.ADC%d_0:SEG_LEN'%(i)).putData(MDSplus.Int32(0))
+                    self.getNode('OUTPUTS.ADC%d_0:DIMENSIONS'%(i)).putData(MDSplus.Int32(-1))
             except:
                 raise Exception('Missing or invalid enable specification for channel %d of '%(i+1) + self.getPath())
 #force segmentUpdate for time in step with channel segment update
@@ -175,7 +174,6 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
             self.getNode('.PARAMETERS.PAR_5:VALUE').putData(MDSplus.String('INTERNALTIMING'))
             self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.String('COUNTER_TB3'))
             self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String('RISING_EDGE'))
-            self.getNode('.PARAMETERS.PAR_13:VALUE').putData(MDSplus.Int32(int(frequency)))
         elif clockMode == 'EXTERNAL':
             self.getNode('.PARAMETERS.PAR_5:VALUE').putData(MDSplus.String('PFI0'))
             self.getNode('.PARAMETERS.PAR_6:VALUE').putData(MDSplus.String('ACTIVE_HIGH_OR_RISING_EDGE'))
@@ -233,19 +231,26 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                         currTrigSamples.append(currPulseSamples)
  
                     triggerTime = np.array(currTrigs, dtype=float) 
-                    samplesPerTrigger = np.array(currTrigSamples, dtype=float)  
+                    samplesPerTrigger = np.array(currTrigSamples, dtype=float) 
+                if np.isscalar(deltas):
+                    period = deltas
+                else:
+                    for delta in deltas:
+                        if delta != deltas[0]:
+                            raise Exception ('In multiple clock runs mode the external clock speed must be the same for '+self.getPath())
+                    period = deltas[0]
+                frequency = 1/period
             else: #clock mode INTERNAL
                 try:
                     triggerTime = self.getNode('TRIG_TIME').data()
                 except:
                     triggerTime = 0
         elif acquisitionMode == 'TRIGGERED':
-            if clockMode == 'INTERNAL':
-                period = 1./frequency
-            else:
+            if clockMode != 'INTERNAL':
                 if not np.isscalar(deltas):
                     raise Exception('In TRIGGERED acquisition mode the external clock must be single speed for '+self.getPath())
                 period = deltas
+                frequency = 1/period
             try:
                 triggerTime = self.getNode('TRIG_TIME').data()
             except:
@@ -256,6 +261,11 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                 raise  Exception('Cannot get the number of post trigger samples for '+self.getPath())
             self.getNode('.PARAMETERS.PAR_15:VALUE').putData(MDSplus.Int32(postTriggerSamples))
         elif acquisitionMode == 'MULTI_TRIGGERED':
+            if clockMode != 'INTERNAL':
+                if not np.isscalar(deltas):
+                    raise Exception('In MULTI_TRIGGERED acquisition mode the external clock must be single speed for '+self.getPath())
+                period = deltas
+                frequency = 1/period
             try:
                 pulseTriggerTime = self.getNode('TRIG_TIME').data()
             except:
@@ -281,6 +291,7 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
         else:
             raise  Exception('Invalid Acquisition Mode for '+self.getPath())
         self.getNode('.PARAMETERS.PAR_14:VALUE').putData(MDSplus.String(acquisitionMode))
+        self.getNode('.PARAMETERS.PAR_13:VALUE').putData(MDSplus.Int32(int(frequency)))
 
 #At this point triggerTime contains the (array of) trigger time(s)
         if acquisitionMode == 'TRIGGERED' or np.isscalar(triggerTime):
