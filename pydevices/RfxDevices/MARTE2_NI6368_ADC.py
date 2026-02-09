@@ -24,6 +24,7 @@
 #
 import numpy as np
 import MDSplus
+from MDSplus import mdsExceptions
 from ctypes import CDLL, Structure, c_int, c_uint, c_char, c_byte, c_ubyte
 from ctypes import c_float, byref, c_char_p, c_void_p, c_short, c_ulonglong
 import os
@@ -303,8 +304,13 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
 ####### Data expressions
         t = self.getTree()
         for i in range(16):
-            dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
-            self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))
+            dataExpr = '_c = data('+self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+');'
+            dataExpr += '_s = data('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+');'
+            dataExpr += 'Build_With_Units(Build_signal((_c[0] + _c[1] * _s + _c[2] * _s * _s + _c[3] * _s * _s * _s),,dim_of(_s)), "Volts")'
+            print(dataExpr)
+            self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))            
+#            dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
+           
 ######## Timebase expression
         print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
         ' / '+self.getNode('PARAMETERS.PAR_13:VALUE').getFullPath()+'))')
@@ -350,16 +356,49 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                     ("self_cal_temp", c_ulonglong),
                     ("geographical_addr", c_uint)]
     def init(self):
+        XSERIES_AI_CHANNEL_TYPE_DIFFERENTIAL = c_int(1)
         try:
             niInterfaceLib = CDLL("libNiInterface.so")
+            niLib = CDLL("libnixseries.so")
         except:
             print('Cannot link to NIInterface for '+self.getPath()) 
             raise  Exception(MDSplus.mdsExceptions.TclFAILED_ESSENTIAL) 
+
         boardId = self.getNode('PARAMETERS.PAR_2:VALUE').data()
         gainDict = {10.: c_int(0), 5.: c_int(1), 2.: c_int(2), 1.: c_int(3), 0.5: c_int(4), 0.2: c_int(5), 0.1: c_int(6)}
+
+        fileName = '/dev/pxie-6368.'+str(boardId)+'.ai'
+        try:
+            fd = os.open(fileName, os.O_RDWR)
+        except:
+            print('Callot open device')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        status = niLib.xseries_reset_ai(c_int(fd))
+        if status != 0:
+            print('Cannot reset ai')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        aiConf = c_void_p(0)
+        niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(1000), 0)
+
+        for chan in range(16):
+            currGain = self.getNode('OUTPUTS:ADC%d_0.PARAMETERS.PAR_1:VALUE'%(chan)).data()
+            currGainCode = gainDict[currGain]
+            status = niLib.xseries_add_ai_channel(aiConf, c_short(chan), currGainCode, XSERIES_AI_CHANNEL_TYPE_DIFFERENTIAL, c_byte(1))
+            if status != 0:
+                print('Cannot add ai conf')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        status = niInterfaceLib.xseries_set_ai_conf_ptr(c_int(fd), aiConf)
+        if status != 0:
+            print('Cannot load ai conf')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
         for chan in range(16):
             try:
                 currFd = os.open('/dev/pxie-6368.'+str(boardId)+'.ai.'+str(chan), os.O_RDWR | os.O_NONBLOCK)
+                print('APERTO CHAN ', chan, currFd)
                 currGain = self.getNode('OUTPUTS:ADC%d_0.PARAMETERS.PAR_1:VALUE'%(chan)).data()
                 currGainCode = gainDict[currGain]
                 coeffArray = c_float*4
@@ -376,11 +415,12 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                 raise  Exception(MDSplus.mdsExceptions.TclFAILED_ESSENTIAL) 
         deviceInfo = self.XSERIES_DEV_INFO(0, "".encode('utf-8'), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
+        os.close(fd)
         # get card info
         fileName = '/dev/pxie-6368.'+str(boardId)
         devFd = os.open(fileName, os.O_RDWR)
         status = niInterfaceLib._xseries_get_device_info(c_int(devFd), byref(deviceInfo))
-        os.close(currFd)
+        os.close(devFd)
         if status < 0:
             print('Cannot get device info for '+self.getPath()) 
             raise mdsExceptions.TclFAILED_ESSENTIAL

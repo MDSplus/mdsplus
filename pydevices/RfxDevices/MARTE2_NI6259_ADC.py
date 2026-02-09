@@ -430,8 +430,11 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
 ####### Data expressions
         t = self.getTree()
         for i in range(32):
-            dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
-            print('SCRIVO ', dataExpr)
+            dataExpr = '_c = data('+self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+');'
+            dataExpr += '_s = data('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+');'
+            dataExpr += 'Build_With_Units(Build_signal((_c[0] + _c[1] * _s + _c[2] * _s * _s + _c[3] * _s * _s * _s),,dim_of(_s)), "Volts")'
+            print(dataExpr)
+#            dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
             self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))
 ######## Timebase expression
         print('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+' * 1./'+str(frequency)+'))')

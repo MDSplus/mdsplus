@@ -115,7 +115,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
 
 
-    def convertGamNodes(self, gams):
+    def convertGamNodesXXXX(self, gams):
         gamNodes = []
         if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
@@ -170,7 +170,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 currInterface = interfaces.getDescAt(i)
                 if isinstance(currInterface, MDSplus.TreePath):
                     currInterface = self.getTree().getNode(currInterface)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         else:
             for interf1 in interfaces.data():
                 if isinstance(interf1, str):
@@ -178,7 +179,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 else:
                     interf = str(interf1, 'utf_8')
                 currInterface = t.getNode(interf)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         #Check
         for currInterface in interfaceNodes:
             if isinstance(currInterface, MDSplus.TreePath):
@@ -1437,8 +1439,12 @@ $<APP_NAME> = {
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
                 if isinstance(currGamNode, MDSplus.TreePath):
-                    currGamNode = self.getTree().getNode(currGamNode)
-                gamNodes.append(currGamNode)
+                    try:
+                        currGamNode = self.getTree().getNode(currGamNode)
+                    except:
+                        raise Exception('Cannot find GAM Node: '+currGamNode.getFullPath())  
+                if currGamNode.isOn():                      
+                    gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
                 if isinstance(gam1, str):
@@ -1446,7 +1452,8 @@ $<APP_NAME> = {
                 else:
                     gam = str(gam1, 'utf_8')
                 currGamNode = self.getTree().getNode(gam)
-                gamNodes.append(currGamNode)
+                if currGamNode.isOn():
+                    gamNodes.append(currGamNode)
         return gamNodes
 
 
