@@ -57,7 +57,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Num. Samples"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="32"/>
+                <Property name="offsetNid" type="int" value="33"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
@@ -65,7 +65,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MdsWriter CPU Mask: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="28"/>
+                <Property name="offsetNid" type="int" value="26"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -79,7 +79,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Out Segment len (0 to disable writing in tree):"/>
                 <Property name="numCols" type="int" value="5"/>
-                <Property name="offsetNid" type="int" value="34"/>
+                <Property name="offsetNid" type="int" value="35"/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice2">

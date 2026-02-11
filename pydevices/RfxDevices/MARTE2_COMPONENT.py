@@ -93,14 +93,27 @@ class MARTE2_COMPONENT(MDSplus.Device):
                       'type': 'numeric', 'value': 0})
         parts.append({'path': '.OUTPUTS:POST_TRIGGER',
                       'type': 'numeric', 'value': 100})
-        # reference time for the device valid for all devices except SynchInput
+
+        parts.append({'path': '.OUTPUTS:TIME_MODE',
+                      'type': 'text', 'value': 'Forced'})
+        #Time associated to first sample is no trigger defined time corresponing to the trigger otherwise
+        #It can be an array in case mutiple pulses are acquired
+        parts.append({'path': '.OUTPUTS:TRIGGER_TIME', 'type': 'numeric'})
+        #TWhen Trigger time is an array, specify the number of samples corresponding to a given pulse
+        parts.append({'path': '.OUTPUTS:TRIGGER_SAMP', 'type': 'numeric'})
+        #When defined forces use of beginSegment and putSegment
+        parts.append({'path': '.OUTPUTS:SEG_BLOCKS', 'type': 'numeric'})
+        # reference time for the device valid for all devices (except SynchInput???)
         parts.append({'path': '.OUTPUTS:OUT_TIME', 'type': 'signal'})
-        # Used only by SynchInput devices to identify which output is the time
-        parts.append({'path': '.OUTPUTS:TIME_IDX',
-                      'type': 'numeric', 'value': 0})
         # CPU Mask for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:CPU_MASK',
-                      'type': 'numeric', 'value': 15})
+        parts.append({'path': '.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value': 15})
+        # Discontinuity Factor for MdsWriter thread
+        parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        # Resampling Factor for MdsWriter thread
+        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric', 'value': 1000})
+        # JPG Flag 
+        parts.append({'path': '.OUTPUTS:JPG_CONV','type': 'numeric'})
+
         nameList = []
         cls.buildOutputsRec(parts, currOutputs = cls.outputs, prefix = '.OUTPUTS')
 
@@ -124,19 +137,13 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:
                 parts.append({'path': prefix + '.'+sigName +
                               ':SEG_LEN', 'type': 'numeric', 'value': 0})
-            if 'stream' in output:
-                parts.append({'path': prefix + '.'+sigName+':STREAM',
-                              'type': 'text', 'value': output['stream']})
-            else:
-                parts.append({'path': prefix + '.'+sigName +
-                              ':STREAM', 'type': 'text'})
 
             if(output['type'] == 'string'):
                 parts.append(
                     {'path': prefix + '.'+sigName+':VALUE', 'type': 'text'})
             else:
-                parts.append({'path': prefix + '.'+sigName +
-                              ':VALUE', 'type': 'signal'})
+                parts.append({'path': prefix + '.'+sigName +':VALUE', 'type': 'signal'})
+                parts.append({'path': prefix + '.'+sigName +':RES_VALUE', 'type': 'signal'})
             try:
                 pars = output['parameters']
             except:
@@ -1339,7 +1346,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
     #Return the definitions of MDSWriter DataSource and ConversionGAM GAM for handling the stored outputs
     def handleOutputsStorage(self, signalsToBeStored, threadMap):
         retDataSource = {}
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Name'] = self.getMarteDeviceName(self)+'_TreeOut'
         parameters = {}
         try:
@@ -1372,9 +1379,56 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 raise Exception('When trigger defined, pre and post trigger must be set in device '+self.getPath())
             parameters['NumberOfPreTriggers'] = preTrigSamples
             parameters['NumberOfPostTriggers'] = postTrigSamples
-            parameters['NumberOfBuffers'] = postTrigSamples + 10
+            parameters['NumberOfBuffers'] = postTrigSamples + 10 * len(signalsToBeStored)
         else:
-            parameters['NumberOfBuffers'] = 10000
+            parameters['NumberOfBuffers'] = 10 * len(signalsToBeStored)
+####Parameters for new MDSWriter
+        try:
+            triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
+            parameters['TriggerTime'] = triggerTime
+            if not np.isscalar(triggerTime):
+                try:
+                    triggerSamples = self.getNode('OUTPUTS:TRIGGER_SAMP').data()
+                    parameters['TriggerSamples'] = triggerSamples
+                except:
+                    pass #TriggerSamples is an optional parameter
+        except:
+            pass
+        try:
+            timebaseDescr = self.getNode('OUTPUTS:TIME_MODE').data().upper()
+        except:
+            timebaseDescr = 'FORCED'
+
+        if timebaseDescr == 'FORCED':
+            parameters['TimingSource'] = 'Internal'
+            parameters['TimebaseMode'] = 'Expression'
+        elif timebaseDescr == 'DERIVED':
+            parameters['TimingSource'] = 'External'
+            parameters['TimebaseMode'] = 'Expression'
+        elif timebaseDescr == 'PRECISE':
+            parameters['TimingSource'] = 'External'
+            parameters['TimebaseMode'] = 'Precise'
+        #Others not supported falls to default
+
+
+
+        try:
+            discontinuityFactor = int(self.getNode('OUTPUTS:DISC_FACTOR').data())
+        except:
+            discontinuityFactor = 100
+        try:
+            resampleFactor = self.getNode('OUTPUTS:RES_FACTOR').data()
+        except:
+            resampleFactor = 0
+        try:
+            blocksInSegment = self.getNode('OUTPUTS:SEG_BLOCKS').data()
+        except:
+            blocksInSegment = 0
+        try:
+            convertToJpg = self.getNode('OUTPUTS:JPG_CONV').data() == 1
+        except:
+            convertToJpg = False
+####
         retDataSource['Parameters'] = parameters
 
         signals = []
@@ -1384,6 +1438,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             numSamples = signalsToBeStored[0].getNode('SAMPLES')
         except:
             numSamples = 1
+
+        segmentLen = int(signalsToBeStored[0].getNode('SEG_LEN').data())
         signals.append({
             'Name': 'Time', 
             'Type': self.timerType, 
@@ -1392,8 +1448,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'TimeSignal': 1,
 #            'Period': str(self.timerPeriod * numSamples).replace('D', 'E'),
             'Period': str(self.timerPeriod).replace('D', 'E'),
-            'MakeSegmentAfterNWrites': signalsToBeStored[0].getNode('SEG_LEN').data(),
-            'DiscontinuityFactor': 10
+
+            'MakeSegmentAfterNWrites': segmentLen,
+            'DiscontinuityFactor': discontinuityFactor,
+            'TimeSignalMultiplier': 1E-6
             })
         for sigNode in signalsToBeStored:
             sigName = self.getSignalName(sigNode)
@@ -1406,7 +1464,26 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
-            sigDef['DiscontinuityFactor'] = 10
+            sigDef['Samples'] = sigNode.getNode('SAMPLES').data()
+
+
+            sigDef['DiscontinuityFactor'] = discontinuityFactor
+            sigDef['TimeSignalMultiplier'] = 1E-6
+
+###Additional parameters for new MDSWriter
+            if resampleFactor > 0:
+                sigDef['MinMaxResampleFactor'] = str(resampleFactor)
+                sigDef['DecimatedNodeName'] = sigNode.getNode('RES_VALUE').getFullPath()
+            if blocksInSegment > 1:
+                print('SEGMENT LEN: '+str(segmentLen))
+                print('BLOCKS IN SEGMENT: '+str(blocksInSegment))
+                print('SAMPLES: '+str(numSamples))
+                
+                sigDef['MakeBlockAfterNWrites'] = str(segmentLen//blocksInSegment)
+            if convertToJpg:
+                sigDef['ConvertToJPG'] = 1
+######
+
             signals.append(sigDef)
         retDataSource['Signals'] = signals
 
@@ -1495,8 +1572,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Type'] = sigNode.getNode('Type').data()
             sigDef['DataSource'] = self.getMarteDeviceName(self)+'_TreeOut'
             numDims, numEls = self.parseDimension(sigNode.getNode('DIMENSIONS').data())
-#            sigDef['NumberOfDimensions'] = numDims  Set to 1 as current MDSWriter does not support matrixes
-            sigDef['NumberOfDimensions'] = 1
+            sigDef['NumberOfDimensions'] = numDims  
             sigDef['NumberOfElements'] = numEls
             try:
                 samples = sigNode.getNode('Samples').data()
@@ -1776,6 +1852,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam['Name'] = self.getMarteDeviceName(self)+'_IOGAM'
         retGam['Class'] = 'IOGAM'
         for currInput in inputs:
+            if currInput['Name'] == 'Time':
+                currInput['Frequency'] = str(1/timerPeriod)
             if alias == None:
                 currInput['DataSource'] = self.getMarteDeviceName(self)
             else:

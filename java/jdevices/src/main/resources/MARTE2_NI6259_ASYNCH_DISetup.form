@@ -60,14 +60,14 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Storage CPU Mask: "/>
-                <Property name="offsetNid" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="23"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField3">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="OutBits Seg. Len.: "/>
-                <Property name="offsetNid" type="int" value="31"/>
+                <Property name="offsetNid" type="int" value="32"/>
               </Properties>
             </Component>
           </SubComponents>

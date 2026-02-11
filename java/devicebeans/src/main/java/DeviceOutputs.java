@@ -76,7 +76,8 @@ public class DeviceOutputs extends DeviceComponent
             try {
                 numOutputs = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
             }catch(Exception exc){numOutputs = 0;}
-            int currOutNid = currNid + 7;
+//            int currOutNid = currNid + 7;
+            int currOutNid = currNid + 13;
             //Count number of actual outputs (i.e. for which nSamplese make sense
             numItems = 0;
             int numBusItems = 0;
@@ -138,7 +139,8 @@ public class DeviceOutputs extends DeviceComponent
             jpAux.add(triggerTF = new JTextField(40));
             jp.add(jpAux);
             
-            currOutNid = currNid + 7;
+//            currOutNid = currNid + 7;
+            currOutNid = currNid + 13;
             int currItem = 0;
             numParItems = 0;
             for(int outIdx = 0; outIdx < numOutputs; outIdx++)

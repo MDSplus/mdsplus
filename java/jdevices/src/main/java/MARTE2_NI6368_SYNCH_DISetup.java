@@ -58,13 +58,13 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Clock id: ");
         deviceField2.setNumCols(2);
-        deviceField2.setOffsetNid(16);
+        deviceField2.setOffsetNid(19);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Trigger id. ");
         deviceField3.setNumCols(2);
-        deviceField3.setOffsetNid(19);
+        deviceField3.setOffsetNid(22);
         jPanel2.add(deviceField3);
 
         jPanel1.add(jPanel2);
@@ -72,13 +72,13 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Period: ");
         deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(22);
+        deviceField4.setOffsetNid(25);
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trig. Time: ");
         deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(25);
+        deviceField5.setOffsetNid(28);
         jPanel3.add(deviceField5);
 
         jPanel1.add(jPanel3);
@@ -86,19 +86,19 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Time Seg. Len.:");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(38);
+        deviceField6.setOffsetNid(44);
         jPanel4.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Out Bits seg. len: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(48);
+        deviceField7.setOffsetNid(49);
         jPanel4.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Write CPU Mask: ");
         deviceField8.setNumCols(8);
-        deviceField8.setOffsetNid(32);
+        deviceField8.setOffsetNid(35);
         jPanel4.add(deviceField8);
 
         jPanel1.add(jPanel4);

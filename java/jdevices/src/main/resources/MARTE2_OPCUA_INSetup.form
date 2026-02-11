@@ -120,7 +120,7 @@
       <SubComponents>
         <Container class="DeviceOutputs" name="deviceOutputs1">
           <Properties>
-            <Property name="offsetNid" type="int" value="26"/>
+            <Property name="offsetNid" type="int" value="38"/>
           </Properties>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>

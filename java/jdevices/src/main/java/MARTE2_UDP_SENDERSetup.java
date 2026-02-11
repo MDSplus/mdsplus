@@ -32,8 +32,6 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -113,19 +111,6 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Timebase: ");
-        deviceField3.setNumCols(20);
-        deviceField3.setOffsetNid(3);
-        jPanel3.add(deviceField3);
-
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Timebase Div.: ");
-        deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(134);
-        jPanel3.add(deviceField4);
-
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -168,14 +153,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type: ");
-        deviceChoice2.setOffsetNid(23);
+        deviceChoice2.setOffsetNid(24);
         deviceChoice2.setUpdateIdentifier("");
         jPanel9.add(deviceChoice2);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Dimensions: ");
         deviceField7.setNumCols(5);
-        deviceField7.setOffsetNid(24);
+        deviceField7.setOffsetNid(25);
         jPanel9.add(deviceField7);
 
         jPanel8.add(jPanel9);
@@ -183,7 +168,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Value: ");
         deviceField8.setNumCols(25);
-        deviceField8.setOffsetNid(26);
+        deviceField8.setOffsetNid(27);
         jPanel10.add(deviceField8);
 
         jPanel8.add(jPanel10);
@@ -196,14 +181,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice3.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type: ");
-        deviceChoice3.setOffsetNid(30);
+        deviceChoice3.setOffsetNid(32);
         deviceChoice3.setUpdateIdentifier("");
         jPanel12.add(deviceChoice3);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Dimensions: ");
         deviceField9.setNumCols(5);
-        deviceField9.setOffsetNid(31);
+        deviceField9.setOffsetNid(33);
         jPanel12.add(deviceField9);
 
         jPanel11.add(jPanel12);
@@ -211,7 +196,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Value: ");
         deviceField10.setNumCols(25);
-        deviceField10.setOffsetNid(33);
+        deviceField10.setOffsetNid(35);
         jPanel13.add(deviceField10);
 
         jPanel11.add(jPanel13);
@@ -224,14 +209,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice4.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type: ");
-        deviceChoice4.setOffsetNid(37);
+        deviceChoice4.setOffsetNid(40);
         deviceChoice4.setUpdateIdentifier("");
         jPanel15.add(deviceChoice4);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Dimensions: ");
         deviceField11.setNumCols(5);
-        deviceField11.setOffsetNid(38);
+        deviceField11.setOffsetNid(41);
         jPanel15.add(deviceField11);
 
         jPanel14.add(jPanel15);
@@ -239,7 +224,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Value: ");
         deviceField12.setNumCols(25);
-        deviceField12.setOffsetNid(40);
+        deviceField12.setOffsetNid(43);
         jPanel16.add(deviceField12);
 
         jPanel14.add(jPanel16);
@@ -252,14 +237,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice5.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
-        deviceChoice5.setOffsetNid(44);
+        deviceChoice5.setOffsetNid(52);
         deviceChoice5.setUpdateIdentifier("");
         jPanel18.add(deviceChoice5);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Dimensions: ");
         deviceField13.setNumCols(5);
-        deviceField13.setOffsetNid(45);
+        deviceField13.setOffsetNid(49);
         jPanel18.add(deviceField13);
 
         jPanel17.add(jPanel18);
@@ -267,7 +252,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Value: ");
         deviceField14.setNumCols(25);
-        deviceField14.setOffsetNid(47);
+        deviceField14.setOffsetNid(51);
         jPanel19.add(deviceField14);
 
         jPanel17.add(jPanel19);
@@ -280,14 +265,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice6.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type: ");
-        deviceChoice6.setOffsetNid(51);
+        deviceChoice6.setOffsetNid(56);
         deviceChoice6.setUpdateIdentifier("");
         jPanel21.add(deviceChoice6);
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Dimensions: ");
         deviceField15.setNumCols(5);
-        deviceField15.setOffsetNid(52);
+        deviceField15.setOffsetNid(57);
         jPanel21.add(deviceField15);
 
         jPanel20.add(jPanel21);
@@ -295,7 +280,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Value: ");
         deviceField16.setNumCols(25);
-        deviceField16.setOffsetNid(54);
+        deviceField16.setOffsetNid(59);
         jPanel22.add(deviceField16);
 
         jPanel20.add(jPanel22);
@@ -308,14 +293,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice7.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type: ");
-        deviceChoice7.setOffsetNid(58);
+        deviceChoice7.setOffsetNid(64);
         deviceChoice7.setUpdateIdentifier("");
         jPanel24.add(deviceChoice7);
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Dimensions: ");
         deviceField17.setNumCols(5);
-        deviceField17.setOffsetNid(59);
+        deviceField17.setOffsetNid(65);
         jPanel24.add(deviceField17);
 
         jPanel23.add(jPanel24);
@@ -323,7 +308,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Value: ");
         deviceField18.setNumCols(25);
-        deviceField18.setOffsetNid(61);
+        deviceField18.setOffsetNid(67);
         jPanel25.add(deviceField18);
 
         jPanel23.add(jPanel25);
@@ -336,14 +321,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type: ");
-        deviceChoice8.setOffsetNid(65);
+        deviceChoice8.setOffsetNid(72);
         deviceChoice8.setUpdateIdentifier("");
         jPanel27.add(deviceChoice8);
 
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("Dimensions: ");
         deviceField19.setNumCols(5);
-        deviceField19.setOffsetNid(66);
+        deviceField19.setOffsetNid(73);
         jPanel27.add(deviceField19);
 
         jPanel26.add(jPanel27);
@@ -351,7 +336,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Value: ");
         deviceField20.setNumCols(25);
-        deviceField20.setOffsetNid(68);
+        deviceField20.setOffsetNid(75);
         jPanel28.add(deviceField20);
 
         jPanel26.add(jPanel28);
@@ -364,14 +349,14 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceChoice9.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Type: ");
-        deviceChoice9.setOffsetNid(72);
+        deviceChoice9.setOffsetNid(80);
         deviceChoice9.setUpdateIdentifier("");
         jPanel30.add(deviceChoice9);
 
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("Dimensions: ");
         deviceField21.setNumCols(5);
-        deviceField21.setOffsetNid(73);
+        deviceField21.setOffsetNid(81);
         jPanel30.add(deviceField21);
 
         jPanel29.add(jPanel30);
@@ -379,7 +364,7 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("Value: ");
         deviceField22.setNumCols(25);
-        deviceField22.setOffsetNid(75);
+        deviceField22.setOffsetNid(83);
         jPanel31.add(deviceField22);
 
         jPanel29.add(jPanel31);
@@ -418,8 +403,6 @@ public class MARTE2_UDP_SENDERSetup extends DeviceSetup {
     private DeviceField deviceField20;
     private DeviceField deviceField21;
     private DeviceField deviceField22;
-    private DeviceField deviceField3;
-    private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
