@@ -86,7 +86,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
     parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
     parts.append({'path': ':DESCRIPTION', 'type': 'text'})
-
+    parts.append({'path': ':TIMER_CPU', 'type': 'numeric'})
 
     parts.append({'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
@@ -115,7 +115,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
 
 
-    def convertGamNodes(self, gams):
+    def convertGamNodesXXXX(self, gams):
         gamNodes = []
         if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
@@ -170,7 +170,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 currInterface = interfaces.getDescAt(i)
                 if isinstance(currInterface, MDSplus.TreePath):
                     currInterface = self.getTree().getNode(currInterface)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         else:
             for interf1 in interfaces.data():
                 if isinstance(interf1, str):
@@ -178,7 +179,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 else:
                     interf = str(interf1, 'utf_8')
                 currInterface = t.getNode(interf)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         #Check
         for currInterface in interfaceNodes:
             if isinstance(currInterface, MDSplus.TreePath):
@@ -222,7 +224,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
-    #Return the target timebase reference dor DERIVED and EXT_DERIVED mode
+    #Return the target timebase reference for DERIVED and EXT_DERIVED mode
     def getExtTimebaseRef(self, timebaseMode, stateIdx, threadIdx): 
         if timebaseMode == 'DERIVED':
             try:
@@ -423,11 +425,21 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 frequency = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).data()
             except:
                 raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '+ self.getPath())
-            retDataSources.append( {
-                'Name': threadName+'_Timer',
-                'Class': 'LinuxTimer',
-                'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
-            })
+            if self.timerCpu != None:
+                retDataSources.append( {
+                    'Name': threadName+'_Timer',
+                    'Class': 'LinuxTimer',
+                    'Parameters': {
+                        'CPUMask' : self.timerCpu,
+                    },
+                    'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
+                })
+            else:
+                retDataSources.append( {
+                    'Name': threadName+'_Timer',
+                    'Class': 'LinuxTimer',
+                    'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
+                })
             retDataSources.append( {
                 'Name': threadName+'_TimerDDB',
                 'Class': 'GAMDataSource'
@@ -824,7 +836,6 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         for gamNode in gamNodes:
             gamName = gamNode.getMarteDeviceName()
             gamMode = gamNode.getNode('MODE').data()
-            print('GAM NAME: ', gamName,   'GAM MODE:', gamMode)
             if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
                 timeSignals.append(gamName+'_ReadTime')
                 timeSignals.append(gamName+'_ExecTime')
@@ -869,7 +880,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
         retDataSource = {}
         retDataSource['Name'] = 'State_%d_Thread_%d_TIMES_WRITER' % (stateIdx+1, threadIdx+1)
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Parameters'] = {
             'CPUMask': cpuMask,
             'NumberOfBuffers' : 20000,
@@ -1118,6 +1129,10 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             firstStateName = self.getNode('STATE_1:NAME').data()
         except:
             raise Exception('Missing first state name for '+self.getPath())
+        try:
+            self.timerCpu = self.getNode('TIMER_CPU').data()
+        except:
+            self.timerCpu = None
         outConfig = '''
 <TYPE_LIST>
 +MDS_EVENTS = {
@@ -1271,6 +1286,7 @@ $<APP_NAME> = {
       Class = ReferenceContainer
       +IDLE_MDSPLUS_TIMER = {
         Class = LinuxTimer
+        $$LINUX_TIMER_CPU$$
         Signals = {
           Counter = {
             Type = uint32
@@ -1309,6 +1325,10 @@ $<APP_NAME> = {
     }
 }
 '''    
+        if self.timerCpu == None:
+            outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','')
+        else:
+            outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','CPUMask = '+str(self.timerCpu))
         config = self.getMarte2ConfigInfo()  
         outConfig = outConfig.replace('<APP_NAME>', appName)
         outConfig = outConfig.replace('<TYPE_LIST>', self.expandTypes(config['TypesDict']))
@@ -1377,7 +1397,7 @@ $<APP_NAME> = {
         gamClasses.append('ConstantGAM')
         gamClasses.append('PickSampleGAM')
         gamClasses.append('MDSEventManager')
-        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSDataSource::MDSplusWriter')
         gamClasses.append('MDSReaderGAM')
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')
@@ -1441,8 +1461,12 @@ $<APP_NAME> = {
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
                 if isinstance(currGamNode, MDSplus.TreePath):
-                    currGamNode = self.getTree().getNode(currGamNode)
-                gamNodes.append(currGamNode)
+                    try:
+                        currGamNode = self.getTree().getNode(currGamNode)
+                    except:
+                        raise Exception('Cannot find GAM Node: '+currGamNode.getFullPath())  
+                if currGamNode.isOn():                      
+                    gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
                 if isinstance(gam1, str):
@@ -1450,7 +1474,8 @@ $<APP_NAME> = {
                 else:
                     gam = str(gam1, 'utf_8')
                 currGamNode = self.getTree().getNode(gam)
-                gamNodes.append(currGamNode)
+                if currGamNode.isOn():
+                    gamNodes.append(currGamNode)
         return gamNodes
 
 

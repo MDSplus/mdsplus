@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_SIMULINK_RFX_MPCSetup extends DeviceSetup {
+public class MARTE2_RAMPSetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_SIMULINK_RFX_MPCSetup
+     * Creates new form MARTE2_RAMPSetup
      */
-    public MARTE2_SIMULINK_RFX_MPCSetup() {
+    public MARTE2_RAMPSetup() {
         initComponents();
     }
 
@@ -33,24 +33,25 @@ public class MARTE2_SIMULINK_RFX_MPCSetup extends DeviceSetup {
         deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("MARTe2 Simulink RFX MPC Controller");
-        setDeviceType("MARTE2_SIMULINK_RFX_MPC");
+        setDeviceTitle("MARTe2 Ramp Generator");
+        setDeviceType("MARTE2_RAMP");
         setHeight(400);
-        setUpdateEvent("");
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceInputs1.setOffsetNid(50);
+        deviceInputs1.setOffsetNid(32);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
-        deviceOutputs1.setOffsetNid(91);
+        deviceOutputs1.setOffsetNid(57);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
         deviceParameters1.setNumParameters(9);
-        deviceParameters1.setOffsetNid(19);
+        deviceParameters1.setOffsetNid(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
 
