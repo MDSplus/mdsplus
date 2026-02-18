@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument(
     '--mdsip-server',
-    default='alcdaq6',
+    default='alcdata',
     help='The server to call mdsconnect() on'
 )
 
