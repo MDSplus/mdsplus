@@ -33,8 +33,8 @@ short RemCamLastIosb[4];
 
 int RemoteServerId()
 {
-  static int socket = 0;
-  if (socket == 0)
+  static int socket = INVALID_CONNECTION_ID;
+  if (socket == INVALID_CONNECTION_ID)
   {
     char *server = getenv("camac_server");
     if (server == 0)
@@ -45,8 +45,8 @@ int RemoteServerId()
     else
     {
       socket = ConnectToMds(server);
-      if (socket < 0)
-        socket = 0;
+      if (socket < INVALID_CONNECTION_ID)
+        socket = INVALID_CONNECTION_ID;
     }
   }
   return socket;
@@ -96,7 +96,7 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data,
   int serverid = RemoteServerId();
   int status = 0;
   int writeData;
-  if (serverid)
+  if (serverid > INVALID_CONNECTION_ID)
   {
     struct descrip data_d = {8, 0, {0}, 0, 0};
     struct descrip ans_d = {0, 0, {0}, 0, 0};
