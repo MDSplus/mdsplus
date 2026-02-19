@@ -78,13 +78,14 @@ class libs:
 # check version
 if __name__ == "MDSplus":
     version_check = os.getenv("MDSPLUS_VERSION_CHECK", "on").lower()
-    version_check = not (
-        version_check == "0" or version_check == "off" or version_check == "no")
+    version_check = not (version_check == "0" or version_check == "off" or version_check == "no")
 else:
     version_check = False
+
 try:
     _version = _mimport('_version')
-    __version__ = _version.release_tag
+    __version__ = '.'.join(map(str, _version.version))
+    release_tag = _version.release_tag
     __doc__ = """%s
 Version: %s
 Release Date: %s
@@ -94,6 +95,7 @@ except Exception:
         sys.stderr.write(
             "PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
     __version__ = "unknown"
+    release_tag = "unknown"
 
 if version_check:
     def version_check():
@@ -102,13 +104,13 @@ if version_check:
             verchk = _ver.tostr(libs.MdsShr.MdsRelease())
         except Exception:
             verchk = "unknown"
-        if verchk != __version__ or verchk == "unknown":
+        if verchk != release_tag or verchk == "unknown":
             sys.stderr.write('''Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
   Upgrade the module using the mdsplus/python/MDSplus directory of the
   MDSplus installation or set PYTHONPATH=/usr/local/mdsplus/python.
-''' % (__version__, verchk))
+''' % (release_tag, verchk))
     version_check()
 del version_check
 
