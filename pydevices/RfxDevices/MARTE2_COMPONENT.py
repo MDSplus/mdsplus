@@ -1384,12 +1384,17 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfBuffers'] = 10 * len(signalsToBeStored)
 ####Parameters for new MDSWriter
         try:
+            numSamples = signalsToBeStored[0].getNode('SAMPLES')
+        except:
+            numSamples = 1
+
+        try:
             triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
-            parameters['TriggerTime'] = triggerTime
+            parameters['StartTime'] = triggerTime
             if not np.isscalar(triggerTime):
                 try:
                     triggerSamples = self.getNode('OUTPUTS:TRIGGER_SAMP').data()
-                    parameters['TriggerSamples'] = triggerSamples
+                    parameters['StartCycles'] = triggerSamples/numSamples
                 except:
                     pass #TriggerSamples is an optional parameter
         except:
@@ -1434,10 +1439,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
         signals = []
         if trigger != None:
             signals.append({'Name': 'Trigger', 'Type': 'uint8'})
-        try:
-            numSamples = signalsToBeStored[0].getNode('SAMPLES')
-        except:
-            numSamples = 1
 
         segmentLen = int(signalsToBeStored[0].getNode('SEG_LEN').data())
         signals.append({
