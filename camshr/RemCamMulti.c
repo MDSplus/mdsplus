@@ -102,7 +102,7 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count,
   int serverid = RemoteServerId();
   int status = 0;
   int writeData;
-  if (serverid)
+  if (serverid > INVALID_CONNECTION_ID)
   {
     struct descrip data_d = {8, 1, {0}, 0, 0};
     struct descrip ans_d = {0, 0, {0}, 0, 0};
@@ -138,7 +138,7 @@ int RemCamSetMAXBUF(char *name, int new)
 {
   int serverid = RemoteServerId();
   int status = -1;
-  if (serverid)
+  if (serverid > INVALID_CONNECTION_ID)
   {
     struct descrip ans_d = {0, 0, {0}, 0, 0};
     char cmd[512];
@@ -160,7 +160,7 @@ int RemCamGetMAXBUF(char *name)
 {
   int serverid = RemoteServerId();
   int status = -1;
-  if (serverid)
+  if (serverid > INVALID_CONNECTION_ID)
   {
     struct descrip ans_d = {0, 0, {0}, 0, 0};
     char cmd[512];
