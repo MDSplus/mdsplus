@@ -56,6 +56,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
     MODE_OUTPUT = 4
     MODE_INTERFACE = 5
 
+
+
     @classmethod
     def buildParameters(cls, parts, prefix = 'PARAMETERS', buildParameters = None):
         idx = 1
@@ -621,6 +623,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else:
                     if self.hostedInSameSupervisor(value, threadMap): #Reference within same supervisor
                         if self.hostedInSynchronizingThread(value, threadMap):
+                            currSig.pop('Alias')
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             if  subsamplingRatio > 1:
                                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
@@ -629,7 +632,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      'Alias' : currSig['Alias'],
+                                                      #'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
                             else:
@@ -644,7 +647,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      'Alias' : currSig['Alias'],
+                                                      #'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
@@ -655,7 +658,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                         'Type': currSig['Type'],
                                                         'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                         'NumberOfElements' : currSig['NumberOfElements'],
-                                                        'Alias' : currSig['Alias'],
+                                                        #'Alias' : currSig['Alias'],
                                                         'Samples': subsamplingRatio*samples,
                                                         })
                             else: #Not subsampled
@@ -666,7 +669,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                     'Type': currSig['Type'],
                                     'NumberOfDimensions': currSig['NumberOfDimensions'],
                                     'NumberOfElements' : currSig['NumberOfElements'],
-                                    'Alias' : currSig['Alias'],
+                                    #'Alias' : currSig['Alias'],
                                     'Samples': samples,
                                     })
                             currSig['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
@@ -825,7 +828,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam['Inputs'] = inputs
         outputs = []
         for resSig in resampledSyncSigs:
-            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+#            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
                 'NumberOfElements': resSig['NumberOfElements'], 'Samples': 1, 'DataSource': self.getMarteDeviceName(self)+'_Res_DDB'})
         retGam['Outputs'] = outputs
         return retGam
@@ -894,9 +898,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def checkReferencesRec(self, inputNode):
         try:
             refOutput = inputNode.getNode('VALUE').getData()
-            if isinstance(refOutput, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refOutput):
+            if isinstance(refOutput, MDSplus.TreeNode) and  self.isMarteDeviceRef(refOutput):
                 refOutputNid = refOutput.getNid()
-                if refOutputNid in self.referenceInfo.keys():
+                if refOutputNid in MARTE2_COMPONENT.referenceInfo.keys():
                     MARTE2_COMPONENT.referenceInfo[refOutputNid].append(inputNode.getNid())
                 else:
                     MARTE2_COMPONENT.referenceInfo[refOutputNid] = [inputNode.getNid()]
@@ -924,7 +928,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 try:
                     refTrigger = triggerNode.getData()
                     if isinstance(refTrigger, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refTrigger):
-                        if refTrigger in self.referenceInfo.keys():
+#                        if refTrigger in self.referenceInfo.keys():
+                        if refTrigger in MARTE2_COMPONENT.referenceInfo.keys():
                             MARTE2_COMPONENT.referenceInfo[refTrigger].append(inputNode.getNid())
                         else:
                             MARTE2_COMPONENT.referenceInfo[refTrigger] = [inputNode.getNid()]
@@ -933,17 +938,16 @@ class MARTE2_COMPONENT(MDSplus.Device):
             except:
                 pass  #It is an Output device
 
-
-
-
     # Check if the passed output value node is referenced by any of the inputs passed in inputs
     def isReferenced(self, outValNode, inputNodes):
         outValNid = outValNode.getNid()
-        if not outValNid in self.referenceInfo.keys():
+#        if not outValNid in self.referenceInfo.keys():
+        if not outValNid in MARTE2_COMPONENT.referenceInfo.keys():
             return False
         for inputNode in inputNodes:
             inputNid = inputNode.getNid()
-            if inputNid in self.referenceInfo[outValNid]:
+#            if inputNid in self.referenceInfo[outValNid]:
+            if inputNid in MARTE2_COMPONENT.referenceInfo[outValNid]:
                 return True
 
  
@@ -1128,6 +1132,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             mode = marteDevice.getNode('MODE').data()
             if mode == MARTE2_COMPONENT.MODE_INPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
                 continue
+
             inputNodes = marteDevice.getNode('INPUTS').getChildren()
             if self.isReferenced(outValNode, inputNodes):
                 currThreadName =  threadMap['DeviceInfo'][marteNid]['ThreadName']
@@ -1220,7 +1225,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currDataSource= self.getMarteDeviceName(self)+'_Output_DDB'
             outValNode = sigNode.getNode('VALUE')
             if self.isReferencedBySynchronizedThreadSameSupervisor(outValNode, threadMap):
- 
                 syncThreadSignals.append({
                     'Name': currSig['Name'],
                     'Type': currSig['Type'],
@@ -1381,7 +1385,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfPostTriggers'] = postTrigSamples
             parameters['NumberOfBuffers'] = postTrigSamples + 10 * len(signalsToBeStored)
         else:
-            parameters['NumberOfBuffers'] = 10 * len(signalsToBeStored)
+            parameters['NumberOfBuffers'] = 10000 * len(signalsToBeStored)
 ####Parameters for new MDSWriter
         try:
             numSamples = signalsToBeStored[0].getNode('SAMPLES')
@@ -1476,10 +1480,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 sigDef['MinMaxResampleFactor'] = str(resampleFactor)
                 sigDef['DecimatedNodeName'] = sigNode.getNode('RES_VALUE').getFullPath()
             if blocksInSegment > 1:
-                print('SEGMENT LEN: '+str(segmentLen))
-                print('BLOCKS IN SEGMENT: '+str(blocksInSegment))
-                print('SAMPLES: '+str(numSamples))
-                
                 sigDef['MakeBlockAfterNWrites'] = str(segmentLen//blocksInSegment)
             if convertToJpg:
                 sigDef['ConvertToJPG'] = 1
