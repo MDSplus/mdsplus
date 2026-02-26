@@ -30,6 +30,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
     MAX_STATES = 10
     MAX_THREADS = 10
+    MAX_GAM_TIMES_PER_THREAD = 8
+
 
     for stateIdx in range(MAX_STATES):
         parts.append({'path': '.STATE_'+str(stateIdx+1), 'type': 'structure'})
@@ -537,6 +539,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         'Name': 'Time',
                         'Type': timerType,
                         'DataSource': refThreadName+'_TimerSync',
+                        'NumberOfElements': 1, 
+                        'NumberOfDimensions':0,
                         'Samples': syncDiv
                     }] ,
                     'Outputs': [{
@@ -685,6 +689,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             retDataSources.append({
                 'Name': threadName+'_TimerSync',
                 'Class': 'RealTimeThreadSynchronisation',
+                'Parameters': {'Timeout': 1000000000}
             })
             retGams.append({
                 'Name': threadName+'TimerSync_IOGAM',
@@ -697,6 +702,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'Outputs': [{
                     'Name': 'Time',
                     'Type': timerType,
+                    'NumberOfElements': 1, 
+                    'NumberOfDimensions':0,
                     'DataSource': threadName+'_TimerSync'
                 }]
             })
@@ -857,12 +864,16 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'DataSource': 'Timings',
             'Type': 'uint32'
         })
+        sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:
+                break
             gamInputs.append({
                 'Name': timeSignal,
                 'DataSource': 'Timings',
                 'Type': 'uint32'
             })
+            sigIdx += 1
         retGam['Inputs'] = gamInputs
         gamOutputs = []
         gamOutputs.append({
@@ -870,12 +881,16 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
             'Type': 'uint32'
         })
+        sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:
+                break
             gamOutputs.append({
                 'Name': timeSignal,
                 'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
                 'Type': 'uint32'
             })
+            sigIdx += 1
         retGam['Outputs'] = gamOutputs
 
         retDataSource = {}
@@ -904,6 +919,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         })
         sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:  #This is the number of supported GAMs for time recording
+                break
             retSignals.append({
                 'Name': timeSignal,
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_gam' % (stateIdx+1, threadIdx+1)+str(sigIdx)).getFullPath(),
@@ -1019,7 +1036,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     if np.isscalar(paramDict[paramKey]):
                         currValue = str(paramDict[paramKey])
                     else:
-                        currValue = np.array2string(paramDict[paramKey], threshold = np.inf)
+                        currValue = np.array2string(paramDict[paramKey])
+ #                       currValue = np.array2string(paramDict[paramKey], threshold = np.inf)
                     currValue = currValue.replace('[', '{')
                     currValue = currValue.replace(']', '}')
                     paramConf += self.skipTabs(tabCount)+paramKey+' = ('+self.getParamType(paramDict[paramKey])+')'+currValue+'\n'
@@ -1482,9 +1500,9 @@ $<APP_NAME> = {
 
     def startMarteIdle(self):
         self.buildConfiguration()
-#        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
-#            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
+        f = open("/tmp/MARTe2Output.log", "w", buffering = 1)
+ #       subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
+        subprocess.Popen(['stdbuf', '-oL', self.buildStartScript(startsSoon = False)],  stdout=f)
 
     def startMarteIdleFromConfig(self):
         try:
