@@ -1500,6 +1500,7 @@ $<APP_NAME> = {
 
     def startMarteIdle(self):
         self.buildConfiguration()
+        self.stopMarte()
         f = open("/tmp/MARTe2Output.log", "w", buffering = 1)
  #       subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
         subprocess.Popen(['stdbuf', '-oL', self.buildStartScript(startsSoon = False)],  stdout=f)
