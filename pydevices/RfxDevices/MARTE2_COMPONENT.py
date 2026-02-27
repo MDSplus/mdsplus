@@ -97,7 +97,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                       'type': 'numeric', 'value': 100})
 
         parts.append({'path': '.OUTPUTS:TIME_MODE',
-                      'type': 'text', 'value': 'Forced'})
+                      'type': 'text', 'value': 'Derived'})
         #Time associated to first sample is no trigger defined time corresponing to the trigger otherwise
         #It can be an array in case mutiple pulses are acquired
         parts.append({'path': '.OUTPUTS:TRIGGER_TIME', 'type': 'numeric'})
@@ -112,7 +112,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         # Discontinuity Factor for MdsWriter thread
         parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
         # Resampling Factor for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric', 'value': 1000})
+        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric'})
         # JPG Flag 
         parts.append({'path': '.OUTPUTS:JPG_CONV','type': 'numeric'})
 
@@ -1406,7 +1406,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         try:
             timebaseDescr = self.getNode('OUTPUTS:TIME_MODE').data().upper()
         except:
-            timebaseDescr = 'FORCED'
+            timebaseDescr = 'DERIVED'
 
         if timebaseDescr == 'FORCED':
             parameters['TimingSource'] = 'Internal'

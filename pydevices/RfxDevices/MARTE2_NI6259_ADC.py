@@ -268,6 +268,7 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
         cls.parts.append({'path': 'SERIAL_NUM', 'type': 'numeric'})
 
     def prepareMarteInfo(self):
+        self.getNode('OUTPUTS:TIME_MODE').putData('Forced')
 ######## Enabled channels, segment len and samples
 # set samples equal to SEG_LEN / SEG_BLOCKS and the same value of samples and segment lengthin all output nodes except time
         try:
