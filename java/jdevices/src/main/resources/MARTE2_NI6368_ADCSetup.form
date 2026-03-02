@@ -80,7 +80,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Resample Factor: "/>
-                <Property name="offsetNid" type="int" value="59"/>
+                <Property name="offsetNid" type="int" value="61"/>
               </Properties>
             </Component>
           </SubComponents>
