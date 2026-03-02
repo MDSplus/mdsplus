@@ -37,6 +37,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField9 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
         deviceChoice34 = new DeviceChoice();
         deviceField7 = new DeviceField();
@@ -144,6 +145,12 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
         deviceField5.setNumCols(20);
         deviceField5.setOffsetNid(350);
         jPanel4.add(deviceField5);
+
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Write CPU mask: ");
+        deviceField9.setNumCols(4);
+        deviceField9.setOffsetNid(59);
+        jPanel4.add(deviceField9);
 
         jPanel2.add(jPanel4);
 
@@ -528,6 +535,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
