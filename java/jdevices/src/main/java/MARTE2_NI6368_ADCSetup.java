@@ -122,7 +122,7 @@ public class MARTE2_NI6368_ADCSetup extends DeviceSetup {
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Resample Factor: ");
-        deviceField6.setOffsetNid(59);
+        deviceField6.setOffsetNid(61);
         jPanel3.add(deviceField6);
 
         jPanel2.add(jPanel3);
