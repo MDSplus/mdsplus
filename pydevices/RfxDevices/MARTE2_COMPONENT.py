@@ -1375,6 +1375,15 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['StoreOnTrigger'] = 1
         else:
             parameters['StoreOnTrigger'] = 0
+
+####Parameters for new MDSWriter
+##Take the last of the list because the first one is time that has always samples = 1
+        try:
+            numSamples = signalsToBeStored[len(signalsToBeStored)-1].getNode('SAMPLES')
+        except:
+            numSamples = 1
+
+
         if trigger != None:
             try:
                 postTrigSamples = self.getNode('OUTPUTS:POST_TRIGGER').data()
@@ -1385,12 +1394,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfPostTriggers'] = postTrigSamples
             parameters['NumberOfBuffers'] = postTrigSamples + 10 * len(signalsToBeStored)
         else:
-            parameters['NumberOfBuffers'] = 10000 * len(signalsToBeStored)
-####Parameters for new MDSWriter
-        try:
-            numSamples = signalsToBeStored[0].getNode('SAMPLES')
-        except:
-            numSamples = 1
+            numBuffers = 10000 // numSamples
+            if numBuffers < 10:
+                numBuffers = 10 
+            parameters['NumberOfBuffers'] = numBuffers
+       
 
         try:
             triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
@@ -1466,7 +1474,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Name'] = sigName
 #            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
             sigDef['Period'] = str(self.timerPeriod).replace('D', 'E')
-            sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
+            segmentLen = sigNode.getNode('SEG_LEN').data()
+            sigDef['MakeSegmentAfterNWrites'] = segmentLen
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
             sigDef['Samples'] = sigNode.getNode('SAMPLES').data()
