@@ -6156,6 +6156,9 @@ TUPLE   OPC$TUPLE           457
 LIST   OPC$LIST           458
 SQUEEZE   OPC$SQUEEZE           459
 FLATTEN   OPC$FLATTEN           460
+$SEEK_SET   OPC$$SEEK_SET           461
+$SEEK_CUR   OPC$$SEEK_CUR           462
+$SEEK_END   OPC$$SEEK_END           463
 *
 kind(_u=fopen('tditst.tmp','w'))
 51BU
