@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <tdishr.h>
+#include <mdsshr.h>
 
 #include <string.h>
 
@@ -49,7 +50,72 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[],
   default:
     return TdiNO_OPC;
   case OPC_RESHAPE:
-    return TdiNO_OPC;
+  {
+    uint32_t shape[MAX_DIMS] = { 0 };
+    mdsdsc_a_t dsc_shape = {
+      .length = sizeof(uint32_t),
+      .class = CLASS_A,
+      .dtype = DTYPE_LU,
+      .arsize = sizeof(shape),
+      .pointer = (char *)shape,
+    };
+
+    RETURN_IF_NOT_OK(TdiConvert((mdsdsc_a_t *)list[1], (mdsdsc_a_t *)&dsc_shape));
+
+    size_t dimct = 0;
+    size_t original_count = (arr->arsize / arr->length);
+    size_t new_count = 1;
+    for (size_t i = 0; i < MAX_DIMS; ++i) {
+      if (shape[i] == 0) {
+        break;
+      }
+
+      ++dimct;
+      new_count *= shape[i];
+    }
+
+    if (original_count != new_count) {
+      return TdiMISMATCH;
+    }
+
+    if (dimct <= arr->dimct) {
+      arr->dimct = dimct;
+      for (size_t i = 0; i < dimct; ++i) {
+        arr->m[i] = shape[i];
+      }
+    }
+    else {
+      // Need to resize the array descriptor to fit the new dims
+
+      array_coeff new_array = {
+        .length = arr->length,
+        .dtype = arr->dtype,
+        .class = arr->class,
+        .pointer = arr->pointer,
+        .scale = arr->scale,
+        .digits = arr->digits,
+        .aflags = arr->aflags,
+        .dimct = dimct,
+        .arsize = arr->arsize,
+      };
+
+      new_array.aflags.coeff = 1;
+      new_array.dimct = dimct;
+      new_array.a0 = new_array.pointer;
+      for (size_t i = 0; i < dimct; ++i) {
+        new_array.m[i] = shape[i];
+      }
+
+      mdsdsc_xd_t tmp_out_ptr = MDSDSC_XD_INITIALIZER;
+      MdsCopyDxXd((mdsdsc_t *)&new_array, &tmp_out_ptr);
+
+      // Use the new array, not the original one
+      MdsFree1Dx(out_ptr, NULL);
+      memcpy(out_ptr, &tmp_out_ptr, sizeof(mdsdsc_xd_t));
+    }
+
+    break;
+  }
   case OPC_FLATTEN:
   {
     if (arr->dimct > 1)
