@@ -1500,8 +1500,9 @@ $<APP_NAME> = {
 
     def startMarteIdle(self):
         self.buildConfiguration()
-        self.stopMarte()
-        f = open("/tmp/MARTe2Output.log", "w", buffering = 1)
+#        self.stopMarte()
+        name = self.getNode('NAME').data()
+        f = open('/tmp/MARTe2_'+name+'_Output.log', 'w', buffering = 1)
  #       subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
         subprocess.Popen(['stdbuf', '-oL', self.buildStartScript(startsSoon = False)],  stdout=f)
 
@@ -1603,7 +1604,8 @@ $<APP_NAME> = {
         # KILL MARTe process
         import subprocess
         import os
-
+        thisPattern = 'MARTeApp.ex -l RealTimeLoader -f /tmp/'+marteName+'_marte_configuration.cfg'
+#        command = 'kill -KILL `ps -a | grep \"'+thisPattern+'\" | grep -v grep | awk \'{print $1}\'`'
         command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
         print(command)
         os.system(command)

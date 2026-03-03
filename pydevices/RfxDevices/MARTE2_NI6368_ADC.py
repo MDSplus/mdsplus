@@ -226,7 +226,10 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                     currTrigs = []
                     currTrigSamples = []
                     for currPulse in range(len(begins)):
-                        currPulseSamples = (endings[currPulse] - begins[currPulse])/deltas[currPulse]
+                        if np.isscalar(deltas): #Delta may be scalar even if begin and ending are arrays
+                            currPulseSamples = (endings[currPulse] - begins[currPulse])/deltas
+                        else:
+                            currPulseSamples = (endings[currPulse] - begins[currPulse])/deltas[currPulse]
                         if currPulseSamples % segmentLen != 0:
                             raise Exception('The number of pulse samples must be a multiple of Segment len  in multi gated external clock in '+self.getPath())
                         currTrigs.append(begins[currPulse])
@@ -307,7 +310,8 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
         for i in range(16):
             dataExpr = '_c = data('+self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+');'
             dataExpr += '_s = data('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+');'
-            dataExpr += 'Build_With_Units(Build_signal((_c[0] + _c[1] * _s + _c[2] * _s * _s + _c[3] * _s * _s * _s),,dim_of(_s)), "Volts")'
+            dataExpr += '_d = dim_of('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+');'
+            dataExpr += 'Build_With_Units(Build_signal((_c[0] + _c[1] * _s + _c[2] * _s * _s + _c[3] * _s * _s * _s),,_d), "Volts")'
             print(dataExpr)
             self.getNode('CHANNELS.CHANNEL_%d:DATA' % (i+1)).putData(t.tdiCompile(dataExpr))            
 #            dataExpr = 'Build_With_Units(NIanalogInputScaled('+self.getNode('OUTPUTS.ADC%d_0:VALUE'%(i)).getFullPath()+','+ self.getNode('CHANNELS.CHANNEL_%d:CALIB_PARAM' % (i+1)).getFullPath()+'), "Volts")'
@@ -338,6 +342,9 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
                 'compress_on_put')},
             ])
         cls.parts.append({'path': 'SERIAL_NUM', 'type': 'numeric'})
+        cls.parts.append({'path': ':INIT_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','READY',50,None),Method(None,'init',head))",
+                  'options': ('no_write_shot',)})
 
     class XSERIES_DEV_INFO(Structure):
         _fields_ = [("product_id", c_uint),
@@ -372,8 +379,11 @@ class MARTE2_NI6368_ADC(MC.MARTE2_COMPONENT):
         try:
             fd = os.open(fileName, os.O_RDWR)
         except:
-            print('Callot open device')
+            print('Cannot open device')
             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        # Stop the segment TODO is this necessary since the reset is next
+        niLib.xseries_stop_ai(c_int(fd))
 
         status = niLib.xseries_reset_ai(c_int(fd))
         if status != 0:
