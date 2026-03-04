@@ -89,6 +89,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
     parts.append({'path': ':DESCRIPTION', 'type': 'text'})
     parts.append({'path': ':TIMER_CPU', 'type': 'numeric'})
+    parts.append({'path': ':ALIVE_PORT', 'type': 'numeric'})
 
     parts.append({'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
@@ -1151,6 +1152,11 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             self.timerCpu = self.getNode('TIMER_CPU').data()
         except:
             self.timerCpu = None
+        try:
+            self.alivePort = self.getNode('ALIVE_PORT').data()
+        except:
+            self.alivePort = None
+
         outConfig = '''
 <TYPE_LIST>
 +MDS_EVENTS = {
@@ -1158,6 +1164,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     StackSize = 1048576
     CPUs = 0x1
     Name = <APP_NAME>
+    $$ALIVE_PORT$$
 }
 <INTERFACE_LIST>    
 +StateMachine = {
@@ -1347,6 +1354,12 @@ $<APP_NAME> = {
             outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','')
         else:
             outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','CPUMask = '+str(self.timerCpu))
+
+        if self.alivePort == None:
+            outConfig = outConfig.replace('$$ALIVE_PORT$$','')
+        else:
+            outConfig = outConfig.replace('$$ALIVE_PORT$$','Port = '+str(self.alivePort))
+
         config = self.getMarte2ConfigInfo()  
         outConfig = outConfig.replace('<APP_NAME>', appName)
         outConfig = outConfig.replace('<TYPE_LIST>', self.expandTypes(config['TypesDict']))
