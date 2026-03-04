@@ -11,6 +11,7 @@ class CHECK_MARTE2(MDSplus.Device):
             {'path':'.MARTE2_%d'%(i+1),'type':'structure'},
             {'path':'.MARTE2_%d:IP'%(i+1),'type':'text'},
             {'path':'.MARTE2_%d:PORT'%(i+1),'type':'numeric'},
+            {'path':'.MARTE2_%d:DESCRIPTION'%(i+1),'type':'text'},
         ])
     parts.extend([
         {'path':':CHECK_ACTION','type':'action',
