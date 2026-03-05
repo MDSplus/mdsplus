@@ -24,6 +24,8 @@ static int g_cts_capacity = 0;
 static int g_crate_capacity = 0;
 static int g_cts_owned = FALSE;
 static int g_crate_owned = FALSE;
+static int g_warned_mmap_fallback = FALSE;
+static int g_warned_unknown_backend = FALSE;
 
 static int round_capacity(int count, int incr)
 {
@@ -321,13 +323,29 @@ int camac_db_backend_enabled(void)
 
   if ((strcasecmp(v, "mmap") == 0) || (strcasecmp(v, "legacy") == 0) ||
       (strcasecmp(v, "file") == 0))
+  {
+    if (!g_warned_mmap_fallback)
+    {
+      fprintf(stderr,
+              "camshr: CAMSHR_DB_BACKEND=%s enables legacy mmap backend "
+              "(sqlite is default)\n",
+              v);
+      g_warned_mmap_fallback = TRUE;
+    }
     return FALSE;
+  }
 
   if ((strcasecmp(v, "sqlite") == 0) || (strcasecmp(v, "sql") == 0) ||
       (strcasecmp(v, "auto") == 0))
     return TRUE;
 
-  // Unknown values default to sqlite for forward compatibility.
+  if (!g_warned_unknown_backend)
+  {
+    fprintf(stderr,
+            "camshr: unknown CAMSHR_DB_BACKEND=%s, defaulting to sqlite\n", v);
+    g_warned_unknown_backend = TRUE;
+  }
+
   return TRUE;
 }
 
