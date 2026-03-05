@@ -200,6 +200,7 @@ distributions['CAMSHR SQLite'] = localTest('CAMSHR SQLite', 'linux-amd64', {
                 set -eu
                 ctest -N --test-dir workspace/build > workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_crate_state_fakehw_test" workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_backend_policy_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_schema_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_migration_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_backend_roundtrip_test" workspace/camshr-sqlite-tests.txt

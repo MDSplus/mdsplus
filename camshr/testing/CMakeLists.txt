@@ -30,6 +30,7 @@ find_library(CAMSHR_SQLITE3_LIBRARY sqlite3)
 
 if(CAMSHR_SQLITE3_INCLUDE_DIR AND CAMSHR_SQLITE3_LIBRARY AND TARGET cts_commands)
     set(_sqlite_test_source_list
+        camshr_backend_policy_test.c
         camshr_sqlite_schema_test.c
         camshr_sqlite_migration_test.c
         camshr_sqlite_backend_roundtrip_test.c
