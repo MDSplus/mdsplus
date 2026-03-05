@@ -199,14 +199,15 @@ distributions['CAMSHR SQLite'] = localTest('CAMSHR SQLite', 'linux-amd64', {
             sh '''
                 set -eu
                 ctest -N --test-dir workspace/build > workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_crate_state_fakehw_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_schema_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_migration_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_sqlite_backend_roundtrip_test" workspace/camshr-sqlite-tests.txt
                 grep -q "camshr/testing/camshr_autoconfig_sqlite_fakeproc_test" workspace/camshr-sqlite-tests.txt
             '''
             sh """
-                deploy/build.py --workspace=workspace --no-configure --no-build --test --output-junit --junit-suite-name='camshr-sqlite' \
-                    -R 'camshr/testing/(camshr_sqlite_schema_test|camshr_sqlite_migration_test|camshr_sqlite_backend_roundtrip_test|camshr_autoconfig_sqlite_fakeproc_test)'
+                CAMSHR_DB_BACKEND=sqlite deploy/build.py --workspace=workspace --no-configure --no-build --test \
+                    --output-junit --junit-suite-name='camshr-sqlite'
             """
         }
         finally {
