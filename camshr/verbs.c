@@ -519,19 +519,14 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
   char colorENH[9], colorON[9];
   int enhanced, i, online, moduleFound, numOfCrates, numOfModules;
   int crateStatus;
+  int scsi_up;
   int status;
   struct Crate_ Cr8, *pCr8;
   char *wild = 0;
   struct descriptor wild_d = {0, DTYPE_T, CLASS_S, 0};
   struct descriptor crate_d = {0, DTYPE_T, CLASS_S, 0};
 
-  if (ScsiSystemStatus() == 0)
-  {
-    status = SUCCESS; // this is the function's status
-    *output = malloc(100);
-    sprintf(*output, "scsi system is %sdown!%s\n", RED, NORMAL);
-    goto ShowCrate_Exit;
-  }
+  scsi_up = ScsiSystemStatus();
 
   // user input
   cli_get_value(ctx, "MODULE", &wild);
@@ -562,6 +557,12 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
     }
   }
   *output = strdup(" CRATE   ONL LAM PRV ENH\n=======  === === === ===\n");
+  if (!scsi_up)
+  {
+    *output = realloc(*output, strlen(*output) + 120);
+    sprintf(*output + strlen(*output),
+            "scsi system is %sdown%s, showing cached db status\n", RED, NORMAL);
+  }
 
   pCr8 = &Cr8; // point to some actual storage
 
@@ -582,10 +583,12 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
           moduleFound = TRUE;
           if (moduleFound)
           {
-            crateStatus = 0;
-            status = get_crate_status(pCr8->name, &crateStatus);
-            if (status == SUCCESS)
+            if (scsi_up)
             {
+              crateStatus = 0;
+              status = get_crate_status(pCr8->name, &crateStatus);
+              if (status == SUCCESS)
+              {
               //                                                        online =
               //                                                        !(crateStatus
               //                                                        &
@@ -625,14 +628,25 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
               enhanced = (online && (crateStatus & 0x4000))
                              ? TRUE
                              : FALSE; // [2002.12.09]
-              sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
-              *output =
-                  realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
-              sprintf(*output + strlen(*output),
-                      "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
-                      (online) ? '*' : 'X', NORMAL, colorENH,
-                      (enhanced) ? '*' : '-', NORMAL);
+              }
+              else
+              {
+                online = pCr8->online;
+                enhanced = pCr8->enhanced;
+              }
             }
+            else
+            {
+              online = pCr8->online;
+              enhanced = pCr8->enhanced;
+            }
+            sprintf(colorON, "%s", (online) ? GREEN : RED);
+            sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
+            *output = realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
+            sprintf(*output + strlen(*output),
+                    "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
+                    (online) ? '*' : 'X', NORMAL, colorENH,
+                    (enhanced) ? '*' : '-', NORMAL);
           } // end of if(moduleFound) ...
           else
           {

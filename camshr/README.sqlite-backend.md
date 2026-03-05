@@ -27,3 +27,7 @@ Testing guidance:
 Native full-test note:
 - In full native `ctest` runs, `tditest/testing/test-dev-py` may be skipped if
   `libMitDevices` is not present in `MDSPLUS_LIBRARY_PATH`.
+
+Hardware-less CTS note:
+- `show/crate` now lists crates from the database even when live SCSI is down,
+  and displays cached DB status in that case.
