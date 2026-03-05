@@ -54,7 +54,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 #include "prototypes.h"
 
-#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+#if defined(__APPLE__) ||                                                     \
+    (defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED))
 // union semun is defined by including <sys/sem.h>
 #else
 // according to X/OPEN we have to define it ourselves

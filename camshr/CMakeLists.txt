@@ -12,6 +12,9 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
         CamShr
         add_entry.c
         bisearch.c
+        camac_db_backend.c
+        camac_db_sqlite.c
+        camac_hw_iface.c
         cam_functions.c
         check_for_file.c
         check_sema4.c
@@ -59,6 +62,20 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
         PUBLIC
             MdsIpShr
     )
+
+    find_package(SQLite3)
+    if(SQLite3_FOUND)
+        target_compile_definitions(
+            CamShr
+            PRIVATE
+                CAMSHR_HAVE_SQLITE3=1
+        )
+        target_link_libraries(
+            CamShr
+            PRIVATE
+                SQLite::SQLite3
+        )
+    endif()
 
     set_target_properties(
         CamShr

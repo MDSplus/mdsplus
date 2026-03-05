@@ -193,6 +193,28 @@ distributions['MATLAB'] = localTest('MATLAB', 'linux-amd64', {
     }
 })
 
+distributions['CAMSHR SQLite'] = localTest('CAMSHR SQLite', 'linux-amd64', {
+    stage("Test") {
+        try {
+            sh '''
+                set -eu
+                ctest -N --test-dir workspace/build > workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_sqlite_schema_test" workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_sqlite_migration_test" workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_sqlite_backend_roundtrip_test" workspace/camshr-sqlite-tests.txt
+                grep -q "camshr/testing/camshr_autoconfig_sqlite_fakeproc_test" workspace/camshr-sqlite-tests.txt
+            '''
+            sh """
+                deploy/build.py --workspace=workspace --no-configure --no-build --test --output-junit --junit-suite-name='camshr-sqlite' \
+                    -R 'camshr/testing/(camshr_sqlite_schema_test|camshr_sqlite_migration_test|camshr_sqlite_backend_roundtrip_test|camshr_autoconfig_sqlite_fakeproc_test)'
+            """
+        }
+        finally {
+            junit skipPublishingChecks: true, testResults: "workspace/mdsplus-junit.xml", keepLongStdio: true
+        }
+    }
+})
+
 def AdminList = [
     'dgarnier',
     'GabrieleManduchi',

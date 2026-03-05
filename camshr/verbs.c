@@ -77,6 +77,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "cts_p.h"
 #include "prototypes.h"
 
@@ -256,10 +257,9 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
                       char **output __attribute__((unused)))
 {
   char highway_name[CRATE_NAME_SIZE + 1], *pHighwayName;
-  char line[CRATE_ENTRY];
   int i, numOfEntries;
   int status = SUCCESS; // optimistic
-  FILE *fp;
+  FILE *fp = 0;
 
   int j;
 
@@ -279,23 +279,16 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
     status = FILE_ERROR;
     goto AutoConfig_Exit; // we're done  :<
   }
-  // open file for read-only
-  if ((fp = Fopen(CRATE_DB_FILE, "r")) == NULL)
-  {
-    *error = strdup("Error: crate.db does not exist\n");
-
-    status = FILE_ERROR;
-    goto AutoConfig_Exit;
-  }
-
   pHighwayName = highway_name; // point to real memory ...
 
-  // loop thru list
-  for (i = 0; i < numOfEntries; ++i)
+  if (camac_db_backend_enabled())
   {
-    if (fscanf(fp, "%s", line) == 1)
-    {                                      // get a crate.db entry
-      sprintf(pHighwayName, "%.6s", line); // trim it
+    struct Crate_ Cr8;
+    // loop thru list
+    for (i = 0; i < numOfEntries; ++i)
+    {
+      parse_crate_db(CRATEdb + i, &Cr8);
+      sprintf(pHighwayName, "%.6s", Cr8.name); // trim it
 
       // NB! this is a work-around -- seems necessary for the moment
       for (j = 0; j < 2; j++)
@@ -311,9 +304,45 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
       }
     }
   }
-  // end of for()...
+  else
+  {
+    char line[CRATE_ENTRY];
+    // open file for read-only
+    if ((fp = Fopen(CRATE_DB_FILE, "r")) == NULL)
+    {
+      *error = strdup("Error: crate.db does not exist\n");
+
+      status = FILE_ERROR;
+      goto AutoConfig_Exit;
+    }
+
+    // loop thru list
+    for (i = 0; i < numOfEntries; ++i)
+    {
+      if (fscanf(fp, "%s", line) == 1)
+      {                                      // get a crate.db entry
+        sprintf(pHighwayName, "%.6s", line); // trim it
+
+        // NB! this is a work-around -- seems necessary for the moment
+        for (j = 0; j < 2; j++)
+        {
+          if (map_scsi_device(pHighwayName) != SUCCESS)
+          { // map it if possible
+            *error = malloc(strlen(pHighwayName) + 100);
+            sprintf(*error, "Error: problem mapping scsi device '%s'\n",
+                    pHighwayName);
+            status = FILE_ERROR;
+            goto AutoConfig_Exit;
+          }
+        }
+      }
+    }
+    // end of for()...
+  }
 
 AutoConfig_Exit:
+  if (fp)
+    fclose(fp);
   status = SUCCESS;
 
   return status;

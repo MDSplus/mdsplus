@@ -53,6 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <scsi/scsi.h>
 #include <scsi/sg.h>
 
+#include "camac_hw_iface.h"
 #include "common.h"
 #include "prototypes.h"
 
@@ -87,7 +88,7 @@ int QueryHighwayType(char *serial_hwy_driver)
   int status = SUCCESS; // optimistic
   static int channels[MAX_SCSI_BUSES]
                      [MAX_SCSI_IDS]; // persistant, highway types
-  FILE *fp, *fopen();
+  FILE *fp;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("QHT('%s')\n", serial_hwy_driver);
@@ -95,10 +96,11 @@ int QueryHighwayType(char *serial_hwy_driver)
   host_adapter = toupper(*(serial_hwy_driver + 2)) - 'A';
   scsi_id = NUMERIC(*(serial_hwy_driver + 3));
 
-  if ((fp = fopen(PROC_FILE, "r")) == NULL)
+  if ((fp = camac_hw_open_proc_scsi()) == NULL)
   {
     if (MSGLVL(ALWAYS))
-      fprintf(stderr, "could *NOT* open '%s' for reading\n", PROC_FILE);
+      fprintf(stderr, "could *NOT* open '%s' for reading\n",
+              camac_hw_get_proc_file());
 
     status = FAILURE;
     goto QueryHighwayType_Exit;

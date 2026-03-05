@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -74,6 +75,9 @@ int expand_db(int dbType, int numOfEntries)
   strcpy(tmpfile, get_file_name("mdscts_temp_file_XXXXXX"));
   if (MSGLVL(FUNCTION_NAME))
     printf("expand_db()\n");
+
+  if (camac_db_backend_enabled())
+    return camac_db_backend_expand(dbType, numOfEntries);
 
   // assimilate db specific information ...
   switch (dbType)

@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "crate.h"
 #include "module.h"
 #include "prototypes.h"
@@ -74,6 +75,9 @@ int commit_entry(int dbType)
 
   if (MSGLVL(FUNCTION_NAME))
     printf("commit_entry()\n");
+
+  if (camac_db_backend_enabled())
+    return camac_db_backend_commit(dbType);
 
   switch (dbType)
   {

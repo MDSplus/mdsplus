@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -70,6 +71,11 @@ int check_for_file(char *FileName)
 
   if (MSGLVL(FUNCTION_NAME))
     printf("check_for_file('%s')\n", FileName);
+
+  if (camac_db_backend_enabled() &&
+      ((strcmp(FileName, CTS_DB_FILE) == 0) ||
+       (strcmp(FileName, CRATE_DB_FILE) == 0)))
+    return SUCCESS;
 
   if ((fd = Open(FileName, O_RDONLY)) < 0)
   {                      // file does not exist, yet

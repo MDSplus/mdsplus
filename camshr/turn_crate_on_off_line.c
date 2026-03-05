@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <status.h>
 
+#include "camac_hw_iface.h"
 #include "common.h"
 #include "crate.h"
 #include "prototypes.h"
@@ -99,21 +100,21 @@ int turn_crate_on_off_line(char *crate_name, int state)
   if (CRATEdb[idx].HwyType != ('0' + JORWAY_73A))
   {
     SCCdata = 1;                  // initiates Dataway Z
-    status = CamPiow(pController, // serial crate controller name
-                     0,           // A    --\__ write status register
-                     17,          // F    --/
-                     &SCCdata,    // data value
-                     16,          // mem == 16-bit data
-                     &iosb        // *iosb
+    status = camac_hw_cam_piow(pController, // serial crate controller name
+                               0,           // A    --\__ write status register
+                               17,          // F    --/
+                               &SCCdata,    // data value
+                               16,          // mem == 16-bit data
+                               &iosb        // *iosb
     );
 
     SCCdata = (state == ON) ? 0 : 0x1000; // clear status register
-    status = CamPiow(pController,         // serial crate controller name
-                     0,                   // A    --\__ write status register
-                     17,                  // F    --/
-                     &SCCdata,            // data value
-                     16,                  // mem == 16-bit data
-                     &iosb                // *iosb
+    status = camac_hw_cam_piow(pController, // serial crate controller name
+                               0,           // A    --\__ write status register
+                               17,          // F    --/
+                               &SCCdata,    // data value
+                               16,          // mem == 16-bit data
+                               &iosb        // *iosb
     );
     if (STATUS_OK)
     {
@@ -132,6 +133,9 @@ int turn_crate_on_off_line(char *crate_name, int state)
     CRATEdb[idx].enhanced = '0';
     status = 1;
   }
+
+  if (STATUS_OK)
+    commit_entry(CRATE_DB);
 
   //-----------------------------------------------------------
 TurnCrateOnOffLine_Exit:
