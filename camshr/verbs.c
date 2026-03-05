@@ -119,6 +119,7 @@ EXPORT int Assign(void *ctx, char **error,
                   char *output __attribute__((unused)))
 {
   char line[MODULE_ENTRY + 1];
+  char crate_name[CRATE_NAME_SIZE + 1];
   int dbFileSize, fd, nullMask, numOfEntries;
   size_t i;
   int status = SUCCESS; // assume the best
@@ -132,6 +133,7 @@ EXPORT int Assign(void *ctx, char **error,
   cli_get_value(ctx, "LOG_NAME", &log_name);
   str_upcase(log_name);
   cli_get_value(ctx, "COMMENT", &comment);
+  sprintf(crate_name, "%.6s", phy_name);
 
   // check to see if db file exists
   if (check_for_file(CTS_DB_FILE) != SUCCESS)
@@ -156,6 +158,24 @@ EXPORT int Assign(void *ctx, char **error,
       status = FAILURE; // MAP_ERROR;           [2001.07.12]
       goto Assign_Exit;
     }
+  }
+  if (CRATEdbFileIsMapped == FALSE)
+  { // is not, so try
+    if (map_data_file(CRATE_DB) != SUCCESS)
+    {
+      *error = strdup("Error: problem mapping crate db file\n");
+      status = FAILURE;
+      goto Assign_Exit;
+    }
+  }
+  if (lookup_entry(CRATE_DB, crate_name) < 0)
+  {
+    *error = malloc(strlen(crate_name) + 120);
+    sprintf(*error,
+            "Error: crate '%s' not defined in crate db; use ADDCRATE first\n",
+            crate_name);
+    status = FAILURE;
+    goto Assign_Exit;
   }
   // get current db file count
   if ((numOfEntries = get_file_count(CTS_DB)) < 0)
