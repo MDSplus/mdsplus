@@ -537,7 +537,7 @@ SetCrate_Exit:
 EXPORT int ShowCrate(void *ctx, char **error, char **output)
 {
   char colorENH[9], colorON[9];
-  int enhanced, i, online, moduleFound, numOfCrates, numOfModules;
+  int enhanced, i, online, numOfCrates;
   int crateStatus;
   int scsi_up;
   int status;
@@ -565,17 +565,6 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
       goto ShowCrate_Exit;
     }
   }
-  // check to see if module db file memory mapped
-  if (CTSdbFileIsMapped == FALSE)
-  { // is not, so try
-    if (map_data_file(CTS_DB) != SUCCESS)
-    { // we're dead in the water
-      *error = strdup("Error: error memory mapping cts.db file\n");
-
-      status = FAILURE; // MAP_ERROR;           [2001.07.12]
-      goto ShowCrate_Exit;
-    }
-  }
   *output = strdup(" CRATE   ONL LAM PRV ENH\n=======  === === === ===\n");
   if (!scsi_up)
   {
@@ -587,97 +576,80 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
   pCr8 = &Cr8; // point to some actual storage
 
   // get number of crates in db file
-  if ((numOfCrates = get_file_count(CRATE_DB)) >
-      0)
+  if ((numOfCrates = get_file_count(CRATE_DB)) > 0)
   { // possibly something to show
-    if ((numOfModules = get_file_count(CTS_DB)) >
-        0)
-    { // maybe some crates controllers ..
-      for (i = 0; i < numOfCrates; i++)
+    for (i = 0; i < numOfCrates; i++)
+    {
+      parse_crate_db(CRATEdb + i, pCr8);
+      crate_d.length = strlen(pCr8->name);
+      crate_d.pointer = pCr8->name;
+      if (StrMatchWild(&crate_d, &wild_d) & 1)
       {
-        parse_crate_db(CRATEdb + i, pCr8);
-        crate_d.length = strlen(pCr8->name);
-        crate_d.pointer = pCr8->name;
-        if (StrMatchWild(&crate_d, &wild_d) & 1)
+        if (scsi_up)
         {
-          moduleFound = TRUE;
-          if (moduleFound)
+          crateStatus = 0;
+          status = get_crate_status(pCr8->name, &crateStatus);
+          if (status == SUCCESS)
           {
-            if (scsi_up)
-            {
-              crateStatus = 0;
-              status = get_crate_status(pCr8->name, &crateStatus);
-              if (status == SUCCESS)
-              {
-              //                                                        online =
-              //                                                        !(crateStatus
-              //                                                        &
-              //                                                        0x3c00)
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              //                                                        online =
-              //                                                        !(crateStatus
-              //                                                        &
-              //                                                        0x1000)
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              online = ((crateStatus & 0x1000) != 0x1000)
+            //                                                        online =
+            //                                                        !(crateStatus
+            //                                                        &
+            //                                                        0x3c00)
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            //                                                        online =
+            //                                                        !(crateStatus
+            //                                                        &
+            //                                                        0x1000)
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            online = ((crateStatus & 0x1000) != 0x1000)
+                         ? TRUE
+                         : FALSE; // [2002.12.09]
+            if (!crateStatus ||
+                crateStatus ==
+                    0x3)      // [2001.09.10]                 // [2002.12.09]
+              online = FALSE; // [2002.12.09]
+
+            //                                                        enhanced
+            //                                                        =
+            //                                                        (online
+            //                                                        &&
+            //                                                        (crateStatus
+            //                                                        &
+            //                                                        0x4030))
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            enhanced = (online && (crateStatus & 0x4000))
                            ? TRUE
                            : FALSE; // [2002.12.09]
-              if (!crateStatus ||
-                  crateStatus ==
-                      0x3)      // [2001.09.10]                 // [2002.12.09]
-                online = FALSE; // [2002.12.09]
-              sprintf(colorON, "%s", (online) ? GREEN : RED);
-
-              //                                                        enhanced
-              //                                                        =
-              //                                                        (online
-              //                                                        &&
-              //                                                        (crateStatus
-              //                                                        &
-              //                                                        0x4030))
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              enhanced = (online && (crateStatus & 0x4000))
-                             ? TRUE
-                             : FALSE; // [2002.12.09]
-              }
-              else
-              {
-                online = pCr8->online;
-                enhanced = pCr8->enhanced;
-              }
-            }
-            else
-            {
-              online = pCr8->online;
-              enhanced = pCr8->enhanced;
-            }
-            sprintf(colorON, "%s", (online) ? GREEN : RED);
-            sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
-            *output = realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
-            sprintf(*output + strlen(*output),
-                    "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
-                    (online) ? '*' : 'X', NORMAL, colorENH,
-                    (enhanced) ? '*' : '-', NORMAL);
-          } // end of if(moduleFound) ...
+          }
           else
           {
-            *output =
-                realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
-            sprintf(*output + strlen(*output), "%.6s:   .   .   .   .\n",
-                    pCr8->name);
+            online = pCr8->online;
+            enhanced = pCr8->enhanced;
           }
-        } // end of if(wildcard) ...
-      }   // end of for(crates) ...
-    }     // crates, but no modules (ie no controllers)
+        }
+        else
+        {
+          online = pCr8->online;
+          enhanced = pCr8->enhanced;
+        }
+        sprintf(colorON, "%s", (online) ? GREEN : RED);
+        sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
+        *output = realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
+        sprintf(*output + strlen(*output),
+                "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
+                (online) ? '*' : 'X', NORMAL, colorENH,
+                (enhanced) ? '*' : '-', NORMAL);
+      } // end of if(wildcard) ...
+    }   // end of for(crates) ...
   }
   *output = realloc(*output, strlen(*output) + 100);
   sprintf(*output + strlen(*output), "=======  === === === ===\n"); // header
