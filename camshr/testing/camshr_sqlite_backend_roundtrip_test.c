@@ -30,7 +30,6 @@ int main()
 
   TEST1(mkdtemp(tmpdir) != 0);
   TEST1(setenv(DB_DIR, tmpdir, 1) == 0);
-  TEST1(setenv("CAMSHR_DB_BACKEND", "sqlite", 1) == 0);
 
   CTSdbFileIsMapped = FALSE;
   TEST1(map_data_file(CTS_DB) == SUCCESS);
@@ -61,7 +60,6 @@ int main()
   TEST1(remove_entry(CTS_DB, 0) == SUCCESS);
   TEST1(get_file_count(CTS_DB) == 0);
 
-  unsetenv("CAMSHR_DB_BACKEND");
   unsetenv(DB_DIR);
   make_path(sqlite_path, sizeof(sqlite_path), tmpdir, "camac.db");
   unlink(sqlite_path);

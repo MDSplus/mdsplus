@@ -316,9 +316,19 @@ static int commit_crate(void)
 int camac_db_backend_enabled(void)
 {
   const char *v = getenv("CAMSHR_DB_BACKEND");
-  if (!v)
+  if (!v || *v == '\0')
+    return TRUE; // sqlite is the default backend
+
+  if ((strcasecmp(v, "mmap") == 0) || (strcasecmp(v, "legacy") == 0) ||
+      (strcasecmp(v, "file") == 0))
     return FALSE;
-  return strcasecmp(v, "sqlite") == 0;
+
+  if ((strcasecmp(v, "sqlite") == 0) || (strcasecmp(v, "sql") == 0) ||
+      (strcasecmp(v, "auto") == 0))
+    return TRUE;
+
+  // Unknown values default to sqlite for forward compatibility.
+  return TRUE;
 }
 
 int camac_db_backend_map(int dbType)

@@ -66,6 +66,7 @@ int main()
   fclose(fp);
 
   TEST1(setenv(DB_DIR, tmpdir, 1) == 0);
+  TEST1(setenv("CAMSHR_DB_BACKEND", "mmap", 1) == 0);
 
   CRATEdbFileIsMapped = FALSE;
   camac_hw_reset();
@@ -88,6 +89,7 @@ int main()
   TEST1(g_fake_piow_calls >= 6);
 
   camac_hw_reset();
+  unsetenv("CAMSHR_DB_BACKEND");
   unsetenv(DB_DIR);
   unlink(crate_path);
   rmdir(tmpdir);
