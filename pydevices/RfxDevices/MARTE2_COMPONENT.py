@@ -1429,7 +1429,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['TimebaseMode'] = 'Precise'
         #Others not supported falls to default
 
-        parameters['QueueLenghtLoggingNode'] = self.getNode('OUTPUTS:QUEUE_LEN').getFullPath()
+        parameters['BufferOccupancyNodeName'] = self.getNode('OUTPUTS:QUEUE_LEN').getFullPath()
 
         try:
             resampleFactor = self.getNode('OUTPUTS:RES_FACTOR').data()
