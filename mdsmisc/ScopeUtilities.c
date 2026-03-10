@@ -906,6 +906,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   int64_t estimatedSamples =
       estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin,
                          &xmax, &smin, &smax, &isLong);
+
   const double estimatedDuration = smax - smin;
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax < INFINITY) ? inXMax : NULL;
@@ -914,8 +915,9 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   {
     delta = estimatedSamples / reqNSamples;
     if (xmin > -INFINITY && xmax < INFINITY && smax > smin)
+    {
       delta *= (xmax - xmin) / (smax - smin);
-
+    }
     // Now delta represents the number of samples to be compressed in a min-max
     // mair
     if (delta > estimatedSegmentSamples / 10.)
@@ -926,8 +928,6 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     delta *= (estimatedDuration / estimatedSamples);
     if (isLong)
       delta /= 1e9; // quick compensation of xtreeshr conversion
-
-    //printf("DELTA: %e\n", delta);
 
     deltaP = (delta > 1e-9) ? &deltaD : NULL;
   }
