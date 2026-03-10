@@ -110,7 +110,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
         # CPU Mask for MdsWriter thread
         parts.append({'path': '.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value': 15})
         # Discontinuity Factor for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        #parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        # Queue Length Node length Node
+        parts.append({'path': '.OUTPUTS:QUEUE_LEN','type': 'signal'})
         # Resampling Factor for MdsWriter thread
         parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric'})
         # JPG Flag 
@@ -1427,12 +1429,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['TimebaseMode'] = 'Precise'
         #Others not supported falls to default
 
+        parameters['QueueLenghtLoggingNode'] = self.getNode('OUTPUTS:QUEUE_LEN').getFullPath()
 
-
-        try:
-            discontinuityFactor = int(self.getNode('OUTPUTS:DISC_FACTOR').data())
-        except:
-            discontinuityFactor = 100
         try:
             resampleFactor = self.getNode('OUTPUTS:RES_FACTOR').data()
         except:
@@ -1463,7 +1461,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Period': str(self.timerPeriod).replace('D', 'E'),
 
             'MakeSegmentAfterNWrites': segmentLen,
-            'DiscontinuityFactor': discontinuityFactor,
+#            'DiscontinuityFactor': discontinuityFactor,
             'TimeSignalMultiplier': 1E-6
             })
         for sigNode in signalsToBeStored:
@@ -1481,7 +1479,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Samples'] = sigNode.getNode('SAMPLES').data()
 
 
-            sigDef['DiscontinuityFactor'] = discontinuityFactor
+#            sigDef['DiscontinuityFactor'] = discontinuityFactor
             sigDef['TimeSignalMultiplier'] = 1E-6
 
 ###Additional parameters for new MDSWriter
