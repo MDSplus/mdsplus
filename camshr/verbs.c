@@ -120,6 +120,8 @@ EXPORT int Assign(void *ctx, char **error,
 {
   char line[MODULE_ENTRY + 1];
   char crate_name[CRATE_NAME_SIZE + 1];
+  char phy_adapter_ch;
+  int phy_adapter, phy_id, phy_crate, phy_slot;
   int dbFileSize, fd, nullMask, numOfEntries;
   size_t i;
   int status = SUCCESS; // assume the best
@@ -134,6 +136,15 @@ EXPORT int Assign(void *ctx, char **error,
   str_upcase(log_name);
   cli_get_value(ctx, "COMMENT", &comment);
   sprintf(crate_name, "%.6s", phy_name);
+  if (sscanf(phy_name, "GK%c%1d%2d:N%d", &phy_adapter_ch, &phy_id, &phy_crate,
+             &phy_slot) != 4)
+  {
+    *error = malloc(strlen(phy_name) + 100);
+    sprintf(*error, "Error: invalid physical name '%s'\n", phy_name);
+    status = FAILURE;
+    goto Assign_Exit;
+  }
+  phy_adapter = phy_adapter_ch - 'A';
 
   // check to see if db file exists
   if (check_for_file(CTS_DB_FILE) != SUCCESS)
@@ -196,6 +207,22 @@ EXPORT int Assign(void *ctx, char **error,
 
       status = FAILURE; // DUPLICATE;           [2001.07.12]
       goto Assign_Exit;
+    }
+
+    for (i = 0; i < (size_t)numOfEntries; ++i)
+    {
+      struct Module_ mod;
+      parse_cts_db(CTSdb + i, &mod);
+      if (mod.adapter == phy_adapter && mod.id == phy_id &&
+          mod.crate == phy_crate && mod.slot == phy_slot)
+      {
+        *error = malloc(strlen(phy_name) + strlen(mod.name) + 120);
+        sprintf(*error,
+                "Error: physical module '%s' already assigned to '%s'\n",
+                phy_name, mod.name);
+        status = FAILURE;
+        goto Assign_Exit;
+      }
     }
   }
   // get db file size
