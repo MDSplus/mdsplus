@@ -39,6 +39,11 @@ struct MODULE
 };
 #define MODULE_ENTRY sizeof(struct MODULE)
 
+// A buffer is used when writing records to the *.db files.
+// It must be big enough to hold a module record (which is bigger
+// than a crate record).  Add a few extra bytes for safety.
+#define BUFFER_SIZE MODULE_ENTRY + 10
+
 // internal structure
 typedef struct Module_
 {

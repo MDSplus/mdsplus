@@ -109,32 +109,29 @@ int copy(int dbType, char *inFile, char *outFile, int count)
   default:
     return 0;
   }
+    
+  char line[BUFFER_SIZE];
 
-  // local block
+  // read 'n write ...
+  for (i = 0; i < count; ++i)
   {
-    char line[entrySize];
-
-    // read 'n write ...
-    for (i = 0; i < count; ++i)
+    // read ...
+    if (read(Read_fd, line, entrySize) != entrySize)
     {
-      // read ...
-      if (read(Read_fd, line, entrySize) != entrySize)
-      {
-        if (MSGLVL(ALWAYS))
-          perror("read()");
+      if (MSGLVL(ALWAYS))
+        perror("read()");
 
-        status = COPY_ERROR;
-        goto Copy_Exit_3;
-      }
-      // ... then write
-      if (write(Write_fd, line, entrySize) != entrySize)
-      {
-        if (MSGLVL(ALWAYS))
-          perror("write()");
+      status = COPY_ERROR;
+      goto Copy_Exit_3;
+    }
+    // ... then write
+    if (write(Write_fd, line, entrySize) != entrySize)
+    {
+      if (MSGLVL(ALWAYS))
+        perror("write()");
 
-        status = COPY_ERROR;
-        goto Copy_Exit_3;
-      }
+      status = COPY_ERROR;
+      goto Copy_Exit_3;
     }
   }
 

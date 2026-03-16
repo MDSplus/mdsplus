@@ -105,23 +105,20 @@ int create_tmp_file(int dbType, int count, char *filename)
   // make 'blank-entry' format specifier
   sprintf(fmt, "%%-%ds\n", entrySize - 1);
 
-  // a local block
+  char line[BUFFER_SIZE];
+
+  // 'blank' entry
+  sprintf(line, fmt, " ");
+
+  for (i = 0; i < count; ++i)
   {
-    char line[entrySize];
-
-    // 'blank' entry
-    sprintf(line, fmt, " ");
-
-    for (i = 0; i < count; ++i)
+    if (write(fd, line, entrySize) != entrySize)
     {
-      if (write(fd, line, entrySize) != entrySize)
-      {
-        if (MSGLVL(ALWAYS))
-          perror("write()");
+      if (MSGLVL(ALWAYS))
+        perror("write()");
 
-        status = EXPAND_ERROR;
-        goto CreateTmpFile_Exit;
-      }
+      status = EXPAND_ERROR;
+      goto CreateTmpFile_Exit;
     }
   }
 
