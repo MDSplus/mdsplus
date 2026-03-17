@@ -128,19 +128,16 @@ int remove_entry(int dbType, int index)
   // set up 'blank-entry' format string
   sprintf(fmt, "%%-%ds\n", entrySize - 1);
 
-  // local block
-  {
-    char line[entrySize + 1];
+  char line[BUFFER_SIZE];
 
-    // remove entry -- move appropriate entries one earlier in list
-    for (i = index; i < numOfEntries; ++i)
-      memcpy((char *)dbptr + (i * entrySize),
-             (char *)dbptr + ((i + 1) * entrySize), entrySize);
+  // remove entry -- move appropriate entries one earlier in list
+  for (i = index; i < numOfEntries; ++i)
+    memcpy((char *)dbptr + (i * entrySize),
+            (char *)dbptr + ((i + 1) * entrySize), entrySize);
 
-    // 'blank' out last, old entry
-    sprintf(line, fmt, " ");
-    memcpy((char *)dbptr + ((i + 1) * entrySize), line, entrySize);
-  }
+  // 'blank' out last, old entry
+  sprintf(line, fmt, " ");
+  memcpy((char *)dbptr + ((i + 1) * entrySize), line, entrySize);
 
   // commit change to file
   if (commit_entry(dbType) != SUCCESS)
