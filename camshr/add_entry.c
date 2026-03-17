@@ -114,14 +114,9 @@ int add_entry(int dbType, char *newEntry)
     goto AddEntry_Exit;
   }
 
-  // shift current entries by one
-  if (numOfEntries) // ... only if any entries exist
-    for (i = numOfEntries - 1; i >= 0; --i)
-      memcpy((char *)dbptr + ((i + 1) * entrySize),
-             (char *)dbptr + (i * entrySize), entrySize);
-
-  // put new entry at head of list
-  memcpy((char *)dbptr, newEntry, entrySize);
+  // put new entry at end of list
+  // Indices are zero based, numOfEntries is one based so appends to the list.
+  memcpy((char *)(dbptr + numOfEntries * entrySize), newEntry, entrySize);
 
   // insertion sort
   if (numOfEntries > 0) // only insert if more than one entry exists already

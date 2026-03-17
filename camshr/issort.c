@@ -59,6 +59,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // The entry to be inserted is in the first location, subsequent entries
 // are sorted. Only 1 pass through the list is needed, so algorithm is
 // fairly fast.
+//
+// This routine sorts an unordered set of N items.  Conceptually, it 
+// does the following:
+//    sort(list_1_to_N) = sort(list_1_to_N-1), insert(list, item_N)
+// However, instead of recursion it uses a forward loop.
+// If the list is already sorted, the most efficient way to insert a new
+// item is to append it to the end of the list before calling this routine.
 //-------------------------------------------------------------------------
 // input:       see parameter list
 // output:      always 0
@@ -79,6 +86,7 @@ int issort(void *data, int size, int esize,
     return -1;
 
   //  Repeatedly insert a key element among the sorted elements.
+  //  The indices are zero based, size is one based hence the "<".
   for (j = 1; j < size; ++j)
   {
     memcpy(key, &a[j * esize], esize);
