@@ -74,6 +74,7 @@ int get_file_count(int dbType)
 {
   void *dbptr; // generic pointer to struct's
   char dbFileName[16];
+  char firstChar;
   int dbFileSize, entrySize, i, numOfEntries;
   int *FileIsMapped;
   extern struct MODULE *CTSdb;
@@ -128,7 +129,9 @@ int get_file_count(int dbType)
 
     //              sprintf(&ch, "%.1s", (char *)(dbptr+i));
 
-    if (*(char *)(dbptr + i) == ' ') // we're done, so out'a here
+    // Existing *.db files might be padded with null characters because of a previous bug.
+    firstChar = *(char *)(dbptr + i);
+    if ((firstChar == ' ') || (firstChar == '\0')) // we're done, so out'a here
       break;
 
     ++numOfEntries;

@@ -131,13 +131,14 @@ int remove_entry(int dbType, int index)
   char line[BUFFER_SIZE];
 
   // remove entry -- move appropriate entries one earlier in list
-  for (i = index; i < numOfEntries; ++i)
+  // The index is zero based, but numOfEntries is one based hence the -1.
+  for (i = index; i < (numOfEntries - 1); ++i)
     memcpy((char *)dbptr + (i * entrySize),
             (char *)dbptr + ((i + 1) * entrySize), entrySize);
 
   // 'blank' out last, old entry
   sprintf(line, fmt, " ");
-  memcpy((char *)dbptr + ((i + 1) * entrySize), line, entrySize);
+  memcpy((char *)dbptr + (i * entrySize), line, entrySize);
 
   // commit change to file
   if (commit_entry(dbType) != SUCCESS)
