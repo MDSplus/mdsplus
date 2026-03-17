@@ -351,8 +351,7 @@ EXPORT int Deassign(void *ctx, char **error,
     }
   }
   // get number of current entries
-  if ((numOfEntries = get_file_count(CTS_DB)) ==
-      0)
+  if ((numOfEntries = get_file_count(CTS_DB)) == 0)
   { // no entries in cts db file
     *error = strdup("Error: db file empty, no entries to remove\n");
 
@@ -537,14 +536,13 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
   pCr8 = &Cr8; // point to some actual storage
 
   // get number of crates in db file
-  if ((numOfCrates = get_file_count(CRATE_DB)) >
-      0)
+  if ((numOfCrates = get_file_count(CRATE_DB)) > 0)
   { // possibly something to show
-    if ((numOfModules = get_file_count(CTS_DB)) >
-        0)
+    if ((numOfModules = get_file_count(CTS_DB)) > 0)
     { // maybe some crates controllers ..
       for (i = 0; i < numOfCrates; i++)
       {
+        // The +i increments by CRATE structs, not by bytes.
         parse_crate_db(CRATEdb + i, pCr8);
         crate_d.length = strlen(pCr8->name);
         crate_d.pointer = pCr8->name;
@@ -840,8 +838,7 @@ EXPORT int DelCrate(void *ctx, char **error,
     }
   }
   // get number of current entries
-  if ((numOfEntries = get_file_count(CRATE_DB)) ==
-      0)
+  if ((numOfEntries = get_file_count(CRATE_DB)) == 0)
   { // no entries in crate db file
     *error = strdup("Error: db file empty, no entries to remove\n");
     status = FAILURE; // DELCRATE_ERROR;              [2001.07.12]

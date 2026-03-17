@@ -85,8 +85,7 @@ int compare_str(const void *key1, const void *key2)
            CLR, (char *)key1, CLR, CLR, (char *)key2, CLR);
 
   length = (strlen(key1) >= strlen(key2)) ? strlen(key1) : strlen(key2);
-  if ((retval = strncmp_nocase((const char *)key1, (const char *)key2,
-                               length)) > 0)
+  if ((retval = strncmp_nocase((const char *)key1, (const char *)key2, length)) > 0)
   {
     if (MSGLVL(8))
       printf("comp(): key1 > key2\n");

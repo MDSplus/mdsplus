@@ -99,8 +99,7 @@ int remove_entry(int dbType, int index)
     goto RemoveEntry_Exit;
   }
   // get number of current entries
-  if ((numOfEntries = get_file_count(dbType)) ==
-      0)
+  if ((numOfEntries = get_file_count(dbType)) == 0)
   { // no entries in cts db file
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "db file empty, no entries to remove\n");

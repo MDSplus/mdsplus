@@ -1372,8 +1372,7 @@ EXPORT int CamSetMAXBUF(char *Name, int new)
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,
               Key.crate);
-      if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) <
-          0)
+      if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
       {
         return -1;
       }
@@ -1404,8 +1403,7 @@ EXPORT int CamGetMAXBUF(char *Name)
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,
               Key.crate);
-      if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) <
-          0)
+      if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
       {
         return -1;
       }

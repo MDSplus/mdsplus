@@ -79,8 +79,7 @@ int get_scsi_device_number(char *highway_name, int *enhanced, int *online)
   // lookup name
   sprintf(highway, "%.4s", highway_name); // trim to highway name, only
 
-  if ((i = lookup_entry(CRATE_DB, highway_name)) <
-      0)
+  if ((i = lookup_entry(CRATE_DB, highway_name)) < 0)
   { // lookup actual device num
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "no such highway in 'crate.db'\n");
@@ -89,6 +88,7 @@ int get_scsi_device_number(char *highway_name, int *enhanced, int *online)
     goto GetScsiDeviceNumber_Exit;
   }
 
+  // The +i increments by CRATE structs, not by bytes.
   parse_crate_db(CRATEdb + i, &crate); // get data from db
   device_num = crate.device;           // extract dev num from db
   *enhanced = crate.enhanced;
