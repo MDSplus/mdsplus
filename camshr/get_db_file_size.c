@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -71,6 +72,13 @@ int get_db_file_size(char *FileName)
 
   if (MSGLVL(FUNCTION_NAME))
     printf("get_db_file_size('%s')\n", FileName);
+
+  if (camac_db_backend_enabled())
+  {
+    retval = camac_db_backend_get_size_bytes(FileName);
+    if (retval >= 0)
+      return retval;
+  }
 
   if (Stat(FileName, &sbuf) == ERROR)
   {

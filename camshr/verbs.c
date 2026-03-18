@@ -77,6 +77,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "cts_p.h"
 #include "prototypes.h"
 
@@ -118,6 +119,9 @@ EXPORT int Assign(void *ctx, char **error,
                   char *output __attribute__((unused)))
 {
   char line[MODULE_ENTRY + 1];
+  char crate_name[CRATE_NAME_SIZE + 1];
+  char phy_adapter_ch;
+  int phy_adapter, phy_id, phy_crate, phy_slot;
   int dbFileSize, fd, nullMask, numOfEntries;
   size_t i;
   int status = SUCCESS; // assume the best
@@ -131,6 +135,16 @@ EXPORT int Assign(void *ctx, char **error,
   cli_get_value(ctx, "LOG_NAME", &log_name);
   str_upcase(log_name);
   cli_get_value(ctx, "COMMENT", &comment);
+  sprintf(crate_name, "%.6s", phy_name);
+  if (sscanf(phy_name, "GK%c%1d%2d:N%d", &phy_adapter_ch, &phy_id, &phy_crate,
+             &phy_slot) != 4)
+  {
+    *error = malloc(strlen(phy_name) + 100);
+    sprintf(*error, "Error: invalid physical name '%s'\n", phy_name);
+    status = FAILURE;
+    goto Assign_Exit;
+  }
+  phy_adapter = phy_adapter_ch - 'A';
 
   // check to see if db file exists
   if (check_for_file(CTS_DB_FILE) != SUCCESS)
@@ -156,6 +170,24 @@ EXPORT int Assign(void *ctx, char **error,
       goto Assign_Exit;
     }
   }
+  if (CRATEdbFileIsMapped == FALSE)
+  { // is not, so try
+    if (map_data_file(CRATE_DB) != SUCCESS)
+    {
+      *error = strdup("Error: problem mapping crate db file\n");
+      status = FAILURE;
+      goto Assign_Exit;
+    }
+  }
+  if (lookup_entry(CRATE_DB, crate_name) < 0)
+  {
+    *error = malloc(strlen(crate_name) + 120);
+    sprintf(*error,
+            "Error: crate '%s' not defined in crate db; use ADDCRATE first\n",
+            crate_name);
+    status = FAILURE;
+    goto Assign_Exit;
+  }
   // get current db file count
   if ((numOfEntries = get_file_count(CTS_DB)) < 0)
   {
@@ -175,6 +207,22 @@ EXPORT int Assign(void *ctx, char **error,
 
       status = FAILURE; // DUPLICATE;           [2001.07.12]
       goto Assign_Exit;
+    }
+
+    for (i = 0; i < (size_t)numOfEntries; ++i)
+    {
+      struct Module_ mod;
+      parse_cts_db(CTSdb + i, &mod);
+      if (mod.adapter == phy_adapter && mod.id == phy_id &&
+          mod.crate == phy_crate && mod.slot == phy_slot)
+      {
+        *error = malloc(strlen(phy_name) + strlen(mod.name) + 120);
+        sprintf(*error,
+                "Error: physical module '%s' already assigned to '%s'\n",
+                phy_name, mod.name);
+        status = FAILURE;
+        goto Assign_Exit;
+      }
     }
   }
   // get db file size
@@ -256,10 +304,9 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
                       char **output __attribute__((unused)))
 {
   char highway_name[CRATE_NAME_SIZE + 1], *pHighwayName;
-  char line[CRATE_ENTRY];
   int i, numOfEntries;
   int status = SUCCESS; // optimistic
-  FILE *fp;
+  FILE *fp = 0;
 
   int j;
 
@@ -279,23 +326,16 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
     status = FILE_ERROR;
     goto AutoConfig_Exit; // we're done  :<
   }
-  // open file for read-only
-  if ((fp = Fopen(CRATE_DB_FILE, "r")) == NULL)
-  {
-    *error = strdup("Error: crate.db does not exist\n");
-
-    status = FILE_ERROR;
-    goto AutoConfig_Exit;
-  }
-
   pHighwayName = highway_name; // point to real memory ...
 
-  // loop thru list
-  for (i = 0; i < numOfEntries; ++i)
+  if (camac_db_backend_enabled())
   {
-    if (fscanf(fp, "%s", line) == 1)
-    {                                      // get a crate.db entry
-      sprintf(pHighwayName, "%.6s", line); // trim it
+    struct Crate_ Cr8;
+    // loop thru list
+    for (i = 0; i < numOfEntries; ++i)
+    {
+      parse_crate_db(CRATEdb + i, &Cr8);
+      sprintf(pHighwayName, "%.6s", Cr8.name); // trim it
 
       // NB! this is a work-around -- seems necessary for the moment
       for (j = 0; j < 2; j++)
@@ -311,9 +351,45 @@ EXPORT int Autoconfig(void *ctx __attribute__((unused)), char **error,
       }
     }
   }
-  // end of for()...
+  else
+  {
+    char line[CRATE_ENTRY];
+    // open file for read-only
+    if ((fp = Fopen(CRATE_DB_FILE, "r")) == NULL)
+    {
+      *error = strdup("Error: crate.db does not exist\n");
+
+      status = FILE_ERROR;
+      goto AutoConfig_Exit;
+    }
+
+    // loop thru list
+    for (i = 0; i < numOfEntries; ++i)
+    {
+      if (fscanf(fp, "%s", line) == 1)
+      {                                      // get a crate.db entry
+        sprintf(pHighwayName, "%.6s", line); // trim it
+
+        // NB! this is a work-around -- seems necessary for the moment
+        for (j = 0; j < 2; j++)
+        {
+          if (map_scsi_device(pHighwayName) != SUCCESS)
+          { // map it if possible
+            *error = malloc(strlen(pHighwayName) + 100);
+            sprintf(*error, "Error: problem mapping scsi device '%s'\n",
+                    pHighwayName);
+            status = FILE_ERROR;
+            goto AutoConfig_Exit;
+          }
+        }
+      }
+    }
+    // end of for()...
+  }
 
 AutoConfig_Exit:
+  if (fp)
+    fclose(fp);
   status = SUCCESS;
 
   return status;
@@ -488,21 +564,16 @@ SetCrate_Exit:
 EXPORT int ShowCrate(void *ctx, char **error, char **output)
 {
   char colorENH[9], colorON[9];
-  int enhanced, i, online, moduleFound, numOfCrates, numOfModules;
+  int enhanced, i, online, numOfCrates;
   int crateStatus;
+  int scsi_up;
   int status;
   struct Crate_ Cr8, *pCr8;
   char *wild = 0;
   struct descriptor wild_d = {0, DTYPE_T, CLASS_S, 0};
   struct descriptor crate_d = {0, DTYPE_T, CLASS_S, 0};
 
-  if (ScsiSystemStatus() == 0)
-  {
-    status = SUCCESS; // this is the function's status
-    *output = malloc(100);
-    sprintf(*output, "scsi system is %sdown!%s\n", RED, NORMAL);
-    goto ShowCrate_Exit;
-  }
+  scsi_up = ScsiSystemStatus();
 
   // user input
   cli_get_value(ctx, "MODULE", &wild);
@@ -521,100 +592,91 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
       goto ShowCrate_Exit;
     }
   }
-  // check to see if module db file memory mapped
-  if (CTSdbFileIsMapped == FALSE)
-  { // is not, so try
-    if (map_data_file(CTS_DB) != SUCCESS)
-    { // we're dead in the water
-      *error = strdup("Error: error memory mapping cts.db file\n");
-
-      status = FAILURE; // MAP_ERROR;           [2001.07.12]
-      goto ShowCrate_Exit;
-    }
-  }
   *output = strdup(" CRATE   ONL LAM PRV ENH\n=======  === === === ===\n");
+  if (!scsi_up)
+  {
+    *output = realloc(*output, strlen(*output) + 120);
+    sprintf(*output + strlen(*output),
+            "scsi system is %sdown%s, showing cached db status\n", RED, NORMAL);
+  }
 
   pCr8 = &Cr8; // point to some actual storage
 
   // get number of crates in db file
-  if ((numOfCrates = get_file_count(CRATE_DB)) >
-      0)
+  if ((numOfCrates = get_file_count(CRATE_DB)) > 0)
   { // possibly something to show
-    if ((numOfModules = get_file_count(CTS_DB)) >
-        0)
-    { // maybe some crates controllers ..
-      for (i = 0; i < numOfCrates; i++)
+    for (i = 0; i < numOfCrates; i++)
+    {
+      parse_crate_db(CRATEdb + i, pCr8);
+      crate_d.length = strlen(pCr8->name);
+      crate_d.pointer = pCr8->name;
+      if (StrMatchWild(&crate_d, &wild_d) & 1)
       {
-        parse_crate_db(CRATEdb + i, pCr8);
-        crate_d.length = strlen(pCr8->name);
-        crate_d.pointer = pCr8->name;
-        if (StrMatchWild(&crate_d, &wild_d) & 1)
+        if (scsi_up)
         {
-          moduleFound = TRUE;
-          if (moduleFound)
+          crateStatus = 0;
+          status = get_crate_status(pCr8->name, &crateStatus);
+          if (status == SUCCESS)
           {
-            crateStatus = 0;
-            status = get_crate_status(pCr8->name, &crateStatus);
-            if (status == SUCCESS)
-            {
-              //                                                        online =
-              //                                                        !(crateStatus
-              //                                                        &
-              //                                                        0x3c00)
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              //                                                        online =
-              //                                                        !(crateStatus
-              //                                                        &
-              //                                                        0x1000)
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              online = ((crateStatus & 0x1000) != 0x1000)
+            //                                                        online =
+            //                                                        !(crateStatus
+            //                                                        &
+            //                                                        0x3c00)
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            //                                                        online =
+            //                                                        !(crateStatus
+            //                                                        &
+            //                                                        0x1000)
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            online = ((crateStatus & 0x1000) != 0x1000)
+                         ? TRUE
+                         : FALSE; // [2002.12.09]
+            if (!crateStatus ||
+                crateStatus ==
+                    0x3)      // [2001.09.10]                 // [2002.12.09]
+              online = FALSE; // [2002.12.09]
+
+            //                                                        enhanced
+            //                                                        =
+            //                                                        (online
+            //                                                        &&
+            //                                                        (crateStatus
+            //                                                        &
+            //                                                        0x4030))
+            //                                                        ? TRUE
+            //                                                        : FALSE;
+            //                                                        //
+            //                                                        [2002.12.09]
+            enhanced = (online && (crateStatus & 0x4000))
                            ? TRUE
                            : FALSE; // [2002.12.09]
-              if (!crateStatus ||
-                  crateStatus ==
-                      0x3)      // [2001.09.10]                 // [2002.12.09]
-                online = FALSE; // [2002.12.09]
-              sprintf(colorON, "%s", (online) ? GREEN : RED);
-
-              //                                                        enhanced
-              //                                                        =
-              //                                                        (online
-              //                                                        &&
-              //                                                        (crateStatus
-              //                                                        &
-              //                                                        0x4030))
-              //                                                        ? TRUE
-              //                                                        : FALSE;
-              //                                                        //
-              //                                                        [2002.12.09]
-              enhanced = (online && (crateStatus & 0x4000))
-                             ? TRUE
-                             : FALSE; // [2002.12.09]
-              sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
-              *output =
-                  realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
-              sprintf(*output + strlen(*output),
-                      "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
-                      (online) ? '*' : 'X', NORMAL, colorENH,
-                      (enhanced) ? '*' : '-', NORMAL);
-            }
-          } // end of if(moduleFound) ...
+          }
           else
           {
-            *output =
-                realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
-            sprintf(*output + strlen(*output), "%.6s:   .   .   .   .\n",
-                    pCr8->name);
+            online = pCr8->online;
+            enhanced = pCr8->enhanced;
           }
-        } // end of if(wildcard) ...
-      }   // end of for(crates) ...
-    }     // crates, but no modules (ie no controllers)
+        }
+        else
+        {
+          online = pCr8->online;
+          enhanced = pCr8->enhanced;
+        }
+        sprintf(colorON, "%s", (online) ? GREEN : RED);
+        sprintf(colorENH, "%s", (enhanced) ? GREEN : RED);
+        *output = realloc(*output, strlen(*output) + strlen(pCr8->name) + 100);
+        sprintf(*output + strlen(*output),
+                "%s:   %s%c%s   .   .   %s%c%s\n", pCr8->name, colorON,
+                (online) ? '*' : 'X', NORMAL, colorENH,
+                (enhanced) ? '*' : '-', NORMAL);
+      } // end of if(wildcard) ...
+    }   // end of for(crates) ...
   }
   *output = realloc(*output, strlen(*output) + 100);
   sprintf(*output + strlen(*output), "=======  === === === ===\n"); // header

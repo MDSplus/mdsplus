@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <status.h>
+#include "camac_hw_iface.h"
 #include "common.h"
 #include "crate.h"
 #include "prototypes.h"
@@ -68,12 +69,12 @@ int get_crate_status(char *crate_name, int *ptr_crate_status)
   // get crate status
   SCCdata = 0;
 
-  status = CamPiow(controller, // serial crate controller name
-                   0,          // A    --\__ read status register
-                   1,          // F    --/
-                   &SCCdata,   // returned status
-                   16,         // mem == 16-bit data
-                   &iosb       // *iosb
+  status = camac_hw_cam_piow(controller, // serial crate controller name
+                             0,          // A    --\__ read status register
+                             1,          // F    --/
+                             &SCCdata,   // returned status
+                             16,         // mem == 16-bit data
+                             &iosb       // *iosb
   );
 
   *ptr_crate_status = (short)((STATUS_OK) ? SCCdata : 0) & 0x0ffff;

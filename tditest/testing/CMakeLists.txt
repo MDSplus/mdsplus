@@ -32,4 +32,14 @@ foreach(_test_script IN LISTS _test_script_list)
         NO_WINE
     )
 
+    if(_target STREQUAL "test-dev-py")
+        # do_tditests.sh exits 77 when MitDevices is not available in the runtime
+        # library path; mark that outcome as skipped, not failed.
+        set_tests_properties(
+            "tditest/testing/${_target}"
+            PROPERTIES
+                SKIP_RETURN_CODE 77
+        )
+    endif()
+
 endforeach()

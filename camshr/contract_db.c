@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -74,6 +75,9 @@ int contract_db(int dbType, int numOfEntries)
 
   if (MSGLVL(FUNCTION_NAME))
     printf("contract_db()\n");
+
+  if (camac_db_backend_enabled())
+    return camac_db_backend_contract(dbType, numOfEntries);
 
   // assimilate db specific information ...
   switch (dbType)

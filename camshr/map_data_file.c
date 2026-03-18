@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/types.h>
 
 #include "common.h"
+#include "camac_db_backend.h"
 #include "crate.h"
 #include "module.h"
 #include "prototypes.h"
@@ -96,6 +97,13 @@ int map_data_file(int dbType)
 
   if (MSGLVL(FUNCTION_NAME))
     printf("map_data_file('%s')\n", FileName);
+
+  if (camac_db_backend_enabled())
+  {
+    status = camac_db_backend_map(dbType);
+    *FileIsMapped = (status == SUCCESS) ? TRUE : FALSE;
+    goto MapData_Exit;
+  }
 
   // check to see if db file exists
   if (check_for_file(FileName) != SUCCESS)

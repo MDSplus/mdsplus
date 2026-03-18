@@ -1,0 +1,4 @@
+Attached devices:
+Host: scsi0 Channel: 00 Id: 1 Lun: 00
+  Vendor: KINSYSCO Model: 2145 Rev: 12
+  Type:   Processor                        ANSI SCSI revision: 02

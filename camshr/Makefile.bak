@@ -13,6 +13,9 @@ SHLIB_BUILD = $(top_srcdir)/lib64/$(SHLIB)
 SOURCES	= \
 		add_entry.c              \
 		bisearch.c               \
+		camac_db_backend.c       \
+		camac_db_sqlite.c        \
+		camac_hw_iface.c         \
 		cam_functions.c           \
 		check_for_file.c         \
 		check_sema4.c            \
@@ -94,4 +97,3 @@ $(SHLIB_BUILD) $(IMPLIB): $(OBJECTS)
 	$(LINK.c) -shared  -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L$(top_srcdir)/lib64/ -lMdsShr $(MAKE_IMPLIB)
 	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
 	ln -sf $(SHLIB).$(MAJOR) $@
-

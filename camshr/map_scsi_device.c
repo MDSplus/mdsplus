@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+#include "camac_hw_iface.h"
 #include "common.h"
 #include "prototypes.h"
 
@@ -74,17 +75,17 @@ int map_scsi_device(char *highway_name)
   int adapter, i, numOfEntries, scsi_id, sg_number;
   int status = SUCCESS; // optimistic
   int found = FALSE;
-  FILE *fp, *fopen();
+  FILE *fp;
   extern struct CRATE *CRATEdb; // pointer to in-memory copy of data file
 
   if (MSGLVL(FUNCTION_NAME))
     printf("map_scsi_device('%s')\n", highway_name);
 
   // open '/proc' filesystem scsi info
-  if ((fp = fopen(PROC_FILE, "r")) == NULL)
+  if ((fp = camac_hw_open_proc_scsi()) == NULL)
   {
     if (MSGLVL(ALWAYS))
-      fprintf(stderr, "failure to open '%s'\n", PROC_FILE);
+      fprintf(stderr, "failure to open '%s'\n", camac_hw_get_proc_file());
 
     status = FILE_ERROR; // serious error !!! no scsi devices to check
     goto MapScsiDevice_Exit;

@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 
+#include "camac_hw_iface.h"
 #include "common.h"
 #include "prototypes.h"
 
@@ -56,14 +57,14 @@ int ScsiSystemStatus(void)
 {
   char line[80], *pline;
   int scsiSystemStatus = 0; // assume the worst :(
-  FILE *fp, *fopen();
+  FILE *fp;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("ScsiSystemStatus()\n");
 
-  if ((fp = fopen(PROC_FILE, "r")) == NULL)
+  if ((fp = camac_hw_open_proc_scsi()) == NULL)
   {
-    fprintf(stderr, "can't open '%s' for read\n", PROC_FILE);
+    fprintf(stderr, "can't open '%s' for read\n", camac_hw_get_proc_file());
     scsiSystemStatus = 0;
     goto ScsiSystemStatus_Exit;
   }
