@@ -35,10 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr.h>
 #include <treeshr.h>
 #include <xtreeshr.h>
+#include <float.h>
 
-#ifndef INFINITY
-#define INFINITY 1.0 / 0.0
+#ifdef INFINITY
+#undef INFINITY
 #endif
+#define INFINITY DBL_MAX
 
 #ifdef WORD_BIGENDIAN
 #define SWAP32(out, in) memcpy((char *)(out), (char *)(in), 4)
@@ -90,12 +92,14 @@ static double to_doublex(const void *const ptr, const dtype_t dtype,
     return defval;
   }
 }
-
-static int recIsSegmented(const mdsdsc_t *const dsc)
+#define MAX_RECURSION_LEVEL 1000
+static int recIsSegmented(const mdsdsc_t *const dsc, int recLevel)
 {
   /* returns nid of the first segmented node found
    * or 0 if none found
    */
+  if(recLevel > MAX_RECURSION_LEVEL)
+    return 0;
   if (!dsc)
     return 0;
   int nid, numSegments, status, i;
@@ -126,7 +130,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc)
         status = TreeGetRecord(nid, &xd);
         if (STATUS_OK && xd.l_length > 0)
         {
-          nid = recIsSegmented(xd.pointer);
+          nid = recIsSegmented(xd.pointer, recLevel+1);
           MdsFree1Dx(&xd, 0);
           return nid;
         }
@@ -151,7 +155,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc)
           status = TreeGetRecord(nid, &xd);
           if (STATUS_OK && xd.l_length > 0)
           {
-            nid = recIsSegmented(xd.pointer);
+            nid = recIsSegmented(xd.pointer, recLevel+1);
             MdsFree1Dx(&xd, 0);
             return nid;
           }
@@ -164,7 +168,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc)
     break;
   case CLASS_XD:
     if (dsc->pointer)
-      return recIsSegmented((mdsdsc_t *)dsc->pointer);
+      return recIsSegmented((mdsdsc_t *)dsc->pointer, recLevel+1);
     break;
   case CLASS_R:
   {
@@ -174,7 +178,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc)
              // may be different from that of the segmented node
     for (i = 0; i < rDsc->ndesc; i++)
     {
-      if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
+      if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i], recLevel+1)))
         return nid;
     }
     break;
@@ -210,7 +214,7 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
   int dims[64];
   int nextRow, segmentSamples, numActSegments, segmentIdx;
   EMPTYXD(xd);
-  int nid = recIsSegmented(dsc);
+  int nid = recIsSegmented(dsc, 0);
   if (!nid)
     goto return_neg1;
   int status = TreeGetNumSegments(nid, &numSegments);
@@ -459,8 +463,10 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
 }
 
 static int recGetXxxx(const mdsdsc_t *const dsc_in, mdsdsc_xd_t *const xd_out,
-                      const int getHelp)
+                      const int getHelp, int recLevel)
 {
+  if (recLevel > MAX_RECURSION_LEVEL)
+    goto status_not_ok_out;
   const mdsdsc_t *dsc = dsc_in;
 again:;
   if (!dsc)
@@ -491,7 +497,7 @@ again:;
       EMPTYXD(xd);
       status = TreeGetRecord(nid, &xd);
       if (STATUS_OK)
-        status = recGetXxxx(xd.pointer, xd_out, getHelp);
+        status = recGetXxxx(xd.pointer, xd_out, getHelp, recLevel+1);
       MdsFree1Dx(&xd, NULL);
       goto status_out;
     }
@@ -524,7 +530,7 @@ again:;
       int i;
       for (i = 0; i < rDsc->ndesc; i++)
       {
-        status = recGetXxxx(rDsc->dscptrs[i], xd_out, getHelp);
+        status = recGetXxxx(rDsc->dscptrs[i], xd_out, getHelp, recLevel+1);
         if (STATUS_OK)
           goto status_out;
       }
@@ -568,13 +574,13 @@ again:;
         if (*(opcode_t *)rDsc->pointer == OPC_ADD ||
             *(opcode_t *)rDsc->pointer == OPC_SUBTRACT)
         {
-          status = recGetXxxx(rDsc->dscptrs[0], xd_out, getHelp);
+          status = recGetXxxx(rDsc->dscptrs[0], xd_out, getHelp, recLevel+1);
           if (STATUS_NOT_OK)
             goto status_not_ok_out;
           EMPTYXD(xd);
           for (i = 1; i < rDsc->ndesc; i++)
           {
-            status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
+            status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp, recLevel+1);
             if (STATUS_NOT_OK ||
                 xd.pointer->length != xd_out->pointer->length ||
                 strncmp(xd.pointer->pointer, xd_out->pointer->pointer,
@@ -597,7 +603,7 @@ again:;
           EMPTYXD(xd);
           for (i = 0; i < rDsc->ndesc; i++)
           {
-            status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
+            status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp, recLevel+1);
             if (STATUS_OK)
             {
               if (da.pointer)
@@ -644,13 +650,13 @@ success:;
 static inline int recGetHelp(const mdsdsc_t *const dsc,
                              mdsdsc_xd_t *const xd_out)
 {
-  return recGetXxxx(dsc, xd_out, TRUE);
+  return recGetXxxx(dsc, xd_out, TRUE, 0);
 }
 
 static inline int recGetUnits(const mdsdsc_t *const dsc,
                               mdsdsc_xd_t *const xd_out)
 {
-  return recGetXxxx(dsc, xd_out, FALSE);
+  return recGetXxxx(dsc, xd_out, FALSE, 0);
 }
 
 // Check if the passed expression contains at least one segmented node
@@ -660,7 +666,7 @@ EXPORT int IsSegmented(char *const expr)
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
   if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
     return FALSE;
-  int segNid = recIsSegmented(xd.pointer);
+  int segNid = recIsSegmented(xd.pointer, 0);
   MdsFree1Dx(&xd, NULL);
   return segNid;
 }
@@ -904,9 +910,6 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax < INFINITY) ? inXMax : NULL;
 
-  //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples,
-  //NUM_SAMPLES_THRESHOLD);
-
   if (estimatedSamples > NUM_SAMPLES_THRESHOLD)
   {
     delta = estimatedSamples / reqNSamples;
@@ -935,7 +938,9 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   int status = TreeSetTimeContext(xMinP, xMaxP, deltaP);
 
   if (STATUS_OK)
+  {
     status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+   }
   if (STATUS_NOT_OK)
     goto return_err;
   // Get Y, title, and yLabel, if any
@@ -943,7 +948,9 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   recGetUnits(yXd.pointer, &yLabel);
   // Get X
   if (!inX) // If an explicit expression for X has been given
+  {
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
+  }
   else // Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
   if (STATUS_NOT_OK)
