@@ -148,6 +148,7 @@ int map_scsi_device(char *highway_name)
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
     _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #endif
+        // The +i increments by CRATE structs, not by bytes.
         strncpy((CRATEdb + i)->DSFname, dsf, 3); // real device number
 #pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = hwytype; // highway type
