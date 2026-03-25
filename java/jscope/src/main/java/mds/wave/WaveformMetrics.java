@@ -32,7 +32,7 @@ public class WaveformMetrics implements Serializable
 	double x_range;
 	int start_x;
 	double FACT_X, FACT_Y, OFS_X, OFS_Y;
-int horizontal_offset, vertical_offset;
+	int horizontal_offset, vertical_offset;
 
 	public WaveformMetrics(double _xmax, double _xmin, double _ymax, double _ymin, Rectangle limits, Dimension d,
 			boolean _x_log, boolean _y_log, int horizontal_offset, int vertical_offset)
@@ -61,14 +61,9 @@ int horizontal_offset, vertical_offset;
 				_xmax = MIN_LOG;
 			if (_xmin < MIN_LOG)
 				_xmin = MIN_LOG;
-			xmax = Math.log(_xmax) / LOG10;
-			xmin = Math.log(_xmin) / LOG10;
 		}
-		else
-		{
-			xmax = _xmax;
-			xmin = _xmin;
-		}
+		xmax = XOnAxis(_xmax);
+		xmin = XOnAxis(_xmin);
 		delta_x = xmax - xmin;
 		xmax += delta_x / 100.;
 		xmin -= delta_x / 100.;
@@ -78,14 +73,9 @@ int horizontal_offset, vertical_offset;
 				_ymax = MIN_LOG;
 			if (_ymin < MIN_LOG)
 				_ymin = MIN_LOG;
-			ymax = Math.log(_ymax) / LOG10;
-			ymin = Math.log(_ymin) / LOG10;
 		}
-		else
-		{
-			ymax = _ymax;
-			ymin = _ymin;
-		}
+		ymax = YOnAxis(_ymax);
+		ymin = YOnAxis(_ymin);
 		delta_y = ymax - ymin;
 		ymax += delta_y / 50;
 		ymin -= delta_y / 50.;
@@ -379,7 +369,7 @@ int horizontal_offset, vertical_offset;
 					start_x = XPixel(x[j]);
 					max_y = min_y = y[j];
 					i = j;
-					if (sig.isIncreasingX() && x[j] > xmax)
+					if (sig.isIncreasingX() && XOnAxis(x[j]) > xmax)
 						end_point = j + 1;
 				}
 			}
@@ -433,8 +423,20 @@ int horizontal_offset, vertical_offset;
 		return xmin;
 	}
 
+	final public double XOnAxis(double x)
+	{
+		if (x_log)
+		{
+			if (x < MIN_LOG)
+				x = MIN_LOG;
+			x = Math.log(x) / LOG10;
+		}
+		return x;
+	}
+
 	final public int XPixel(double x)
 	{
+		x = XOnAxis(x);
 		final double xpix = x * FACT_X + OFS_X;
 		if (xpix >= MAX_VALUE)
 			return INT_MAX_VALUE;
@@ -446,12 +448,7 @@ int horizontal_offset, vertical_offset;
 	final public int XPixel(double x, Dimension d)
 	{
 		double ris;
-		if (x_log)
-		{
-			if (x < MIN_LOG)
-				x = MIN_LOG;
-			x = Math.log(x) / LOG10;
-		}
+		x = XOnAxis(x);
 		ris = (x_offset + x_range * (x - xmin) / xrange) * d.width + 0.5;
 		if (ris > 20000)
 			ris = 20000;
@@ -489,7 +486,7 @@ int horizontal_offset, vertical_offset;
 		return ymin;
 	}
 
-	final public int YPixel(double y)
+	final public double YOnAxis(double y)
 	{
 		if (y_log)
 		{
@@ -497,6 +494,12 @@ int horizontal_offset, vertical_offset;
 				y = MIN_LOG;
 			y = Math.log(y) / LOG10;
 		}
+		return y;
+	}
+
+	final public int YPixel(double y)
+	{
+		y = YOnAxis(y);
 		final double ypix = y * FACT_Y + OFS_Y;
 		if (ypix >= MAX_VALUE)
 			return INT_MAX_VALUE;
@@ -507,12 +510,7 @@ int horizontal_offset, vertical_offset;
 
 	final public int YPixel(double y, Dimension d)
 	{
-		if (y_log)
-		{
-			if (y < MIN_LOG)
-				y = MIN_LOG;
-			y = Math.log(y) / LOG10;
-		}
+		y = YOnAxis(y);
 		double ris = (y_range * (ymax - y) / yrange) * d.height + 0.5;
 		if (ris > 20000)
 			ris = 20000;
