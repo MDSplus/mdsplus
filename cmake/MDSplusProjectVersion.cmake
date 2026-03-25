@@ -12,12 +12,26 @@ if(NOT DEFINED RELEASE_TAG OR RELEASE_TAG STREQUAL "")
 
     if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
 
-        mdsplus_git(GIT_TAG         describe --tag)
         mdsplus_git(GIT_BRANCH      rev-parse --abbrev-ref HEAD)
         mdsplus_git(GIT_REMOTE      config branch.${GIT_BRANCH}.remote)
         mdsplus_git(GIT_REMOTE_URL  config remote.${GIT_REMOTE}.url)
         mdsplus_git(GIT_COMMIT      rev-parse HEAD)
         mdsplus_git(GIT_COMMIT_DATE log -1 --format=%ad)
+
+        # Handle multiple tags for the same commit
+        mdsplus_git(GIT_TAGS tag --points-at HEAD)
+        string(REPLACE "\n" ";" GIT_TAGS "${GIT_TAGS}")
+        foreach(_tag IN LISTS GIT_TAGS)
+            if(_tag MATCHES "^${GIT_BRANCH}")
+                set(GIT_TAG "${_tag}")
+                break()
+            endif()
+        endforeach()
+
+        # Fallback to the previous method
+        if(NOT DEFINED GIT_TAG)
+            mdsplus_git(GIT_TAG describe --tag HEAD)
+        endif()
 
         if(NOT GIT_REMOTE)
             set(GIT_REMOTE "LOCAL")
