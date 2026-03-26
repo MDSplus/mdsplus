@@ -7,7 +7,7 @@
     <Property name="deviceType" type="java.lang.String" value="ELAD"/>
     <Property name="height" type="int" value="500"/>
     <Property name="updateEvent" type="java.lang.String" value=""/>
-    <Property name="width" type="int" value="900"/>
+    <Property name="width" type="int" value="1200"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -22,7 +22,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-80,0,0,3,94"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-80,0,0,4,-100"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -43,7 +43,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="4"/>
+        <Property name="rows" type="int" value="6"/>
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -54,9 +54,47 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Comment:"/>
-                <Property name="numCols" type="int" value="30"/>
+                <Property name="numCols" type="int" value="25"/>
                 <Property name="offsetNid" type="int" value="1"/>
                 <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField4">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="PTS: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="14"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField7">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream freq div.: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="15"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField5">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Trans. freq div: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="159"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice19">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Calibration: "/>
+                <Property name="offsetNid" type="int" value="18"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
           </SubComponents>
@@ -69,7 +107,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Device IP:"/>
-                <Property name="numCols" type="int" value="20"/>
+                <Property name="numCols" type="int" value="15"/>
                 <Property name="offsetNid" type="int" value="2"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
@@ -82,34 +120,87 @@
                 <Property name="offsetNid" type="int" value="3"/>
               </Properties>
             </Component>
+            <Component class="DeviceField" name="deviceField10">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream IP:"/>
+                <Property name="numCols" type="int" value="15"/>
+                <Property name="offsetNid" type="int" value="23"/>
+                <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField11">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream Port: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="24"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField4">
+            <Component class="DeviceChoice" name="deviceChoice3">
               <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="4">
+                    <StringItem index="0" value="INTERNAL"/>
+                    <StringItem index="1" value="HW_LOCAL"/>
+                    <StringItem index="2" value="EVENT"/>
+                    <StringItem index="3" value="HW_GLOBAL"/>
+                  </StringArray>
+                </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="PTS: "/>
-                <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="7"/>
+                <Property name="labelString" type="java.lang.String" value="Trigger Mode: "/>
+                <Property name="offsetNid" type="int" value="4"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField5">
+            <Component class="DeviceChoice" name="deviceChoice4">
               <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="4">
+                    <StringItem index="0" value="INTERNAL"/>
+                    <StringItem index="1" value="HW_LOCAL"/>
+                    <StringItem index="2" value="HIGHWAY"/>
+                    <StringItem index="3" value="HW_GLOBAL"/>
+                  </StringArray>
+                </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Input Stream Port: "/>
-                <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="10"/>
+                <Property name="labelString" type="java.lang.String" value="Clock Mode: "/>
+                <Property name="offsetNid" type="int" value="12"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField7">
+            <Component class="DeviceChoice" name="deviceChoice5">
               <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="INTERNAL"/>
+                    <StringItem index="1" value="EVENT"/>
+                  </StringArray>
+                </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Stream freq div.: "/>
-                <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="8"/>
+                <Property name="labelString" type="java.lang.String" value="Stream Trig. Mode: "/>
+                <Property name="offsetNid" type="int" value="5"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice6">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="INTERNAL"/>
+                    <StringItem index="1" value="EVENT"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Autozero Trig. Mode: "/>
+                <Property name="offsetNid" type="int" value="6"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
           </SubComponents>
@@ -123,10 +214,18 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trigger time: "/>
                 <Property name="numCols" type="int" value="30"/>
-                <Property name="offsetNid" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="7"/>
               </Properties>
             </Component>
-            <Component class="DeviceChoice" name="deviceChoice25">
+            <Component class="DeviceField" name="deviceField12">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Trigger Event: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="9"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice7">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                   <StringArray count="2">
@@ -135,23 +234,85 @@
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Calibration: "/>
-                <Property name="offsetNid" type="int" value="12"/>
-                <Property name="updateIdentifier" type="java.lang.String" value=""/>
-              </Properties>
-            </Component>
-            <Component class="DeviceChoice" name="deviceChoice26">
-              <Properties>
-                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="YES"/>
-                    <StringItem index="1" value="NO"/>
-                  </StringArray>
-                </Property>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Global Chop. Enab: "/>
+                <Property name="labelString" type="java.lang.String" value="Stream CIC Filter: "/>
                 <Property name="offsetNid" type="int" value="13"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice1">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Trans. CIC Filter: "/>
+                <Property name="offsetNid" type="int" value="160"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel8">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField13">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream Trig. Time: "/>
+                <Property name="numCols" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="8"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField14">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream Trig. Event: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="10"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField15">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Autozero Trig. Event: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="11"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField39">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Autozero duration: "/>
+                <Property name="numCols" type="int" value="6"/>
+                <Property name="offsetNid" type="int" value="16"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel20">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField40">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="JScope Trans.Event: "/>
+                <Property name="numCols" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="21"/>
+                <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField41">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="jScope Stream Event: "/>
+                <Property name="numCols" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="158"/>
+                <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -185,24 +346,6 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice1">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="16"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
                 <Component class="DeviceChoice" name="deviceChoice2">
                   <Properties>
                     <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
@@ -216,7 +359,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="17"/>
+                    <Property name="offsetNid" type="int" value="29"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -226,7 +369,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Status: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="19"/>
+                    <Property name="offsetNid" type="int" value="31"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -236,7 +379,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="ID: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="18"/>
+                    <Property name="offsetNid" type="int" value="30"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -246,42 +389,24 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="EPROM: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="32"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel19">
+            <Container class="javax.swing.JPanel" name="jPanel9">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
+                    <TitledBorder title="Channel 2"/>
                   </Border>
                 </Property>
               </Properties>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice27">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="23"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice28">
+                <Component class="DeviceChoice" name="deviceChoice8">
                   <Properties>
                     <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
                       <PropertyValue value="[1, 0]"/>
@@ -294,7 +419,487 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="24"/>
+                    <Property name="offsetNid" type="int" value="36"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField16">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="38"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField17">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="37"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField66">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="39"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel10">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 3"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice9">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="43"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField18">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="45"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField19">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="44"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField67">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="46"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel11">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 4"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice10">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="50"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField20">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="52"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField21">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="51"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField68">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="53"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel12">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 5"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice11">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="57"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField22">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="59"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField23">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="58"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField69">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="60"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel13">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 6"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice12">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="64"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField24">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="66"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField25">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="65"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField70">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="67"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel14">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 7"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice13">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="71"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField26">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="73"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField27">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="72"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField71">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="74"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel15">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 8"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice14">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="78"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField28">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="80"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField29">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="79"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField72">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="81"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel16">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 9"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice15">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="85"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField30">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="87"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField31">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="86"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField73">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="88"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel17">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 10"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice16">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="92"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -304,7 +909,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Status: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="26"/>
+                    <Property name="offsetNid" type="int" value="94"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -314,52 +919,34 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="ID: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="25"/>
+                    <Property name="offsetNid" type="int" value="93"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceField" name="deviceField35">
+                <Component class="DeviceField" name="deviceField74">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="EPROM: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="27"/>
+                    <Property name="offsetNid" type="int" value="95"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel20">
+            <Container class="javax.swing.JPanel" name="jPanel18">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
+                    <TitledBorder title="Channel 11"/>
                   </Border>
                 </Property>
               </Properties>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice29">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="30"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice30">
+                <Component class="DeviceChoice" name="deviceChoice17">
                   <Properties>
                     <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
                       <PropertyValue value="[1, 0]"/>
@@ -372,27 +959,77 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="31"/>
+                    <Property name="offsetNid" type="int" value="99"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField35">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="offsetNid" type="int" value="101"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField36">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
+                    <Property name="labelString" type="java.lang.String" value="ID: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="33"/>
+                    <Property name="offsetNid" type="int" value="100"/>
                     <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField75">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="102"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel19">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Channel 12"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice18">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="0"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
+                    <Property name="offsetNid" type="int" value="106"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField37">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
+                    <Property name="labelString" type="java.lang.String" value="Status: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="32"/>
+                    <Property name="offsetNid" type="int" value="108"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -400,711 +1037,19 @@
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="34"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel21">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice31">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="37"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice32">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="38"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField39">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="40"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField40">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="ID: "/>
                     <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="39"/>
+                    <Property name="offsetNid" type="int" value="107"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceField" name="deviceField41">
+                <Component class="DeviceField" name="deviceField76">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="EPROM: "/>
                     <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="41"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel22">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice33">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="44"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice34">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="45"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField42">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="47"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField43">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="46"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField44">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="48"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel23">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice35">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="51"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice36">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="52"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField45">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="54"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField46">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="53"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField47">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="55"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel24">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice37">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="58"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice38">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="59"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField48">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="61"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField49">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="60"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField50">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="62"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel25">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice39">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="65"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice40">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="66"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField51">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="68"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField52">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="67"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField53">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="69"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel26">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice41">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="72"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice42">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="73"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField54">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="75"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField55">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="74"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField56">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="76"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel27">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice43">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="79"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice44">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="80"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField57">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="82"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField58">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="81"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField59">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="83"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel28">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice45">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="86"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice46">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="87"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField60">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="89"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField61">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="88"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField62">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="90"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel29">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Channel 1"/>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceChoice" name="deviceChoice47">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="YES"/>
-                        <StringItem index="1" value="NO"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="convert" type="boolean" value="true"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Chop. Enabled:"/>
-                    <Property name="offsetNid" type="int" value="93"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceChoice" name="deviceChoice48">
-                  <Properties>
-                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[1, 0]"/>
-                    </Property>
-                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="2">
-                        <StringItem index="0" value="1"/>
-                        <StringItem index="1" value="0"/>
-                      </StringArray>
-                    </Property>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="LH Mode: "/>
-                    <Property name="offsetNid" type="int" value="94"/>
-                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField63">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Status: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="96"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField64">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="ID: "/>
-                    <Property name="numCols" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="95"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField65">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="EPROM: "/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="97"/>
+                    <Property name="offsetNid" type="int" value="109"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
