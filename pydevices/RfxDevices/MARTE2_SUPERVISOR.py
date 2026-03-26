@@ -7,6 +7,7 @@ import time
 import traceback
 import os
 import glob
+import subprocess
 try:
     from pathlib import Path
 except:
@@ -1513,7 +1514,7 @@ $<APP_NAME> = {
 
     def startMarteIdle(self):
         self.buildConfiguration()
-#        self.stopMarte()
+        self.stopMarte()
         name = self.getNode('NAME').data()
         f = open('/tmp/MARTe2_'+name+'_Output.log', 'w', buffering = 1)
  #       subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
@@ -1610,18 +1611,21 @@ $<APP_NAME> = {
     def stopMarte(self):
         marteName = self.getNode('name').data()
         self.suspendMarte()
-        time.sleep(2)
+        time.sleep(1)
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
-        time.sleep(2)
+        time.sleep(1)
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         # KILL MARTe process
         import subprocess
         import os
         thisPattern = 'MARTeApp.ex -l RealTimeLoader -f /tmp/'+marteName+'_marte_configuration.cfg'
 #        command = 'kill -KILL `ps -a | grep \"'+thisPattern+'\" | grep -v grep | awk \'{print $1}\'`'
-        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
-        print(command)
-        os.system(command)
+#        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
+#        command = 'kill -KILL `ps -af | grep MARTeApp.ex | grep '+ marteName + ' | grep -v grep | awk \'{print $2}\'`'
+#        print(command)
+#        os.system(command)
+
+        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName])
         return 1
 
         command = 'ps | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'' % (
