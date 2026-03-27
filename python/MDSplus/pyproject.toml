@@ -7,14 +7,13 @@
     authors = [
         {name = "MDSplus Development Team", email = "mdsplusadmin@psfc.mit.edu"},
     ]
-    license = {text = "MIT License"}
     description = "MDSplus Python Object interface"
+    license = "MIT"
     classifiers = [
         "Programming Language :: Python",
         "Intended Audience :: Science/Research",
         "Environment :: Console",
         "Topic :: Scientific/Engineering",
-        "License :: OSI Approved :: MIT License",
     ]
     keywords=['physics', 'mdsplus']
     dynamic = ["version"]
@@ -33,9 +32,8 @@
 [tool.setuptools]
     packages = [
         'MDSplus',
-        'MDSplus.widgets', 
+        'MDSplus.widgets',
         'MDSplus.wsgi',
-        'MDSplus.tests',
     ]
     include-package-data = false  # use package-data below
 
@@ -43,10 +41,9 @@
     'MDSplus' = '.'
     'MDSplus.widgets' = 'widgets'
     'MDSplus.wsgi' = 'wsgi'
-    'MDSplus.tests' = 'tests'
-    
+
 [tool.setuptools.package-data]
-    'MDSplus.wsgi' = [ 
+    'MDSplus.wsgi' = [
         'html/*',
         'conf/*',
         'js/*',
