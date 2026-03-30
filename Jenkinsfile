@@ -45,8 +45,7 @@ def setupStage() {
 
             // HACK: This should be done before stashing the source, but it causes issues with create_github_release
             // so instead each distribution tags separately
-            def new_tag = readFile(file: "new_tag")
-            sh "git tag ${new_tag} || true"
+            sh "git tag ${env.RELEASE_TAG} || true"
         }
     }
 }
@@ -68,7 +67,7 @@ def testStage(os) {
         stage("Build & Test (Debug)") {
             try {
                 def threads = getNumThreads()
-                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug --build --test --output-junit ${extraArgs}"
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug -DRELEASE_TAG=${env.RELEASE_TAG} --build --test --output-junit ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -78,7 +77,7 @@ def testStage(os) {
         stage("Build & Test (Release)") {
             try {
                 def threads = getNumThreads()
-                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=RelWithDebInfo --build --test --output-junit --junit-suite-name '${os}-release' ${extraArgs}"
+                sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRELEASE_TAG=${env.RELEASE_TAG} --build --test --output-junit --junit-suite-name '${os}-release' ${extraArgs}"
             }
             finally {
                 junit skipPublishingChecks: true, testResults: "workspace-${os}/mdsplus-junit.xml", keepLongStdio: true
@@ -91,7 +90,7 @@ def packageStage(os) {
     return {
         stage("Build & Package") {
             def threads = getNumThreads()
-            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Release --build --package --verify-packages"
+            sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Release -DRELEASE_TAG=${env.RELEASE_TAG} --build --package --verify-packages"
             dir("workspace-${os}") {
                 stash name: "packages-${os}", includes: "packages/**/*"
                 stash name: "dist-${os}", includes: "mdsplus-publish.json,dist/**/*"
@@ -146,7 +145,7 @@ def localTest(name, label, testStages) {
                         
                         stage("Build") {
                             def threads = getNumThreads()
-                            sh "deploy/build.py -j${threads} --build --install -DCMAKE_BUILD_TYPE=Debug"
+                            sh "deploy/build.py -j${threads} -DCMAKE_BUILD_TYPE=Debug -DRELEASE_TAG=${env.RELEASE_TAG} --build --install "
                         }
                         
                         testStages.call()
@@ -269,27 +268,24 @@ pipeline {
                         script: "/usr/bin/python3 deploy/get_new_version.py",
                         returnStdout: true
                     ).trim()
-                    
-                    if (new_version != '0.0.0') {
-                        new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
 
-                        echo "Calculated new version to be ${new_version}"
-
-                        // NOTE: To avoid confusing create_github_release, we cannot create the tag now
-                        // so instead we write it to a file, and tag it during the setup stage of each distribution
-                        writeFile(file: "new_tag", text: new_tag)
-                    }   
+                    new_tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
+                    echo "Calculated new version to be ${new_version}"
                 }
 
-                // By default it excludes .git/
+                // By default it excludes .git/ and things like .DS_Store
                 stash name: 'source', includes: '**', useDefaultExcludes: false
             }
         }
         
         stage('Distributions') {
             steps {
-                script {
-                    parallel distributions
+                // NOTE: To avoid confusing create_github_release, we cannot create the tag now
+                // so instead we pass it along and tag it during the setup stage of each distribution
+                withEnv(["RELEASE_TAG=${new_tag}"]) {
+                    script {
+                        parallel distributions
+                    }
                 }
             }
         }
@@ -308,6 +304,10 @@ pipeline {
 
             steps {
                 script {
+                    if (new_version == '0.0.0') {
+                        error 'Unable to compute version for publishing'
+                    }
+
                     ansiColor('xterm') {
                         for (info in OSList) {
                             def (name, os, label) = info
