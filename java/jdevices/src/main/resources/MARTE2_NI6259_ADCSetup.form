@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI 6259"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_ADC"/>
     <Property name="height" type="int" value="700"/>
-    <Property name="width" type="int" value="1100"/>
+    <Property name="width" type="int" value="900"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -116,14 +116,6 @@
                 <Property name="offsetNid" type="int" value="790"/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField10">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
-                <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="50"/>
-              </Properties>
-            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
@@ -133,9 +125,11 @@
             <Component class="DeviceChoice" name="deviceChoice2">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="2">
+                  <StringArray count="4">
                     <StringItem index="0" value="CONTINUOUS"/>
-                    <StringItem index="1" value="TRIGGERED"/>
+                    <StringItem index="1" value="TRIGGERED_PFI1"/>
+                    <StringItem index="2" value="TRIGGERED_RTSI1"/>
+                    <StringItem index="3" value="TRIGGERED_PFI1_R_RTSI1"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
