@@ -37,6 +37,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
+        deviceField10 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceField7 = new DeviceField();
@@ -209,7 +210,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         setDeviceTitle("MARTe2 NI 6259");
         setDeviceType("MARTE2_NI6259_ADC");
         setHeight(700);
-        setWidth(900);
+        setWidth(1100);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
@@ -257,6 +258,12 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
         deviceField6.setNumCols(15);
         deviceField6.setOffsetNid(790);
         jPanel3.add(deviceField6);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Write CPU Mask: ");
+        deviceField10.setNumCols(4);
+        deviceField10.setOffsetNid(50);
+        jPanel3.add(deviceField10);
 
         jPanel1.add(jPanel3);
 
@@ -1517,6 +1524,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
     private DeviceChoice deviceChoice98;
     private DeviceChoice deviceChoice99;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;

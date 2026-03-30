@@ -56,6 +56,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
     MODE_OUTPUT = 4
     MODE_INTERFACE = 5
 
+
+
     @classmethod
     def buildParameters(cls, parts, prefix = 'PARAMETERS', buildParameters = None):
         idx = 1
@@ -95,7 +97,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                       'type': 'numeric', 'value': 100})
 
         parts.append({'path': '.OUTPUTS:TIME_MODE',
-                      'type': 'text', 'value': 'Forced'})
+                      'type': 'text', 'value': 'Derived'})
         #Time associated to first sample is no trigger defined time corresponing to the trigger otherwise
         #It can be an array in case mutiple pulses are acquired
         parts.append({'path': '.OUTPUTS:TRIGGER_TIME', 'type': 'numeric'})
@@ -108,9 +110,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
         # CPU Mask for MdsWriter thread
         parts.append({'path': '.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value': 15})
         # Discontinuity Factor for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        #parts.append({'path': '.OUTPUTS:DISC_FACTOR','type': 'numeric', 'value': 1000})
+        # Queue Length Node length Node
+        parts.append({'path': '.OUTPUTS:QUEUE_LEN','type': 'signal'})
         # Resampling Factor for MdsWriter thread
-        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric', 'value': 1000})
+        parts.append({'path': '.OUTPUTS:RES_FACTOR','type': 'numeric'})
         # JPG Flag 
         parts.append({'path': '.OUTPUTS:JPG_CONV','type': 'numeric'})
 
@@ -621,6 +625,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else:
                     if self.hostedInSameSupervisor(value, threadMap): #Reference within same supervisor
                         if self.hostedInSynchronizingThread(value, threadMap):
+                            currSig.pop('Alias')
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             if  subsamplingRatio > 1:
                                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
@@ -629,7 +634,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      'Alias' : currSig['Alias'],
+                                                      #'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
                             else:
@@ -644,7 +649,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      'Alias' : currSig['Alias'],
+                                                      #'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
@@ -655,7 +660,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                         'Type': currSig['Type'],
                                                         'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                         'NumberOfElements' : currSig['NumberOfElements'],
-                                                        'Alias' : currSig['Alias'],
+                                                        #'Alias' : currSig['Alias'],
                                                         'Samples': subsamplingRatio*samples,
                                                         })
                             else: #Not subsampled
@@ -666,7 +671,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                     'Type': currSig['Type'],
                                     'NumberOfDimensions': currSig['NumberOfDimensions'],
                                     'NumberOfElements' : currSig['NumberOfElements'],
-                                    'Alias' : currSig['Alias'],
+                                    #'Alias' : currSig['Alias'],
                                     'Samples': samples,
                                     })
                             currSig['DataSource'] = self.getMarteDeviceName(self)+'_RTN_IN_DDB'
@@ -825,7 +830,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam['Inputs'] = inputs
         outputs = []
         for resSig in resampledSyncSigs:
-            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+#            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
                 'NumberOfElements': resSig['NumberOfElements'], 'Samples': 1, 'DataSource': self.getMarteDeviceName(self)+'_Res_DDB'})
         retGam['Outputs'] = outputs
         return retGam
@@ -894,9 +900,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
     def checkReferencesRec(self, inputNode):
         try:
             refOutput = inputNode.getNode('VALUE').getData()
-            if isinstance(refOutput, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refOutput):
+            if isinstance(refOutput, MDSplus.TreeNode) and  self.isMarteDeviceRef(refOutput):
                 refOutputNid = refOutput.getNid()
-                if refOutputNid in self.referenceInfo.keys():
+                if refOutputNid in MARTE2_COMPONENT.referenceInfo.keys():
                     MARTE2_COMPONENT.referenceInfo[refOutputNid].append(inputNode.getNid())
                 else:
                     MARTE2_COMPONENT.referenceInfo[refOutputNid] = [inputNode.getNid()]
@@ -924,7 +930,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 try:
                     refTrigger = triggerNode.getData()
                     if isinstance(refTrigger, MDSplus.TreeNode) and  self.isMarteDeviceRef(self, refTrigger):
-                        if refTrigger in self.referenceInfo.keys():
+#                        if refTrigger in self.referenceInfo.keys():
+                        if refTrigger in MARTE2_COMPONENT.referenceInfo.keys():
                             MARTE2_COMPONENT.referenceInfo[refTrigger].append(inputNode.getNid())
                         else:
                             MARTE2_COMPONENT.referenceInfo[refTrigger] = [inputNode.getNid()]
@@ -933,17 +940,16 @@ class MARTE2_COMPONENT(MDSplus.Device):
             except:
                 pass  #It is an Output device
 
-
-
-
     # Check if the passed output value node is referenced by any of the inputs passed in inputs
     def isReferenced(self, outValNode, inputNodes):
         outValNid = outValNode.getNid()
-        if not outValNid in self.referenceInfo.keys():
+#        if not outValNid in self.referenceInfo.keys():
+        if not outValNid in MARTE2_COMPONENT.referenceInfo.keys():
             return False
         for inputNode in inputNodes:
             inputNid = inputNode.getNid()
-            if inputNid in self.referenceInfo[outValNid]:
+#            if inputNid in self.referenceInfo[outValNid]:
+            if inputNid in MARTE2_COMPONENT.referenceInfo[outValNid]:
                 return True
 
  
@@ -1128,6 +1134,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             mode = marteDevice.getNode('MODE').data()
             if mode == MARTE2_COMPONENT.MODE_INPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
                 continue
+
             inputNodes = marteDevice.getNode('INPUTS').getChildren()
             if self.isReferenced(outValNode, inputNodes):
                 currThreadName =  threadMap['DeviceInfo'][marteNid]['ThreadName']
@@ -1220,7 +1227,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 currDataSource= self.getMarteDeviceName(self)+'_Output_DDB'
             outValNode = sigNode.getNode('VALUE')
             if self.isReferencedBySynchronizedThreadSameSupervisor(outValNode, threadMap):
- 
                 syncThreadSignals.append({
                     'Name': currSig['Name'],
                     'Type': currSig['Type'],
@@ -1371,6 +1377,15 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['StoreOnTrigger'] = 1
         else:
             parameters['StoreOnTrigger'] = 0
+
+####Parameters for new MDSWriter
+##Take the last of the list because the first one is time that has always samples = 1
+        try:
+            numSamples = signalsToBeStored[len(signalsToBeStored)-1].getNode('SAMPLES')
+        except:
+            numSamples = 1
+
+
         if trigger != None:
             try:
                 postTrigSamples = self.getNode('OUTPUTS:POST_TRIGGER').data()
@@ -1381,12 +1396,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['NumberOfPostTriggers'] = postTrigSamples
             parameters['NumberOfBuffers'] = postTrigSamples + 10 * len(signalsToBeStored)
         else:
-            parameters['NumberOfBuffers'] = 10 * len(signalsToBeStored)
-####Parameters for new MDSWriter
-        try:
-            numSamples = signalsToBeStored[0].getNode('SAMPLES')
-        except:
-            numSamples = 1
+            numBuffers = 10000 // numSamples
+            if numBuffers < 10:
+                numBuffers = 10 
+            parameters['NumberOfBuffers'] = numBuffers
+       
 
         try:
             triggerTime = self.getNode('OUTPUTS:TRIGGER_TIME').data()
@@ -1402,7 +1416,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         try:
             timebaseDescr = self.getNode('OUTPUTS:TIME_MODE').data().upper()
         except:
-            timebaseDescr = 'FORCED'
+            timebaseDescr = 'DERIVED'
 
         if timebaseDescr == 'FORCED':
             parameters['TimingSource'] = 'Internal'
@@ -1415,12 +1429,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             parameters['TimebaseMode'] = 'Precise'
         #Others not supported falls to default
 
+        parameters['BufferOccupancyNodeName'] = self.getNode('OUTPUTS:QUEUE_LEN').getFullPath()
 
-
-        try:
-            discontinuityFactor = int(self.getNode('OUTPUTS:DISC_FACTOR').data())
-        except:
-            discontinuityFactor = 100
         try:
             resampleFactor = self.getNode('OUTPUTS:RES_FACTOR').data()
         except:
@@ -1451,7 +1461,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             'Period': str(self.timerPeriod).replace('D', 'E'),
 
             'MakeSegmentAfterNWrites': segmentLen,
-            'DiscontinuityFactor': discontinuityFactor,
+#            'DiscontinuityFactor': discontinuityFactor,
             'TimeSignalMultiplier': 1E-6
             })
         for sigNode in signalsToBeStored:
@@ -1462,13 +1472,14 @@ class MARTE2_COMPONENT(MDSplus.Device):
             sigDef['Name'] = sigName
 #            sigDef['Period'] = str(self.timerPeriod * numSamples).replace('D', 'E')
             sigDef['Period'] = str(self.timerPeriod).replace('D', 'E')
-            sigDef['MakeSegmentAfterNWrites'] = sigNode.getNode('SEG_LEN').data()
+            segmentLen = sigNode.getNode('SEG_LEN').data()
+            sigDef['MakeSegmentAfterNWrites'] = segmentLen
             sigDef['NodeName'] = sigNode.getNode('VALUE').getFullPath()
             sigDef['AutomaticSegmentation'] = 0
             sigDef['Samples'] = sigNode.getNode('SAMPLES').data()
 
 
-            sigDef['DiscontinuityFactor'] = discontinuityFactor
+#            sigDef['DiscontinuityFactor'] = discontinuityFactor
             sigDef['TimeSignalMultiplier'] = 1E-6
 
 ###Additional parameters for new MDSWriter
@@ -1476,10 +1487,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 sigDef['MinMaxResampleFactor'] = str(resampleFactor)
                 sigDef['DecimatedNodeName'] = sigNode.getNode('RES_VALUE').getFullPath()
             if blocksInSegment > 1:
-                print('SEGMENT LEN: '+str(segmentLen))
-                print('BLOCKS IN SEGMENT: '+str(blocksInSegment))
-                print('SAMPLES: '+str(numSamples))
-                
                 sigDef['MakeBlockAfterNWrites'] = str(segmentLen//blocksInSegment)
             if convertToJpg:
                 sigDef['ConvertToJPG'] = 1

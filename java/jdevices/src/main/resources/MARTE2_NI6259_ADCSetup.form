@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI 6259"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_ADC"/>
     <Property name="height" type="int" value="700"/>
-    <Property name="width" type="int" value="900"/>
+    <Property name="width" type="int" value="1100"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -114,6 +114,14 @@
                 <Property name="labelString" type="java.lang.String" value="Trigger Time: "/>
                 <Property name="numCols" type="int" value="15"/>
                 <Property name="offsetNid" type="int" value="790"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField10">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Write CPU Mask: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="50"/>
               </Properties>
             </Component>
           </SubComponents>
