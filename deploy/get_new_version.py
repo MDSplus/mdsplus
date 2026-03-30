@@ -18,17 +18,7 @@ def git(command):
     stdout, _ = proc.communicate()
     return stdout.decode().strip()
 
-last_release = None
-branch = git('rev-parse --abbrev-ref HEAD')
-tags = git('tag --points-at HEAD').splitlines()
-for tag in tags:
-    if tag.startswith(branch):
-        last_release = tag
-        break
-
-if last_release is None:
-    last_release = git('describe --tags --abbrev=0')
-
+last_release = git('describe --tag --abbrev=0 HEAD')
 last_release_commit = git(f'rev-list -n 1 {last_release}')
 commit_log = git(f'log {last_release_commit}..HEAD --no-merges --decorate=short --pretty=format:%s')
 
