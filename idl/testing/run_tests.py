@@ -574,168 +574,18 @@ if args.database_name != '':
     ''')
 
 
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # https://github.com/MDSplus/mdsplus/issues/2625
     # Issue #2625: stress test database proxy with many connects.
     # NLOOPS should be more than 64 (see Issue #2638).  If the
     # disconnect works, will never exceed the concurrent limit.
-    # idl_test(f'''
-
-    # testid = "IDL-2625-loop"
-    # PASS = 1
-    # FAIL = 0
-    # BOGUS = -77
-    # NLOOPS = 100                           
-    # proxy = '{args.database_name}'
-    # mdsip_server = '{args.mdsip_server}'
-    # query = 'select getdate()'
-    # test_status = PASS
-
-    # set_database, proxy
-    # print, '!MDSDB_SOCKET=', !MDSDB_SOCKET
-    # val1 = BOGUS
-    # d = dsql(query, val1)
-    # if (typename(val1) ne "STRING") then test_status = FAIL
-
-    # for i = 1, NLOOPS do begin
-    #     socketvar=-1
-    #     mdsconnect, mdsip_server, socket=socketvar
-    #     print, 'socket=', socketvar
-    #     val2 = BOGUS
-    #     d = dsql(query, val2)
-    #     if (typename(val2) ne "STRING") then test_status = FAIL
-    #     mdsdisconnect, socket=socketvar
-    # endfor
-
-    # if (test_status eq PASS) then begin
-    #     print, 'SUCCESS'
-    # end else begin
-    #     print, 'FAILURE'
-    # endelse
-
-    # ''',
-    # '''
-
-    # % Compiled module: SET_DATABASE.
-    # % Compiled module: MDS_KEYWORD_SET.
-    # % Compiled module: MDSVALUE.
-    # % Compiled module: MDSCHECKARG.
-    # % Compiled module: MDSISCLIENT.
-    # % Compiled module: DSQL.
-    # !MDSDB_SOCKET=       0
-    # % Compiled module: EVALUATE.
-    # socket=           1
-    # % Compiled module: MDSDISCONNECT.
-    # socket=           2
-    # socket=           3
-    # socket=           4
-    # socket=           5
-    # socket=           6
-    # socket=           7
-    # socket=           8
-    # socket=           9
-    # socket=          10
-    # socket=          11
-    # socket=          12
-    # socket=          13
-    # socket=          14
-    # socket=          15
-    # socket=          16
-    # socket=          17
-    # socket=          18
-    # socket=          19
-    # socket=          20
-    # socket=          21
-    # socket=          22
-    # socket=          23
-    # socket=          24
-    # socket=          25
-    # socket=          26
-    # socket=          27
-    # socket=          28
-    # socket=          29
-    # socket=          30
-    # socket=          31
-    # socket=          32
-    # socket=          33
-    # socket=          34
-    # socket=          35
-    # socket=          36
-    # socket=          37
-    # socket=          38
-    # socket=          39
-    # socket=          40
-    # socket=          41
-    # socket=          42
-    # socket=          43
-    # socket=          44
-    # socket=          45
-    # socket=          46
-    # socket=          47
-    # socket=          48
-    # socket=          49
-    # socket=          50
-    # socket=          51
-    # socket=          52
-    # socket=          53
-    # socket=          54
-    # socket=          55
-    # socket=          56
-    # socket=          57
-    # socket=          58
-    # socket=          59
-    # socket=          60
-    # socket=          61
-    # socket=          62
-    # socket=          63
-    # socket=          64
-    # socket=          65
-    # socket=          66
-    # socket=          67
-    # socket=          68
-    # socket=          69
-    # socket=          70
-    # socket=          71
-    # socket=          72
-    # socket=          73
-    # socket=          74
-    # socket=          75
-    # socket=          76
-    # socket=          77
-    # socket=          78
-    # socket=          79
-    # socket=          80
-    # socket=          81
-    # socket=          82
-    # socket=          83
-    # socket=          84
-    # socket=          85
-    # socket=          86
-    # socket=          87
-    # socket=          88
-    # socket=          89
-    # socket=          90
-    # socket=          91
-    # socket=          92
-    # socket=          93
-    # socket=          94
-    # socket=          95
-    # socket=          96
-    # socket=          97
-    # socket=          98
-    # socket=          99
-    # socket=         100
-    # SUCCESS
-
-    # ''')
-
-idl_test(f'''
+    idl_test(f'''
 
     testid = "IDL-2625-loop"
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    NLOOPS = 50                           
+    NLOOPS = 100                           
     proxy = '{args.database_name}'
     mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
@@ -825,6 +675,56 @@ idl_test(f'''
     socket=          48
     socket=          49
     socket=          50
+    socket=          51
+    socket=          52
+    socket=          53
+    socket=          54
+    socket=          55
+    socket=          56
+    socket=          57
+    socket=          58
+    socket=          59
+    socket=          60
+    socket=          61
+    socket=          62
+    socket=          63
+    socket=          64
+    socket=          65
+    socket=          66
+    socket=          67
+    socket=          68
+    socket=          69
+    socket=          70
+    socket=          71
+    socket=          72
+    socket=          73
+    socket=          74
+    socket=          75
+    socket=          76
+    socket=          77
+    socket=          78
+    socket=          79
+    socket=          80
+    socket=          81
+    socket=          82
+    socket=          83
+    socket=          84
+    socket=          85
+    socket=          86
+    socket=          87
+    socket=          88
+    socket=          89
+    socket=          90
+    socket=          91
+    socket=          92
+    socket=          93
+    socket=          94
+    socket=          95
+    socket=          96
+    socket=          97
+    socket=          98
+    socket=          99
+    socket=         100
     SUCCESS
 
     ''')
@@ -834,142 +734,12 @@ idl_test(f'''
 # https://github.com/MDSplus/mdsplus/issues/2638
 # Issue #2638: crashes with too many concurrent sockets.
 # NLOOPS should be more than 64.
-# idl_test(f'''
-
-# testid = "IDL-2638-loop"
-# PASS = 1
-# FAIL = 0
-# NLOOPS = 100
-# mdsip_server = '{args.mdsip_server}'
-# test_status = FAIL
-
-# for i = 1, NLOOPS do begin
-#     socketvar=-1
-#     mdsconnect, mdsip_server, socket=socketvar
-#     print, 'socket=', socketvar
-# endfor
-# test_status = PASS
-
-# if (test_status eq PASS) then begin
-#     print, 'SUCCESS'
-# end else begin
-#     print, 'FAILURE'
-# endelse
-
-# ''',
-# '''
-
-# % Compiled module: MDSCONNECT.
-# % Compiled module: MDS_KEYWORD_SET.
-# socket=           0
-# socket=           1
-# socket=           2
-# socket=           3
-# socket=           4
-# socket=           5
-# socket=           6
-# socket=           7
-# socket=           8
-# socket=           9
-# socket=          10
-# socket=          11
-# socket=          12
-# socket=          13
-# socket=          14
-# socket=          15
-# socket=          16
-# socket=          17
-# socket=          18
-# socket=          19
-# socket=          20
-# socket=          21
-# socket=          22
-# socket=          23
-# socket=          24
-# socket=          25
-# socket=          26
-# socket=          27
-# socket=          28
-# socket=          29
-# socket=          30
-# socket=          31
-# socket=          32
-# socket=          33
-# socket=          34
-# socket=          35
-# socket=          36
-# socket=          37
-# socket=          38
-# socket=          39
-# socket=          40
-# socket=          41
-# socket=          42
-# socket=          43
-# socket=          44
-# socket=          45
-# socket=          46
-# socket=          47
-# socket=          48
-# socket=          49
-# socket=          50
-# socket=          51
-# socket=          52
-# socket=          53
-# socket=          54
-# socket=          55
-# socket=          56
-# socket=          57
-# socket=          58
-# socket=          59
-# socket=          60
-# socket=          61
-# socket=          62
-# socket=          63
-# socket=          64
-# socket=          65
-# socket=          66
-# socket=          67
-# socket=          68
-# socket=          69
-# socket=          70
-# socket=          71
-# socket=          72
-# socket=          73
-# socket=          74
-# socket=          75
-# socket=          76
-# socket=          77
-# socket=          78
-# socket=          79
-# socket=          80
-# socket=          81
-# socket=          82
-# socket=          83
-# socket=          84
-# socket=          85
-# socket=          86
-# socket=          87
-# socket=          88
-# socket=          89
-# socket=          90
-# socket=          91
-# socket=          92
-# socket=          93
-# socket=          94
-# socket=          95
-# socket=          96
-# socket=          97
-# socket=          98
-# socket=          99
-# SUCCESS
-
-# ''')
 idl_test(f'''
 
 testid = "IDL-2638-loop"
 PASS = 1
 FAIL = 0
-NLOOPS = 50
+NLOOPS = 100
 mdsip_server = '{args.mdsip_server}'
 test_status = FAIL
 
@@ -1041,6 +811,56 @@ socket=          46
 socket=          47
 socket=          48
 socket=          49
+socket=          50
+socket=          51
+socket=          52
+socket=          53
+socket=          54
+socket=          55
+socket=          56
+socket=          57
+socket=          58
+socket=          59
+socket=          60
+socket=          61
+socket=          62
+socket=          63
+socket=          64
+socket=          65
+socket=          66
+socket=          67
+socket=          68
+socket=          69
+socket=          70
+socket=          71
+socket=          72
+socket=          73
+socket=          74
+socket=          75
+socket=          76
+socket=          77
+socket=          78
+socket=          79
+socket=          80
+socket=          81
+socket=          82
+socket=          83
+socket=          84
+socket=          85
+socket=          86
+socket=          87
+socket=          88
+socket=          89
+socket=          90
+socket=          91
+socket=          92
+socket=          93
+socket=          94
+socket=          95
+socket=          96
+socket=          97
+socket=          98
+socket=          99
 SUCCESS
 
 ''')
