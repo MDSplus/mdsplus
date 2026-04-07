@@ -1433,7 +1433,7 @@ static char *mds_value_remote_expression(char *expression,
 
   char *native_float_str, *native_double_str, *native_complex_str,
       *native_double_complex_str;
-  char *newexpression = (char *)malloc(strlen(expression) + 24);
+  char *newexpression = (char *)calloc(strlen(expression) + 24, sizeof(char));
 
   /*  Determine the native floating/double/complex type of the client, so as to
    * pass the correct conversion function to the server and thus save extra
