@@ -267,7 +267,7 @@ public class MARTE2_NI6259_ADCSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceChoice2.setChoiceItems(new String[] {"CONTINUOUS", "TRIGGERED"});
+        deviceChoice2.setChoiceItems(new String[] {"CONTINUOUS", "TRIGGERED_PFI1", "TRIGGERED_RTSI1", "TRIGGERED_PFI1_R_RTSI1"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Acquisition Mode: ");
         deviceChoice2.setOffsetNid(782);

@@ -233,10 +233,10 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
         {'name': 'BoardId', 'type': 'int32', 'value': 0},
         {'name': 'DelayDivisor', 'type': 'int32', 'value': 3},
         {'name': 'ClockSampleSource', 'type': 'string', 'value': 'SI_TC'},
-        {'name': 'ClockSamplePolarity', 'type': 'string',
-            'value': 'ACTIVE_HIGH_OR_RISING_EDGE'},
+        {'name': 'TriggerSource', 'type': 'string',
+            'value': 'PFI1'},
         {'name': 'ClockConvertSource', 'type': 'string', 'value': 'SI2TC'},
-        {'name': 'ClockConvertPolarity', 'type': 'string', 'value': 'RISING_EDGE'},
+        {'name': 'ExportTriggerTo', 'type': 'string', 'value': 'NO'},
         {'name': 'CPUs', 'type': 'int32', 'value': 0xf},
         {'name': 'SamplingFrequency', 'type': 'int32', 'value': 1000000},
         {'name': 'AcquisitionMode', 'type': 'string', 'value':'CONTINUOUS'},
@@ -398,7 +398,38 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
                 except:
                     triggerTime = 0
                 period = 1./frequency
-        elif acquisitionMode == 'TRIGGERED':
+        elif acquisitionMode == 'TRIGGERED' or acquisitionMode == 'TRIGGERED_PFI1' or acquisitionMode == 'TRIGGERED_PFI1_R_RTSI1' :
+            self.getNode('.PARAMETERS.PAR_5:VALUE').putData("PFI1")
+            if acquisitionMode == 'TRIGGERED_PFI1_R_RTSI1': 
+                self.getNode('.PARAMETERS.PAR_7:VALUE').putData("RTSI1")
+            else:
+                self.getNode('.PARAMETERS.PAR_7:VALUE').putData("NO")
+            if clockMode == 'INTERNAL':
+                period = 1./frequency
+            else:
+                if not np.isscalar(deltas):
+                    raise Exception('In TRIGGERED acquisition mode the external clock must be single speed for '+self.getPath())
+                period = deltas
+                frequency = 1./period
+            try:
+                triggerTime = self.getNode('TRIG_TIME').data()
+            except:
+                triggerTime = 0
+            try:
+                preTriggerSamples = self.getNode('PRE_TRIG').data()
+            except:
+                raise  Exception('Cannot get the number of pre trigger samples for '+self.getPath())
+            self.getNode('.PARAMETERS.PAR_11:VALUE').putData(MDSplus.Int32(preTriggerSamples))
+            try:
+                postTriggerSamples = self.getNode('POST_TRIG').data()
+            except:
+                raise  Exception('Cannot get the number of post trigger samples for '+self.getPath())
+            self.getNode('.PARAMETERS.PAR_12:VALUE').putData(MDSplus.Int32(postTriggerSamples))
+            triggerTime -= period * preTriggerSamples
+        
+        elif acquisitionMode == 'TRIGGERED_RTSI1':
+            self.getNode('.PARAMETERS.PAR_7:VALUE').putData("NO")
+            self.getNode('.PARAMETERS.PAR_5:VALUE').putData("RTSI1")
             if clockMode == 'INTERNAL':
                 period = 1./frequency
             else:
@@ -422,8 +453,12 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
             self.getNode('.PARAMETERS.PAR_12:VALUE').putData(MDSplus.Int32(postTriggerSamples))
             triggerTime -= period * preTriggerSamples
         else:
-            raise  Exception('Invalid Acquisition Mode for '+self.getPath())
-        self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String(acquisitionMode))
+            raise  Exception('Invalid Acquisition Mode '+acquisitionMode+' for '+self.getPath())
+        if acquisitionMode == 'CONTINUOUS':
+            self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String(acquisitionMode))
+        else:
+            self.getNode('.PARAMETERS.PAR_10:VALUE').putData(MDSplus.String('TRIGGERED'))
+
 
 
 #At this point triggerTime contains the (array of) trigger time(s)
