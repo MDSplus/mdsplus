@@ -577,7 +577,11 @@ Function Init
 	${If} for AllUsers ?
 		${If} `$INSTDIR` == ""
 			${If} ${RunningX64} ; 64 bit system
-				StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
+			    ${IF} ${ARCH} == "x64"
+				    StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
+				${Else}
+					StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
+				${Endif}
 			${Else} ; 32 bit system
 				StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
 			${EndIf}
