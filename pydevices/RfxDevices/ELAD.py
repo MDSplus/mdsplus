@@ -107,6 +107,14 @@ class ELAD(MDSplus.Device):
                     self.trigTime = 0.
                 self.clockFreq = 1E6
                 self.freqDiv = self.device.freq_div.data()
+                self.cicEnabled = self.device.cic_enabled.data() == 'YES'
+                if self.cicEnabled:
+                    shiftedBits = np.round(np.log2(np.power(self.freqDiv, 3)))
+                    if shiftedBits >= 12:
+                        shiftedBits -= 12
+                    self.cicCorrection = np.power(2, shiftedBits)/np.power(self.freqDiv, 3)
+                else:
+                    self.cicCorrection = 1
                 self.lhMode = []
                 for chanIdx in range(12):
                     self.lhMode.append(getattr(self.device, 'channel_%d_lh_mode' % (chanIdx+1)).data())
@@ -165,6 +173,8 @@ class ELAD(MDSplus.Device):
                             convertedData = chans[chanIdx] * 1E-5
                         else:
                             convertedData = chans[chanIdx] * 5E-6
+
+                        convertedData *= self.cicCorrection
                         getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
                        # getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
@@ -174,7 +184,7 @@ class ELAD(MDSplus.Device):
                             convertedData = chans[activeChans + chanIdx] * 1E-5
                         else:
                             convertedData = chans[chanIdx] * 5E-6
-                        convertedData *= 1E-6
+                        convertedData *= 1048576*1E-6   #2**20/1E6
                         getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
                         # getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
                     MDSplus.Event.setevent(self.device.jscope_ev.data())
