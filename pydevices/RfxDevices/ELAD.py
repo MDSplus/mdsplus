@@ -110,8 +110,8 @@ class ELAD(MDSplus.Device):
                 self.cicEnabled = self.device.cic_enabled.data() == 'YES'
                 if self.cicEnabled:
                     shiftedBits = np.round(np.log2(np.power(self.freqDiv, 3)))
-                    if shiftedBits >= 12:
-                        shiftedBits -= 12
+                    if shiftedBits >= 11:
+                        shiftedBits -= 11
                     self.cicCorrection = np.power(2, shiftedBits)/np.power(self.freqDiv, 3)
                 else:
                     self.cicCorrection = 1
