@@ -133,9 +133,11 @@
             <Component class="DeviceChoice" name="deviceChoice2">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="2">
+                  <StringArray count="4">
                     <StringItem index="0" value="CONTINUOUS"/>
-                    <StringItem index="1" value="TRIGGERED"/>
+                    <StringItem index="1" value="TRIGGERED_PFI1"/>
+                    <StringItem index="2" value="TRIGGERED_RTSI1"/>
+                    <StringItem index="3" value="TRIGGERED_PFI1_R_RTSI1"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
