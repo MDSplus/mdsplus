@@ -242,6 +242,8 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
         {'name': 'AcquisitionMode', 'type': 'string', 'value':'CONTINUOUS'},
         {'name': 'PreTriggerSamples', 'type': 'int32', 'value':0},
         {'name': 'PostTriggerSamples', 'type': 'int32', 'value':1000},
+        {'name': 'ClockSamplePolarity', 'type': 'string', 'value': 'ACTIVE_HIGH_OR_RISING_EDGE'},
+        {'name': 'ClockConvertPolarity', 'type': 'string', 'value': 'RISING_EDGE'},
     ]
     parts = []
 
