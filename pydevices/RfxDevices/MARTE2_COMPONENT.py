@@ -282,7 +282,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     if not isinstance(val, MDSplus.Dictionary):
                         raise Exception('Wrong parameter in ' + parNode.getPath()+' Only Dictionaries, string, scalar and arrays supported')
                 else:
-                    val = val.data()
+                    try:
+                        val = val.data()
+                    except:
+                        raise Exception('Cannot get value for parameter '+name)
             pars[name] = val
         return pars
     
