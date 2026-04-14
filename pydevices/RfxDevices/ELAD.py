@@ -748,7 +748,7 @@ class ELAD(MDSplus.Device):
             print("Cannot read samples from socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-        timebase = MDSplus.Range(trigTime, trigTime + 1E-6 * numChanSamples, 1E-6 * trFreqDiv)            
+        timebase = MDSplus.Range(trigTime, trigTime + 1E-6 * trFreqDiv * numChanSamples, 1E-6 * trFreqDiv)            
         for chan in range(activeChans):
             if getattr(self, 'channel_%d_lh_mode' % (chan+1)).data() == 0:
                 convExpr = self.getTree().tdiCompile("1E-5 * $VALUE")
@@ -756,7 +756,7 @@ class ELAD(MDSplus.Device):
                 convExpr = self.getTree().tdiCompile("5E-6 * $VALUE")
  
             rawMdsData = MDSplus.Int32Array(samples[chan * numChanSamples:(chan+1) * numChanSamples])
-            rawMdsData.setUnits("Sec.")
+            rawMdsData.setUnits("Count")
             convExpr.setUnits("Volt")
             currSig = MDSplus.Signal(convExpr, rawMdsData, timebase)
             self.__getattr__('channel_%d_data' % (chan+1)).putData(currSig)
