@@ -78,8 +78,8 @@ public class NI_WAVE_GENSetup extends DeviceSetup
 		setDeviceProvider("sdepl.nbtf");
 		setDeviceTitle("NI PXI-6259 / 6368 Analog Output Waveform Generation");
 		setDeviceType("NI_WAVE_GEN");
-		setHeight(600);
-		setWidth(800);
+		setHeight(400);
+		setWidth(1100);
 		jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 		deviceField1.setIdentifier("");
 		deviceField1.setLabelString("Comment:");
@@ -116,7 +116,7 @@ public class NI_WAVE_GENSetup extends DeviceSetup
 		deviceButtons1.setCheckExpressions(new String[] {});
 		deviceButtons1.setCheckMessages(new String[] {});
 		deviceButtons1.setMethods(new String[]
-		{ "init", "start_gen", "stop_gen" });
+		{ "init", "start_gen", "stop_gen", "pause_gen", "resume_gen", "update_gen"});
 		getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 		jPanel5.setLayout(new java.awt.GridLayout(4, 0));
 		jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
