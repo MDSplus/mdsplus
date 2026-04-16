@@ -552,8 +552,8 @@ int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr,
   // transient recorder 1
   if ((*(int *)stopAcq) == 1)
     transientRec = true;
-  else
-    numSamples = segmentSize;
+  
+  numSamples = segmentSize;
 
   (*(int *)stopAcq) = 0;
 
@@ -964,8 +964,8 @@ int pxi6259_readAndSaveAllChannels(
 
   if ((*(int *)stopAcq) == 1)
     transientRec = true;
-  else
-    numSamples = segmentSize;
+
+  numSamples = segmentSize;
 
   (*(int *)stopAcq) = 0;
 

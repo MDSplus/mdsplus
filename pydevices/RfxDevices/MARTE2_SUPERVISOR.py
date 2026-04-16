@@ -1483,8 +1483,10 @@ $<APP_NAME> = {
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
         commandFile.close()
-        f = Path(fileName)
-        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
+	st = os.stat(fileName)
+	os.chmod(fileName, st.st_mode | stat.S_IEXEC)
+#        f = Path(fileName)
+#        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
         return fileName    
  
     def convertGamNodes(self, gams):
@@ -1625,7 +1627,7 @@ $<APP_NAME> = {
 #        print(command)
 #        os.system(command)
 
-        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName])
+        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName+'_marte_configuration' ])
         return 1
 
         command = 'ps | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'' % (
