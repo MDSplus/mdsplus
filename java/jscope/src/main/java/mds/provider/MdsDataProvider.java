@@ -1415,7 +1415,7 @@ public class MdsDataProvider implements DataProvider
 			if(defaultNode != null) //Consider default node stuff only when defaultNode is really passed
 			{
 				//if (defaultNode != null && (prev_default_node == null || (!defaultNode.trim().equals("") && !defaultNode.equals(prev_default_node))))
-				if ( prev_default_node == null || !defaultNode.equals(prev_default_node))
+			//	if ( prev_default_node == null || !defaultNode.equals(prev_default_node))
 				{
 					Descriptor descr;
 					if (default_node.trim().charAt(0) == '\\')
