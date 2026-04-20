@@ -934,7 +934,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField40.setLabelString("Pre Set Press. [barG]:");
         deviceField40.setNumCols(5);
         deviceField40.setOffsetNid(320);
-        jPanel42.add(deviceField40);
+        //jPanel42.add(deviceField40);//remove 2024 07 03
 
         jPanel43.add(jPanel42);
 
@@ -986,7 +986,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave10.setUpdateExpression("");
         jPanel21.add(deviceWave10, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("Pressure Modulation %", jPanel21);
+        jTabbedPane4.addTab("Line Pressure [barG]", jPanel21);
 
         jPanel22.setLayout(new java.awt.BorderLayout());
 
