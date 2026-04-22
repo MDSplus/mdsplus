@@ -934,7 +934,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField40.setLabelString("Pre Set Press. [barG]:");
         deviceField40.setNumCols(5);
         deviceField40.setOffsetNid(320);
-        jPanel42.add(deviceField40);
+        //jPanel42.add(deviceField40);//remove 2024 07 03
 
         jPanel43.add(jPanel42);
 

@@ -1412,27 +1412,37 @@ public class MdsDataProvider implements DataProvider
 		}
 		if (open)
 		{
-			if (defaultNode != null && (prev_default_node == null || (!defaultNode.trim().equals("") && !defaultNode.equals(prev_default_node))))
+			if(defaultNode != null) //Consider default node stuff only when defaultNode is really passed
 			{
-				Descriptor descr;
-				if (default_node.trim().charAt(0) == '\\')
-					descr = mds.MdsValue("TreeSetDefault(\"\\" + defaultNode + "\")");
-				else
-					descr = mds.MdsValue("TreeSetDefault(\"\\\\" + defaultNode + "\")");
-				prev_default_node = defaultNode;
-				if ((descr.int_data[0] & 1) == 0)
+				//if (defaultNode != null && (prev_default_node == null || (!defaultNode.trim().equals("") && !defaultNode.equals(prev_default_node))))
+			//	if ( prev_default_node == null || !defaultNode.equals(prev_default_node))
 				{
-					mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
-					prev_default_node = null;
+					Descriptor descr;
+					if (default_node.trim().charAt(0) == '\\')
+					{
+						descr = mds.MdsValue("TreeSetDefault(\"\\" + defaultNode + "\")");
+					}
+					else
+					{
+						descr = mds.MdsValue("TreeSetDefault(\"\\\\" + defaultNode + "\")");
+					}
+					prev_default_node = defaultNode;
+					if ((descr.int_data[0] & 1) == 0)
+					{
+						mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+						prev_default_node = null;
+					}
 				}
 			}
-			else if (defaultNode == null && prev_default_node != null)
+		}
+/*			else if (defaultNode == null && prev_default_node != null)
 			{
-				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+//				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
 				prev_default_node = null;
 			}
                         prev_default_node = default_node;
 		}
+*/
 		return true;
 	}
 
