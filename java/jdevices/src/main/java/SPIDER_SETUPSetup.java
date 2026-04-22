@@ -265,7 +265,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField79 = new DeviceField();
         deviceField80 = new DeviceField();
 
-        setDeviceProvider("soserver.nbtf:9000");
+        setDeviceProvider("localhodst:8100");
         setDeviceTitle("SPIDER Experiment Setup");
         setDeviceType("SPIDER_SETUP");
         setHeight(650);
@@ -1350,7 +1350,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         // TODO add your handling code here:
     }//GEN-LAST:event_deviceField17PropertyChange
 
-    
+    public void applyCallback()
+    {
+        updateWaves();
+    }
     private void updateWaves()
     {
         float maxX = 0, minX = 0;
