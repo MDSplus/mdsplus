@@ -265,7 +265,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField79 = new DeviceField();
         deviceField80 = new DeviceField();
 
-        setDeviceProvider("soserver.nbtf:9000");
+        setDeviceProvider("localhodst:8100");
         setDeviceTitle("SPIDER Experiment Setup");
         setDeviceType("SPIDER_SETUP");
         setHeight(650);
@@ -986,7 +986,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave10.setUpdateExpression("");
         jPanel21.add(deviceWave10, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("Pressure Modulation %", jPanel21);
+        jTabbedPane4.addTab("Line Pressure [barG]", jPanel21);
 
         jPanel22.setLayout(new java.awt.BorderLayout());
 
@@ -1350,7 +1350,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         // TODO add your handling code here:
     }//GEN-LAST:event_deviceField17PropertyChange
 
-    
+    public void applyCallback()
+    {
+        updateWaves();
+    }
     private void updateWaves()
     {
         float maxX = 0, minX = 0;
