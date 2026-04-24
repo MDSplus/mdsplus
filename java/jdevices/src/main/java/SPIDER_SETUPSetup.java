@@ -429,7 +429,9 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
 
         jPanel33.add(jPanel53);
 
+        deviceChoice10.setChoiceIntValues(new int[] {0, 1, 2, 3, 4});
         deviceChoice10.setChoiceItems(new String[] {"Standard", "RF1 Master", "RF2 Master", "RF3 Master", "RF4 Master"});
+        deviceChoice10.setConvert(true);
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("RF Control Mode:");
         deviceChoice10.setOffsetNid(324);
@@ -1452,6 +1454,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     public void fireUpdate(String id, String val)
     {
         super.fireUpdate(id, val);
+        //System.out.println("FIRE UPDATE ID: "+id +"  VAL: " + val);
         if(val.equals("RF1 Master"))
         {
             jLabel5.setText("Master");
