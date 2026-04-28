@@ -156,7 +156,7 @@ class SPIDER_SETUP(Device):
      parts.append({'path':'.GVS:GAS_TYPE'   , 'type':'text'   , 'value':'3090'})
 
      parts.append({'path':'.ISEPS:ISRF_TE_V'  , 'type':'numeric', 'value':10000})
-     parts.append({'path':'.ISEPS:RF_REG_MODE', 'type':'text'   , 'value':'None'})
+     parts.append({'path':'.ISEPS:RF_REG_MODE', 'type':'numeric'   , 'value':0})
      parts.append({'path':'.ISEPS:FIL_V_REF'  , 'type':'numeric', 'value':54})
      parts.append({'path':'.ISEPS:CS1_I_REF'  , 'type':'numeric', 'value':0})
      parts.append({'path':'.ISEPS:CS2_I_REF'  , 'type':'numeric', 'value':0})

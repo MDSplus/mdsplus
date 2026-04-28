@@ -587,8 +587,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         deviceWave4.setIdentifier("rf1_power");
+        deviceWave4.setMinYVisible(true);
         deviceWave4.setOffsetNid(39);
         deviceWave4.setUpdateExpression("");
+        deviceWave4.setUpdateIdentifier("");
         jPanel10.add(deviceWave4, java.awt.BorderLayout.CENTER);
 
         jTabbedPane7.addTab("RF1 Power [kW]", jPanel10);
@@ -649,6 +651,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         jPanel16.setLayout(new java.awt.BorderLayout());
 
         deviceWave9.setIdentifier("");
+        deviceWave9.setMinYVisible(true);
         deviceWave9.setOffsetNid(213);
         deviceWave9.setUpdateExpression("");
         jPanel16.add(deviceWave9, java.awt.BorderLayout.CENTER);
@@ -690,8 +693,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         jPanel50.setLayout(new java.awt.BorderLayout());
 
         deviceWave24.setIdentifier("rf3_power");
+        deviceWave24.setMinYVisible(true);
         deviceWave24.setOffsetNid(227);
         deviceWave24.setUpdateExpression("");
+        deviceWave24.setUpdateIdentifier("");
         jPanel50.add(deviceWave24, java.awt.BorderLayout.CENTER);
 
         jTabbedPane9.addTab("RF3 Power [kW]", jPanel50);
@@ -741,8 +746,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         jPanel66.setLayout(new java.awt.BorderLayout());
 
         deviceWave27.setIdentifier("rf4_power");
+        deviceWave27.setMinYVisible(true);
         deviceWave27.setOffsetNid(248);
         deviceWave27.setUpdateExpression("");
+        deviceWave27.setUpdateIdentifier("");
         jPanel66.add(deviceWave27, java.awt.BorderLayout.CENTER);
 
         jTabbedPane10.addTab("RF4 Power [kW]", jPanel66);
