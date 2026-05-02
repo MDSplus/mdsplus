@@ -621,37 +621,10 @@ public class MdsDataProvider implements DataProvider
 			}
 			byte[] retData = null;
 			int nSamples;
-			int GetXYSignalVersion;
-			Descriptor desc;
-			if (isLong)
-			{
-				desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalLongTimes\"),ref(_addr))");
-				if ((desc.status & 1) == 1)
-					GetXYSignalVersion = 1;
-				else
-					GetXYSignalVersion = 0;
-			}
-			else
-			{
-				desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalDoubleLimits\"),ref(_addr))");
-				if ((desc.status & 1) == 1)
-				{
-					GetXYSignalVersion = 2;
-				}
-				else
-				{
-					desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignal\"),ref(_addr))");
-					if ((desc.status & 1) == 1)
-						GetXYSignalVersion = 1;
-					else
-						GetXYSignalVersion = 0;
-				}
-			}
-			// If the requeated number of points is Integer.MAX_VALUE, force the old way of
-			//getting data
-			if (numPoints == Integer.MAX_VALUE)
-				GetXYSignalVersion = 0;
-			if (GetXYSignalVersion > 0)
+			// If the requested number of points is Integer.MAX_VALUE, force the old way of getting data
+			// Signals with long (int64) dimension require GetXYSignal version 2
+			if ((numPoints != Integer.MAX_VALUE) &&
+				(((!isLong) && (GetXYSignalVersion > 0)) || (isLong && (GetXYSignalVersion > 1))))
 			{
 				final Vector<Descriptor> args = new Vector<>();
 				args.addElement(new Descriptor(null, yExpr));
@@ -679,7 +652,7 @@ public class MdsDataProvider implements DataProvider
 					retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
 				else
 				{
-					if (GetXYSignalVersion > 1)
+					if (GetXYSignalVersion > 2)
 						retData = GetByteArray(" MdsMisc->GetXYSignalDoubleLimits:DSC", args);
 					else
 					{
@@ -1268,6 +1241,7 @@ public class MdsDataProvider implements DataProvider
 	protected long shot;
 	protected boolean open, connected;
 	protected final MdsConnection mds;
+	protected int GetXYSignalVersion;
 	protected String error;
 
 	protected boolean use_compression = false;
@@ -1363,6 +1337,34 @@ public class MdsDataProvider implements DataProvider
 				connected = true;
 				updateWorker = new UpdateWorker();
 				updateWorker.start();
+				/* Get version of MdsMisc GetXYSignal routine
+				 *   0 GetXYSignal not available
+				 *   1 added GetXYSignal for signals with real dimension
+				 *   2 added GetXYSignalLongTimes for signals with long integer dimension
+				 *   3 GetXYSignalDoubleLimits replaced GetXYSignal
+				 */
+				Descriptor desc;
+				desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalDoubleLimits\"),ref(_addr))");
+				if ((desc.status & 1) == 1)
+				{
+					GetXYSignalVersion = 3;
+				}
+				else
+				{
+					desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalLongTimes\"),ref(_addr))");
+					if ((desc.status & 1) == 1)
+					{
+						GetXYSignalVersion = 2;
+					}
+					else
+					{
+						desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignal\"),ref(_addr))");
+						if ((desc.status & 1) == 1)
+							GetXYSignalVersion = 1;
+						else
+							GetXYSignalVersion = 0;
+					}
+				}
 			}
 		}
 	}
@@ -1374,22 +1376,7 @@ public class MdsDataProvider implements DataProvider
 
 	protected synchronized boolean CheckOpen(String experiment, long shot, String defaultNode) throws IOException
 	{
-		int status;
-		if (!connected)
-		{
-			status = mds.ConnectToMds(use_compression);
-			if (status == 0)
-			{
-				if (mds.error != null)
-					throw new IOException("Cannot connect to data server : " + mds.error);
-				else
-					error = "Cannot connect to data server";
-				return false;
-			}
-			connected = true;
-			updateWorker = new UpdateWorker();
-			updateWorker.start();
-		}
+		CheckConnection();
 		if (!open && experiment != null || this.shot != shot
 				|| experiment != null && !experiment.equalsIgnoreCase(this.experiment))
 		{
