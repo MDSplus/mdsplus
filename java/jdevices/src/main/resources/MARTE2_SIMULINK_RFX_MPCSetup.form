@@ -73,7 +73,7 @@
         </Container>
         <Container class="DeviceParameters" name="deviceParameters1">
           <Properties>
-            <Property name="numParameters" type="int" value="10"/>
+            <Property name="numParameters" type="int" value="9"/>
             <Property name="offsetNid" type="int" value="19"/>
           </Properties>
           <Constraints>

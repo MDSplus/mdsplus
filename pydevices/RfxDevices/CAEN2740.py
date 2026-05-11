@@ -117,7 +117,6 @@ class CAEN2740(MDSplus.Device):
             print('Cannot set clock mode')   
             raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-
         numChans = int(digs[ip].par.NUMCH.value)
         if numChans != 64:
             print('Unexpected numewr of channels: '+str(numChans))
@@ -207,7 +206,7 @@ class CAEN2740(MDSplus.Device):
         postSamples = self.getNode('POST_TRIG').data()
 
         inputRange = int(digs[ip].par.INPUTRANGE.value)
-
+ 
         dim = MDSplus.Dimension(MDSplus.Window(MDSplus.Int32(-preSamples), MDSplus.Int32(postSamples), MDSplus.Float64(triggerTime)), MDSplus.Range(
                 None, None, MDSplus.Float64(delta)))
         convExpr = self.getTree().tdiCompile(str(inputRange)+'* $VALUE/32768. - '+str(inputRange/2))

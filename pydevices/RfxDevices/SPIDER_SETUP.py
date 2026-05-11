@@ -156,7 +156,7 @@ class SPIDER_SETUP(Device):
      parts.append({'path':'.GVS:GAS_TYPE'   , 'type':'text'   , 'value':'3090'})
 
      parts.append({'path':'.ISEPS:ISRF_TE_V'  , 'type':'numeric', 'value':10000})
-     parts.append({'path':'.ISEPS:RF_REG_MODE', 'type':'text'   , 'value':'None'})
+     parts.append({'path':'.ISEPS:RF_REG_MODE', 'type':'numeric'   , 'value':0})
      parts.append({'path':'.ISEPS:FIL_V_REF'  , 'type':'numeric', 'value':54})
      parts.append({'path':'.ISEPS:CS1_I_REF'  , 'type':'numeric', 'value':0})
      parts.append({'path':'.ISEPS:CS2_I_REF'  , 'type':'numeric', 'value':0})
@@ -212,6 +212,28 @@ class SPIDER_SETUP(Device):
      parts.append({'path':'.SAFETY_PAR.NOM_VACUUM:ISRF3_PLIM', 'type':'Numeric'})
      parts.append({'path':'.SAFETY_PAR.NOM_VACUUM:ISRF4_PLIM', 'type':'Numeric'})
 
+
+# 2026 04 22
+# Changes for the setup of the new Radio Frequency Solid State Amplifier (RFSA)
+# .ISEPS:ISRF_TE_V is not removed from the conglomerate, but it is no longer used in the new RFSA power supply.
+# The RF frequency values are changed from reference to setpoint, along with some other parameters used to configure the RF frequency control mode.
+
+# Add Frequency field to all RFSA power supply
+                
+     parts.append({'path':'.ISEPS.RFSA_FREQ', 'type':'structure'})
+     for i in range(0,4):
+           parts.append({'path':'.ISEPS.RFSA_FREQ.RF_%d'%(i+1), 'type':'structure'})
+           parts.append({'path':'.ISEPS.RFSA_FREQ.RF_%d:MODE'%(i+1), 'type':'numeric', 'value':0})
+           parts.append({'path':'.ISEPS.RFSA_FREQ.RF_%d:AUTO_FREQ'%(i+1), 'type':'numeric', 'value': 920.})
+           parts.append({'path':'.ISEPS.RFSA_FREQ.RF_%d:VSWR'%(i+1), 'type':'numeric', 'value': 1.2})
+           parts.append({'path':'.ISEPS.RFSA_FREQ.RF_%d:PHASE'%(i+1), 'type':'numeric', 'value': 0.})
+
+
+
+
      del(i)
+
+
+
 
 

@@ -92,7 +92,7 @@ public class MARTE2_OPCUA_INSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        deviceOutputs1.setOffsetNid(26);
+        deviceOutputs1.setOffsetNid(38);
         jScrollPane1.setViewportView(deviceOutputs1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);

@@ -66,7 +66,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Write CPU Mask:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="111"/>
+                <Property name="offsetNid" type="int" value="109"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jButton2">
@@ -959,7 +959,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="113"/>
+                        <Property name="offsetNid" type="int" value="114"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -977,7 +977,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="114"/>
+                        <Property name="offsetNid" type="int" value="115"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -986,7 +986,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="116"/>
+                        <Property name="offsetNid" type="int" value="117"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField31">
@@ -994,7 +994,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="117"/>
+                        <Property name="offsetNid" type="int" value="118"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1014,7 +1014,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="123"/>
+                        <Property name="offsetNid" type="int" value="124"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1032,7 +1032,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="124"/>
+                        <Property name="offsetNid" type="int" value="125"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1041,7 +1041,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="126"/>
+                        <Property name="offsetNid" type="int" value="127"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField34">
@@ -1049,7 +1049,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="127"/>
+                        <Property name="offsetNid" type="int" value="128"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1069,7 +1069,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="133"/>
+                        <Property name="offsetNid" type="int" value="134"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1087,7 +1087,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="134"/>
+                        <Property name="offsetNid" type="int" value="135"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1096,7 +1096,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="136"/>
+                        <Property name="offsetNid" type="int" value="137"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField37">
@@ -1104,7 +1104,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="137"/>
+                        <Property name="offsetNid" type="int" value="138"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1124,7 +1124,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="offsetNid" type="int" value="145"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1142,7 +1142,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="offsetNid" type="int" value="145"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1151,7 +1151,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="146"/>
+                        <Property name="offsetNid" type="int" value="148"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField40">
@@ -1159,7 +1159,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="147"/>
+                        <Property name="offsetNid" type="int" value="148"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1179,7 +1179,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="153"/>
+                        <Property name="offsetNid" type="int" value="154"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1197,7 +1197,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="154"/>
+                        <Property name="offsetNid" type="int" value="155"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1206,7 +1206,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="156"/>
+                        <Property name="offsetNid" type="int" value="157"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField43">
@@ -1214,7 +1214,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="157"/>
+                        <Property name="offsetNid" type="int" value="158"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1234,7 +1234,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="163"/>
+                        <Property name="offsetNid" type="int" value="164"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1252,7 +1252,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="164"/>
+                        <Property name="offsetNid" type="int" value="165"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1261,7 +1261,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="166"/>
+                        <Property name="offsetNid" type="int" value="167"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField46">
@@ -1269,7 +1269,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="167"/>
+                        <Property name="offsetNid" type="int" value="168"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1289,7 +1289,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="173"/>
+                        <Property name="offsetNid" type="int" value="174"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1307,7 +1307,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="174"/>
+                        <Property name="offsetNid" type="int" value="175"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1316,7 +1316,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="176"/>
+                        <Property name="offsetNid" type="int" value="177"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField49">
@@ -1324,7 +1324,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="177"/>
+                        <Property name="offsetNid" type="int" value="178"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1344,7 +1344,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name: "/>
-                        <Property name="offsetNid" type="int" value="183"/>
+                        <Property name="offsetNid" type="int" value="184"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1362,7 +1362,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type: "/>
-                        <Property name="offsetNid" type="int" value="184"/>
+                        <Property name="offsetNid" type="int" value="185"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1371,7 +1371,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions (0 for scalar, -1 to disable):"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="186"/>
+                        <Property name="offsetNid" type="int" value="187"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField52">
@@ -1379,7 +1379,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable)"/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="187"/>
+                        <Property name="offsetNid" type="int" value="188"/>
                       </Properties>
                     </Component>
                   </SubComponents>
