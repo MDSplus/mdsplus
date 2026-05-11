@@ -116,7 +116,7 @@ public class DeviceField extends DeviceComponent
 		jp.add(label = new JLabel());
 		add(jp);
 		add(textF = new JTextField(10));
-		textF.setEnabled(editable);
+		//textF.setEnabled(editable);
 		textF.setEditable(editable);
 		origTH = textF.getTransferHandler();
 		textF.setTransferHandler(new ToTransferHandler());
