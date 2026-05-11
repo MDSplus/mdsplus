@@ -38,6 +38,7 @@ public class CAEN2740Setup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         jPanel5 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
+        deviceChoice66 = new DeviceChoice();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -286,6 +287,13 @@ public class CAEN2740Setup extends DeviceSetup {
         deviceField5.setNumCols(25);
         deviceField5.setOffsetNid(6);
         jPanel5.add(deviceField5);
+
+        deviceChoice66.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice66.setIdentifier("");
+        deviceChoice66.setLabelString("Clock Mode: ");
+        deviceChoice66.setOffsetNid(263);
+        deviceChoice66.setUpdateIdentifier("");
+        jPanel5.add(deviceChoice66);
 
         jPanel2.add(jPanel5);
 
@@ -1452,6 +1460,7 @@ public class CAEN2740Setup extends DeviceSetup {
     private DeviceChoice deviceChoice63;
     private DeviceChoice deviceChoice64;
     private DeviceChoice deviceChoice65;
+    private DeviceChoice deviceChoice66;
     private DeviceChoice deviceChoice7;
     private DeviceChoice deviceChoice8;
     private DeviceChoice deviceChoice9;
