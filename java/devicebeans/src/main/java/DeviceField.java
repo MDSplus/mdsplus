@@ -116,7 +116,7 @@ public class DeviceField extends DeviceComponent
 		jp.add(label = new JLabel());
 		add(jp);
 		add(textF = new JTextField(10));
-		//textF.setEnabled(editable);
+	//	textF.setEnabled(editable);
 		textF.setEditable(editable);
 		origTH = textF.getTransferHandler();
 		textF.setTransferHandler(new ToTransferHandler());
@@ -204,7 +204,7 @@ public class DeviceField extends DeviceComponent
 		else
 			textF.setText("");
 		label.setEnabled(is_on);
-		textF.setEnabled(is_on & editable);
+		//textF.setEnabled(is_on & editable);
 		textF.setEditable(is_on & editable);
 	}
 
@@ -295,7 +295,7 @@ public class DeviceField extends DeviceComponent
 						label.setEnabled(state);
 					if (textF != null && editable)
 					{
-						textF.setEnabled(state);
+						//textF.setEnabled(state);
 						textF.setEditable(state);
 					}
 				}
@@ -340,7 +340,7 @@ public class DeviceField extends DeviceComponent
 				reportingChange = false;
 			}
 		});
-		textF.setEnabled(editable);
+		//textF.setEnabled(editable);
 		textF.setEditable(editable);
 		if (preferredWidth > 0)
 		{
@@ -435,7 +435,7 @@ public class DeviceField extends DeviceComponent
 		// if(checkB != null) checkB.setEnabled(state);
 		if (textF != null)
 		{
-			textF.setEnabled(state);
+		//	textF.setEnabled(state);
 			textF.setEditable(state);
 		}
 		if (label != null)
