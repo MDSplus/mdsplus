@@ -619,61 +619,57 @@ public class MdsDataProvider implements DataProvider
 					xExpr = in_x;
 				}
 			}
-			final Vector<Descriptor> args = new Vector<>();
-			args.addElement(new Descriptor(null, yExpr));
-			if (in_x == null)
-				args.addElement(new Descriptor(null, ""));
-			else
-				args.addElement(new Descriptor(null, xExpr));
-			if (isLong)
-			{
-				args.addElement(new Descriptor(null, new long[]
-				{ (xmin <= -Double.MAX_VALUE) ? Long.MIN_VALUE : (long) xmin }));
-				args.addElement(new Descriptor(null, new long[]
-				{ (xmax >= Double.MAX_VALUE) ? Long.MAX_VALUE : (long) xmax }));
-			}
-			else
-			{
-				args.addElement(new Descriptor(null, new double[]
-				{ (double) xmin }));
-				args.addElement(new Descriptor(null, new double[]
-				{ (double) xmax }));
-			}
-			args.addElement(new Descriptor(null, new int[]
-			{ numPoints }));
 			byte[] retData = null;
 			int nSamples;
-			try
+			// If the requested number of points is Integer.MAX_VALUE, force the old way of getting data
+			// Signals with long (int64) dimension require GetXYSignal version 2
+			if ((numPoints != Integer.MAX_VALUE) &&
+				(((!isLong) && (GetXYSignalVersion > 0)) || (isLong && (GetXYSignalVersion > 1))))
 			{
-				// If the requeated number of points is Integer.MAX_VALUE, force the old way of
-				// getting data
-				if (numPoints == Integer.MAX_VALUE)
-					throw new Exception("Use Old Method for getting data");
+				final Vector<Descriptor> args = new Vector<>();
+				args.addElement(new Descriptor(null, yExpr));
+				if (in_x == null)
+					args.addElement(new Descriptor(null, ""));
+				else
+					args.addElement(new Descriptor(null, xExpr));
+				if (isLong)
+				{
+					args.addElement(new Descriptor(null, new long[]
+					{ (xmin <= -Double.MAX_VALUE) ? Long.MIN_VALUE : (long) xmin }));
+					args.addElement(new Descriptor(null, new long[]
+					{ (xmax >= Double.MAX_VALUE) ? Long.MAX_VALUE : (long) xmax }));
+				}
+				else
+				{
+					args.addElement(new Descriptor(null, new double[]
+					{ (double) xmin }));
+					args.addElement(new Descriptor(null, new double[]
+					{ (double) xmax }));
+				}
+				args.addElement(new Descriptor(null, new int[]
+				{ numPoints }));
 				if (isLong)
 					retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
 				else
-                                {
-                                    try {
- 					retData = GetByteArray(" MdsMisc->GetXYSignalDoubleLimits:DSC", args);
-                                    }catch(Exception exc)
-                                    {
-                                        //Try old method in case the mdsip server is not up-to-date
-                                         final Vector<Descriptor> newArgs = new Vector<>();
-                                         for(int i = 0; i < args.size() - 3; i++)
-                                        {
-                                            newArgs.addElement(args.elementAt(i));
-                                        }
-                                        newArgs.addElement(new Descriptor(null, new float[]
-                                                { (float) xmin }));
-                                        newArgs.addElement(new Descriptor(null, new float[]
-                                                { (float) xmax }));
-                                        newArgs.addElement(new Descriptor(null, new int[]
-                                                { numPoints }));
-                                         try {
-                                                retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", newArgs);
-                                         } catch(Exception exc1){System.out.println(exc1);}
-                                    }
-                                }
+				{
+					if (GetXYSignalVersion > 2)
+						retData = GetByteArray(" MdsMisc->GetXYSignalDoubleLimits:DSC", args);
+					else
+					{
+						final Vector<Descriptor> newArgs = new Vector<>();
+						for(int i = 0; i < args.size() - 3; i++)
+						{
+							newArgs.addElement(args.elementAt(i));
+						}
+						newArgs.addElement(new Descriptor(null, new float[]
+						{ (float) xmin }));
+						newArgs.addElement(new Descriptor(null, new float[]
+						{ (float) xmax }));
+						newArgs.addElement(new Descriptor(null, new int[]
+						{ numPoints }));
+						retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", newArgs);
+					}
+				}
 				/*
 				 * Decode data: Format: -retResolution(float) ----Gabriele Feb 2019 NEW: if
 				 * retResolution == 0 then the following int is the number of bytes of the error
@@ -692,7 +688,7 @@ public class MdsDataProvider implements DataProvider
 					nSamples = dis.readInt();
 					final byte[] errorBuf = new byte[nSamples];
 					dis.readFully(errorBuf);
-					throw new Exception(new String(errorBuf));
+					throw new IOException(new String(errorBuf));
 				}
 				if (debug)
 					System.out.println("********************RET RESOLUTION: " + fRes);
@@ -724,14 +720,14 @@ public class MdsDataProvider implements DataProvider
 				{
 					final double[] x = new double[nSamples];
 					for (int i = 0; i < nSamples; i++)
-                                        {
+					{
 						x[i] = dis.readDouble();
-                                                if(i > 0 && x[i-1] > x[i])
-                                                {
-                                                    System.out.println("Internal error: non increasing dimension ("+i+" "+nSamples+")");
-                                                }
-                                        }        
-                                        res = new XYData(x, y, dRes);
+						if(i > 0 && x[i-1] > x[i])
+						{
+							System.out.println("Internal error: non increasing dimension ("+i+" "+nSamples+")");
+						}
+					}
+					res = new XYData(x, y, dRes);
 				}
 				else // float X
 				{
@@ -772,27 +768,25 @@ public class MdsDataProvider implements DataProvider
 					// enqueue a new request
 				return res;
 			}
-			catch (final Exception exc)
-			{
-				// System.out.println("MdsMisc->GetXYSignal Failed: "+exc); It means that
-				// MdsMisc->GetXYSignal() is likely not available on the server
-			}
-			// If execution arrives here probably MdsMisc->GetXYSignal() is not available on
-			// the server, so use the traditional approach
-//            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
-			final float y[] = GetFloatArray("(" + yExpr + ")");
-			final RealArray xReal = GetRealArray("(" + xExpr + ";)");
-			if (y == null || xReal == null)
-				return null;
-			if (xReal.isLong())
-			{
-				isXLong = true;
-				return new XYData(xReal.getLongArray(), y, 1E12);
-			}
 			else
 			{
-				isXLong = false;
-				return new XYData(xReal.getDoubleArray(), y, 1E12);
+				// If execution arrives here probably MdsMisc->GetXYSignal() is not available on
+				// the server, so use the traditional approach
+//            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
+				final float y[] = GetFloatArray("(" + yExpr + ")");
+				final RealArray xReal = GetRealArray("(" + xExpr + ";)");
+				if (y == null || xReal == null)
+					return null;
+				if (xReal.isLong())
+				{
+					isXLong = true;
+					return new XYData(xReal.getLongArray(), y, 1E12);
+				}
+				else
+				{
+					isXLong = false;
+					return new XYData(xReal.getDoubleArray(), y, 1E12);
+				}
 			}
 		}
 
@@ -1247,6 +1241,7 @@ public class MdsDataProvider implements DataProvider
 	protected long shot;
 	protected boolean open, connected;
 	protected final MdsConnection mds;
+	protected int GetXYSignalVersion;
 	protected String error;
 
 	protected boolean use_compression = false;
@@ -1342,6 +1337,34 @@ public class MdsDataProvider implements DataProvider
 				connected = true;
 				updateWorker = new UpdateWorker();
 				updateWorker.start();
+				/* Get version of MdsMisc GetXYSignal routine
+				 *   0 GetXYSignal not available
+				 *   1 added GetXYSignal for signals with real dimension
+				 *   2 added GetXYSignalLongTimes for signals with long integer dimension
+				 *   3 GetXYSignalDoubleLimits replaced GetXYSignal
+				 */
+				Descriptor desc;
+				desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalDoubleLimits\"),ref(_addr))");
+				if ((desc.status & 1) == 1)
+				{
+					GetXYSignalVersion = 3;
+				}
+				else
+				{
+					desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignalLongTimes\"),ref(_addr))");
+					if ((desc.status & 1) == 1)
+					{
+						GetXYSignalVersion = 2;
+					}
+					else
+					{
+						desc = mds.MdsValue("_addr=0Q;MdsShr->LibFindImageSymbol(descr(\"MdsMisc\"),descr(\"GetXYSignal\"),ref(_addr))");
+						if ((desc.status & 1) == 1)
+							GetXYSignalVersion = 1;
+						else
+							GetXYSignalVersion = 0;
+					}
+				}
 			}
 		}
 	}
@@ -1353,22 +1376,7 @@ public class MdsDataProvider implements DataProvider
 
 	protected synchronized boolean CheckOpen(String experiment, long shot, String defaultNode) throws IOException
 	{
-		int status;
-		if (!connected)
-		{
-			status = mds.ConnectToMds(use_compression);
-			if (status == 0)
-			{
-				if (mds.error != null)
-					throw new IOException("Cannot connect to data server : " + mds.error);
-				else
-					error = "Cannot connect to data server";
-				return false;
-			}
-			connected = true;
-			updateWorker = new UpdateWorker();
-			updateWorker.start();
-		}
+		CheckConnection();
 		if (!open && experiment != null || this.shot != shot
 				|| experiment != null && !experiment.equalsIgnoreCase(this.experiment))
 		{
