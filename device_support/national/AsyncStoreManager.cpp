@@ -54,6 +54,7 @@ MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr,  int res
 void SaveItem::save()
 {
 
+  //std::cout << " sampleToRead " << sampleToRead << std::endl;
   // std::cout << "START SAVE" << std::endl;
   //Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
   Tree *tree = (Tree *)treePtr;
@@ -138,7 +139,9 @@ void SaveItem::save()
     // if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) *
     // segmentSize) < counter + bufSize )
     // if ((counter % segmentSize) == 0 || sampleToRead == 0)
-     if (sampleToRead >= segmentSize || counter == 0)
+    //if (sampleToRead >= segmentSize || counter == 0 )
+
+    if (sampleToRead >= segmentSize || counter == 0 || sampleToRead == 0)
     {
   //  std::cout << "SAVE 2" << std::endl;
     // Create Segment
@@ -173,7 +176,7 @@ void SaveItem::save()
 
         Data *timeAtIdx0 = new Float32(timeIdx0);
         Data *periodData = new Float64(period);
-        std::cout << "PERIOD: " << period << std::endl;
+        //std::cout << "PERIOD: " << period << std::endl;
         startTime = compileWithArgs(
             "NIADCClockSegment($1, $2, $3, $4, 'start_time', $5)", tree, 5,
             clockNode, startIdx, endIdx, timeAtIdx0, periodData);
@@ -257,6 +260,9 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
       break;
       }
 
+      //std::cout << "Start Idx " << startIdx << " End Idx " << endIdx << " segmentSize " << segmentSize << std::endl;
+
+
       deleteData(startIdx);
       deleteData(endIdx);
       deleteData(startTime);
@@ -265,8 +271,10 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
 
     try
     {
+
       switch (dataType)
       {
+
       case SHORT:
       {
         // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
@@ -282,7 +290,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
         }
         catch (const MdsException &exc)
         {
-          printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
+          printf("PUT SEGMENT FAILED FOR NODE : %s: %s\n", dataNode->getFullPath(),
                  exc.what());
         }
         pthread_mutex_unlock(&segmentMutex);
