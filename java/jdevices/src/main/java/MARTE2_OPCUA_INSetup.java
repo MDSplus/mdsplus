@@ -31,9 +31,9 @@ public class MARTE2_OPCUA_INSetup extends DeviceSetup {
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
-        deviceField6 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
+        deviceChoice1 = new DeviceChoice();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -61,28 +61,32 @@ public class MARTE2_OPCUA_INSetup extends DeviceSetup {
         deviceField2.setOffsetNid(22);
         jPanel2.add(deviceField2);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("RootIdentifierType: ");
-        deviceField6.setOffsetNid(37);
-        deviceField6.setTextOnly(true);
-        jPanel2.add(deviceField6);
+        deviceChoice2.setChoiceItems(new String[] {"STRING", "NUMERIC"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("RootIdentifierType: ");
+        deviceChoice2.setOffsetNid(37);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel2.add(deviceChoice2);
 
         jPanel1.add(jPanel2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Traverse");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(28);
-        jPanel3.add(deviceField3);
+        deviceChoice1.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice1.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice1.setConvert(true);
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Traverse Hierarchy: ");
+        deviceChoice1.setOffsetNid(28);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice1);
 
         deviceField4.setIdentifier("");
-        deviceField4.setLabelString("RootNameSpaceIndex:");
+        deviceField4.setLabelString("RootNameSpace: ");
         deviceField4.setNumCols(4);
         deviceField4.setOffsetNid(31);
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("RootIdentifierValue:");
+        deviceField5.setLabelString("RootIdentifier:");
         deviceField5.setNumCols(15);
         deviceField5.setOffsetNid(34);
         deviceField5.setTextOnly(true);
@@ -92,7 +96,7 @@ public class MARTE2_OPCUA_INSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        deviceOutputs1.setOffsetNid(26);
+        deviceOutputs1.setOffsetNid(38);
         jScrollPane1.setViewportView(deviceOutputs1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -101,12 +105,12 @@ public class MARTE2_OPCUA_INSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
     private DeviceField deviceField2;
-    private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
-    private DeviceField deviceField6;
     private DeviceOutputs deviceOutputs1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -35,7 +35,9 @@ public fun DIO4HWSetExternalClockChan(in _nid, in _board_id, in _channel, in _fr
 	private _DIO4_IO_INT_ENABLE =0x1;
 	private _DIO4_IO_INT_DISABLE= 0x0;
 
-write(*, 'DIO4HWSetExternalClockChan');
+        private _DIO4_CLOCK_SOURCE_OK = 0x1;
+
+write(*, 'DIO4HWSetExternalClockChan 0');
 
 	_period = 1./_freq2;
 	_tot_cycles = long(_period / 1E-7 + 0.5);
@@ -122,7 +124,6 @@ write(*, 'DIO4HWSetExternalClockChan');
 	
 
 
-
 	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(byte(_DIO4_CLOCK_SOURCE_IO)), val(byte(2*_channel+2)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
 	if(_status != 0)
 	{
@@ -170,9 +171,6 @@ write(*, 'DIO4HWSetExternalClockChan');
         write("Check PLL", _bLockCnt);
         wait(1);
     }
-
-
-
 
 	_dwTemp = long(0);
 	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x008)), ref(_dwTemp));

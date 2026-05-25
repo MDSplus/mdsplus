@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 FFT GAM"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_FFT"/>
     <Property name="height" type="int" value="300"/>
@@ -57,7 +57,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Num. Samples"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="7"/>
+                <Property name="offsetNid" type="int" value="33"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
@@ -65,7 +65,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MdsWriter CPU Mask: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="22"/>
+                <Property name="offsetNid" type="int" value="26"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -79,7 +79,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Out Segment len (0 to disable writing in tree):"/>
                 <Property name="numCols" type="int" value="5"/>
-                <Property name="offsetNid" type="int" value="28"/>
+                <Property name="offsetNid" type="int" value="35"/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice2">
@@ -117,24 +117,6 @@
         <Container class="javax.swing.JPanel" name="jPanel3">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-                <Property name="numCols" type="int" value="35"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField6">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase div:"/>
-                <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="41"/>
-              </Properties>
-            </Component>
-          </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
 

@@ -7,6 +7,7 @@ import time
 import traceback
 import os
 import glob
+import subprocess
 try:
     from pathlib import Path
 except:
@@ -30,6 +31,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
     MAX_STATES = 10
     MAX_THREADS = 10
+    MAX_GAM_TIMES_PER_THREAD = 8
+
 
     for stateIdx in range(MAX_STATES):
         parts.append({'path': '.STATE_'+str(stateIdx+1), 'type': 'structure'})
@@ -86,7 +89,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
     parts.append({'path': ':VERBOSITY', 'type': 'text', 'value': 'QUIET' })
     parts.append({'path': ':DESCRIPTION', 'type': 'text'})
-
+    parts.append({'path': ':TIMER_CPU', 'type': 'numeric'})
+    parts.append({'path': ':ALIVE_PORT', 'type': 'numeric'})
 
     parts.append({'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
@@ -115,7 +119,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
 
 
 
-    def convertGamNodes(self, gams):
+    def convertGamNodesXXXX(self, gams):
         gamNodes = []
         if isinstance(gams, MDSplus.VECTOR):
             for i in range(gams.getNumDescs()):
@@ -170,7 +174,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 currInterface = interfaces.getDescAt(i)
                 if isinstance(currInterface, MDSplus.TreePath):
                     currInterface = self.getTree().getNode(currInterface)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         else:
             for interf1 in interfaces.data():
                 if isinstance(interf1, str):
@@ -178,7 +183,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 else:
                     interf = str(interf1, 'utf_8')
                 currInterface = t.getNode(interf)
-                interfaceNodes.append(currInterface)
+                if currInterface.isOn():
+                    interfaceNodes.append(currInterface)
         #Check
         for currInterface in interfaceNodes:
             if isinstance(currInterface, MDSplus.TreePath):
@@ -222,7 +228,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 raise Exception('Declared node is not a MARTE2_SUPERVISOR: ', currSupervisor)
         return supervisorNodes
 
-    #Return the target timebase reference dor DERIVED and EXT_DERIVED mode
+    #Return the target timebase reference for DERIVED and EXT_DERIVED mode
     def getExtTimebaseRef(self, timebaseMode, stateIdx, threadIdx): 
         if timebaseMode == 'DERIVED':
             try:
@@ -423,11 +429,21 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 frequency = self.getNode('STATE_%d.THREAD_%d:TIMEBASE_DEF' % (stateIdx+1, threadIdx+1)).data()
             except:
                 raise Exception('Missing period definition  for Internal timebase mode in thread '+threadName+' supervisor '+ self.getPath())
-            retDataSources.append( {
-                'Name': threadName+'_Timer',
-                'Class': 'LinuxTimer',
-                'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
-            })
+            if self.timerCpu != None:
+                retDataSources.append( {
+                    'Name': threadName+'_Timer',
+                    'Class': 'LinuxTimer',
+                    'Parameters': {
+                        'CPUMask' : self.timerCpu,
+                    },
+                    'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
+                })
+            else:
+                retDataSources.append( {
+                    'Name': threadName+'_Timer',
+                    'Class': 'LinuxTimer',
+                    'Signals': [{'Name':'Counter', 'Type': 'uint32'}, {'Name':'Time', 'Type': 'uint32'}]
+                })
             retDataSources.append( {
                 'Name': threadName+'_TimerDDB',
                 'Class': 'GAMDataSource'
@@ -525,6 +541,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                         'Name': 'Time',
                         'Type': timerType,
                         'DataSource': refThreadName+'_TimerSync',
+                        'NumberOfElements': 1, 
+                        'NumberOfDimensions':0,
                         'Samples': syncDiv
                     }] ,
                     'Outputs': [{
@@ -673,6 +691,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             retDataSources.append({
                 'Name': threadName+'_TimerSync',
                 'Class': 'RealTimeThreadSynchronisation',
+                'Parameters': {'Timeout': 1000000000}
             })
             retGams.append({
                 'Name': threadName+'TimerSync_IOGAM',
@@ -685,6 +704,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'Outputs': [{
                     'Name': 'Time',
                     'Type': timerType,
+                    'NumberOfElements': 1, 
+                    'NumberOfDimensions':0,
                     'DataSource': threadName+'_TimerSync'
                 }]
             })
@@ -823,7 +844,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         gamNodes = self.getGamNodes(stateIdx, threadIdx)
         for gamNode in gamNodes:
             gamName = gamNode.getMarteDeviceName()
-            gamMode = gamNode.getData('MODE').getDevice()
+            gamMode = gamNode.getNode('MODE').data()
             if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
                 timeSignals.append(gamName+'_ReadTime')
                 timeSignals.append(gamName+'_ExecTime')
@@ -845,12 +866,16 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'DataSource': 'Timings',
             'Type': 'uint32'
         })
+        sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:
+                break
             gamInputs.append({
                 'Name': timeSignal,
                 'DataSource': 'Timings',
                 'Type': 'uint32'
             })
+            sigIdx += 1
         retGam['Inputs'] = gamInputs
         gamOutputs = []
         gamOutputs.append({
@@ -858,17 +883,21 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
             'Type': 'uint32'
         })
+        sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:
+                break
             gamOutputs.append({
                 'Name': timeSignal,
                 'DataSource': 'State_%d_Thread_%d_TIMES_WRITER\n' % (stateIdx+1, threadIdx+1),
                 'Type': 'uint32'
             })
+            sigIdx += 1
         retGam['Outputs'] = gamOutputs
 
         retDataSource = {}
         retDataSource['Name'] = 'State_%d_Thread_%d_TIMES_WRITER' % (stateIdx+1, threadIdx+1)
-        retDataSource['Class'] = 'MDSWriter'
+        retDataSource['Class'] = 'MDSDataSource::MDSplusWriter'
         retDataSource['Parameters'] = {
             'CPUMask': cpuMask,
             'NumberOfBuffers' : 20000,
@@ -892,6 +921,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         })
         sigIdx = 1
         for timeSignal in timeSignals:
+            if sigIdx > MARTE2_SUPERVISOR.MAX_GAM_TIMES_PER_THREAD:  #This is the number of supported GAMs for time recording
+                break
             retSignals.append({
                 'Name': timeSignal,
                 'NodeName':  getattr(self, 'times_state_%d_thread_%d_gam' % (stateIdx+1, threadIdx+1)+str(sigIdx)).getFullPath(),
@@ -899,7 +930,8 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 'MakeSegmentAfterNWrites': segLen,
                 'AutomaticSegmentation' : 0,
                 'DiscontinuityFactor': 10
-           })
+            })
+            sigIdx += 1 
 
         retDataSource['Signals'] = retSignals
         return retDataSource, retGam
@@ -1003,7 +1035,11 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                 if isinstance(paramDict[paramKey], str):
                     paramConf += self.skipTabs(tabCount)+paramKey+' = \"'+str(paramDict[paramKey])+'\"\n'
                 else:
-                    currValue = str(paramDict[paramKey])
+                    if np.isscalar(paramDict[paramKey]):
+                        currValue = str(paramDict[paramKey])
+                    else:
+                        currValue = np.array2string(paramDict[paramKey])
+ #                       currValue = np.array2string(paramDict[paramKey], threshold = np.inf)
                     currValue = currValue.replace('[', '{')
                     currValue = currValue.replace(']', '}')
                     paramConf += self.skipTabs(tabCount)+paramKey+' = ('+self.getParamType(paramDict[paramKey])+')'+currValue+'\n'
@@ -1113,6 +1149,15 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
             firstStateName = self.getNode('STATE_1:NAME').data()
         except:
             raise Exception('Missing first state name for '+self.getPath())
+        try:
+            self.timerCpu = self.getNode('TIMER_CPU').data()
+        except:
+            self.timerCpu = None
+        try:
+            self.alivePort = self.getNode('ALIVE_PORT').data()
+        except:
+            self.alivePort = None
+
         outConfig = '''
 <TYPE_LIST>
 +MDS_EVENTS = {
@@ -1120,6 +1165,7 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
     StackSize = 1048576
     CPUs = 0x1
     Name = <APP_NAME>
+    $$ALIVE_PORT$$
 }
 <INTERFACE_LIST>    
 +StateMachine = {
@@ -1139,6 +1185,31 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
                     Class = ConfigurationDatabase
                     param1 = Idle
                 }
+            }
+            +StartNextStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StartNextStateExecution
+            }
+        }
+        +GOTORUN = {
+            Class = StateMachineEvent
+            NextState = "RUN"
+            NextStateError = "IDLE"
+            Timeout = 0 
+            +ChangeToRunMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = PrepareNextState
+                +Parameters = {
+                   Class = ConfigurationDatabase
+                    param1 = <FIRST_STATE>
+                }
+            }
+            +StopCurrentStateExecutionMsg = {
+                Class = Message
+                Destination = <APP_NAME>
+                Function = StopCurrentStateExecution
             }
             +StartNextStateExecutionMsg = {
                 Class = Message
@@ -1241,6 +1312,7 @@ $<APP_NAME> = {
       Class = ReferenceContainer
       +IDLE_MDSPLUS_TIMER = {
         Class = LinuxTimer
+        $$LINUX_TIMER_CPU$$
         Signals = {
           Counter = {
             Type = uint32
@@ -1279,6 +1351,16 @@ $<APP_NAME> = {
     }
 }
 '''    
+        if self.timerCpu == None:
+            outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','')
+        else:
+            outConfig = outConfig.replace('$$LINUX_TIMER_CPU$$','CPUMask = '+str(self.timerCpu))
+
+        if self.alivePort == None:
+            outConfig = outConfig.replace('$$ALIVE_PORT$$','')
+        else:
+            outConfig = outConfig.replace('$$ALIVE_PORT$$','Port = '+str(self.alivePort))
+
         config = self.getMarte2ConfigInfo()  
         outConfig = outConfig.replace('<APP_NAME>', appName)
         outConfig = outConfig.replace('<TYPE_LIST>', self.expandTypes(config['TypesDict']))
@@ -1304,7 +1386,7 @@ $<APP_NAME> = {
         f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
         f.write(config)
         f.close()
-        self.getNode('MARTE_CONFIG').putData(MDSplus.Int8Array(np.fromstring(config, dtype=np.int8)))
+        self.getNode('MARTE_CONFIG').putData(MDSplus.Int8Array(np.frombuffer(config.encode('utf-8'), dtype=np.int8)))
 
 
 
@@ -1347,7 +1429,7 @@ $<APP_NAME> = {
         gamClasses.append('ConstantGAM')
         gamClasses.append('PickSampleGAM')
         gamClasses.append('MDSEventManager')
-        gamClasses.append('MDSWriter')
+        gamClasses.append('MDSDataSource::MDSplusWriter')
         gamClasses.append('MDSReaderGAM')
         gamClasses.append('RealTimeThreadSynchronisation')
         gamClasses.append('RealTimeThreadAsyncBridge')
@@ -1356,7 +1438,7 @@ $<APP_NAME> = {
         gamClasses.append('RTNOut')
         return gamClasses
     
-    def buildStartScript(self):
+    def buildStartScript(self, startsSoon = False):
         gamClasses = self.getInvolvedGamClasses()
         fileContent = ''
         try:
@@ -1393,13 +1475,18 @@ $<APP_NAME> = {
         else:
             verb = 8191 #Remove three most significant bits in error mask
         fileName = '/tmp/'+self.getNode('name').data()+'_start.sh'
-        fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
+        if startsSoon:
+            fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:GOTORUN' + ' -e ' + str(verb) +'\n'
+        else:
+            fileContent += os.environ['MARTe2_DIR'] +'/Build/x86-linux/App/MARTeApp.ex -l RealTimeLoader -f '+ '/tmp/'+self.getNode('name').data()+'_marte_configuration.cfg -m StateMachine:START' + ' -e ' + str(verb) +'\n'
         print(fileContent)
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
         commandFile.close()
-        f = Path(fileName)
-        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
+        st = os.stat(fileName)
+        os.chmod(fileName, st.st_mode | stat.S_IEXEC)
+#        f = Path(fileName)
+#        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
         return fileName    
  
     def convertGamNodes(self, gams):
@@ -1408,8 +1495,12 @@ $<APP_NAME> = {
             for i in range(gams.getNumDescs()):
                 currGamNode = gams.getDescAt(i)
                 if isinstance(currGamNode, MDSplus.TreePath):
-                    currGamNode = self.getTree().getNode(currGamNode)
-                gamNodes.append(currGamNode)
+                    try:
+                        currGamNode = self.getTree().getNode(currGamNode)
+                    except:
+                        raise Exception('Cannot find GAM Node: '+currGamNode.getFullPath())  
+                if currGamNode.isOn():                      
+                    gamNodes.append(currGamNode)
         else:
             for gam1 in gams.data():
                 if isinstance(gam1, str):
@@ -1417,16 +1508,19 @@ $<APP_NAME> = {
                 else:
                     gam = str(gam1, 'utf_8')
                 currGamNode = self.getTree().getNode(gam)
-                gamNodes.append(currGamNode)
+                if currGamNode.isOn():
+                    gamNodes.append(currGamNode)
         return gamNodes
 
 
 
     def startMarteIdle(self):
         self.buildConfiguration()
-#        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
-#            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        subprocess.Popen([self.buildStartScript()], shell=True)
+        self.stopMarte()
+        name = self.getNode('NAME').data()
+        f = open('/tmp/MARTe2_'+name+'_Output.log', 'w', buffering = 1)
+ #       subprocess.Popen([self.buildStartScript(startsSoon = False)], shell=True)
+        subprocess.Popen(['stdbuf', '-oL', self.buildStartScript(startsSoon = False)],  stdout=f)
 
     def startMarteIdleFromConfig(self):
         try:
@@ -1447,9 +1541,9 @@ $<APP_NAME> = {
         stateName = self.state_1_name.data()
 #        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
 #            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
-        subprocess.Popen([self.buildStartScript()], shell=True)
-        time.sleep(4)
-        self.gotorun()
+        subprocess.Popen([self.buildStartScript(startsSoon = True)], shell=True)
+#        time.sleep(4)
+#        self.gotorun()
 
     def gotorun(self):
         marteName = self.getNode('name').data()
@@ -1519,17 +1613,21 @@ $<APP_NAME> = {
     def stopMarte(self):
         marteName = self.getNode('name').data()
         self.suspendMarte()
-        time.sleep(2)
+        time.sleep(1)
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
-        time.sleep(2)
+        time.sleep(1)
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         # KILL MARTe process
         import subprocess
         import os
+        thisPattern = 'MARTeApp.ex -l RealTimeLoader -f /tmp/'+marteName+'_marte_configuration.cfg'
+#        command = 'kill -KILL `ps -a | grep \"'+thisPattern+'\" | grep -v grep | awk \'{print $1}\'`'
+#        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
+#        command = 'kill -KILL `ps -af | grep MARTeApp.ex | grep '+ marteName + ' | grep -v grep | awk \'{print $2}\'`'
+#        print(command)
+#        os.system(command)
 
-        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
-        print(command)
-        os.system(command)
+        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName+'_marte_configuration' ])
         return 1
 
         command = 'ps | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'' % (

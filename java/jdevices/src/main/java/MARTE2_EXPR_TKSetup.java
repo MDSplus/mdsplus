@@ -67,7 +67,7 @@ public class MARTE2_EXPR_TKSetup extends DeviceSetup
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Storage CPUs: ");
         deviceField42.setNumCols(4);
-        deviceField42.setOffsetNid(100);
+        deviceField42.setOffsetNid(103);
         jPanel50.add(deviceField42);
 
         getContentPane().add(jPanel50, java.awt.BorderLayout.PAGE_START);
