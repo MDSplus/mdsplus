@@ -28,7 +28,7 @@
 """
 RfxDevices
 ==========
-@authors: Gabriele Manduchi & Luca Trevisan (Consorzio RFX Padova)
+@authors: Gabriele Manduchi & Luca Trevisan (Consorzio RFX Padova), Tim Robinson (UKAEA)
 @copyright: 2023
 @license: GNU GPL
 """
@@ -42,6 +42,9 @@ import os
 import sys
 import numpy as np
 import select
+from collections import OrderedDict
+import errno
+import time
 
 class NI6683(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
@@ -306,6 +309,45 @@ class NI6683(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), message + 'status: %d'%(status))
             raise DevCOMM_ERROR
 
+    def NI6683_close(self, Fds):
+        print("\nCLOSING NI6683...")
+        print('FD to Close: ', Fds)
+        for fd in Fds:
+            print("Closing FD", fd)
+            os.close(fd)
+        print("CLOSED!")
+        return 0
+    
+    def NI6683_stop(self, activeFds):
+        print("\nSTOPPING NI6683...")
+        status = NI6683.niLib.nisync_abort_all_ftes(self.fd)
+        if status == -1:
+            return -1
+
+        for fd in activeFds:
+            print("Disabling future events for FD %i" % fd)
+            status = NI6683.niLib.nisync_disable_future_time_events(fd)
+            errorNumber = get_errno()
+            message = os.strerror(errorNumber)
+            if status == -1:
+                print("Tried disabling future events for FD %i, failed with the errno: %i = %s" % (fd, get_errno(), message))
+                return -1
+            os.close(fd)
+        
+        os.close(self.fd)
+        print("STOPPED!")
+        return 0   
+
+    #Stop worker process if it is running
+    def worker_check(self):
+        if NI6683.ni6683WorkerDict:
+            worker = NI6683.ni6683WorkerDict[self.nid]
+            self.fd = NI6683.ni6683Fds[self.nid]
+            if worker.isAlive():
+                self.debugPrint("PXI 6683 stop_worker")
+                worker.stop()
+                worker.join()
+
     # saves the information contained in the pulse file in the module variables
     def init(self):
         self.debugPrint('=================  PXI 6683 init ===============')
@@ -316,19 +358,26 @@ class NI6683(Device):
         curr_nanos = c_uint64()
         status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
 
+        # Checking if the moduled is synchronized with the PTP network
+        curr_state = c_int(0)
+        NI6683.niLib.nisync_get_ptpd_state(self.fd, byref(curr_state))
+        if (curr_state.value != 2):
+            Data.execute('DevLogErr($1,$2)', self.getNid(), "ERROR: MODULE NON SYNCHRONIZED WITH THE PTP NETWORK! EXITING...")
+            raise DevBAD_PARAMETER # DA METTERE A POSTO
+
         try:
             NI6683.ni6683AbsStart = self.abs_start.data() # Trying to read the curr time from the ABS_START field
-            print ("ABS START RETRIEVED: %f, INTERNAL TIME: %f"%(NI6683.ni6683AbsStart, curr_nanos.value))
-            if curr_nanos.value - NI6683.ni6683AbsStart < 0:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), "CURRENT TIME SMALLER THAN ABSOLUTE TIME")
-                raise DevBAD_PARAMETER 
-            elif abs(curr_nanos.value - NI6683.ni6683AbsStart) > 1000:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), "ABSOLUTE TIME FAR FROM THE MODULE INTERNAL TIME, CHECK THE SYNCHRONIZATION STATUS")
-                raise DevBAD_PARAMETER
         except:
             print (" !!!!!!!!!!!!!!! PROBLEM IN RECOVERING ABSOLUTE TIME, CONTINUING WITH MODULE INTERNAL TIME !!!!!!!!!!!!!!!")
             NI6683.useInternalReference = True
-        
+
+        if (not NI6683.useInternalReference):
+            print ("ABS START RETRIEVED: %f, INTERNAL TIME: %f"%(NI6683.ni6683AbsStart, curr_nanos.value))
+            if NI6683.ni6683AbsStart - curr_nanos.value < 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), "ERROR: CURRENT TIME GREATER THAN ABSOLUTE TIME")
+                raise DevBAD_PARAMETER 
+            
+
         # if the trigger event is defined, the module will wait for it to be triggered
         try:
             NI6683.ni6683ModuleTriggerName = self.trig_event.data()
@@ -429,7 +478,12 @@ class NI6683(Device):
     # By using the information gained in the init() phase, the NI6683 triggers the future events associated to each terminal
     def trigger(self):
         self.debugPrint('=================  PXI 6683 trigger ===============')
+        #ERROR CHECKING
+        if not NI6683.ni6683Modes: #This is created by init, so if it doesn't exist init wasn't run
+            print("ERROR: Init not run first")
+            return -1
         self.restoreInfo()
+        self.worker_check()
 
         if (NI6683.useInternalReference): # if abs_start not found on the pulse file, puts the current module time in the abs_start field
             deltaT = 200 # ms
@@ -722,8 +776,7 @@ class NI6683(Device):
         self.termDict = NI6683.ni6683Dicts[self.nid]
         for termName in NI6683.termNameDict.keys():
             Fds.append(self.termDict[termName])
-        c_Fds = (c_int * len(Fds))(*Fds)
-        status = NI6683.niInterfaceLib.NI6683_close(c_int(self.fd), c_Fds, len(Fds))
+        status = self.NI6683_close(Fds)
         if status == -1:
             print("PROBLEM WHILE CLOSING...")
 
@@ -731,12 +784,7 @@ class NI6683(Device):
     def stop(self):
         self.debugPrint('================= PXI 6683 stop ================')
         self.closeInfo()
-        worker = NI6683.ni6683WorkerDict[self.nid]
-        self.fd = NI6683.ni6683Fds[self.nid]
-        if worker.isAlive():
-           self.debugPrint("PXI 6683 stop_worker")
-           worker.stop()
-           worker.join()
+        self.worker_check()
 
         if self.nid in NI6683.ni6683Fds.keys():
             self.fd = NI6683.ni6683Fds[self.nid]
@@ -762,14 +810,28 @@ class NI6683(Device):
             mode = getattr(self, termName.lower()+'_mode').data()
             if mode != 'DISABLED':
                 term = NI6683.niLib.nisync_open_terminal(c_int(devType), c_int(boardId), c_int(NI6683.termNameDict[termName]), c_int(self.NISYNC_READ_NONBLOCKING))
+                print("Terminal open: ", term)
                 activeFds.append(term)
 
-        c_activeFds = (c_int * len(activeFds))(*activeFds)
         
-        status = NI6683.niInterfaceLib.NI6683_stop(c_int(self.fd), c_activeFds, len(activeFds))
+        status = self.NI6683_stop(activeFds)
         if status == -1:
             print("PROBLEM WHILE STOPPING...")
+        print("Cleaning up...") #-----------------------------Tim Robinson added code
+        for fd in activeFds:
+            try:
+                os.close(fd)
+                print("Closed terminal FD" , fd) 
+            except OSError as e:
+                #print ("Terminal FD", fd, " already closed")
+                pass
 
+        try:    
+            os.close(self.fd)
+            print("Closed Device FD" , self.fd)
+        except OSError as e:
+            #print("Device FD" , self.fd, " already closed")
+            pass
     # AsynchStore inner class, it handles the MDSEvents geneneration triggered by hardware
     class AsynchStore(Thread):
         class nisync_timestamp_nanos(Structure):
@@ -805,24 +867,21 @@ class NI6683(Device):
             while not self.stopReq:
                 readyFds = self.poll.poll(1000)
                 for fdTuple in readyFds:
-                    print (readyFds)
                     readyFd = fdTuple[0]
                     event = fdTuple[1]
                     print('EVENT: ', fdTuple, select.EPOLLIN)
-                    if event & select.EPOLLIN == 0:
+                    if (event & select.EPOLLIN) == 0:
                         print('NO DATA')
-                    if event & select.EPOLLERR != 0:
+                        return
+                    if (event & select.EPOLLERR) != 0:
                         print ('POLL ERROR!!')
                         return
                     timestamp = self.nisync_timestamp_nanos(0,0)
-                    # nanos = c_uint64()
-                    # status = NI6683.niLib.nisync_get_time_ns(NI6683.ni6683Fds[self.device.getNid()], byref(nanos))
                     status = NI6683.niLib.nisync_read_timestamps_ns(c_int(readyFd), byref(timestamp), c_int(1))
                     print ("TIMESTAMP: " , timestamp.nanos)
                     self.device.checkStatus(status, 'Cannot get current time')
                     termName = self.nameDict[readyFd]
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
-                    # eventRelTime = self.getRelTime(nanos.value)
                     eventRelTime = self.getRelTime(timestamp.nanos)
                     recorderNid.putRow(10, Float64(eventRelTime), Float64(eventRelTime))
                     print ("DEBUG -> TIMESTAMP: " + str(timestamp.nanos))
@@ -830,7 +889,8 @@ class NI6683(Device):
                     try:
                         eventNameNid = getattr(self.device, termName.lower()+'_event_name')
                         eventName = eventNameNid.data()
-                        Event.setevent(eventName, Uint64(eventRelTime))
+                        # Event.setevent(eventName, Uint64(eventRelTime))
+                        Event.setevent(eventName, Float64(eventRelTime))
                     except:
                         pass
                     
