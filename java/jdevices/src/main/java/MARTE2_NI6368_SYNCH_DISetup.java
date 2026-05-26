@@ -41,7 +41,7 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField8 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("NI6259 Synch Digital In");
+        setDeviceTitle("NI6368 Synch Digital In");
         setDeviceType("MARTE2_NI6259_SYNCH_DI");
         setHeight(200);
         setWidth(800);
@@ -51,7 +51,7 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id.:");
-        deviceField1.setNumCols(2);
+        deviceField1.setNumCols(20);
         deviceField1.setOffsetNid(10);
         jPanel2.add(deviceField1);
 
