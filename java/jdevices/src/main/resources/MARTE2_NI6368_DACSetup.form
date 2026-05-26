@@ -49,7 +49,7 @@
           <Properties>
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Board Id:"/>
-            <Property name="numCols" type="int" value="2"/>
+            <Property name="numCols" type="int" value="20"/>
             <Property name="offsetNid" type="int" value="10"/>
           </Properties>
         </Component>
