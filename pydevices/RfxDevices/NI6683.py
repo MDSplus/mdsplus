@@ -29,7 +29,7 @@
 """
 RfxDevices
 ==========
-@authors: Gabriele Manduchi & Luca Trevisan (Consorzio RFX Padova), Tim Robinson (UKAEA)
+@authors: Gabriele Manduchi & Luca Trevisan (Consorzio RFX Padova)
 @copyright: 2023
 @license: GNU GPL
 """
@@ -45,6 +45,7 @@ import select
 from collections import OrderedDict
 import errno
 import time
+
 
 class NI6683(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
@@ -360,8 +361,22 @@ class NI6683(Device):
         if NI6683.ni6683WorkerDict:
             worker = NI6683.ni6683WorkerDict[self.nid]
             self.fd = NI6683.ni6683Fds[self.nid]
-
             if self.thread_alive(worker):
+                self.debugPrint("PXI 6683 stop_worker")
+                worker.stop()
+                worker.join()
+
+    # saves the information contained in the pulse file in the module variables
+    def init(self):
+        self.debugPrint('=================  PXI 6683 init ===============')
+        if (self.DEVMODE == 1):
+            print("WARNING: Developer mode active!")
+        self.restoreInfo()
+        self.reset_device()
+
+        NI6683.ni6683RecorderDict[self.nid] = []
+        curr_nanos = c_uint64()
+        status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
 
         if (self.DEVMODE != 1):
             # Checking if the moduled is synchronized with the PTP network
@@ -922,6 +937,7 @@ class NI6683(Device):
                     self.device.checkStatus(status, 'Cannot get current time')
                     termName = self.nameDict[readyFd]
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
+                    
                     eventRelTime = self.getRelTime(timestamp.nanos)
                     
                     # Store this event as a single-sample segment
