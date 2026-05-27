@@ -285,7 +285,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     try:
                         val = val.data()
                     except:
-                        raise Exception('Cannot get value for parameter '+name)
+                        raise Exception('Cannot get value for parameter '+name + ' in '+parRoot.getPath())
             pars[name] = val
         return pars
     
