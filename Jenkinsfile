@@ -4,6 +4,7 @@ def OSList = [
     ['Ubuntu 22.04 (amd64)',            'ubuntu-22-amd64',  'docker && linux-amd64'],
     ['Ubuntu 24.04 (amd64)',            'ubuntu-24-amd64',  'docker && linux-amd64'],
     ['Ubuntu 24.04 (arm64)',            'ubuntu-24-arm64',  'docker && linux-aarch64'],
+    ['Ubuntu 26.04 (amd64)',            'ubuntu-26-amd64',  'docker && linux-amd64'],
     ['RHEL 7 (x86_64)',                 'rhel-7-x86_64',    'docker && linux-amd64'],
     ['RHEL 8 (x86_64)',                 'rhel-8-x86_64',    'docker && linux-amd64'],
     ['RHEL 9 (x86_64)',                 'rhel-9-x86_64',    'docker && linux-amd64'],
