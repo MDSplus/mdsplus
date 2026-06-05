@@ -948,7 +948,7 @@ static inline void OperateIfun(char init,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
