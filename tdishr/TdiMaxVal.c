@@ -283,7 +283,7 @@ operateIloc(char *start, int testit(const char *, const char *), args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
@@ -317,7 +317,7 @@ static inline void OperateFloc(char dtype, double start,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
@@ -351,7 +351,7 @@ static inline void OperateTloc(int testit(), args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
@@ -538,7 +538,7 @@ operateIval(char *start, int testit(const char *, const char *), args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -569,7 +569,7 @@ static inline void OperateFval(char dtype, double start,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -601,7 +601,7 @@ static inline void OperateTval(int testit(), args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -757,7 +757,7 @@ static inline void OperateImean(size_t buflen,
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   char *buf = malloc(buflen);
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -788,7 +788,7 @@ static inline void OperateFmean(char dtype, args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -826,7 +826,7 @@ static inline void OperateCmean(char dtype, args_t *a)
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -973,7 +973,7 @@ static inline void OperateFfun(double init, char dtype,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
@@ -1010,7 +1010,7 @@ static inline void OperateCfun(double init, char dtype,
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
-  for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
+  for (ja = 0, pia = a->inp, pma = a->maskp; ja < a->cnt_aft;
        ja++, pia += a->stp_aft, pma += a->stpm_aft)
   { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
