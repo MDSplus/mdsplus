@@ -428,7 +428,7 @@ class NI6368EV(Device):
             self.device.debugPrint('Stop ASYNCH WORKER TERMINATED')
             self.stopReq = True
             NI6368EV.niInterfaceLib.setStopAcqFlag(self.stopAcq)
-
+            print('****TIRATO SU FLAG DI STOP*****')
         def hasError(self):
             return ( self.error != self.ACQ_NOERROR)
         
@@ -440,7 +440,7 @@ class NI6368EV(Device):
                     self.device.debugPrint('Exception')
                     pass
             self.device.debugPrint('ASYNCH WORKER TERMINATED')
-            NI6368EV.niInterfaceLib.stopSave(saveList)
+            NI6368EV.niInterfaceLib.stopSaveEV(saveList)
             NI6368EV.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
 
             self.device.closeInfo()
@@ -770,12 +770,13 @@ class NI6368EV(Device):
             if not error:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread stopped')
         """
-
+        print("NI6368EV STOP STORE")
         if self.thread_alive(self.worker):
             print("Try to stopping...")
             self.worker.stop()
             error = self.worker.hasError()
         else:
+            print("Thread alredy dead")
             error = self.worker.hasError()
             if not error:
                 Data.execute('DevLogErr($1,$2)', self.getNid(),
