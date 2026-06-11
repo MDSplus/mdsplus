@@ -3,6 +3,8 @@ dtype = class(value);
 switch dtype
     case 'char'
         result = value;
+    case 'string'
+        result = value;
     otherwise
         switch dtype
             case 'single'
