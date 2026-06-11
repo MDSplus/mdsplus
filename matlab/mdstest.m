@@ -32,7 +32,9 @@ function result = mdstest(varargin)
     result = result && mdscheck('$ == $', 'uint8', [1, 1], 1, 2);
     result = result && mdscheck('QUADWORD_UNSIGNED(1:100)', 'uint64', [100, 1]);
     if info.usePython
-        if ismac || ispc
+        % Text can have different classes depending on the software versions
+        x = mdsvalue('"any_string"');
+        if strcmp(class(x), 'py.str')
             result = result && mdscheck('"string test"', 'py.str', [1, 11]);
         else 
             result = result && mdscheck('"string test"', 'char', [1, 11]);
