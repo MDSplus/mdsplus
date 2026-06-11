@@ -371,9 +371,8 @@ class DTACQ_SUPERVISOR(Device):
             try:
                 dtackAi = self.ai_b_device.getData()
                 hasBulkAi = True
-                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(clockFreq)) #num samples
-#                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/numSamples))
-                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(1)) #1 segment per second
+#                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(clockFreq)) #num samples
+                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(clockFreq)) #1 segment per second
                 dtackAi.getNode('.PARAMETERS.PAR_2:VALUE').putData(Float64(triggerTime))
                 dtackAi.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32(1))
                 dtackAi.getNode('.PARAMETERS.PAR_4:VALUE').putData(len(aiSites))

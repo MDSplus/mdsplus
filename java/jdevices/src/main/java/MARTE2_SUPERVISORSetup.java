@@ -48,6 +48,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceDispatch1 = new DeviceDispatch();
         jPanel109 = new javax.swing.JPanel();
         deviceField172 = new DeviceField();
+        deviceChoice10 = new DeviceChoice();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -267,12 +268,13 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceField353 = new DeviceField();
         jPanel200 = new javax.swing.JPanel();
         deviceField354 = new DeviceField();
+        deviceFieldArea1 = new DeviceFieldArea();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Supervisor");
         setDeviceType("MARTE2_SUPERVISOR");
         setHeight(400);
-        setWidth(1200);
+        setWidth(1300);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -329,6 +331,13 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
         deviceField172.setNumCols(50);
         deviceField172.setOffsetNid(5);
         jPanel109.add(deviceField172);
+
+        deviceChoice10.setChoiceItems(new String[] {"QUIET", "VERBOSE"});
+        deviceChoice10.setIdentifier("");
+        deviceChoice10.setLabelString("Vervosity: ");
+        deviceChoice10.setOffsetNid(2049);
+        deviceChoice10.setUpdateIdentifier("");
+        jPanel109.add(deviceChoice10);
 
         jPanel2.add(jPanel109);
 
@@ -407,7 +416,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("GAMs:");
-        deviceField8.setNumCols(50);
+        deviceField8.setNumCols(110);
         deviceField8.setOffsetNid(13);
         jPanel9.add(deviceField8);
 
@@ -472,7 +481,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField184.setIdentifier("");
         deviceField184.setLabelString("GAMs:");
-        deviceField184.setNumCols(50);
+        deviceField184.setNumCols(100);
         deviceField184.setOffsetNid(21);
         jPanel114.add(deviceField184);
 
@@ -537,7 +546,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField192.setIdentifier("");
         deviceField192.setLabelString("GAMs:");
-        deviceField192.setNumCols(50);
+        deviceField192.setNumCols(100);
         deviceField192.setOffsetNid(29);
         jPanel118.add(deviceField192);
 
@@ -602,7 +611,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField200.setIdentifier("");
         deviceField200.setLabelString("GAMs:");
-        deviceField200.setNumCols(50);
+        deviceField200.setNumCols(100);
         deviceField200.setOffsetNid(37);
         jPanel122.add(deviceField200);
 
@@ -667,7 +676,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField208.setIdentifier("");
         deviceField208.setLabelString("GAMs:");
-        deviceField208.setNumCols(50);
+        deviceField208.setNumCols(100);
         deviceField208.setOffsetNid(45);
         jPanel126.add(deviceField208);
 
@@ -732,7 +741,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField216.setIdentifier("");
         deviceField216.setLabelString("GAMs:");
-        deviceField216.setNumCols(50);
+        deviceField216.setNumCols(100);
         deviceField216.setOffsetNid(53);
         jPanel130.add(deviceField216);
 
@@ -797,7 +806,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField224.setIdentifier("");
         deviceField224.setLabelString("GAMs:");
-        deviceField224.setNumCols(50);
+        deviceField224.setNumCols(100);
         deviceField224.setOffsetNid(61);
         jPanel134.add(deviceField224);
 
@@ -862,7 +871,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         deviceField232.setIdentifier("");
         deviceField232.setLabelString("GAMs:");
-        deviceField232.setNumCols(50);
+        deviceField232.setNumCols(100);
         deviceField232.setOffsetNid(69);
         jPanel138.add(deviceField232);
 
@@ -1414,6 +1423,10 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
 
         jTabbedPane1.addTab("State2", jPanel139);
 
+        deviceFieldArea1.setOffsetNid(2050);
+        deviceFieldArea1.setTextOnly(true);
+        jTabbedPane1.addTab("Description", deviceFieldArea1);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -1441,6 +1454,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice10;
     private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice18;
     private DeviceChoice deviceChoice19;
@@ -1595,6 +1609,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
+    private DeviceFieldArea deviceFieldArea1;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel109;

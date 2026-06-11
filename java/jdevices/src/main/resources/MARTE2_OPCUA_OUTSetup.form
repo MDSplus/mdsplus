@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+<Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTE2 OPCUA OUT"/>
@@ -21,7 +21,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,55,0,0,3,51"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,55,0,0,3,-20"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -58,12 +58,18 @@
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField5">
+            <Component class="DeviceChoice" name="deviceChoice2">
               <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="NUMERIC"/>
+                    <StringItem index="1" value="STRING"/>
+                  </StringArray>
+                </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="RootIdentifierType"/>
+                <Property name="labelString" type="java.lang.String" value="RootIdentifier Type"/>
                 <Property name="offsetNid" type="int" value="25"/>
-                <Property name="textOnly" type="boolean" value="true"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
           </SubComponents>
@@ -72,12 +78,22 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField2">
+            <Component class="DeviceChoice" name="deviceChoice1">
               <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[1, 0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="convert" type="boolean" value="true"/>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Traverse: "/>
-                <Property name="numCols" type="int" value="4"/>
+                <Property name="labelString" type="java.lang.String" value="Traverse Hierarchy: "/>
                 <Property name="offsetNid" type="int" value="16"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField3">
@@ -111,6 +127,9 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Container class="DeviceInputs" name="deviceInputs1">
+          <Properties>
+            <Property name="offsetNid" type="int" value="26"/>
+          </Properties>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
         </Container>

@@ -30,6 +30,12 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 
 class MARTE2_SIMULINK(MC.MARTE2_COMPONENT):
+    PROXY_IN = 1
+    PROXY_OUT = 2
+    PROXY_IN_SERVER = 3
+    PROXY_OUT_SERVER = 5
+    PROXY_NONE = 0
+    proxyMode = PROXY_NONE
     pass
 
 # TODO: device class need <lib_name>.so to get node struct,
@@ -575,7 +581,8 @@ def BUILDER(cls):
  #                   paramDict = dict(name='Parameters.'+retrievedName,
  #                                   type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
                     paramDict = dict(name=retrievedName,
-                                    type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
+                                    type=MARTe2Typename, dimensions=dimension)
+#                                    type=MARTe2Typename, dimensions=dimension, value=mdsplusValue)
 
                     # dictionary is appended to the MDSplus-style list
                     paramList.append(paramDict)
@@ -911,7 +918,8 @@ def BUILDER(cls):
                         raise Exception('Unsupported parameter datatype.')
                       
                 paramDict = dict(name=fieldName,
-                            type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
+                            type=fieldMARTe2Typename, dimensions=fieldDimension)
+#                            type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
               # dictionary is appended to the MDSplus-style list
                 paramList.append(paramDict)
             return paramList
@@ -939,5 +947,43 @@ def BUILDER(cls):
         cls.parameters = modelParameters
 
     cls.parts = []
-    cls.buildGam(cls.parts, 'SimulinkWrapperGAM', cls.MODE_GAM)
+    if cls.proxyMode == MARTE2_SIMULINK.PROXY_IN:
+        cls.outputs = [
+            {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+            {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []}]+cls.outputs
+        cls.parameters = [
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
+            {'name': 'Port', 'type': 'int32', 'value': 3},
+            {'name': 'InPort', 'type': 'int32', 'value': 8123},
+            {'name': 'FirstPacketEnabled', 'type': 'int32', 'value': 0},
+            {'name': 'LossRate', 'type': 'float64', 'value': 0},
+            {'name': 'PacketDelay', 'type': 'int32', 'value': 0}
+             ]
+        cls.buildGam(cls.parts, 'SimulinkProxyIn', cls.MODE_SYNCH_INPUT)
+    elif cls.proxyMode == MARTE2_SIMULINK.PROXY_OUT:
+        cls.parameters = [
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
+            {'name': 'Port', 'type': 'int32', 'value': 8122},
+            {'name': 'LossRate', 'type': 'float64', 'value': 0},
+            {'name': 'PacketDelay', 'type': 'int32', 'value': 0}
+             ]       
+        cls.buildGam(cls.parts, 'SimulinkProxyOut', cls.MODE_OUTPUT)
+    elif cls.proxyMode == MARTE2_SIMULINK.PROXY_IN_SERVER:
+        cls.parameters = [
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
+            {'name': 'Port', 'type': 'int32', 'value': 3},
+            {'name': 'InPort', 'type': 'int32', 'value': 8122},
+            {'name': 'FirstPacketEnabled', 'type': 'int32', 'value': 0}]
+        cls.outputs = [
+            {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+            {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []}]+cls.inputs
+        cls.buildGam(cls.parts, 'SimulinkProxyIn', cls.MODE_SYNCH_INPUT)
+    elif cls.proxyMode == MARTE2_SIMULINK.PROXY_OUT_SERVER:
+        cls.parameters = [
+            {'name': 'IpAddress', 'type': 'string', 'value': 'localhost'},
+            {'name': 'Port', 'type': 'int32', 'value': 8123}]
+        cls.inputs = cls.outputs
+        cls.buildGam(cls.parts, 'SimulinkProxyOut', cls.MODE_OUTPUT)
+    else:
+        cls.buildGam(cls.parts, 'SimulinkWrapperGAM', cls.MODE_GAM)
     return cls

@@ -5,8 +5,8 @@
     <Property name="deviceProvider" type="java.lang.String" value="sdepl.nbtf"/>
     <Property name="deviceTitle" type="java.lang.String" value="NI PXI-6259 / 6368 Analog Output Waveform Generation"/>
     <Property name="deviceType" type="java.lang.String" value="NI_WAVE_GEN"/>
-    <Property name="height" type="int" value="400"/>
-    <Property name="width" type="int" value="1100"/>
+    <Property name="height" type="int" value="600"/>
+    <Property name="width" type="int" value="800"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>

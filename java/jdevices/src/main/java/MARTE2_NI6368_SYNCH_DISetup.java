@@ -40,8 +40,8 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
 
-        setDeviceProvider("spilds.rfx.local:8100");
-        setDeviceTitle("NI6259 Synch Digital In");
+        setDeviceProvider("localhost:8100");
+        setDeviceTitle("NI6368 Synch Digital In");
         setDeviceType("MARTE2_NI6259_SYNCH_DI");
         setHeight(200);
         setWidth(800);
@@ -51,20 +51,20 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id.:");
-        deviceField1.setNumCols(2);
+        deviceField1.setNumCols(20);
         deviceField1.setOffsetNid(10);
         jPanel2.add(deviceField1);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Clock id: ");
         deviceField2.setNumCols(2);
-        deviceField2.setOffsetNid(19);
+        deviceField2.setOffsetNid(16);
         jPanel2.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Trigger id. ");
         deviceField3.setNumCols(2);
-        deviceField3.setOffsetNid(22);
+        deviceField3.setOffsetNid(19);
         jPanel2.add(deviceField3);
 
         jPanel1.add(jPanel2);
@@ -72,13 +72,13 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Period: ");
         deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(25);
+        deviceField4.setOffsetNid(22);
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trig. Time: ");
         deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(28);
+        deviceField5.setOffsetNid(25);
         jPanel3.add(deviceField5);
 
         jPanel1.add(jPanel3);
@@ -86,13 +86,13 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Time Seg. Len.:");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(41);
+        deviceField6.setOffsetNid(44);
         jPanel4.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Out Bits seg. len: ");
         deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(49);
+        deviceField7.setOffsetNid(54);
         jPanel4.add(deviceField7);
 
         deviceField8.setIdentifier("");

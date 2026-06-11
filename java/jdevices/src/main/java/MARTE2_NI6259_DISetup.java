@@ -33,36 +33,22 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        jPanel2 = new javax.swing.JPanel();
+        deviceField7 = new DeviceField();
+        deviceField6 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("NI6259 Digital Input");
         setDeviceType("MARTE2_NI6259_DI");
         setHeight(200);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Timebase: ");
-        deviceField6.setNumCols(25);
-        deviceField6.setOffsetNid(3);
-        jPanel2.add(deviceField6);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Storage CPUs: ");
-        deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(17);
-        jPanel2.add(deviceField7);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id: ");
@@ -73,19 +59,19 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Port 1 Mask: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(31);
+        deviceField2.setOffsetNid(38);
         jPanel1.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Port 2 Mask: ");
         deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(45);
+        deviceField3.setOffsetNid(54);
         jPanel1.add(deviceField3);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Port 3 Mask: ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(59);
+        deviceField4.setOffsetNid(70);
         jPanel1.add(deviceField4);
 
         deviceField5.setIdentifier("");
@@ -93,7 +79,21 @@ public class MARTE2_NI6259_DISetup extends DeviceSetup
         deviceField5.setOffsetNid(23);
         jPanel1.add(deviceField5);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Storage CPUs: ");
+        deviceField7.setNumCols(4);
+        deviceField7.setOffsetNid(20);
+        jPanel2.add(deviceField7);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Seg. Length");
+        deviceField6.setNumCols(8);
+        deviceField6.setOffsetNid(29);
+        jPanel2.add(deviceField6);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents

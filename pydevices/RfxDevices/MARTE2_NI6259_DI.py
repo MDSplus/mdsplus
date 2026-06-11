@@ -32,10 +32,10 @@ class MARTE2_NI6259_DI(MC.MARTE2_COMPONENT):
         {'name': 'DIO_0', 'type': 'uint32', 'dimensions': 0, 'parameters': [
             {'name': 'PortId', 'type': 'int', 'value': 0},
             {'name': 'Mask', 'type': 'int', 'value': 0}]},
-        {'name': 'DIO_1', 'type': 'uint32', 'dimensions': 0, 'parameters': [
+        {'name': 'DIO_1', 'type': 'uint32', 'dimensions': -1, 'parameters': [
             {'name': 'PortId', 'type': 'int', 'value': 1},
             {'name': 'Mask', 'type': 'int', 'value': 0}]},
-        {'name': 'DIO_2', 'type': 'uint32', 'dimensions': 0, 'parameters': [
+        {'name': 'DIO_2', 'type': 'uint32', 'dimensions': -1, 'parameters': [
             {'name': 'PortId', 'type': 'int', 'value': 2},
             {'name': 'Mask', 'type': 'int', 'value': 0}]},
     ]

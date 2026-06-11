@@ -5,7 +5,7 @@
     <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="NI6368 Digital Output"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6368_DO"/>
-    <Property name="height" type="int" value="300"/>
+    <Property name="height" type="int" value="200"/>
     <Property name="updateEvent" type="java.lang.String" value=""/>
     <Property name="width" type="int" value="500"/>
   </Properties>
@@ -43,23 +43,9 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="3"/>
+        <Property name="rows" type="int" value="2"/>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel2">
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-          <SubComponents>
-            <Component class="DeviceField" name="deviceField1">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-                <Property name="numCols" type="int" value="25"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="jPanel3">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -68,7 +54,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Board Id: "/>
-                <Property name="numCols" type="int" value="4"/>
+                <Property name="numCols" type="int" value="20"/>
                 <Property name="offsetNid" type="int" value="10"/>
               </Properties>
             </Component>

@@ -2,7 +2,7 @@
 
 <Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="NI6259 Digital Input"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_DI"/>
     <Property name="height" type="int" value="200"/>
@@ -36,37 +36,10 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Container class="javax.swing.JPanel" name="jPanel2">
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-          <BorderConstraints direction="First"/>
-        </Constraint>
-      </Constraints>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-      <SubComponents>
-        <Component class="DeviceField" name="deviceField6">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Timebase: "/>
-            <Property name="numCols" type="int" value="25"/>
-            <Property name="offsetNid" type="int" value="3"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField7">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Storage CPUs: "/>
-            <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="17"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-          <BorderConstraints direction="Center"/>
+          <BorderConstraints direction="North"/>
         </Constraint>
       </Constraints>
 
@@ -85,7 +58,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Port 1 Mask: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="31"/>
+            <Property name="offsetNid" type="int" value="38"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField3">
@@ -93,7 +66,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Port 2 Mask: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="45"/>
+            <Property name="offsetNid" type="int" value="54"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField4">
@@ -101,7 +74,7 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Port 3 Mask: "/>
             <Property name="numCols" type="int" value="4"/>
-            <Property name="offsetNid" type="int" value="59"/>
+            <Property name="offsetNid" type="int" value="70"/>
           </Properties>
         </Component>
         <Component class="DeviceField" name="deviceField5">
@@ -109,6 +82,33 @@
             <Property name="identifier" type="java.lang.String" value=""/>
             <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
             <Property name="offsetNid" type="int" value="23"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel2">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+      <SubComponents>
+        <Component class="DeviceField" name="deviceField7">
+          <Properties>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Storage CPUs: "/>
+            <Property name="numCols" type="int" value="4"/>
+            <Property name="offsetNid" type="int" value="20"/>
+          </Properties>
+        </Component>
+        <Component class="DeviceField" name="deviceField6">
+          <Properties>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Seg. Length"/>
+            <Property name="numCols" type="int" value="8"/>
+            <Property name="offsetNid" type="int" value="29"/>
           </Properties>
         </Component>
       </SubComponents>

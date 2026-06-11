@@ -2,8 +2,8 @@
 
 <Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8100"/>
-    <Property name="deviceTitle" type="java.lang.String" value="NI6259 Synch Digital In"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
+    <Property name="deviceTitle" type="java.lang.String" value="NI6368 Synch Digital In"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_SYNCH_DI"/>
     <Property name="height" type="int" value="200"/>
     <Property name="width" type="int" value="800"/>
@@ -53,7 +53,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Board Id.:"/>
-                <Property name="numCols" type="int" value="2"/>
+                <Property name="numCols" type="int" value="20"/>
                 <Property name="offsetNid" type="int" value="10"/>
               </Properties>
             </Component>
@@ -62,7 +62,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Clock id: "/>
                 <Property name="numCols" type="int" value="2"/>
-                <Property name="offsetNid" type="int" value="19"/>
+                <Property name="offsetNid" type="int" value="16"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField3">
@@ -70,7 +70,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trigger id. "/>
                 <Property name="numCols" type="int" value="2"/>
-                <Property name="offsetNid" type="int" value="22"/>
+                <Property name="offsetNid" type="int" value="19"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -84,7 +84,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Period: "/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="22"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField5">
@@ -92,7 +92,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trig. Time: "/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="28"/>
+                <Property name="offsetNid" type="int" value="25"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -106,7 +106,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Time Seg. Len.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="41"/>
+                <Property name="offsetNid" type="int" value="44"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField7">
@@ -114,7 +114,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Out Bits seg. len: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="49"/>
+                <Property name="offsetNid" type="int" value="54"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField8">

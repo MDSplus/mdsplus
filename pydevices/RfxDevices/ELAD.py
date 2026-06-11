@@ -24,20 +24,41 @@ class ELAD(MDSplus.Device):
         {'path': ':COMMENT', 'type': 'text'},
         {'path': ':IP', 'type': 'text'}, 
         {'path': ':PORT', 'type': 'numeric', 'value': 8000}, 
-        {'path': ':HW_TRIG', 'type': 'numeric', 'value': 0},
-        {'path': ':HW_AUTO_TRIG', 'type': 'numeric', 'value': 0},
-        {'path': ':TRIG_TIME', 'type': 'numeric', 'value': 0},
+        {'path': ':TRG_MOD', 'type': 'text', 'value': 'INTERNAL'},
+        {'path': ':STRG_MOD', 'type': 'text', 'value': 'INTERNAL'},
+        {'path': ':ATRG_MOD', 'type': 'text', 'value': 'INTERNAL'},
+        {'path': ':TRG_TIM', 'type': 'numeric', 'value': 0},
+        {'path': ':STRG_TIM', 'type': 'numeric', 'value': 0},
+        {'path': ':TRG_EV', 'type': 'numeric'},
+        {'path': ':STRG_EV', 'type': 'numeric'},
+        {'path': ':ATRG_EV', 'type': 'numeric'},
+        {'path': ':CLOCK_MODE', 'type': 'text', 'value': 'INTERNAL'},
+        {'path': ':CIC_ENABLED', 'type': 'text', 'value': 'NO'},
+        
         {'path': ':PTS', 'type': 'numeric', 'value': 1000},
         {'path': ':FREQ_DIV', 'type': 'numeric', 'value': 10000},
         {'path': ':AUTOZERO_TIM', 'type': 'numeric', 'value': 2.},
-        {'path': ':REC_PORT', 'type': 'numeric', 'value': 8111},
-        {'path': ':ACT_CHANS', 'type': 'numeric', 'value':2},
+        {'path': ':ACT_CHANS', 'type': 'numeric', 'value':12},
+        {'path': ':CALIBRATION', 'type': 'text', 'value':"NO"},
+        {'path': ':CHOP_ENA', 'type': 'text', 'value':"NO"},
+        {'path': ':STREAM_MODE', 'type': 'text', 'value':'UDP'},
+        {'path': ':JSCOPE_EV', 'type': 'text', 'value':'JSCOPE_EVENT'},
+        {'path': ':FPGA_VER', 'type': 'text'},
+        {'path': ':STREAM_IP', 'type': 'text', 'value':'localhost'},
+        {'path': ':STREAM_PORT', 'type': 'numeric', 'value': 8111},
+        {'path': ':AUTOZERO_SUM', 'type': 'numeric'},
+        
     ]
     for i in range(12):
         parts.extend([
             {'path': '.CHANNEL_%d' % (i+1), 'type': 'structure'},
             {'path': '.CHANNEL_%d:DATA' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
+            {'path': '.CHANNEL_%d:CHOP_ENA' % (i+1), 'type': 'numeric', 'value': 0 },
+            {'path': '.CHANNEL_%d:LH_MODE' % (i+1), 'type': 'numeric', 'value':0},
+            {'path': '.CHANNEL_%d:ID' % (i+1), 'type': 'text'},
+            {'path': '.CHANNEL_%d:STATUS' % (i+1), 'type': 'text'},
+            {'path': '.CHANNEL_%d:EPROM' % (i+1), 'type': 'text'}
         ])
     for i in range(12):
         parts.extend([
@@ -52,33 +73,69 @@ class ELAD(MDSplus.Device):
                 'no_write_model', 'compress_on_put')},
         ])
     parts.extend([
+            {'path': ':JSCOPE_ST_EV', 'type': 'text', 'value':'JSCOPE_STREAM_EVENT'},
+            {'path': ':TR_FREQ_DIV', 'type': 'numeric', 'value':1},
+            {'path': ':TR_CIC_ENA', 'type': 'text', 'value': 'NO'},
+        ])
+    parts.extend([
         {'path': ':INIT_ACTION', 'type': 'action',
          'valueExpr': "Action(Dispatch('ELAD_SERVER','INIT',50,None),Method(None,'init',head))",
          'options': ('no_write_shot',)},
+        {'path': ':ARM_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('ELAD_SERVER','INIT',55,None),Method(None,'arm',head))",
+         'options': ('no_write_shot',)},
         {'path': ':STORE_ACTION', 'type': 'action',
          'valueExpr': "Action(Dispatch('ELAD_SERVER','STORE',50,None),Method(None,'store',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STR_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('ELAD_SERVER','STORE',60,None),Method(None,'startStream',head))",
          'options': ('no_write_shot',)},
     ])
     del(i)
 
     socketDict = {}
-    class AsynchStore(Thread):
+    class AsynchStoreUdp(Thread):
 
             def configure(self, device):
                 self.device = device
                 self.nid = device.getNid()
+                self.shot = device.getTree().shot
+                self.experiment = device.getTree().name
                 try:
                     self.trigTime = device.trig_time.data()
                 except:
                     self.trigTime = 0.
+                self.clockFreq = 1E6
+                self.freqDiv = self.device.freq_div.data()
+                self.cicEnabled = self.device.cic_enabled.data() == 'YES'
+                if self.cicEnabled:
+                    shiftedBits = np.round(np.log2(np.power(self.freqDiv, 3)))
+                    if shiftedBits >= 11:
+                        shiftedBits -= 11
+                    self.cicCorrection = np.power(2, shiftedBits)/np.power(self.freqDiv, 3)
+                else:
+                    self.cicCorrection = 1
+                self.lhMode = []
+                for chanIdx in range(12):
+                    self.lhMode.append(getattr(self.device, 'channel_%d_lh_mode' % (chanIdx+1)).data())
+                self.isStreamOn = []
+                for chanIdx in range(12):
+                    self.isStreamOn.append(getattr(self.device, 'stream_%d' % (chanIdx+1)).isOn())
+                self.isStrintOn = []
+                for chanIdx in range(12):
+                    self.isStrintOn.append(getattr(self.device, 'strint_%d' % (chanIdx+1)).isOn())
+
 
             def run(self):
+                self.device.tree = MDSplus.Tree(self.experiment, self.shot)
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.bind(('',self.device.rec_port.data()))
-                freqDiv = self.device.freq_div.data()
-                actFreq = 1E6/freqDiv
-                segmentSize = int(0.5* 1E6/freqDiv)  #save a segment every 0.5 seconds
+                try:
+                    sock.bind(('',self.device.stream_port.data()))
+                except:
+                    print('Cannot bind to port: '+ str(self.device.stream_port.data()))
+                    print('Listener thread exited')
+                segmentSize = int(0.5* self.clockFreq/self.freqDiv)  #save a segment every 0.5 seconds
                 print('SEGMENT SIZE: ', segmentSize)
                 activeChans = self.device.act_chans.data()
                 print('ACTIVE CHANS: ', activeChans)
@@ -96,21 +153,134 @@ class ELAD(MDSplus.Device):
                         sampleBuf = sock.recv(4*(2*activeChans+1))
                         chans[2*activeChans][sampleIdx] = np.frombuffer(sampleBuf[:4], dtype = np.int32)
                         for chanIdx in range(2*activeChans):
+                            #print(np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32))
                             chans[chanIdx][sampleIdx] = np.frombuffer(sampleBuf[(chanIdx + 1)*4:(chanIdx + 2)*4], dtype = np.int32)
                         actSegmentSize = actSegmentSize+1
                         if stopAcq[self.nid]:
                             break
                     if stopAcq[self.nid]:
                         stopped = True
-                    period = freqDiv/1E6
-                    startTime = MDSplus.Float64(chans[2*activeChans][0]*period)
-                    endTime = MDSplus.Float64(chans[2*activeChans][actSegmentSize - 1]*period)
+                        break
+                    period = self.freqDiv/self.clockFreq
+                    #Correct with offset of 1 sample due to sampling delay
+                    startTime = MDSplus.Float64(self.trigTime+(chans[2*activeChans][0]+1)*period)
+                    endTime = MDSplus.Float64(self.trigTime+(chans[2*activeChans][actSegmentSize - 1]+1)*period)
                     timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
+                        if not self.isStreamOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+
+                        convertedData *= self.cicCorrection
+                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                       # getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
                     for chanIdx in range(activeChans):
-                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
-                    MDSplus.Event.setevent('ELAD_JSCOPE')
+                        if not self.isStrintOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[activeChans + chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+                        convertedData *= 1048576*1E-6   #2**20/1E6
+                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                        # getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
+                    MDSplus.Event.setevent(self.device.jscope_ev.data())
+
+
+    class AsynchStoreTcp(Thread):
+
+            def configure(self, device):
+                self.device = device
+                self.nid = device.getNid()
+                try:
+                    self.trigTime = device.trig_time.data()
+                except:
+                    self.trigTime = 0.
+                if device.ext_clock.data() == 1:
+                    self.clockFreq = device.clock_freq.data()
+                else:
+                    self.clockFreq = 1E6
+                self.freqDiv = self.device.freq_div.data()
+                self.lhMode = []
+                for chanIdx in range(12):
+                    self.lhMode.append(getattr(self.device, 'channel_%d_lh_mode' % (chanIdx+1)).data())
+                self.isStreamOn = []
+                for chanIdx in range(12):
+                    self.isStreamOn.append(getattr(self.device, 'stream_%d' % (chanIdx+1)).isOn())
+                self.isStrintOn = []
+                for chanIdx in range(12):
+                    self.isStrintOn.append(getattr(self.device, 'strint_%d' % (chanIdx+1)).isOn())
+              
+
+            def run(self):
+                serverSocket = socket.socket()
+                serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                serverSocket.bind((socket.gethostname(),self.device.rec_port.data()))
+                serverSocket.listen(1)
+                sock, addr = serverSocket.accept()
+                print('TCP Connection established')
+                segmentSize = int(1000* (int(1E6/self.freqDiv)/int(1000)))  #save a segment every second rouded to 1000 samples
+                if segmentSize == 0:
+                    print('Invalid frequency division for TCP streaming. It must be less than 1000 (Samplig rate > 1kHz)')
+                    return
+                activeChans = self.device.act_chans.data()
+                chans = []
+                for chanIdx in range(2*activeChans+1):
+                    chans.append(np.zeros(segmentSize, dtype = np.int32))
+                for chanIdx in range(12):
+                    getattr(self.device, 'stream_%d_data' % (chanIdx+1)).deleteData()
+                for chanIdx in range(12):
+                    getattr(self.device, 'strint_%d_data' % (chanIdx+1)).deleteData()
+                stopped = False
+                actSamples = 0
+                prevSamples = 0
+                while not stopped:
+                    tcpPacketLen = 1000*4*(2*activeChans)
+                    for sampleSetIdx in range(int(segmentSize/1000)):
+                        sampleBuf = bytearray()
+                        while len(sampleBuf) < tcpPacketLen:
+                            packet = sock.recv(tcpPacketLen - len(sampleBuf))
+                            if not packet:
+                                return None
+                            sampleBuf.extend(packet)
+                        for chanIdx in range(2*activeChans):
+                            chans[chanIdx][sampleSetIdx*1000:(sampleSetIdx+1)*1000] = np.frombuffer(sampleBuf[chanIdx*4*1000:(chanIdx + 1)*4*1000], dtype = np.int32)
+                        actSamples += 1000
+                        if stopAcq[self.nid]:
+                            break
+                    if stopAcq[self.nid]:
+                        stopped = True
+                    period = self.freqDiv/self.clockFreq
+                    startTime = MDSplus.Float64(self.trigTime+prevSamples*period)
+                    endTime = MDSplus.Float64(self.trigTime+actSamples*period)
+                    timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(period))
+                    for chanIdx in range(activeChans):
+                        if not self.isStreamOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[chanIdx] * 5E-6
+                        getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+                       #getattr(self.device, 'stream_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[chanIdx]))
+                    for chanIdx in range(activeChans):
+                        if not self.isStrintOn[chanIdx]:
+                            continue
+                        if self.lhMode[chanIdx] == 0:
+                            convertedData = chans[activeChans + chanIdx] * 1E-5
+                        else:
+                            convertedData = chans[activeChans + chanIdx] * 5E-6
+                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Float64Array(convertedData))
+#                        getattr(self.device, 'strint_%d_data' % (chanIdx+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int32Array(chans[activeChans+chanIdx]))
+                    MDSplus.Event.setevent(self.device.jscope_ev.data())
+                    prevSamples = actSamples
+                sock.shutdown(socket.SHUT_RDWR)
+                sock.close()
+                serverSocket.shutdown(socket.SHUT_RDWR)
+                serverSocket.close()
 
 
     def init(self):
@@ -135,8 +305,21 @@ class ELAD(MDSplus.Device):
         try:
             freqDiv = self.freq_div.data()
         except:
-            print("Missing Frequency division")
+            print("Missing Streaming Frequency division")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if freqDiv <= 0:
+            print("Frequency division must be greater than or equal to 1")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        try:
+            trFreqDiv = self.tr_freq_div.data()
+        except:
+            print("Missing Transient Frequency division")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if trFreqDiv <= 0:
+            print("Transient Frequency division must be greater than or equal to 1")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
 
         try:
             autozeroTime = self.autozero_tim.data()
@@ -144,28 +327,113 @@ class ELAD(MDSplus.Device):
             print("Missing Autozero time")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
+        trigModeDict = {'INTERNAL': 0, 'HW_LOCAL':1, 'EVENT':2, 'HW_GLOBAL':3}
         try:
-            useHwTrigger = self.hw_trig.data()
+            trigMode = trigModeDict[self.trg_mod.data()]
         except:
-            print("Missing use HW Trigger flag")
+            print("Missing or invalid Trigger Mode")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
+        if trigMode == 2: #Event
+            try:
+                trigEvent = self.trg_ev.data()
+            except:
+                print("Missing Trigger event")
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        streamTrigModeDict = {'INTERNAL':0, 'EVENT':1}
         try:
-            useHwAutozeroTrigger = self.hw_auto_trig.data()
+            streamTrigMode = streamTrigModeDict[self.strg_mod.data()]
         except:
-            print("Missing use HW Trigger flag")
+            print("Missing or invalid Stream Trigger Mode")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        
+        if streamTrigMode == 1:  #event
+            try:
+                streamTrigEvent = self.strg_ev.data()
+            except:
+                print("Missing Stream Trigger event")
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        autozeroTrigModeDict = {'INTERNAL':0, 'EVENT':1}
         try:
-            recPort = self.rec_port.data()
+            autozeroTrigMode = autozeroTrigModeDict[self.atrg_mod.data()]
+        except:
+            print("Missing or invalid Autozero Trigger Mode")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+ 
+        if autozeroTrigMode == 1:  #event
+            try:
+                autozeroTrigEvent = self.atrg_ev.data()
+            except:
+                print("Missing Autozero Trigger event")
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        clockModeDict = {'INTERNAL':0, 'HW_LOCAL':1, 'HIGHWAY':2, 'HW_GLOBAL':2}
+        try:
+            clockMode = clockModeDict[self.clock_mode.data()]
+            print('CLOCK MODE: ', clockMode)
+        except:
+            print("Missing or invalid Clock Mode")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        try:
+            streamIp = self.stream_ip.data()
+        except:
+            streamIp = socket.gethostbyname(socket.gethostname())
+            print('StreamIp non defined, assumed '+streamIp)
+
+        try:
+            streamPort = self.stream_port.data()
         except:
             print("Missing Receive port")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
-        localIp = socket.gethostbyname(socket.gethostname())
+        cicEnabledDict = {'YES':1, 'NO':0}
+        try:
+            cicEnabled = cicEnabledDict[self.cic_enabled.data()]
+        except:
+            print("Missing or invalied CIC enabilng specification")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+        try:
+            if trFreqDiv == 1:
+                trCicEnabled = 0;
+            else:
+                trCicEnabled = cicEnabledDict[self.tr_cic_ena.data()]
+        except:
+            print("Missing or invalied Transient CIC enabilng specification")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+
+
+        modeReg = int(0) 
+        chopActive = False    
+        globalChopEnable = self.chop_ena.data() == 'YES'        
+        for chan in range(12):
+            try:
+                chopEna = self.__getattr__('channel_%d_chop_ena' % (chan+1)).data()
+            except:
+                chopEna = 0
+            if globalChopEnable and chopEna > 0:
+                modeReg |= (1 << (chan+1))
+                chopActive = True
+            try:
+                lhMode = self.__getattr__('channel_%d_lh_mode' % (chan+1)).data()
+            except:
+                lhMode = 0
+            if lhMode > 0:
+                modeReg |= (1 << (chan+16))
+        if chopActive:
+            modeReg |= 1
+        calEnabled = self.calibration.data()
+        if calEnabled == 'YES':
+            modeReg |= (1 << 30)
+        #globalChopEnable = self.chop_ena.data() == 'YES'
 
         try:
             sock = ELAD.socketDict[self.getNid()]
+            sock.close()
+            sock.connect((ip, port))
         except:
             print('Connecting....')
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -190,17 +458,102 @@ class ELAD(MDSplus.Device):
             sock.send(freqDiv.item().to_bytes(4,'little'))
             print(sock.recv(2))
 
+            sock.send(b'TIV')
+            sock.send(trFreqDiv.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+
             autoTicks = np.int32(autozeroTime * 1000)
             sock.send(b'AUT')
             sock.send(autoTicks.item().to_bytes(4,'little'))
             print(sock.recv(2))
 
             sock.send(b'IPP')
-            ipLen = np.int32(len(localIp))
+            ipLen = np.int32(len(streamIp))
             sock.send(ipLen.item().to_bytes(4,'little'))
-            sock.send(bytes(localIp, 'utf-8'))
-            sock.send(recPort.item().to_bytes(4,'little'))
+            sock.send(bytes(streamIp, 'utf-8'))
+            sock.send(streamPort.item().to_bytes(4,'little'))
             print(sock.recv(2))
+
+            
+            sock.send(b'TEX')
+            mode =  np.int32(trigMode)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            if trigMode == 2: #event
+                sock.send(b'EVT')
+                event = np.int32(trigEvent)
+                sock.send(event.item().to_bytes(4,'little'))
+                print(sock.recv(2))
+
+            sock.send(b'SEX')
+            mode =  np.int32(streamTrigMode)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            if streamTrigMode == 1: #event
+                sock.send(b'EVS')
+                event = np.int32(streamTrigEvent)
+                sock.send(event.item().to_bytes(4,'little'))
+                print(sock.recv(2))
+
+            sock.send(b'TAU')
+            mode =  np.int32(autozeroTrigMode)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+            if autozeroTrigMode == 1: #event
+                sock.send(b'EVA')
+                event = np.int32(autozeroTrigEvent)
+                sock.send(event.item().to_bytes(4,'little'))
+                print(sock.recv(2))
+
+            sock.send(b'CEX')
+            mode = np.int32(clockMode)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+
+            sock.send(b'CIC')
+            mode = np.int32(cicEnabled)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+           
+            sock.send(b'TIC')
+            mode = np.int32(trCicEnabled)
+            sock.send(mode.item().to_bytes(4,'little'))
+            print(sock.recv(2))
+           
+            sock.send(b'MOD')
+            sock.send(modeReg.to_bytes(4,'little'))
+            print(sock.recv(2))
+
+            sock.send(b'IDS')
+
+            #ids = np.frombuffer(recvall(sock, 16 * 12), dtype = np.int8)   
+            ids = np.frombuffer(recvall(sock, 16 * 12+ 32 * 12 + 8), dtype = np.int8)   
+ 
+            for chan in range(12):
+                id = ''
+                for i in range(16):  # era 7
+                    id += chr(ids[(chan*(16+32))+i])
+                   # id += chr(ids[(chan*16)+i])
+                print(id)
+                self.__getattr__('channel_%d_id' % (chan+1)).putData(MDSplus.String(id))
+                id = ''
+                for i in range(32):  # era 7
+                    id += chr(ids[(chan*(16+32))+16+i])
+                print(id)
+                self.__getattr__('channel_%d_eprom' % (chan+1)).putData(MDSplus.String(id))
+            
+            id = ''
+            for i in range(8):
+                id += chr(ids[(12*(16+32))+i])
+            self.fpga_ver.putData(MDSplus.String(id))
+                
+
+   #         sock.send(b'EPR')
+   #         for chan in range(12):
+   #             numBytes = int.from_bytes(sock.recv(4),'little')
+   #             epromBuffer  =  recvall(sock, numBytes)
+   #             epromString = epromBuffer.decode("utf-8")
+   #             self.__getattr__('channel_%d_eprom' % (chan+1)).putData(MDSplus.String(epromString))
 
         except:
             print("Socket communication failed")
@@ -255,13 +608,26 @@ class ELAD(MDSplus.Device):
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         
-        self.worker = self.AsynchStore()
+        try:
+            streamMode = self.stream_mode.data()
+        except:
+            print("Missing STREAM_MODE")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if streamMode != 'UDP' and streamMode != 'TCP':
+            print("Invalid STREAM_MODE: "+streamMode)
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        if streamMode == 'UDP':
+            self.worker = self.AsynchStoreUdp()
+        else:
+            self.worker = self.AsynchStoreTcp()
         self.worker.configure(self)
         self.worker.daemon = True
         stopAcq[self.getNid()] = False
         self.worker.start()
 
-        time.sleep(1)
+        time.sleep(0.5)
+
         try:
             sock.send(b'STS')
             print(sock.recv(2))
@@ -269,13 +635,47 @@ class ELAD(MDSplus.Device):
             print("Socket communication failed")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-    def stopStream(self):
+    def enableStream(self):
         try:
             sock = ELAD.socketDict[self.getNid()]
         except:
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        try:
+            streamMode = self.stream_mode.data()
+        except:
+            print("Missing STREAM_MODE")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        if streamMode != 'UDP' and streamMode != 'TCP':
+            print("Invalid STREAM_MODE: "+streamMode)
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        
+        if streamMode == 'UDP':
+            self.worker = self.AsynchStoreUdp()
+        else:
+            self.worker = self.AsynchStoreTcp()
+        self.worker.configure(self)
+        self.worker.daemon = True
+        stopAcq[self.getNid()] = False
+        self.worker.start()
+
+        time.sleep(0.5)
+
+        try:
+            sock.send(b'ETS')
+            print(sock.recv(2))
+        except:
+            print("Socket communication failed")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
+    def stopStream(self):
         stopAcq[self.getNid()] = True
+        try:
+            sock = ELAD.socketDict[self.getNid()]
+        except:
+            print("Cannot retrieve socket")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         try:
             sock.send(b'STO')
             print(sock.recv(2))
@@ -290,7 +690,7 @@ class ELAD(MDSplus.Device):
             print("Cannot retrieve socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         try:
-            trigTime = self.trig_time.data()
+            trigTime = self.trg_tim.data()
         except:
             print("Cannot retrieve trigger time")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
@@ -299,25 +699,76 @@ class ELAD(MDSplus.Device):
         except:
             print("Cannot retrieve number of active chans")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+
         try:
+            trFreqDiv = self.tr_freq_div.data()
+        except:
+            print("Missing Transient Frequency division")
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+  
+        if self.tr_cic_ena.data() == 'YES':
+            rightBits = np.round(np.log2(np.power(trFreqDiv, 3)))
+            print("CIC RIght BIts: ", rightBits)
+            cicCorrection = np.power(2, rightBits)/np.power(trFreqDiv, 3)
+            print("CIC Correction: ", cicCorrection)
+        else:
+            cicCorrection = 1
+
+        try:
+            sock.send(b'STA')
+            statusReg =  int.from_bytes(sock.recv(4),'little')
+            activeChans = statusReg & 0x0000000F
+            print('Active Chans: ', activeChans)
+            self.act_chans.putData(MDSplus.Int32(activeChans))
+            for chan in range(12):
+                if statusReg & (1 << (4+chan)) > 0:
+                    self.__getattr__('channel_%d_status' % (chan+1)).putData(MDSplus.String("ERROR"))
+                else:
+                    self.__getattr__('channel_%d_status' % (chan+1)).putData(MDSplus.String("OK"))
             sock.send(b'STR')
             numSamples = int.from_bytes(sock.recv(4),'little')
             print('num Samples: ', numSamples)
-            samples = np.zeros(numSamples, np.int)
+            dmaSamples = np.zeros(numSamples, np.int32)
             numChanSamples = int(numSamples/activeChans)
             print('num Chan Samples: ', numChanSamples)
-            samples = np.frombuffer(recvall(sock, 4 * numSamples), dtype = np.int32)
+
+            dmaSamples = np.frombuffer(recvall(sock, 4 * numSamples), dtype = np.int32)  
+            print('LETTI SAMPLES')          
+            samples = np.zeros(numSamples, np.int32)
+            outIdx = 0
+            for chanIdx in range(activeChans):
+                samples[chanIdx*numChanSamples:(chanIdx +1) * numChanSamples] = dmaSamples[chanIdx::activeChans] * cicCorrection
+
+#               for sampleIdx in range(numChanSamples):
+#                  samples[outIdx] = dmaSamples[sampleIdx * activeChans + chanIdx]
+#                    outIdx += 1
+
             print('Received Samples: ', len(samples))
         except:
             print("Cannot read samples from socket")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-        timebase = MDSplus.Range(trigTime, trigTime + 1E-6 * numChanSamples, 1E-6)            
+        timebase = MDSplus.Range(trigTime, trigTime + 1E-6 * trFreqDiv * numChanSamples, 1E-6 * trFreqDiv)            
         for chan in range(activeChans):
-            currSig = MDSplus.Signal(samples[chan * numChanSamples:(chan+1) * numChanSamples], None, timebase)
+            if getattr(self, 'channel_%d_lh_mode' % (chan+1)).data() == 0:
+                convExpr = self.getTree().tdiCompile("1E-5 * $VALUE")
+            else:
+                convExpr = self.getTree().tdiCompile("5E-6 * $VALUE")
+ 
+            rawMdsData = MDSplus.Int32Array(samples[chan * numChanSamples:(chan+1) * numChanSamples])
+            rawMdsData.setUnits("Count")
+            convExpr.setUnits("Volt")
+            currSig = MDSplus.Signal(convExpr, rawMdsData, timebase)
             self.__getattr__('channel_%d_data' % (chan+1)).putData(currSig)
 
-        #sock.close()
+            #Read autozero sums
+        sock.send(b'CAU')
+        autozeroSums = []
+        for chan in range(activeChans):
+            currAutozero = int.from_bytes(sock.recv(4),'little')
+            autozeroSums.append(currAutozero)
+        self.autozero_sum.putData(MDSplus.Int32Array(autozeroSums))
+            
 
 
     

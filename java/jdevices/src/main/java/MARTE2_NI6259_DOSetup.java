@@ -35,8 +35,6 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceField8 = new DeviceField();
-        deviceField9 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
@@ -48,7 +46,7 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 NI6259 Digital Output ");
         setDeviceType("MARTE2_NI6259_DO");
         setHeight(200);
@@ -60,18 +58,6 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
         deviceField1.setNumCols(4);
         deviceField1.setOffsetNid(10);
         jPanel2.add(deviceField1);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Timebase: ");
-        deviceField8.setNumCols(20);
-        deviceField8.setOffsetNid(3);
-        jPanel2.add(deviceField8);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Timebase div.:");
-        deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(54);
-        jPanel2.add(deviceField9);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -90,13 +76,13 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Mask: ");
-        deviceField4.setOffsetNid(40);
+        deviceField4.setOffsetNid(41);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Value: ");
         deviceField5.setNumCols(35);
-        deviceField5.setOffsetNid(32);
+        deviceField5.setOffsetNid(33);
         jPanel4.add(deviceField5);
 
         jTabbedPane1.addTab("Port 2", jPanel4);
@@ -109,7 +95,7 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Value: ");
         deviceField7.setNumCols(35);
-        deviceField7.setOffsetNid(45);
+        deviceField7.setOffsetNid(47);
         jPanel5.add(deviceField7);
 
         jTabbedPane1.addTab("Port 3", jPanel5);
@@ -128,8 +114,6 @@ public class MARTE2_NI6259_DOSetup extends DeviceSetup
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
-    private DeviceField deviceField8;
-    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
