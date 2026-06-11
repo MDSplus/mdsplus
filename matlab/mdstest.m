@@ -2,10 +2,13 @@ function result = mdstest(varargin)
 % MDSTEST  test the MDSplus-MATLAB API (types and shapes)
 %   This routine tests the various functions in the MDSplus
 %   Matlab/Octave interface.
+%   Without a prior "mdsconnect()" call, this function just confirms
+%   that Java or Python can be used to access the MDSplus installed
+%   on the client computer. 
 %   mdstest()   % tests current bridge
 %   mdstest(0)  % tests java bridge
 %   mdstest(1)  % tests python bridge
-%   mdstest(1,1)  % tests mdsthin bridge
+%   mdstest(1,1)  % not a test of the mdsthin bridge, this is equivalent to mdstest(1)
 
     info = mdsInfo(varargin{:}); % update MDSINFO
     result = mdscheck('1BU', 'uint8', [1, 1]);
