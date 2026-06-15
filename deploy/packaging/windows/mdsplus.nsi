@@ -213,6 +213,8 @@ SectionGroup "!core" core
 
  	Section "binaries" bin
 
+		SectionIn 1 2 3
+
 		Call install_core_pre
 
 		SetOutPath ${BINDIR}
@@ -235,61 +237,29 @@ SectionGroup "!core" core
 	SectionEnd
 
 	Section "add to PATH" appendpath
-		${IfNot} for AllUsers ?
-			${AddToEnv} "PATH" "${BINDIR}"
-		${EndIf}
+		SectionIn 1 2
+		${AddToEnv} "PATH" "${BINDIR}"
 	SectionEnd
 
 SectionGroupEnd ; core
 
-SectionGroup devices devices
- SectionGroup tdi tdidevices
-  Section KBSI
-	SectionIn 2
-	SetOutPath "$INSTDIR\tdi"
-	File /r tdi/KbsiDevices
-  SectionEnd ; KBSI
-  Section MIT
-	SectionIn 2
-	SetOutPath "$INSTDIR\tdi"
-	File /r tdi/MitDevices
-  SectionEnd ; MIT
-  Section RFX
-	SectionIn 2
-	SetOutPath "$INSTDIR\tdi"
-	File /r tdi/RfxDevices
-  SectionEnd ; RFX
- SectionGroupEnd ; tdi
- SectionGroup pydevices pydevices
-  Section HTS pydevices_hts
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\HtsDevices"
-	File /r "pydevices/HtsDevices/*"
-  SectionEnd ; HTS
-  Section MIT pydevices_mit
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\MitDevices"
-	File /r "pydevices/MitDevices/*"
-	File pydevices/MitDevices/_version.py
-  SectionEnd ; MIT
-  Section RFX pydevices_rfx
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\RfxDevices"
-	File /r "pydevices/RfxDevices/*"
-	File pydevices/RfxDevices/_version.py
-  SectionEnd ; RFX
-  Section W7X pydevices_w7x
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\W7xDevices"
-	File /r "pydevices/W7xDevices/*"
-	File pydevices/W7xDevices/_version.py
-  SectionEnd ; W7X
-  Section "setup MDS_PYDEVICE_PATH" pydevpath
-	SectionIn 2 RO
-	${AddToEnv} "MDS_PYDEVICE_PATH" "${MDS_PYDEVICE_PATH}"
-  SectionEnd ; pydevpath
- SectionGroupEnd ; pydevices
-SectionGroupEnd ; devices
+SectionGroup "tdi devices" tdidevices
+	Section KBSI
+		SectionIn 2
+		SetOutPath "$INSTDIR\tdi"
+		File /r tdi/KbsiDevices
+	SectionEnd ; KBSI
+	Section MIT
+		SectionIn 2
+		SetOutPath "$INSTDIR\tdi"
+		File /r tdi/MitDevices
+	SectionEnd ; MIT
+	Section RFX
+		SectionIn 2
+		SetOutPath "$INSTDIR\tdi"
+		File /r tdi/RfxDevices
+	SectionEnd ; RFX
+SectionGroupEnd ; tdi
 
 SectionGroup "site specifics"
  Section D3D d3d
@@ -313,7 +283,7 @@ Section "java tools" java
 	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd ; java
 
-SectionGroup /e "!APIs" apis
+SectionGroup "APIs" apis
  Section EPICS epics
 	SectionIn 2
 	SetOutPath "$INSTDIR\epics"
@@ -352,13 +322,42 @@ SectionGroup /e "!APIs" apis
 	SetOutPath "$INSTDIR\matlab"
 	File /r "matlab/*"
  SectionEnd ; MATLAB
- SectionGroup /e "!python" python
-  Section "!MDSplus package" python_cp
+ SectionGroup "python" python
+  Section "MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
 	File /x modpython.py /x setup.py "python/MDSplus/*.py" python/MDSplus/pyproject.toml
 	File python/MDSplus/_version.py
   SectionEnd ; python_cp
+ SectionGroup pydevices pydevices
+  Section HTS pydevices_hts
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\HtsDevices"
+	File /r "pydevices/HtsDevices/*"
+  SectionEnd ; HTS
+  Section MIT pydevices_mit
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\MitDevices"
+	File /r "pydevices/MitDevices/*"
+	File pydevices/MitDevices/_version.py
+  SectionEnd ; MIT
+  Section RFX pydevices_rfx
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\RfxDevices"
+	File /r "pydevices/RfxDevices/*"
+	File pydevices/RfxDevices/_version.py
+  SectionEnd ; RFX
+  Section W7X pydevices_w7x
+	SectionIn 2
+	SetOutPath "$INSTDIR\pydevices\W7xDevices"
+	File /r "pydevices/W7xDevices/*"
+	File pydevices/W7xDevices/_version.py
+  SectionEnd ; W7X
+  Section "setup MDS_PYDEVICE_PATH" pydevpath
+	SectionIn 2 RO
+	${AddToEnv} "MDS_PYDEVICE_PATH" "${MDS_PYDEVICE_PATH}"
+  SectionEnd ; pydevpath
+ SectionGroupEnd ; pydevices
   Section "WSGI" python_wsgi
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
@@ -442,12 +441,11 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${core}	"Install binaries and kernel tdi functions."
 	!insertmacro MUI_DESCRIPTION_TEXT ${bin}	"Copy binaries."
 	!insertmacro MUI_DESCRIPTION_TEXT ${appendpath}	"Add '.\bin*' to user's PATH env."
-	!insertmacro MUI_DESCRIPTION_TEXT ${devices}	"Copy device classes implemented in tdi or as pydevices"
 	!insertmacro MUI_DESCRIPTION_TEXT ${tdidevices}	"Copy device classes implemented in tdi to '.\tdi'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${pydevices}	"Copy python device classes to '.\pydevices'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${pydevpath}	"Add '.\pydevices' to MDS_PYDEVICE_PATH env."
 	!insertmacro MUI_DESCRIPTION_TEXT ${d3d}	"Copy site-specific tdi routines to '.\tdi\d3d'"
-	; !insertmacro MUI_DESCRIPTION_TEXT ${java}	"Copy jTraverser, jTraverser2, jScope, etc. to '.\java\classes'"
+	!insertmacro MUI_DESCRIPTION_TEXT ${java}	"Copy jTraverser, jTraverser2, jScope, etc. to '.\java\classes'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${epics}	"Copy EPICS Plugin to './epics'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${idl}	"Copy IDL Plugin to './idl'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${LabView}	"Older versions of LabView are available on github.com"
@@ -475,61 +473,61 @@ SectionEnd
 
 
 ### BEGIN SECTION LOGIC ###
-Function .onSelChange
-	; pydevices depend on python
-	${If}   $0 == ${apis}
-	${OrIf} $0 == ${python}
-	${OrIf} $0 == ${python_cp}
-		${IfNot}    $0 is ${SF_SELECTED}
-		${AndIfNot} $0 is ${SF_PSELECTED}
-			${UnselectSection}  ${pydevices}
-			${UnselectSection}  ${python_mod}
-			${UnselectSection}  ${python_pp}
-			${UnselectSection}  ${python_su}
-			${UnselectSection}  ${python_comp}
-			${UnselectSection}  ${python_wdg}
-			${UnselectSection}  ${python_wsgi}
-		${EndIf}
-	${ElseIf} $0 == ${devices}
-	${OrIf}	  $0 == ${pydevices}
-		${If}   $0 is ${SF_SELECTED}
-		${OrIf} $0 is ${SF_PSELECTED}
-			${ClearSectionFlag} ${pydevpath} ${SF_RO}
-			${SelectSection}    ${pydevpath}
-			${SelectSection}    ${python_cp}
-		${Else}
-			Goto lock_pydevpath
-		${EndIf}
-	${ElseIf} $0 == ${pydevices_hts}
-	${OrIf}   $0 == ${pydevices_mit}
-	${OrIf}   $0 == ${pydevices_rfx}
-	${OrIf}   $0 == ${pydevices_w7x}
-		${IfNot}    $R0 is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_hts} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_mit} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_rfx} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_w7x} is ${SF_SELECTED}
-			lock_pydevpath:
-			${UnselectSection}  ${pydevpath}
-			${SetSectionFlag}   ${pydevpath} ${SF_RO}
-		${Else} ;unlock_pydevpath:
-			${ClearSectionFlag} ${pydevpath} ${SF_RO}
-			${SelectSection}    ${python_cp}
-		${EndIf}
-	${ElseIf} $0 == ${python_mod}
-	${OrIf}   $0 == ${python_pp}
-		${If} $0 is ${SF_SELECTED}
-			${SelectSection}    ${python_cp}
-		${EndIf}
-	${ElseIf} $0 == ${python_su}
-	${OrIf}   $0 == ${python_comp}
-	${OrIf}   $0 == ${python_wdg}
-	${OrIf}   $0 == ${python_wsgi}
-	${If} $0 is ${SF_SELECTED}
-			${SelectSection}    ${python_cp}
-		${EndIf}
-	${EndIf}
-FunctionEnd
+; Function .onSelChange
+; 	; pydevices depend on python
+; 	${If}   $0 == ${apis}
+; 	${OrIf} $0 == ${python}
+; 	${OrIf} $0 == ${python_cp}
+; 		${IfNot}    $0 is ${SF_SELECTED}
+; 		${AndIfNot} $0 is ${SF_PSELECTED}
+; 			${UnselectSection}  ${pydevices}
+; 			${UnselectSection}  ${python_mod}
+; 			${UnselectSection}  ${python_pp}
+; 			${UnselectSection}  ${python_su}
+; 			${UnselectSection}  ${python_comp}
+; 			${UnselectSection}  ${python_wdg}
+; 			${UnselectSection}  ${python_wsgi}
+; 		${EndIf}
+; 	${ElseIf} $0 == ${devices}
+; 	${OrIf}	  $0 == ${pydevices}
+; 		${If}   $0 is ${SF_SELECTED}
+; 		${OrIf} $0 is ${SF_PSELECTED}
+; 			${ClearSectionFlag} ${pydevpath} ${SF_RO}
+; 			${SelectSection}    ${pydevpath}
+; 			${SelectSection}    ${python_cp}
+; 		${Else}
+; 			Goto lock_pydevpath
+; 		${EndIf}
+; 	${ElseIf} $0 == ${pydevices_hts}
+; 	${OrIf}   $0 == ${pydevices_mit}
+; 	${OrIf}   $0 == ${pydevices_rfx}
+; 	${OrIf}   $0 == ${pydevices_w7x}
+; 		${IfNot}    $R0 is ${SF_SELECTED}
+; 		${AndIfNot} ${pydevices_hts} is ${SF_SELECTED}
+; 		${AndIfNot} ${pydevices_mit} is ${SF_SELECTED}
+; 		${AndIfNot} ${pydevices_rfx} is ${SF_SELECTED}
+; 		${AndIfNot} ${pydevices_w7x} is ${SF_SELECTED}
+; 			lock_pydevpath:
+; 			${UnselectSection}  ${pydevpath}
+; 			${SetSectionFlag}   ${pydevpath} ${SF_RO}
+; 		${Else} ;unlock_pydevpath:
+; 			${ClearSectionFlag} ${pydevpath} ${SF_RO}
+; 			${SelectSection}    ${python_cp}
+; 		${EndIf}
+; 	${ElseIf} $0 == ${python_mod}
+; 	${OrIf}   $0 == ${python_pp}
+; 		${If} $0 is ${SF_SELECTED}
+; 			${SelectSection}    ${python_cp}
+; 		${EndIf}
+; 	${ElseIf} $0 == ${python_su}
+; 	${OrIf}   $0 == ${python_comp}
+; 	${OrIf}   $0 == ${python_wdg}
+; 	${OrIf}   $0 == ${python_wsgi}
+; 	${If} $0 is ${SF_SELECTED}
+; 			${SelectSection}    ${python_cp}
+; 		${EndIf}
+; 	${EndIf}
+; FunctionEnd
 ### END SECTION LOGIC ###
 
 
@@ -573,7 +571,9 @@ Function Init
 		${ReadEnv} $INSTDIR MDSPLUS_DIR
 	${EndIf}
 	Pop $R0
-	SectionSetInstTypes ${bin} 7 ; always include binaries
+	IntOp $0 ${SF_SELECTED} | ${SF_RO}
+	SectionSetFlags ${bin} $0
+	SectionSetInstTypes ${bin} 7 ; always include binaries (1 | 3 | 5)
 	${If} for AllUsers ?
 		${If} `$INSTDIR` == ""
 			${If} ${RunningX64} ; 64 bit system
@@ -586,7 +586,8 @@ Function Init
 				StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
 			${EndIf}
 		${EndIf}
-		SectionSetFlags ${appendpath} ${SF_RO}
+		${SelectSection} ${appendpath}
+		; SectionSetFlags ${appendpath} ${SF_RO}
 	${Else}
 		${If} $INSTDIR == ""
 			StrCpy $INSTDIR $PROFILE\MDSplus
