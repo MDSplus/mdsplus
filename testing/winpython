@@ -1,1 +1,0 @@
-exec wine $1 $2 $(winepath -w $3) $(winepath -w $4)
