@@ -9,8 +9,8 @@ class CRIO_MFAU(Device):
     """NI Compact RIO MITICA Interlock Fast Acquisition Units"""
     parts=[{'path':':COMMENT', 'type':'text'},
         {'path':':FIFO_DEPTH', 'type':'numeric', 'value':30000},
-        {'path':':TSMP_FREQ', 'type':'numeric', 'value':1},
         {'path':':BUF_SIZE', 'type':'numeric', 'value':10000},
+        {'path':':TSMP_FREQ', 'type':'numeric', 'value':1},
         {'path':':PTP_SYNC', 'type':'text', 'value':"ENABLED"},
         {'path':':EN_ACQ_MODE', 'type':'text', 'value':"EXTERNAL"},
         {'path':':CLOCK_SOURCE', 'type':'numeric'}]
@@ -23,6 +23,12 @@ class CRIO_MFAU(Device):
              parts.append({'path':'.OPIF_%d.RX_%d.CHANNEL_%d:DESCRIPTION'%(i,j,k), 'type':'text'  })
              parts.append({'path':'.OPIF_%d.RX_%d.CHANNEL_%d:DATA'%(i,j,k), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
            parts.append({'path':'.OPIF_%d.RX_%d.PARITY'%(i,j), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
+    parts.append({'path':'.OPIF_5', 'type':'structure'})
+    for i in range(1,4): #TX 1-3        
+       parts.append({'path':'.OPIF_5.TX_%d'%(i), 'type':'structure' })
+       parts.append({'path':'.OPIF_5.TX_%d:MODE'%(i), 'type':'text', 'value':"OFF"}) #ON,OFF,FREQ
+       parts.append({'path':'.OPIF_5.TX_%d:TICKCNT'%(i), 'type':'numeric', 'value':40000}) #TICK IN SEMIPERIOD
+       parts.append({'path':'.OPIF_5.TX_%d:OP'%(i), 'type':'text', 'value':"NONE"}) #NONE AND NAND
 
     del(i)
     del(j)
@@ -40,6 +46,8 @@ class CRIO_MFAU(Device):
     EnAcqModeDict = {'INTERNAL':0 , 'EXTERNAL':1}
     tsmpDict = {40000000:0 , 10000000:1, 5000000:2 , 1000000:3}
     #TPEModeDict = {'DISABLED':0 , 'SLOW':1, 'FAST':3}
+    testOutModeDict = {'OFF':0 , 'ON':1, 'FREQ':2}
+    testOutOpDict = {'NONE':0 , 'AND':1, 'NAND':2}
 
     session = c_void_p(0)
     niInterfaceLib = None
@@ -151,12 +159,17 @@ class CRIO_MFAU(Device):
             CRIO_MFAU.niInterfaceLib.FAU_MiticaStopSave(self.saveList) ##
             CRIO_MFAU.niInterfaceLib.freeStopAcqFlag(self.stopFlag) 
  
+            statusOverflow=CRIO_MFAU.niInterfaceLib.IsFauMiticaFIFOOverflow(self.device.session)
+            print("Acquisition Overflowed: ", statusOverflow)
+            if statusOverflow != 0:
+               print("ATTENTION: ACQUISITION OVERFLOW OCCURRED!!!!!")
+
             CRIO_MFAU.niInterfaceLib.setFauMiticaStopSCTML(self.device.session, c_byte(1))
 
-            for i in range(10) :
+            for i in range(5) :
               acqState = c_short();
               CRIO_MFAU.niInterfaceLib.getFauMiticaAcqState(self.device.session, byref(acqState))
-              sleep(0.05)
+              sleep(0.1)
               print ("-- Init Acquisition State ", acqState.value)
 
 
@@ -181,7 +194,7 @@ class CRIO_MFAU(Device):
 
         try:
             ptpSync = self.ptp_sync.data()
-            print ("PTP Sync is ", enAcqMode)
+            print ("PTP Sync is ", ptpSync)
             if(ptpSync!="ENABLED" and ptpSync!="DISABLED"):
                print ("PTP Sync selected is not allowed.")
                raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -241,9 +254,9 @@ class CRIO_MFAU(Device):
 #            return 0
 
 
-        status = CRIO_MFAU.niInterfaceLib.setFauMiticaAcqParam(self.session, c_byte(EnAcqModeDict[enAcqMode]), c_byte(PtpSyncDict[ptpSync]) )
+        status = CRIO_MFAU.niInterfaceLib.setFauMiticaAcqParam(self.session, c_byte(self.EnAcqModeDict[enAcqMode]), c_byte(self.PtpSyncDict[ptpSync]) )
         if status < 0 :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'MFAU setFauAcqParam error.')
+            Data.execute('DevLogErr($1,$setFauMiticaTestTX12)', self.getNid(), 'MFAU setFauAcqParam error.')
             return 0
 
 
@@ -339,7 +352,6 @@ class CRIO_MFAU(Device):
 
         return 1
 
-
     def stop_store(self):
 
         try:
@@ -368,15 +380,35 @@ class CRIO_MFAU(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'MFAU device not initialized')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        tx1_mode=2 #ON, OFF, FREQ #self.tx1_mode.data()
-        tx1_tickCnt=40000    #self.tx1_tick.data()
-        tx1_and_rx1=0        #self.tx1_and.data()
+        tx1_mode=self.opif_5_tx_1_mode.data()       
+        tx1_tickCnt=self.opif_5_tx_1_tickcnt.data()    
+        tx1_op=self.opif_5_tx_1_op.data()    
 
-        status = CRIO_MFAU.niInterfaceLib.setFauMiticaTestTX1(self.session, c_uint16(tx1_mode), c_uint32(tx1_tickCnt), c_uint8(tx1_and_rx1))
-        print ("Start Mitica FAU acquisition")    
+        status = CRIO_MFAU.niInterfaceLib.setFauMiticaTestTX1(self.session, c_uint16(self.testOutModeDict[tx1_mode]), c_uint32(tx1_tickCnt), c_uint16(self.testOutOpDict[tx1_op]))
+        print ("setFauMiticaTestTX1...")    
         if status < 0:
-           Data.execute('DevLogErr($1,$2)', self.getNid(), 'MFAU start acquisition device error.')
+           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error on setFauMiticaTestTX1')
            raise mdsExceptions.TclFAILED_ESSENTIAL
 
+
+        tx2_mode=self.opif_5_tx_2_mode.data()       
+        tx2_tickCnt=self.opif_5_tx_2_tickcnt.data()    
+        tx2_op=self.opif_5_tx_2_op.data()  
+
+        status = CRIO_MFAU.niInterfaceLib.setFauMiticaTestTX2(self.session, c_uint16(self.testOutModeDict[tx2_mode]), c_uint32(tx2_tickCnt), c_uint16(self.testOutOpDict[tx2_op]))
+        print ("setFauMiticaTestTX2...")    
+        if status < 0:
+           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error on setFauMiticaTestTX2')
+           raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        tx3_mode=self.opif_5_tx_3_mode.data()       
+        tx3_tickCnt=self.opif_5_tx_3_tickcnt.data()    
+        tx3_op=self.opif_5_tx_3_op.data()    
+
+        status = CRIO_MFAU.niInterfaceLib.setFauMiticaTestTX3(self.session, c_uint16(self.testOutModeDict[tx3_mode]), c_uint32(tx3_tickCnt), c_uint16(self.testOutOpDict[tx3_op]))
+        print ("setFauMiticaTestTX3...")    
+        if status < 0:
+           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error on setFauMiticaTestTX3')
+           raise mdsExceptions.TclFAILED_ESSENTIAL
         return 1
    
