@@ -263,14 +263,16 @@ extern "C" void FAU_MiticaStopSave(void *listPtr)
 
 NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
 {
+   *session = 0;
+
   NiFpga_Status status = NiFpga_Status_Success;
-  size_t requestedDepth, actualDepth;
+  size_t requestedDepth, actualDepth = 0;
 
   /* opens a session, downloads the bitstream, and runs the FPGA */
   printf("Opening a session... %s \n", NiFpga_M_FAU_cRIO_FPGA_Bitfile);
 
   NiFpga_MergeStatus(
-      &status, status = NiFpga_Open(NiFpga_M_FAU_cRIO_FPGA_Bitfile,
+      &status, NiFpga_Open(NiFpga_M_FAU_cRIO_FPGA_Bitfile,
                                     NiFpga_M_FAU_cRIO_FPGA_Signature, "RIO0",
                                     NiFpga_OpenAttribute_NoRun, session));   /*NiFpga_OpenAttribute_NoRun = 1 ; 0 is RUN*/
   if (NiFpga_IsError(status)) //20260127 fede
@@ -279,12 +281,10 @@ NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
     printf("Notice: check NiFpga_M_FAU_cRIO_FPGA_Bitfile has absolute path in header file\n"); 
     return -1;
   }
-
+printf("SESSION: %p\n", session);
   //stop all SCTML vi
   //setFauMiticaStopSCTML(*session, 1);
-
-/*
-  printf("SET GO TO Idle ...\n");
+/*  printf("SET GO TO Idle ...\n");
   NiFpga_MergeStatus(
       &status,
       NiFpga_WriteBool(*session, NiFpga_M_FAU_cRIO_FPGA_ControlBool_goToIdle, 1));
@@ -295,6 +295,8 @@ NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
       return -1;
     }
 */
+printf("11\n");
+
   if (NiFpga_IsNotError(status))
   {
     /*OIU*/
@@ -311,6 +313,7 @@ NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
       printf("Host OIU FIFO data resize error\n");
       return -1;
     }
+printf("22\n");
 
     /*FLS*/
     NiFpga_MergeStatus(
@@ -325,6 +328,7 @@ NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
       printf("Host FLS FIFO data resize error\n");
       return -1;
     }
+printf("33\n");
 
     /*TIME*/
     NiFpga_MergeStatus(
@@ -345,6 +349,8 @@ NiFpga_Status crioFauMiticaInit(NiFpga_Session *session, size_t FifoDepthSize)
     printf("FPGA Open error\n");
     return -1;
   }
+printf("44\n");
+
   return status;
 }
 
