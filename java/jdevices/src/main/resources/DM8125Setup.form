@@ -256,6 +256,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField445">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="753"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField41">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -348,6 +355,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField446">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="754"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField45">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -440,6 +454,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField447">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="755"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField49">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -532,6 +553,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField448">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="756"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField53">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -624,6 +652,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField449">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="757"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField58">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -716,6 +751,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField450">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="758"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField63">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -808,6 +850,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField451">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="759"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField68">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -900,6 +949,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField452">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="760"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField73">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -992,6 +1048,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField453">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="761"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField368">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1084,6 +1147,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField454">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="762"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField373">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1221,7 +1291,7 @@
                                         <Property name="identifier" type="java.lang.String" value=""/>
                                         <Property name="labelString" type="java.lang.String" value="Sensor ID:"/>
                                         <Property name="numCols" type="int" value="20"/>
-                                        <Property name="offsetNid" type="int" value="113"/>
+                                        <Property name="offsetNid" type="int" value="111"/>
                                         <Property name="textOnly" type="boolean" value="true"/>
                                       </Properties>
                                     </Component>
@@ -1240,6 +1310,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField455">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="763"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField78">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1332,6 +1409,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField456">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="764"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField83">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1424,6 +1508,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField457">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="765"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField88">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1435,7 +1526,7 @@
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
                                         <Property name="labelString" type="java.lang.String" value="C2:"/>
-                                        <Property name="offsetNid" type="int" value="128"/>
+                                        <Property name="offsetNid" type="int" value="126"/>
                                       </Properties>
                                     </Component>
                                     <Component class="DeviceField" name="deviceField90">
@@ -1516,6 +1607,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField458">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="766"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField93">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1608,6 +1706,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField459">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="767"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField98">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1700,6 +1805,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField460">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="768"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField103">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1792,6 +1904,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField461">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="769"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField108">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1884,6 +2003,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField462">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="770"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField113">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -1976,6 +2102,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField463">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="771"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField378">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2068,6 +2201,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField464">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="772"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField383">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2131,7 +2271,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="FIBRE 3 ID:"/>
                             <Property name="numCols" type="int" value="20"/>
-                            <Property name="offsetNid" type="int" value="198"/>
+                            <Property name="offsetNid" type="int" value="196"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -2224,6 +2364,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField465">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="773"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField118">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2316,6 +2463,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField466">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="774"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField123">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2408,6 +2562,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField467">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="775"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField128">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2500,6 +2661,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField468">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="776"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField133">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2592,6 +2760,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField469">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="777"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField138">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2684,6 +2859,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField470">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="778"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField143">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2776,6 +2958,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField471">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="779"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField148">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2868,6 +3057,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField472">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="780"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField153">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -2960,6 +3156,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField473">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="781"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField388">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3052,6 +3255,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField474">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="782"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField393">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3115,7 +3325,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="FIBRE 4 ID:"/>
                             <Property name="numCols" type="int" value="20"/>
-                            <Property name="offsetNid" type="int" value="290"/>
+                            <Property name="offsetNid" type="int" value="289"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -3208,6 +3418,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField475">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="783"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField158">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3300,6 +3517,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField476">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="784"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField163">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3392,6 +3616,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField477">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="785"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField168">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3484,6 +3715,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField478">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="786"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField173">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3576,6 +3814,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField479">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="787"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField178">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3668,6 +3913,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField480">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="788"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField183">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3760,6 +4012,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField481">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="789"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField188">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3852,6 +4111,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField482">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="789"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField193">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -3944,6 +4210,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField483">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="791"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField398">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4036,6 +4309,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField484">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="792"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField403">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4192,6 +4472,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField485">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="793"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField198">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4284,6 +4571,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField486">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="794"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField203">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4376,6 +4670,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField487">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="795"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField208">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4468,6 +4769,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField488">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="796"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField213">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4560,6 +4868,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField489">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="797"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField218">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4652,6 +4967,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField490">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="798"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField223">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4744,6 +5066,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField491">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="799"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField228">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4836,6 +5165,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField492">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="800"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField233">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -4928,6 +5264,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField493">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="801"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField408">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5020,6 +5363,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField494">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="802"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField413">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5083,7 +5433,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="FIBRE 6 ID:"/>
                             <Property name="numCols" type="int" value="20"/>
-                            <Property name="offsetNid" type="int" value="474"/>
+                            <Property name="offsetNid" type="int" value="475"/>
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -5176,6 +5526,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField495">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="803"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField238">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5268,6 +5625,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField496">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="804"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField243">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5360,6 +5724,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField497">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="805"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField248">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5452,6 +5823,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField498">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="806"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField253">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5544,6 +5922,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField499">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="807"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField258">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5636,6 +6021,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField500">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="808"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField263">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5728,6 +6120,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField501">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="809"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField268">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5820,6 +6219,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField502">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="810"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField273">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -5912,6 +6318,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField503">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="811"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField418">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6004,6 +6417,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField504">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="812"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField423">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6160,6 +6580,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField505">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="813"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField278">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6252,6 +6679,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField506">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="814"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField283">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6344,6 +6778,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField507">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="815"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField288">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6436,6 +6877,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField508">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="816"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField293">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6528,6 +6976,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField509">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="817"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField298">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6620,6 +7075,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField510">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="818"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField303">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6712,6 +7174,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField511">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="819"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField308">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6804,6 +7273,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField512">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="820"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField313">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6896,6 +7372,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField513">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="821"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField428">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -6988,6 +7471,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField514">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="822"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField433">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7144,6 +7634,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField515">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="823"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField318">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7236,6 +7733,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField516">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="824"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField323">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7328,6 +7832,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField517">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="825"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField328">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7420,6 +7931,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField518">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="826"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField333">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7512,6 +8030,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField519">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="827"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField338">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7604,6 +8129,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField520">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="828"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField343">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7696,6 +8228,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField521">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="829"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField348">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7788,6 +8327,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField522">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="830"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField353">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7880,6 +8426,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField523">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="831"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField358">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
@@ -7972,6 +8525,13 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                   <SubComponents>
+                                    <Component class="DeviceField" name="deviceField524">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="C4:"/>
+                                        <Property name="offsetNid" type="int" value="832"/>
+                                      </Properties>
+                                    </Component>
                                     <Component class="DeviceField" name="deviceField363">
                                       <Properties>
                                         <Property name="identifier" type="java.lang.String" value=""/>
