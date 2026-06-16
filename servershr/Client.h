@@ -108,7 +108,7 @@ static void Client_cleanup_jobs(Client *c, fd_set *fdactive)
     Job *j = Job_pop_by_conid(conid);
     if (j)
     {
-      Job_callback_done(j, ServerPATH_DOWN, FALSE);
+      Job_callback_done(j, ServerPATH_DOWN, NULL, FALSE);
       free(j);
     }
     else
@@ -198,7 +198,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
       j = Job_get_by_jobid(MonJob);
     if (j)
     {
-      Job_callback_done(j, status, TRUE);
+      Job_callback_done(j, status, msg, TRUE);
     }
     else
     {

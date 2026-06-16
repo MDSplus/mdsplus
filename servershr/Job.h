@@ -11,7 +11,7 @@ typedef struct job
   int conid;
   int *retstatus;
   pthread_rwlock_t *lock;
-  void (*callback_done)();
+  void (*callback_done)(void *, char*);
   void (*callback_before)();
   void *callback_param;
   pthread_cond_t *cond;
@@ -30,7 +30,7 @@ static Job *Jobs = NULL;
 static int MonJob = -1;
 
 static Job *newJob(int conid, int *retstatus, pthread_rwlock_t *lock,
-                   void (*callback_done)(void *),
+                   void (*callback_done)(void *, char *),
                    void *callback_param,
                    void (*callback_before)(void *))
 {
@@ -71,7 +71,7 @@ static void Job_pop(Job *job)
 static int Job_register(int *msgid,
                         int conid, int *retstatus, pthread_rwlock_t *lock,
                         void *callback_param,
-                        void (*callback_done)(void *),
+                        void (*callback_done)(void *, char *),
                         void (*callback_before)(void *))
 {
   Job *j = newJob(conid, retstatus, lock, callback_param, callback_done, callback_before);
@@ -107,10 +107,10 @@ static void Job_callback_before(Job *job)
 }
 
 /// returns  true if job was popped
-static int Job_callback_done(Job *j, int status, int remove)
+static int Job_callback_done(Job *j, int status, char *msg, int remove)
 {
   MDSDBG(JOB_PRI " status=%d, remove=%d", JOB_VAR(j), status, remove);
-  void (*callback_done)(void *);
+  void (*callback_done)(void *, char *);
   const int is_mon = j->jobid == MonJob;
   if (j->lock)
     pthread_rwlock_wrlock(j->lock);
@@ -122,7 +122,7 @@ static int Job_callback_done(Job *j, int status, int remove)
   if (j->lock)
     pthread_rwlock_unlock(j->lock);
   if (callback_done)
-    callback_done(j->callback_param);
+    callback_done(j->callback_param, msg);
   /**** If job has a condition, RemoveJob will not remove it. ***/
   if (remove && !is_mon)
   {
@@ -258,7 +258,7 @@ static void Job_cleanup(int status, int jobid)
   do
   {
     MDSDBG(JOB_PRI " done", JOB_VAR(j));
-    Job_callback_done(j, status, FALSE);
+    Job_callback_done(j, status, NULL, FALSE);
     free(j);
     j = Job_pop_by_conid(conid);
   } while (j);

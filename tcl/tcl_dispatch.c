@@ -436,8 +436,9 @@ typedef struct
   char *command;
 } DispatchedCommand;
 
-static void CommandDone(DispatchedCommand *command)
+static void CommandDone(void *arg, char *dummy __attribute__((unused)))
 {
+  DispatchedCommand *command = (DispatchedCommand *) arg;
   if (IS_NOT_OK(command->status))
   {
     char *msg = MdsGetMsg(command->status);
@@ -507,7 +508,7 @@ EXPORT int TclDispatch_command(void *ctx, char **error,
       iostatusp = &c.cmd->status;
     }
     status = ServerDispatchCommand(c.sid, c.svr, c.tab, c.cmd->command,
-                                   CommandDone, c.cmd, iostatusp, NULL, 0);
+                                   CommandDone, (void *)c.cmd, iostatusp, NULL, 0);
     if (STATUS_NOT_OK)
     {
       MDSMSG("ServerDispatchCommand failed.");

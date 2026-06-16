@@ -46,7 +46,7 @@ public class MARTE2_NI6368_DOSetup extends DeviceSetup {
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Board Id: ");
-        deviceField2.setNumCols(4);
+        deviceField2.setNumCols(20);
         deviceField2.setOffsetNid(10);
         jPanel3.add(deviceField2);
 

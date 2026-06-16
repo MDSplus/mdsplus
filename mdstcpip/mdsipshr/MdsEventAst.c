@@ -25,6 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 #include <stdlib.h>
+#include <string.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsEventAst  ///////////////////////////////////////////////////////////////
@@ -40,6 +41,8 @@ int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
   MdsEventInfo info;
   int size = sizeof(info);
   int status;
+  memset(info.data,0,sizeof(info.data));
+  info.eventid = 0;
   info.astadr = (void (*)(void *, int, char *))astadr;
   info.astprm = astprm;
   ansarg.ptr = 0;

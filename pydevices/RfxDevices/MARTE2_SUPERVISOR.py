@@ -1483,8 +1483,8 @@ $<APP_NAME> = {
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
         commandFile.close()
-	st = os.stat(fileName)
-	os.chmod(fileName, st.st_mode | stat.S_IEXEC)
+        st = os.stat(fileName)
+        os.chmod(fileName, st.st_mode | stat.S_IEXEC)
 #        f = Path(fileName)
 #        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
         return fileName    

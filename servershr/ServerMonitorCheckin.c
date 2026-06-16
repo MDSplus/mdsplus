@@ -101,7 +101,7 @@ static inline int using_events(char *server, void (*ast)(), void *astprm)
   return yesno;
 }
 
-EXPORT int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)
+EXPORT int ServerMonitorCheckin(char *server, void (*ast)(void *, char *), void *astprm)
 {
   if (using_events(server, ast, astprm))
     return MDSplusSUCCESS;

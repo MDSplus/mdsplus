@@ -2,7 +2,7 @@
 
 <Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="soserver.nbtf:9000"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="SPIDER Experiment Setup"/>
     <Property name="deviceType" type="java.lang.String" value="SPIDER_SETUP"/>
     <Property name="height" type="int" value="650"/>
@@ -21,7 +21,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,77,0,0,3,84"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,77,0,0,4,-92"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -329,25 +329,21 @@
 
                           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                           <SubComponents>
-                            <Component class="DeviceField" name="deviceField29">
-                              <Properties>
-                                <Property name="identifier" type="java.lang.String" value="isrf_te_v"/>
-                                <Property name="labelString" type="java.lang.String" value="ISRF TE V:"/>
-                                <Property name="offsetNid" type="int" value="323"/>
-                              </Properties>
-                            </Component>
                             <Component class="DeviceChoice" name="deviceChoice10">
                               <Properties>
                                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                                  <StringArray count="2">
-                                    <StringItem index="0" value="None"/>
-                                    <StringItem index="1" value="Frequency"/>
+                                  <StringArray count="5">
+                                    <StringItem index="0" value="Standard"/>
+                                    <StringItem index="1" value="RF1 Master"/>
+                                    <StringItem index="2" value="RF2 Master"/>
+                                    <StringItem index="3" value="RF3 Master"/>
+                                    <StringItem index="4" value="RF4 Master"/>
                                   </StringArray>
                                 </Property>
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="RF Control Mode:"/>
                                 <Property name="offsetNid" type="int" value="324"/>
-                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                <Property name="updateIdentifier" type="java.lang.String" value="123"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -806,8 +802,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel10">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF1 Power [W]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Power [W]"/>
+                                  <JTabbedPaneConstraints tabName="RF1 Power [kW]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Power [kW]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -833,8 +829,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel14">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF1 Frequeny [Hz]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Frequeny [Hz]"/>
+                                  <JTabbedPaneConstraints tabName="RF1 Frequeny [kHz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Frequeny [kHz]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -844,6 +840,7 @@
                                 <Container class="DeviceWave" name="deviceWave7">
                                   <Properties>
                                     <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="minYVisible" type="boolean" value="true"/>
                                     <Property name="offsetNid" type="int" value="45"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -855,32 +852,63 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                 </Container>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="jPanel48">
-                              <Constraints>
-                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF1 Capacitance [pF]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Capacitance [pF]"/>
-                                  </JTabbedPaneConstraints>
-                                </Constraint>
-                              </Constraints>
-
-                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-                              <SubComponents>
-                                <Container class="DeviceWave" name="deviceWave22">
-                                  <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
-                                    <Property name="offsetNid" type="int" value="51"/>
-                                    <Property name="updateExpression" type="java.lang.String" value=""/>
-                                  </Properties>
+                                <Container class="javax.swing.JPanel" name="jPanel86">
                                   <Constraints>
                                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                                      <BorderConstraints direction="Center"/>
+                                      <BorderConstraints direction="North"/>
                                     </Constraint>
                                   </Constraints>
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JLabel" name="jLabel5">
+                                      <Properties>
+                                        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                          <Color blue="33" green="33" red="ff" type="rgb"/>
+                                        </Property>
+                                        <Property name="text" type="java.lang.String" value="jLabel5"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceChoice" name="deviceChoice3">
+                                      <Properties>
+                                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                                          <PropertyValue value="[0, 1]"/>
+                                        </Property>
+                                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                          <StringArray count="2">
+                                            <StringItem index="0" value="OFF"/>
+                                            <StringItem index="1" value="ON"/>
+                                          </StringArray>
+                                        </Property>
+                                        <Property name="convert" type="boolean" value="true"/>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Automatch: "/>
+                                        <Property name="offsetNid" type="int" value="375"/>
+                                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField29">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Initial Freq(Automatch):"/>
+                                        <Property name="offsetNid" type="int" value="376"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField81">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="VSWR: "/>
+                                        <Property name="offsetNid" type="int" value="377"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField82">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Phase: "/>
+                                        <Property name="offsetNid" type="int" value="378"/>
+                                      </Properties>
+                                    </Component>
+                                  </SubComponents>
                                 </Container>
                               </SubComponents>
                             </Container>
@@ -900,8 +928,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel15">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF2 Power [W]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Power [W]"/>
+                                  <JTabbedPaneConstraints tabName="RF2 Power [kW]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Power [kW]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -911,8 +939,10 @@
                                 <Container class="DeviceWave" name="deviceWave8">
                                   <Properties>
                                     <Property name="identifier" type="java.lang.String" value="rf2_power"/>
+                                    <Property name="minYVisible" type="boolean" value="true"/>
                                     <Property name="offsetNid" type="int" value="57"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
                                   </Properties>
                                   <Constraints>
                                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -927,8 +957,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel16">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF2 Frequeny [Hz]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Frequeny [Hz]"/>
+                                  <JTabbedPaneConstraints tabName="RF2 Frequency (kHz)">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Frequency (kHz)"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -949,32 +979,63 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                 </Container>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="jPanel49">
-                              <Constraints>
-                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF2 Capacitance [pF]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Capacitance [pF]"/>
-                                  </JTabbedPaneConstraints>
-                                </Constraint>
-                              </Constraints>
-
-                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-                              <SubComponents>
-                                <Container class="DeviceWave" name="deviceWave23">
-                                  <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
-                                    <Property name="offsetNid" type="int" value="220"/>
-                                    <Property name="updateExpression" type="java.lang.String" value=""/>
-                                  </Properties>
+                                <Container class="javax.swing.JPanel" name="jPanel87">
                                   <Constraints>
                                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                                      <BorderConstraints direction="Center"/>
+                                      <BorderConstraints direction="North"/>
                                     </Constraint>
                                   </Constraints>
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JLabel" name="jLabel11">
+                                      <Properties>
+                                        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                          <Color blue="33" green="33" red="ff" type="rgb"/>
+                                        </Property>
+                                        <Property name="text" type="java.lang.String" value="jLabel11"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceChoice" name="deviceChoice13">
+                                      <Properties>
+                                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                                          <PropertyValue value="[0, 1]"/>
+                                        </Property>
+                                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                          <StringArray count="2">
+                                            <StringItem index="0" value="OFF"/>
+                                            <StringItem index="1" value="ON"/>
+                                          </StringArray>
+                                        </Property>
+                                        <Property name="convert" type="boolean" value="true"/>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Automatch: "/>
+                                        <Property name="offsetNid" type="int" value="380"/>
+                                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField83">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Initial Freq(Automatch):"/>
+                                        <Property name="offsetNid" type="int" value="381"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField84">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="VSWR: "/>
+                                        <Property name="offsetNid" type="int" value="382"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField85">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Phase: "/>
+                                        <Property name="offsetNid" type="int" value="383"/>
+                                      </Properties>
+                                    </Component>
+                                  </SubComponents>
                                 </Container>
                               </SubComponents>
                             </Container>
@@ -994,8 +1055,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel50">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF3 Power [W]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Power [W]"/>
+                                  <JTabbedPaneConstraints tabName="RF3 Power [kW]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Power [kW]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -1032,6 +1093,7 @@
                                 <Container class="DeviceWave" name="deviceWave25">
                                   <Properties>
                                     <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="minYVisible" type="boolean" value="true"/>
                                     <Property name="offsetNid" type="int" value="234"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -1043,32 +1105,63 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                 </Container>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="jPanel65">
-                              <Constraints>
-                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF3 Capacitance [pF]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Capacitance [pF]"/>
-                                  </JTabbedPaneConstraints>
-                                </Constraint>
-                              </Constraints>
-
-                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-                              <SubComponents>
-                                <Container class="DeviceWave" name="deviceWave26">
-                                  <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
-                                    <Property name="offsetNid" type="int" value="241"/>
-                                    <Property name="updateExpression" type="java.lang.String" value=""/>
-                                  </Properties>
+                                <Container class="javax.swing.JPanel" name="jPanel88">
                                   <Constraints>
                                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                                      <BorderConstraints direction="Center"/>
+                                      <BorderConstraints direction="North"/>
                                     </Constraint>
                                   </Constraints>
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JLabel" name="jLabel12">
+                                      <Properties>
+                                        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                          <Color blue="33" green="33" red="ff" type="rgb"/>
+                                        </Property>
+                                        <Property name="text" type="java.lang.String" value="jLabel12"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceChoice" name="deviceChoice14">
+                                      <Properties>
+                                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                                          <PropertyValue value="[0, 1]"/>
+                                        </Property>
+                                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                          <StringArray count="2">
+                                            <StringItem index="0" value="OFF"/>
+                                            <StringItem index="1" value="ON"/>
+                                          </StringArray>
+                                        </Property>
+                                        <Property name="convert" type="boolean" value="true"/>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Automatch: "/>
+                                        <Property name="offsetNid" type="int" value="385"/>
+                                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField86">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Initial Freq(Automatch):"/>
+                                        <Property name="offsetNid" type="int" value="386"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField87">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="VSWR: "/>
+                                        <Property name="offsetNid" type="int" value="387"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField88">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Phase: "/>
+                                        <Property name="offsetNid" type="int" value="388"/>
+                                      </Properties>
+                                    </Component>
+                                  </SubComponents>
                                 </Container>
                               </SubComponents>
                             </Container>
@@ -1088,8 +1181,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel66">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF4 Power [W]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Power [W]"/>
+                                  <JTabbedPaneConstraints tabName="RF4 Power [kW]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Power [kW]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -1115,8 +1208,8 @@
                             <Container class="javax.swing.JPanel" name="jPanel67">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF4 Frequeny [Hz]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Frequeny [Hz]"/>
+                                  <JTabbedPaneConstraints tabName="RF4 Frequeny [kHz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Frequeny [kHz]"/>
                                   </JTabbedPaneConstraints>
                                 </Constraint>
                               </Constraints>
@@ -1126,6 +1219,7 @@
                                 <Container class="DeviceWave" name="deviceWave28">
                                   <Properties>
                                     <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="minYVisible" type="boolean" value="true"/>
                                     <Property name="offsetNid" type="int" value="255"/>
                                     <Property name="updateExpression" type="java.lang.String" value=""/>
                                   </Properties>
@@ -1137,32 +1231,63 @@
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                                 </Container>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="jPanel68">
-                              <Constraints>
-                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="RF4 Capacitance [pF]">
-                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Capacitance [pF]"/>
-                                  </JTabbedPaneConstraints>
-                                </Constraint>
-                              </Constraints>
-
-                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-                              <SubComponents>
-                                <Container class="DeviceWave" name="deviceWave29">
-                                  <Properties>
-                                    <Property name="identifier" type="java.lang.String" value=""/>
-                                    <Property name="offsetNid" type="int" value="262"/>
-                                    <Property name="updateExpression" type="java.lang.String" value=""/>
-                                  </Properties>
+                                <Container class="javax.swing.JPanel" name="jPanel89">
                                   <Constraints>
                                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                                      <BorderConstraints direction="Center"/>
+                                      <BorderConstraints direction="North"/>
                                     </Constraint>
                                   </Constraints>
 
                                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JLabel" name="jLabel16">
+                                      <Properties>
+                                        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                          <Color blue="33" green="33" red="ff" type="rgb"/>
+                                        </Property>
+                                        <Property name="text" type="java.lang.String" value="jLabel16"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceChoice" name="deviceChoice15">
+                                      <Properties>
+                                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                                          <PropertyValue value="[0, 1]"/>
+                                        </Property>
+                                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                          <StringArray count="2">
+                                            <StringItem index="0" value="OFF"/>
+                                            <StringItem index="1" value="ON"/>
+                                          </StringArray>
+                                        </Property>
+                                        <Property name="convert" type="boolean" value="true"/>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Automatch: "/>
+                                        <Property name="offsetNid" type="int" value="390"/>
+                                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField89">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Initial Freq(Automatch):"/>
+                                        <Property name="offsetNid" type="int" value="391"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField90">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="VSWR: "/>
+                                        <Property name="offsetNid" type="int" value="392"/>
+                                      </Properties>
+                                    </Component>
+                                    <Component class="DeviceField" name="deviceField91">
+                                      <Properties>
+                                        <Property name="identifier" type="java.lang.String" value=""/>
+                                        <Property name="labelString" type="java.lang.String" value="Phase: "/>
+                                        <Property name="offsetNid" type="int" value="393"/>
+                                      </Properties>
+                                    </Component>
+                                  </SubComponents>
                                 </Container>
                               </SubComponents>
                             </Container>
@@ -1804,8 +1929,8 @@
                     <Container class="javax.swing.JPanel" name="jPanel21">
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Pressure Modulation %">
-                            <Property name="tabTitle" type="java.lang.String" value="Pressure Modulation %"/>
+                          <JTabbedPaneConstraints tabName="Line Pressure [barG]">
+                            <Property name="tabTitle" type="java.lang.String" value="Line Pressure [barG]"/>
                           </JTabbedPaneConstraints>
                         </Constraint>
                       </Constraints>
