@@ -196,12 +196,12 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.nid = *(int *)p3;
     if (job.h.addr)
     {
-      MDSDBG(SVRACTIONJOB_PRI, SVRACTIONJOB_VAR(&job));
+      MDSDBG(SRVACTIONJOB_PRI, SRVACTIONJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSWRN(SVRACTIONJOB_PRI " No Addr", SVRACTIONJOB_VAR(&job));
+      MDSWRN(SRVACTIONJOB_PRI " No Addr", SRVACTIONJOB_VAR(&job));
       status = DoSrvAction((SrvJob *)&job);
     }
     break;
@@ -217,12 +217,12 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.h.jobid = *jobid;
     if (job.h.addr)
     {
-      MDSDBG(SVRCLOSEJOB_PRI, SVRCLOSEJOB_VAR(&job));
+      MDSDBG(SRVCLOSEJOB_PRI, SRVCLOSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSWRN(SVRCLOSEJOB_PRI " No Addr", SVRCLOSEJOB_VAR(&job));
+      MDSWRN(SRVCLOSEJOB_PRI " No Addr", SRVCLOSEJOB_VAR(&job));
       status = DoSrvClose((SrvJob *)&job);
     }
     break;
@@ -240,12 +240,12 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.shot = *(int *)p2;
     if (job.h.addr)
     {
-      MDSDBG(SVRCREATEPULSEJOB_PRI, SVRCREATEPULSEJOB_VAR(&job));
+      MDSDBG(SRVCREATEPULSEJOB_PRI, SRVCREATEPULSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSWRN(SVRCREATEPULSEJOB_PRI " No Addr", SVRCREATEPULSEJOB_VAR(&job));
+      MDSWRN(SRVCREATEPULSEJOB_PRI " No Addr", SRVCREATEPULSEJOB_VAR(&job));
       status = DoSrvCreatePulse((SrvJob *)&job);
     }
     break;
@@ -271,12 +271,12 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.command = strdup((char *)p2);
     if (job.h.addr)
     {
-      MDSDBG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
+      MDSDBG(SRVCOMMANDJOB_PRI, SRVCOMMANDJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSWRN(SVRCOMMANDJOB_PRI " No Addr", SVRCOMMANDJOB_VAR(&job));
+      MDSWRN(SRVCOMMANDJOB_PRI " No Addr", SRVCOMMANDJOB_VAR(&job));
       status = DoSrvCommand((SrvJob *)&job);
     }
     break;
@@ -300,12 +300,12 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.status = *(int *)p8;
     if (job.h.addr)
     {
-      MDSDBG(SVRMONITORJOB_PRI, SVRMONITORJOB_VAR(&job));
+      MDSDBG(SRVMONITORJOB_PRI, SRVMONITORJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSWRN(SVRMONITORJOB_PRI " No Addr", SVRMONITORJOB_VAR(&job));
+      MDSWRN(SRVMONITORJOB_PRI " No Addr", SRVMONITORJOB_VAR(&job));
       status = MDSplusERROR;
     }
     break;
@@ -429,7 +429,7 @@ static int RemoveLast()
       JobQueueNext->h.next = 0;
     else
       JobQueue = 0;
-    MDSMSG(SVRJOB_PRI "Removed pending action", SVRJOB_VAR(job));
+    MDSMSG(SRVJOB_PRI "Removed pending action", SRVJOB_VAR(job));
     FreeJob(job);
     status = MDSplusSUCCESS;
   }
@@ -948,7 +948,7 @@ static SOCKET setup_client(SrvJob *job)
     if (sock != INVALID_SOCKET)
     {
       add_client(addr, port, sock);
-      MDSMSG("setup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+      MDSMSG("setup connection %" PRI_SOCKET " " SRVJOB_PRI, sock, SRVJOB_VAR(job));
     }
   }
   return sock;
@@ -961,11 +961,11 @@ static void cleanup_client(SrvJob *job)
     close_socket(sock);
   if (STATIC_Debug)
   {
-    MDSMSG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+    MDSMSG("cleanup connection %" PRI_SOCKET " " SRVJOB_PRI, sock, SRVJOB_VAR(job));
   }
   else
   {
-    MDSDBG("cleanup connection %" PRI_SOCKET " " SVRJOB_PRI, sock, SVRJOB_VAR(job));
+    MDSDBG("cleanup connection %" PRI_SOCKET " " SRVJOB_PRI, sock, SRVJOB_VAR(job));
   }
 }
 
@@ -992,7 +992,7 @@ static int send_all(SOCKET sock, char *msg, int len)
 
 static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
-  MDSDBG(SVRJOB_PRI " %d", SVRJOB_VAR(job), replyType);
+  MDSDBG(SRVJOB_PRI " %d", SRVJOB_VAR(job), replyType);
   int status = MDSplusERROR;
   long msg_len = msg ? (long)strlen(msg) : 0;
   int try_again = FALSE;
@@ -1005,7 +1005,7 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
     SOCKET sock = setup_client(job);
     if (sock == INVALID_SOCKET)
     {
-      MDSMSG(SVRJOB_PRI " break connection", SVRJOB_VAR(job));
+      MDSMSG(SRVJOB_PRI " break connection", SRVJOB_VAR(job));
       cleanup_client(job);
       break;
     }

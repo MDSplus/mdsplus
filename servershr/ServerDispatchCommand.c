@@ -59,7 +59,7 @@ int *netid, void (*link_down)(), void (*before_ast)())
 #include "servershrp.h"
 
 EXPORT int ServerDispatchCommand(int *id, char *server, char *cli,
-                                 char *command, void (*ast)(), void *astprm,
+                                 char *command, void (*ast)(void *, char *), void *astprm,
                                  int *retstatus, pthread_rwlock_t *lock,
                                  void (*before_ast)())
 {
