@@ -15,7 +15,6 @@ def recvall(sock, n):
         data.extend(packet)
     return data
 
-stopAcq = {}
 
 
 class EPICA(MDSplus.Device):
@@ -70,6 +69,8 @@ class EPICA(MDSplus.Device):
        ])
 
     socketDict = {}
+    startTimeDict = {}
+    trigTimeDict = {}
 
     def init(self):
         try:
@@ -195,6 +196,11 @@ class EPICA(MDSplus.Device):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
         EPICA.socketDict[self.getNid()] = sock
+        for chan in range(8):
+            self.getNode('.CHANNEL_%d:V' % (chan+1)).deleteData()
+            self.getNode('.CHANNEL_%d:I' % (chan+1)).deleteData()
+
+
 
     def arm(self):
         try:
@@ -208,8 +214,19 @@ class EPICA(MDSplus.Device):
         except:
             print("Socket communication failed")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            EPICA.startTimeDict.pop(self.getNid())
+        except:
+            pass
 
     def trigger(self):
+        try:
+            firstTriggerTime = EPICA.startTimeDict[self.getNid()]
+            EPICA.trigTimeDict [self.getNid()] = time.time() - firstTriggerTime
+        except:
+            EPICA.startTimeDict[self.getNid()] = time.time()
+            EPICA.trigTimeDict[self.getNid()] = 0
+
         try:
             sock = EPICA.socketDict[self.getNid()]
         except:
@@ -221,6 +238,7 @@ class EPICA(MDSplus.Device):
         except:
             print("Socket communication failed")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+        self.store()
 
     def clear(self):
         try:
@@ -268,24 +286,19 @@ class EPICA(MDSplus.Device):
             print("SCannot read decimation")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
+        try:
+            EPICA.triggerTime = EPICA.trigTimeDict[self.getNid()]
+        except:
+            print('Store called without calling firt trigger!')
+            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
         decimationDict = {0:32,1:64,2:128,2:256,4:512,5:1024,6:2048,7:4096};   
         freq = 20E6/decimationDict[decimation]
-        timebase = MDSplus.Range(trigTime, trigTime + pts/freq, 1/freq)            
+        startTime = MDSplus.Float64(EPICA.triggerTime + trigTime) 
+        endTime = MDSplus.Float64(EPICA.triggerTime + trigTime + pts/freq)        
+        timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(1/freq))   
         for chan in range(int(activeChans/2)):
-            convExpr = self.getTree().tdiCompile("$VALUE")
- 
-            rawMdsData = MDSplus.Int32Array(dmaSamples[2 * chan * pts:2 * chan * pts + pts])
-            rawMdsData.setUnits("Count")
-            convExpr.setUnits("Volt")
-            currSig = MDSplus.Signal(convExpr, rawMdsData, timebase)
-            self.getNode('.CHANNEL_%d:V' % (chan+1)).putData(currSig)
-
-            rawMdsData = MDSplus.Int32Array(dmaSamples[(2 * chan +1) * pts:(2 * chan +1) * pts + pts])
-            rawMdsData.setUnits("Count")
-            convExpr.setUnits("Ampere")
-            currSig = MDSplus.Signal(convExpr, rawMdsData, timebase)
-            self.getNode('.CHANNEL_%d:I' % (chan+1)).putData(currSig)
-
+            self.getNode('.CHANNEL_%d:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(2 * chan) * pts:(2 * chan) * pts + pts])))
+            self.getNode('.CHANNEL_%d:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(2 * chan +1 ) * pts:(2 * chan + 1) * pts + pts])))
 
     
 
