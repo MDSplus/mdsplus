@@ -112,7 +112,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     cm->h = m->h;
     cm->h.client_type |= COMPRESSED;
     memcpy(cm->bytes, &cm->h.msglen, 4);
-    int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+    unsigned int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
     MDSDBG(MESSAGE_PRI, MESSAGE_VAR(cm));
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);

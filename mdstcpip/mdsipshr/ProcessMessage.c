@@ -611,7 +611,7 @@ static inline void _client_event_ast(MdsEventList *e, int data_len, char *data, 
   (*m)->h.msglen = len;
   (*m)->h.dtype = DTYPE_EVENT_NOTIFY;
   if (data_len > 0)
-    memcpy(e->info->data, data, (data_len < 12) ? data_len : 12);
+    memcpy((*m)->bytes, data, (data_len < 12) ? data_len : 12);
   SendMdsMsgC(e->connection, *m, MSG_DONTWAIT);
 }
 

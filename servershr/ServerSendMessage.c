@@ -106,7 +106,7 @@ static SOCKET get_socket_by_conid(int conid)
 // Each thread uses a different port, thus a different network connection.
 // Connections persist and thus handle all traffic between the endpoints.
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
-                      pthread_rwlock_t *lock, int *conid_out, void (*callback_done)(),
+                      pthread_rwlock_t *lock, int *conid_out, void (*callback_done)(void *, char *),
                       void *callback_param, void (*callback_before)(), int numargs_in,
                       ...)
 {
@@ -125,7 +125,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
       MDSWRN("failed to connect");
     }
     if (callback_done)
-      callback_done(callback_param);
+      callback_done(callback_param, NULL);
     return ServerPATH_DOWN;
   }
   INIT_STATUS;
@@ -155,7 +155,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
   {
     MDSWRN("could not resolve address socket %" PRI_SOCKET " is bound to", sock);
     if (callback_done)
-      callback_done(callback_param);
+      callback_done(callback_param, NULL);
     return ServerSOCKET_ADDR_ERROR;
   }
   jobid = Job_register(msgid, conid, retstatus, lock, callback_done, callback_param, callback_before);

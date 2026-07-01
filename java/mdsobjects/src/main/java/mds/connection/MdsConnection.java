@@ -3,7 +3,6 @@ package mds.connection;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.swing.*;
 public class MdsConnection
 {
 	public static final int DEFAULT_PORT = 8000;
@@ -81,23 +80,15 @@ public class MdsConnection
 			if (MdsConnection.this.busy)
 				return;
 			if (eventName != null)
-                        {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run()
-                                {
-                                    dispatchUpdateEvent(eventName);
-                                }
-                            });
-                        }
+			{
+				// TODO: Update this to work async
+				dispatchUpdateEvent(eventName);
+			}
 			else if (eventId != -1)
-                        {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run()
-                                {
-                                    dispatchUpdateEvent(eventId);
-                                }
-                            });
-                        }
+			{
+				// TODO: Update this to work async
+				dispatchUpdateEvent(eventId);
+			}
 		}
 
 		public void SetEventid(int id)

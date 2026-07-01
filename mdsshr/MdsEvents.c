@@ -400,7 +400,7 @@ static void *handleRemoteAst(void *arg )
   getServerDefinition("mds_event_server", receive_servers, &num_receive_servers);
   newRemoteId(eventInfo->eventid);
   for (idx = 0; idx < num_receive_servers; idx++)
-  {  
+  {
     receive_thread_ids[idx] = searchOpenServer(receive_servers[idx]);
     if(receive_thread_ids[idx] < 0)
     {
@@ -574,7 +574,7 @@ static int eventAstRemote(char const *eventnam, void (*astadr)(), void *astprm,
   if (STATUS_OK)
   {
     /* if external_thread running, it must be killed before sending messages
-       * over socket */   
+       * over socket */
     if (external_thread_created)
     {
       KillHandler();
@@ -883,7 +883,7 @@ static int canEventRemote(const int eventid)
   {
     KillHandler();
     for (i = 0; i < num_receive_servers; i++)
-    {     
+    {
       if (receive_ids[i] < 0)
         receive_ids[i] = ConnectToMds_(receive_servers[i]);
       if(receive_ids[i]  == INVALID_CONNECTION_ID)

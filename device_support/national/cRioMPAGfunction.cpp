@@ -97,7 +97,6 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName, Ni
 NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId, size_t fifoDepthSize)
 {
   NiFpga_Status status = NiFpga_Status_Success;
-  uint16_t fpgaState;
 
   if (DEBUG == 1)
     return status;
@@ -123,18 +122,20 @@ NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId, size_t f
 
     sleep(1);
 
-   
-    NiFpga_MergeStatus(&status, NiFpga_ReadU16( *session,
-                                             NiFpga_MainFPGA_9159_IndicatorU16_Master_STATUS,
-                                             &fpgaState));
+    uint16_t fpgaState;
+    NiFpga_MergeStatus(&status, NiFpga_ReadU16(*session,
+                                               NiFpga_MainFPGA_9159_IndicatorU16_Master_STATUS,
+                                               &fpgaState));
 
     if (NiFpga_IsError(status) || fpgaState == FPGA_IDLE_STATE)
     {
       NiFpga_Close(*session, NiFpga_CloseAttribute_NoResetIfLastSession);
-      printf("Error reading AGPS cRIO acquisition state or AGPS cRIO in IDLE state\n");
+      printf("Error reading AGPS cRIO acquisition state or AGPS cRIO in IDLE state  \n");
       return -1;
     }
-  //printf("FPGA state %s\n", fpgaStateStr[fpgaState]);
+
+    //printf("FPGA state %s\n", fpgaStateStr[fpgaState]);
+
     printf("FPGA state %d\n", fpgaState);
 
     status = crioMpagInitFifo(*session, "FIFO A", NiFpga_MainFPGA_9159_TargetToHostFifoU64_FIFOTOPC_A, fifoDepthSize);
@@ -312,10 +313,7 @@ void *acquisitionThreadFPGA(void *args)
   double *time;
   int __count = 0;
   int chanTree;
-  
-  //int sampleToRead = 0;
-  int *sampleToRead;
-
+  int sampleToRead = 0;
   int readElem;
   float dummyCalibCoeff[] = {1., 0., 0., 0.};
   int *readChanSmp;
@@ -365,7 +363,6 @@ void *acquisitionThreadFPGA(void *args)
   float *streamOffsets = fpgaAcq->streamOffsets;
   uint8_t clockMode = fpgaAcq->clockMode;
 
-
   NiFpga_Bool val;
   NiFpga_MergeStatus(&status, NiFpga_ReadBool(session,
                                               NiFpga_MainFPGA_9159_ControlBool_Start,
@@ -377,11 +374,8 @@ void *acquisitionThreadFPGA(void *args)
   readChanSmp = (int *)calloc(NUM_SLAVE_CHANNEL + NUM_9220_CHANNEL * NUM_9220, sizeof(int));
   bufReadChanSmp = (int *)calloc(NUM_SLAVE_CHANNEL + NUM_9220_CHANNEL * NUM_9220, sizeof(int));
 
-  sampleToRead = (int *)calloc(NUM_SLAVE_CHANNEL + NUM_9220_CHANNEL * NUM_9220, sizeof(int));
-
   for (int chan = 0; chan < NUM_SLAVE_CHANNEL + NUM_9220_CHANNEL * NUM_9220; chan++)
   {
-    sampleToRead[chan] = segmentSize;
     bufReadChanSmp[chan] = bufSize;
     readChanSmp[chan] = 0;
     coeffs[chan] = dummyCalibCoeff;
@@ -392,8 +386,6 @@ void *acquisitionThreadFPGA(void *args)
   printf("WAIT  thread %s\n", fifoName);
   sem_wait(&structFpga->semThreadStart);
   printf("START thread %s Stop acq %d\n", fifoName, (*(uint8_t *)stopAcq));
-
-  printf("bufSize %d\nsegmentSize %d\nnumSamples %d\n", bufSize, segmentSize, numSamples );
 
   usleep(200000);
 
@@ -457,20 +449,14 @@ void *acquisitionThreadFPGA(void *args)
       sleep(2);
       printf("Read elem %d \n", readElem);
     }
-    
-    //printf("Read elem %d \n", readElem);
 
-    //if (readElem == -1 || readElem != slaveDataSamples) // 2025 09 26
-    if ( readElem == -1 ) // 2025 09 26
+    if (readElem == -1 || readElem != slaveDataSamples)
     {
       //Report error contition only if system in in acquisizione ande the read data are less than requested
-     // if (readElem != slaveDataSamples && (!*(uint8_t *)stopAcq) == 1)
-     // printf("%s Fifo reading samples requested %d read %d\n", fifoName, slaveDataSamples, readElem);
-      printf("%s Acquisition terminated or error\n", fifoName);
-      if (readElem == -1) // 2025/08/28 
-          break;
-    } 
-
+      if (readElem != slaveDataSamples && (!*(uint8_t *)stopAcq) == 1)
+        printf("%s Fifo reading samples requested %d read %d\n", fifoName, slaveDataSamples, readElem);
+      break;
+    }
 
     //chanIdx is the counter of active  channels on the system  from 0 to NUM_SLAVE_CHANNEL * NUM_SLAVE + NUM_9220_CHANNEL * NUM_9220
     //chan    is the counter for all channels on the slave   from 0 to NUM_SLAVE_CHANNEL + NUM_9220_CHANNEL * NUM_9220
@@ -478,16 +464,14 @@ void *acquisitionThreadFPGA(void *args)
     int chanIdx = 0;
     int chanIndex = 0;
     int16_t *data16;
-    int currBufSize = readElem / NUM_SLAVE_CHANNEL; // currBufSize is buffSize value eccept the last cicle 
 
     for (int slaveCh = 0; slaveCh < NUM_SLAVE_CHANNEL; slaveCh++)
     {
+
       if (chanState[slaveCh + slaveIdx * NUM_SLAVE_CHANNEL]) // Node is ON
       {
-        //buffers_s[chanIdx] = new short[bufSize];
-        //for (int smp = 0; smp < bufSize; smp++)
-        buffers_s[chanIdx] = new short[currBufSize];
-        for (int smp = 0; smp < currBufSize; smp++)
+        buffers_s[chanIdx] = new short[bufSize];
+        for (int smp = 0; smp < bufSize; smp++)
         {
           //if(smp == 0)printf("%s %d buffers_s[%d] = data[%d]\n",fifoName, chanIdx,(chanIdx + smp * NUM_SLAVE_CHANNEL), (slaveCh + smp * NUM_SLAVE_CHANNEL));
           //  buffers_s[chanIdx][smp] = data[slaveCh + smp * NUM_SLAVE_CHANNEL];
@@ -505,7 +489,6 @@ void *acquisitionThreadFPGA(void *args)
     }
 
     chanIdx = 0;
-
     for (int slaveCh = 0; slaveCh < NUM_SLAVE_CHANNEL; slaveCh++)
     {
       chanTree = slaveCh + slaveIdx * NUM_SLAVE_CHANNEL;
@@ -520,23 +503,16 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
 
         if (resampledNid)
           saveList->addItem(buffers_s[chanIdx],
-                            currBufSize, sampleToRead[slaveCh], SHORT, segmentSize,
-//                            bufReadChanSmp[slaveCh], sampleToRead[slaveCh], SHORT, segmentSize,
+                            bufReadChanSmp[slaveCh], sampleToRead, SHORT, segmentSize,
                             readChanSmp[slaveCh], dataNid[chanTree], clockNid, timeIdx0, treePtr, shot, streamFactor, streamNames[chanTree],
                             streamGains[chanTree], streamOffsets[chanTree], period, gains[slaveCh], coeffs[slaveCh],
                             numCoeffs[slaveCh], resampledNid[chanTree]);
         else
           saveList->addItem(buffers_s[chanIdx],
-                            currBufSize, sampleToRead[slaveCh], SHORT, segmentSize,
-//                            bufReadChanSmp[slaveCh], sampleToRead[slaveCh], SHORT, segmentSize,
+                            bufReadChanSmp[slaveCh], sampleToRead, SHORT, segmentSize,
                             readChanSmp[slaveCh], dataNid[chanTree], clockNid, timeIdx0, treePtr, shot, streamFactor, streamNames[chanTree],
                             streamGains[chanTree], streamOffsets[chanTree], period, gains[slaveCh], coeffs[slaveCh],
                             numCoeffs[slaveCh]);
-
-//        sampleToRead[slaveCh] -= bufReadChanSmp[slaveCh];
-        sampleToRead[slaveCh] -= currBufSize;
-        if ( sampleToRead[slaveCh] <= 0 )
-             sampleToRead[slaveCh] = segmentSize;
 
         //Update the number of samples rearunningd
         readChanSmp[slaveCh] += bufReadChanSmp[slaveCh];
@@ -556,10 +532,8 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
       {
         if (chanState[ni9220chIdx])
         {
-          //buffers_s[chanIdx] = new short[bufSize];
-          buffers_s[chanIdx] = new short[currBufSize];
-          //for (int smp = 0; smp < bufSize; smp++)
-          for (int smp = 0; smp < currBufSize; smp++)
+          buffers_s[chanIdx] = new short[bufSize];
+          for (int smp = 0; smp < bufSize; smp++)
           {
             buffers_s[chanIdx][smp] = (data[slaveCh + smp * NUM_SLAVE_CHANNEL] >> (16 * 2)) & 0xFFFF;
           }
@@ -568,10 +542,8 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
         ni9220chIdx++;
         if (chanState[ni9220chIdx])
         {
-          //buffers_s[chanIdx] = new short[bufSize];
-          buffers_s[chanIdx] = new short[currBufSize];
-          //for (int smp = 0; smp < bufSize; smp++)
-          for (int smp = 0; smp < currBufSize; smp++)
+          buffers_s[chanIdx] = new short[bufSize];
+          for (int smp = 0; smp < bufSize; smp++)
           {
             buffers_s[chanIdx][smp] = (data[slaveCh + smp * NUM_SLAVE_CHANNEL] >> (16 * 3)) & 0xFFFF;
           }
@@ -590,23 +562,16 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
 
           if (resampledNid)
             saveList->addItem(buffers_s[chanIdx],
-                              //bufReadChanSmp[ni9220chIdx], sampleToRead[ni9220chIdx], SHORT, segmentSize,
-                              currBufSize, sampleToRead[ni9220chIdx], SHORT, segmentSize,
+                              bufReadChanSmp[ni9220chIdx], sampleToRead, SHORT, segmentSize,
                               readChanSmp[ni9220chIdx], dataNid[chanTree], clockNid, timeIdx0, treePtr, shot, streamFactor, streamNames[chanTree],
                               streamGains[chanTree], streamOffsets[chanTree], period, gains[ni9220chIdx], coeffs[ni9220chIdx],
                               numCoeffs[ni9220chIdx], resampledNid[chanTree]);
           else
             saveList->addItem(buffers_s[chanIdx],
-                              //bufReadChanSmp[ni9220chIdx], sampleToRead[ni9220chIdx], SHORT, segmentSize,
-                              currBufSize, sampleToRead[ni9220chIdx], SHORT, segmentSize,
+                              bufReadChanSmp[ni9220chIdx], sampleToRead, SHORT, segmentSize,
                               readChanSmp[ni9220chIdx], dataNid[chanTree], clockNid, timeIdx0, treePtr, shot, streamFactor, streamNames[chanTree],
                               streamGains[chanTree], streamOffsets[chanTree], period, gains[ni9220chIdx], coeffs[ni9220chIdx],
                               numCoeffs[ni9220chIdx]);
-
-        //sampleToRead[ni9220chIdx] -= bufReadChanSmp[ni9220chIdx];
-        sampleToRead[ni9220chIdx] -= currBufSize;
-        if ( sampleToRead[ni9220chIdx] <= 0 )
-             sampleToRead[ni9220chIdx] = segmentSize;
 
           //Update the number of samples read
           readChanSmp[ni9220chIdx] += bufReadChanSmp[ni9220chIdx];
@@ -620,7 +585,6 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
     //numSamples = readChanSmp[0] + segmentSize;
     numSamples = bufSize + segmentSize;
   }
-
   printf("\n");
 
   free(readChanSmp);
@@ -673,7 +637,6 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
   float streamOffsets[nChan];
 
   uint16_t fpgaState;
-
   NiFpga_MergeStatus(&status, NiFpga_ReadU16(session,
                                              NiFpga_MainFPGA_9159_IndicatorU16_Master_STATUS,
                                              &fpgaState));
@@ -872,7 +835,7 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName, NiFpgaEx_DmaF
   NiFpga_Status status = NiFpga_Status_Success;
   size_t currSize = 0;
   uint32_t count = 0;
-  size_t currElem, rElem, nElem = 1;
+  size_t currElem, rElem, nElem;
 
   //int __count = 0;
 
@@ -890,7 +853,7 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName, NiFpgaEx_DmaF
     return slaveBufSize;
   }
 
-  while (currSize < slaveBufSize) 
+  while (currSize < slaveBufSize)
   {
 
     count++;
@@ -911,13 +874,8 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName, NiFpgaEx_DmaF
 
     //Terminate read from slave if stopAcq is asserted
     if (nElem == 0 && (*(uint8_t *)stopAcq) == 1)
-    {
-      if(currSize > 0)
-      {  
-          return currSize;
-      }
       return -1;
-    }
+
     //Continue to read from slave
     if (nElem == 0)
       continue;

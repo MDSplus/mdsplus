@@ -44,6 +44,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel13 = new javax.swing.JPanel();
         deviceField37 = new DeviceField();
         jPanel14 = new javax.swing.JPanel();
+        deviceField445 = new DeviceField();
         deviceField41 = new DeviceField();
         deviceField42 = new DeviceField();
         deviceField43 = new DeviceField();
@@ -52,6 +53,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel15 = new javax.swing.JPanel();
         deviceField38 = new DeviceField();
         jPanel16 = new javax.swing.JPanel();
+        deviceField446 = new DeviceField();
         deviceField45 = new DeviceField();
         deviceField46 = new DeviceField();
         deviceField47 = new DeviceField();
@@ -60,6 +62,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel17 = new javax.swing.JPanel();
         deviceField39 = new DeviceField();
         jPanel18 = new javax.swing.JPanel();
+        deviceField447 = new DeviceField();
         deviceField49 = new DeviceField();
         deviceField50 = new DeviceField();
         deviceField51 = new DeviceField();
@@ -68,6 +71,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel19 = new javax.swing.JPanel();
         deviceField40 = new DeviceField();
         jPanel20 = new javax.swing.JPanel();
+        deviceField448 = new DeviceField();
         deviceField53 = new DeviceField();
         deviceField54 = new DeviceField();
         deviceField55 = new DeviceField();
@@ -76,6 +80,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel21 = new javax.swing.JPanel();
         deviceField57 = new DeviceField();
         jPanel22 = new javax.swing.JPanel();
+        deviceField449 = new DeviceField();
         deviceField58 = new DeviceField();
         deviceField59 = new DeviceField();
         deviceField60 = new DeviceField();
@@ -84,6 +89,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel23 = new javax.swing.JPanel();
         deviceField62 = new DeviceField();
         jPanel24 = new javax.swing.JPanel();
+        deviceField450 = new DeviceField();
         deviceField63 = new DeviceField();
         deviceField64 = new DeviceField();
         deviceField65 = new DeviceField();
@@ -92,6 +98,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel25 = new javax.swing.JPanel();
         deviceField67 = new DeviceField();
         jPanel26 = new javax.swing.JPanel();
+        deviceField451 = new DeviceField();
         deviceField68 = new DeviceField();
         deviceField69 = new DeviceField();
         deviceField70 = new DeviceField();
@@ -100,6 +107,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel27 = new javax.swing.JPanel();
         deviceField72 = new DeviceField();
         jPanel28 = new javax.swing.JPanel();
+        deviceField452 = new DeviceField();
         deviceField73 = new DeviceField();
         deviceField74 = new DeviceField();
         deviceField75 = new DeviceField();
@@ -108,6 +116,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel204 = new javax.swing.JPanel();
         deviceField367 = new DeviceField();
         jPanel205 = new javax.swing.JPanel();
+        deviceField453 = new DeviceField();
         deviceField368 = new DeviceField();
         deviceField369 = new DeviceField();
         deviceField370 = new DeviceField();
@@ -116,6 +125,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel207 = new javax.swing.JPanel();
         deviceField372 = new DeviceField();
         jPanel208 = new javax.swing.JPanel();
+        deviceField454 = new DeviceField();
         deviceField373 = new DeviceField();
         deviceField374 = new DeviceField();
         deviceField375 = new DeviceField();
@@ -130,6 +140,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel30 = new javax.swing.JPanel();
         deviceField77 = new DeviceField();
         jPanel31 = new javax.swing.JPanel();
+        deviceField455 = new DeviceField();
         deviceField78 = new DeviceField();
         deviceField79 = new DeviceField();
         deviceField80 = new DeviceField();
@@ -138,6 +149,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel33 = new javax.swing.JPanel();
         deviceField82 = new DeviceField();
         jPanel34 = new javax.swing.JPanel();
+        deviceField456 = new DeviceField();
         deviceField83 = new DeviceField();
         deviceField84 = new DeviceField();
         deviceField85 = new DeviceField();
@@ -146,6 +158,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel36 = new javax.swing.JPanel();
         deviceField87 = new DeviceField();
         jPanel37 = new javax.swing.JPanel();
+        deviceField457 = new DeviceField();
         deviceField88 = new DeviceField();
         deviceField89 = new DeviceField();
         deviceField90 = new DeviceField();
@@ -154,6 +167,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel39 = new javax.swing.JPanel();
         deviceField92 = new DeviceField();
         jPanel40 = new javax.swing.JPanel();
+        deviceField458 = new DeviceField();
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
         deviceField95 = new DeviceField();
@@ -162,6 +176,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel42 = new javax.swing.JPanel();
         deviceField97 = new DeviceField();
         jPanel43 = new javax.swing.JPanel();
+        deviceField459 = new DeviceField();
         deviceField98 = new DeviceField();
         deviceField99 = new DeviceField();
         deviceField100 = new DeviceField();
@@ -170,6 +185,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel45 = new javax.swing.JPanel();
         deviceField102 = new DeviceField();
         jPanel46 = new javax.swing.JPanel();
+        deviceField460 = new DeviceField();
         deviceField103 = new DeviceField();
         deviceField104 = new DeviceField();
         deviceField105 = new DeviceField();
@@ -178,6 +194,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel48 = new javax.swing.JPanel();
         deviceField107 = new DeviceField();
         jPanel49 = new javax.swing.JPanel();
+        deviceField461 = new DeviceField();
         deviceField108 = new DeviceField();
         deviceField109 = new DeviceField();
         deviceField110 = new DeviceField();
@@ -186,6 +203,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel51 = new javax.swing.JPanel();
         deviceField112 = new DeviceField();
         jPanel52 = new javax.swing.JPanel();
+        deviceField462 = new DeviceField();
         deviceField113 = new DeviceField();
         deviceField114 = new DeviceField();
         deviceField115 = new DeviceField();
@@ -194,6 +212,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel210 = new javax.swing.JPanel();
         deviceField377 = new DeviceField();
         jPanel211 = new javax.swing.JPanel();
+        deviceField463 = new DeviceField();
         deviceField378 = new DeviceField();
         deviceField379 = new DeviceField();
         deviceField380 = new DeviceField();
@@ -202,6 +221,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel213 = new javax.swing.JPanel();
         deviceField382 = new DeviceField();
         jPanel214 = new javax.swing.JPanel();
+        deviceField464 = new DeviceField();
         deviceField383 = new DeviceField();
         deviceField384 = new DeviceField();
         deviceField385 = new DeviceField();
@@ -216,6 +236,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel54 = new javax.swing.JPanel();
         deviceField117 = new DeviceField();
         jPanel55 = new javax.swing.JPanel();
+        deviceField465 = new DeviceField();
         deviceField118 = new DeviceField();
         deviceField119 = new DeviceField();
         deviceField120 = new DeviceField();
@@ -224,6 +245,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel57 = new javax.swing.JPanel();
         deviceField122 = new DeviceField();
         jPanel58 = new javax.swing.JPanel();
+        deviceField466 = new DeviceField();
         deviceField123 = new DeviceField();
         deviceField124 = new DeviceField();
         deviceField125 = new DeviceField();
@@ -232,6 +254,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel60 = new javax.swing.JPanel();
         deviceField127 = new DeviceField();
         jPanel61 = new javax.swing.JPanel();
+        deviceField467 = new DeviceField();
         deviceField128 = new DeviceField();
         deviceField129 = new DeviceField();
         deviceField130 = new DeviceField();
@@ -240,6 +263,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel63 = new javax.swing.JPanel();
         deviceField132 = new DeviceField();
         jPanel64 = new javax.swing.JPanel();
+        deviceField468 = new DeviceField();
         deviceField133 = new DeviceField();
         deviceField134 = new DeviceField();
         deviceField135 = new DeviceField();
@@ -248,6 +272,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel66 = new javax.swing.JPanel();
         deviceField137 = new DeviceField();
         jPanel67 = new javax.swing.JPanel();
+        deviceField469 = new DeviceField();
         deviceField138 = new DeviceField();
         deviceField139 = new DeviceField();
         deviceField140 = new DeviceField();
@@ -256,6 +281,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel69 = new javax.swing.JPanel();
         deviceField142 = new DeviceField();
         jPanel70 = new javax.swing.JPanel();
+        deviceField470 = new DeviceField();
         deviceField143 = new DeviceField();
         deviceField144 = new DeviceField();
         deviceField145 = new DeviceField();
@@ -264,6 +290,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel72 = new javax.swing.JPanel();
         deviceField147 = new DeviceField();
         jPanel73 = new javax.swing.JPanel();
+        deviceField471 = new DeviceField();
         deviceField148 = new DeviceField();
         deviceField149 = new DeviceField();
         deviceField150 = new DeviceField();
@@ -272,6 +299,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel75 = new javax.swing.JPanel();
         deviceField152 = new DeviceField();
         jPanel76 = new javax.swing.JPanel();
+        deviceField472 = new DeviceField();
         deviceField153 = new DeviceField();
         deviceField154 = new DeviceField();
         deviceField155 = new DeviceField();
@@ -280,6 +308,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel216 = new javax.swing.JPanel();
         deviceField387 = new DeviceField();
         jPanel217 = new javax.swing.JPanel();
+        deviceField473 = new DeviceField();
         deviceField388 = new DeviceField();
         deviceField389 = new DeviceField();
         deviceField390 = new DeviceField();
@@ -288,6 +317,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel219 = new javax.swing.JPanel();
         deviceField392 = new DeviceField();
         jPanel220 = new javax.swing.JPanel();
+        deviceField474 = new DeviceField();
         deviceField393 = new DeviceField();
         deviceField394 = new DeviceField();
         deviceField395 = new DeviceField();
@@ -302,6 +332,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel78 = new javax.swing.JPanel();
         deviceField157 = new DeviceField();
         jPanel79 = new javax.swing.JPanel();
+        deviceField475 = new DeviceField();
         deviceField158 = new DeviceField();
         deviceField159 = new DeviceField();
         deviceField160 = new DeviceField();
@@ -310,6 +341,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel81 = new javax.swing.JPanel();
         deviceField162 = new DeviceField();
         jPanel82 = new javax.swing.JPanel();
+        deviceField476 = new DeviceField();
         deviceField163 = new DeviceField();
         deviceField164 = new DeviceField();
         deviceField165 = new DeviceField();
@@ -318,6 +350,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel84 = new javax.swing.JPanel();
         deviceField167 = new DeviceField();
         jPanel85 = new javax.swing.JPanel();
+        deviceField477 = new DeviceField();
         deviceField168 = new DeviceField();
         deviceField169 = new DeviceField();
         deviceField170 = new DeviceField();
@@ -326,6 +359,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel87 = new javax.swing.JPanel();
         deviceField172 = new DeviceField();
         jPanel88 = new javax.swing.JPanel();
+        deviceField478 = new DeviceField();
         deviceField173 = new DeviceField();
         deviceField174 = new DeviceField();
         deviceField175 = new DeviceField();
@@ -334,6 +368,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel90 = new javax.swing.JPanel();
         deviceField177 = new DeviceField();
         jPanel91 = new javax.swing.JPanel();
+        deviceField479 = new DeviceField();
         deviceField178 = new DeviceField();
         deviceField179 = new DeviceField();
         deviceField180 = new DeviceField();
@@ -342,6 +377,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel93 = new javax.swing.JPanel();
         deviceField182 = new DeviceField();
         jPanel94 = new javax.swing.JPanel();
+        deviceField480 = new DeviceField();
         deviceField183 = new DeviceField();
         deviceField184 = new DeviceField();
         deviceField185 = new DeviceField();
@@ -350,6 +386,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel96 = new javax.swing.JPanel();
         deviceField187 = new DeviceField();
         jPanel97 = new javax.swing.JPanel();
+        deviceField481 = new DeviceField();
         deviceField188 = new DeviceField();
         deviceField189 = new DeviceField();
         deviceField190 = new DeviceField();
@@ -358,6 +395,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel99 = new javax.swing.JPanel();
         deviceField192 = new DeviceField();
         jPanel100 = new javax.swing.JPanel();
+        deviceField482 = new DeviceField();
         deviceField193 = new DeviceField();
         deviceField194 = new DeviceField();
         deviceField195 = new DeviceField();
@@ -366,6 +404,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel222 = new javax.swing.JPanel();
         deviceField397 = new DeviceField();
         jPanel223 = new javax.swing.JPanel();
+        deviceField483 = new DeviceField();
         deviceField398 = new DeviceField();
         deviceField399 = new DeviceField();
         deviceField400 = new DeviceField();
@@ -374,6 +413,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel225 = new javax.swing.JPanel();
         deviceField402 = new DeviceField();
         jPanel226 = new javax.swing.JPanel();
+        deviceField484 = new DeviceField();
         deviceField403 = new DeviceField();
         deviceField404 = new DeviceField();
         deviceField405 = new DeviceField();
@@ -388,6 +428,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel102 = new javax.swing.JPanel();
         deviceField197 = new DeviceField();
         jPanel103 = new javax.swing.JPanel();
+        deviceField485 = new DeviceField();
         deviceField198 = new DeviceField();
         deviceField199 = new DeviceField();
         deviceField200 = new DeviceField();
@@ -396,6 +437,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel105 = new javax.swing.JPanel();
         deviceField202 = new DeviceField();
         jPanel106 = new javax.swing.JPanel();
+        deviceField486 = new DeviceField();
         deviceField203 = new DeviceField();
         deviceField204 = new DeviceField();
         deviceField205 = new DeviceField();
@@ -404,6 +446,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel108 = new javax.swing.JPanel();
         deviceField207 = new DeviceField();
         jPanel109 = new javax.swing.JPanel();
+        deviceField487 = new DeviceField();
         deviceField208 = new DeviceField();
         deviceField209 = new DeviceField();
         deviceField210 = new DeviceField();
@@ -412,6 +455,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel111 = new javax.swing.JPanel();
         deviceField212 = new DeviceField();
         jPanel112 = new javax.swing.JPanel();
+        deviceField488 = new DeviceField();
         deviceField213 = new DeviceField();
         deviceField214 = new DeviceField();
         deviceField215 = new DeviceField();
@@ -420,6 +464,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel114 = new javax.swing.JPanel();
         deviceField217 = new DeviceField();
         jPanel115 = new javax.swing.JPanel();
+        deviceField489 = new DeviceField();
         deviceField218 = new DeviceField();
         deviceField219 = new DeviceField();
         deviceField220 = new DeviceField();
@@ -428,6 +473,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel117 = new javax.swing.JPanel();
         deviceField222 = new DeviceField();
         jPanel118 = new javax.swing.JPanel();
+        deviceField490 = new DeviceField();
         deviceField223 = new DeviceField();
         deviceField224 = new DeviceField();
         deviceField225 = new DeviceField();
@@ -436,6 +482,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel120 = new javax.swing.JPanel();
         deviceField227 = new DeviceField();
         jPanel121 = new javax.swing.JPanel();
+        deviceField491 = new DeviceField();
         deviceField228 = new DeviceField();
         deviceField229 = new DeviceField();
         deviceField230 = new DeviceField();
@@ -444,6 +491,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel123 = new javax.swing.JPanel();
         deviceField232 = new DeviceField();
         jPanel124 = new javax.swing.JPanel();
+        deviceField492 = new DeviceField();
         deviceField233 = new DeviceField();
         deviceField234 = new DeviceField();
         deviceField235 = new DeviceField();
@@ -452,6 +500,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel228 = new javax.swing.JPanel();
         deviceField407 = new DeviceField();
         jPanel229 = new javax.swing.JPanel();
+        deviceField493 = new DeviceField();
         deviceField408 = new DeviceField();
         deviceField409 = new DeviceField();
         deviceField410 = new DeviceField();
@@ -460,6 +509,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel231 = new javax.swing.JPanel();
         deviceField412 = new DeviceField();
         jPanel232 = new javax.swing.JPanel();
+        deviceField494 = new DeviceField();
         deviceField413 = new DeviceField();
         deviceField414 = new DeviceField();
         deviceField415 = new DeviceField();
@@ -474,6 +524,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel126 = new javax.swing.JPanel();
         deviceField237 = new DeviceField();
         jPanel127 = new javax.swing.JPanel();
+        deviceField495 = new DeviceField();
         deviceField238 = new DeviceField();
         deviceField239 = new DeviceField();
         deviceField240 = new DeviceField();
@@ -482,6 +533,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel129 = new javax.swing.JPanel();
         deviceField242 = new DeviceField();
         jPanel130 = new javax.swing.JPanel();
+        deviceField496 = new DeviceField();
         deviceField243 = new DeviceField();
         deviceField244 = new DeviceField();
         deviceField245 = new DeviceField();
@@ -490,6 +542,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel132 = new javax.swing.JPanel();
         deviceField247 = new DeviceField();
         jPanel133 = new javax.swing.JPanel();
+        deviceField497 = new DeviceField();
         deviceField248 = new DeviceField();
         deviceField249 = new DeviceField();
         deviceField250 = new DeviceField();
@@ -498,6 +551,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel135 = new javax.swing.JPanel();
         deviceField252 = new DeviceField();
         jPanel136 = new javax.swing.JPanel();
+        deviceField498 = new DeviceField();
         deviceField253 = new DeviceField();
         deviceField254 = new DeviceField();
         deviceField255 = new DeviceField();
@@ -506,6 +560,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel138 = new javax.swing.JPanel();
         deviceField257 = new DeviceField();
         jPanel139 = new javax.swing.JPanel();
+        deviceField499 = new DeviceField();
         deviceField258 = new DeviceField();
         deviceField259 = new DeviceField();
         deviceField260 = new DeviceField();
@@ -514,6 +569,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel141 = new javax.swing.JPanel();
         deviceField262 = new DeviceField();
         jPanel142 = new javax.swing.JPanel();
+        deviceField500 = new DeviceField();
         deviceField263 = new DeviceField();
         deviceField264 = new DeviceField();
         deviceField265 = new DeviceField();
@@ -522,6 +578,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel144 = new javax.swing.JPanel();
         deviceField267 = new DeviceField();
         jPanel145 = new javax.swing.JPanel();
+        deviceField501 = new DeviceField();
         deviceField268 = new DeviceField();
         deviceField269 = new DeviceField();
         deviceField270 = new DeviceField();
@@ -530,6 +587,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel147 = new javax.swing.JPanel();
         deviceField272 = new DeviceField();
         jPanel148 = new javax.swing.JPanel();
+        deviceField502 = new DeviceField();
         deviceField273 = new DeviceField();
         deviceField274 = new DeviceField();
         deviceField275 = new DeviceField();
@@ -538,6 +596,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel234 = new javax.swing.JPanel();
         deviceField417 = new DeviceField();
         jPanel235 = new javax.swing.JPanel();
+        deviceField503 = new DeviceField();
         deviceField418 = new DeviceField();
         deviceField419 = new DeviceField();
         deviceField420 = new DeviceField();
@@ -546,6 +605,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel237 = new javax.swing.JPanel();
         deviceField422 = new DeviceField();
         jPanel238 = new javax.swing.JPanel();
+        deviceField504 = new DeviceField();
         deviceField423 = new DeviceField();
         deviceField424 = new DeviceField();
         deviceField425 = new DeviceField();
@@ -560,6 +620,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel150 = new javax.swing.JPanel();
         deviceField277 = new DeviceField();
         jPanel151 = new javax.swing.JPanel();
+        deviceField505 = new DeviceField();
         deviceField278 = new DeviceField();
         deviceField279 = new DeviceField();
         deviceField280 = new DeviceField();
@@ -568,6 +629,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel153 = new javax.swing.JPanel();
         deviceField282 = new DeviceField();
         jPanel154 = new javax.swing.JPanel();
+        deviceField506 = new DeviceField();
         deviceField283 = new DeviceField();
         deviceField284 = new DeviceField();
         deviceField285 = new DeviceField();
@@ -576,6 +638,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel156 = new javax.swing.JPanel();
         deviceField287 = new DeviceField();
         jPanel157 = new javax.swing.JPanel();
+        deviceField507 = new DeviceField();
         deviceField288 = new DeviceField();
         deviceField289 = new DeviceField();
         deviceField290 = new DeviceField();
@@ -584,6 +647,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel159 = new javax.swing.JPanel();
         deviceField292 = new DeviceField();
         jPanel160 = new javax.swing.JPanel();
+        deviceField508 = new DeviceField();
         deviceField293 = new DeviceField();
         deviceField294 = new DeviceField();
         deviceField295 = new DeviceField();
@@ -592,6 +656,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel162 = new javax.swing.JPanel();
         deviceField297 = new DeviceField();
         jPanel163 = new javax.swing.JPanel();
+        deviceField509 = new DeviceField();
         deviceField298 = new DeviceField();
         deviceField299 = new DeviceField();
         deviceField300 = new DeviceField();
@@ -600,6 +665,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel165 = new javax.swing.JPanel();
         deviceField302 = new DeviceField();
         jPanel166 = new javax.swing.JPanel();
+        deviceField510 = new DeviceField();
         deviceField303 = new DeviceField();
         deviceField304 = new DeviceField();
         deviceField305 = new DeviceField();
@@ -608,6 +674,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel168 = new javax.swing.JPanel();
         deviceField307 = new DeviceField();
         jPanel169 = new javax.swing.JPanel();
+        deviceField511 = new DeviceField();
         deviceField308 = new DeviceField();
         deviceField309 = new DeviceField();
         deviceField310 = new DeviceField();
@@ -616,6 +683,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel171 = new javax.swing.JPanel();
         deviceField312 = new DeviceField();
         jPanel172 = new javax.swing.JPanel();
+        deviceField512 = new DeviceField();
         deviceField313 = new DeviceField();
         deviceField314 = new DeviceField();
         deviceField315 = new DeviceField();
@@ -624,6 +692,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel240 = new javax.swing.JPanel();
         deviceField427 = new DeviceField();
         jPanel241 = new javax.swing.JPanel();
+        deviceField513 = new DeviceField();
         deviceField428 = new DeviceField();
         deviceField429 = new DeviceField();
         deviceField430 = new DeviceField();
@@ -632,6 +701,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel243 = new javax.swing.JPanel();
         deviceField432 = new DeviceField();
         jPanel244 = new javax.swing.JPanel();
+        deviceField514 = new DeviceField();
         deviceField433 = new DeviceField();
         deviceField434 = new DeviceField();
         deviceField435 = new DeviceField();
@@ -646,6 +716,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel174 = new javax.swing.JPanel();
         deviceField317 = new DeviceField();
         jPanel175 = new javax.swing.JPanel();
+        deviceField515 = new DeviceField();
         deviceField318 = new DeviceField();
         deviceField319 = new DeviceField();
         deviceField320 = new DeviceField();
@@ -654,6 +725,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel177 = new javax.swing.JPanel();
         deviceField322 = new DeviceField();
         jPanel178 = new javax.swing.JPanel();
+        deviceField516 = new DeviceField();
         deviceField323 = new DeviceField();
         deviceField324 = new DeviceField();
         deviceField325 = new DeviceField();
@@ -662,6 +734,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel180 = new javax.swing.JPanel();
         deviceField327 = new DeviceField();
         jPanel181 = new javax.swing.JPanel();
+        deviceField517 = new DeviceField();
         deviceField328 = new DeviceField();
         deviceField329 = new DeviceField();
         deviceField330 = new DeviceField();
@@ -670,6 +743,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel183 = new javax.swing.JPanel();
         deviceField332 = new DeviceField();
         jPanel184 = new javax.swing.JPanel();
+        deviceField518 = new DeviceField();
         deviceField333 = new DeviceField();
         deviceField334 = new DeviceField();
         deviceField335 = new DeviceField();
@@ -678,6 +752,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel186 = new javax.swing.JPanel();
         deviceField337 = new DeviceField();
         jPanel187 = new javax.swing.JPanel();
+        deviceField519 = new DeviceField();
         deviceField338 = new DeviceField();
         deviceField339 = new DeviceField();
         deviceField340 = new DeviceField();
@@ -686,6 +761,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel189 = new javax.swing.JPanel();
         deviceField342 = new DeviceField();
         jPanel190 = new javax.swing.JPanel();
+        deviceField520 = new DeviceField();
         deviceField343 = new DeviceField();
         deviceField344 = new DeviceField();
         deviceField345 = new DeviceField();
@@ -694,6 +770,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel192 = new javax.swing.JPanel();
         deviceField347 = new DeviceField();
         jPanel193 = new javax.swing.JPanel();
+        deviceField521 = new DeviceField();
         deviceField348 = new DeviceField();
         deviceField349 = new DeviceField();
         deviceField350 = new DeviceField();
@@ -702,6 +779,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel195 = new javax.swing.JPanel();
         deviceField352 = new DeviceField();
         jPanel196 = new javax.swing.JPanel();
+        deviceField522 = new DeviceField();
         deviceField353 = new DeviceField();
         deviceField354 = new DeviceField();
         deviceField355 = new DeviceField();
@@ -710,6 +788,7 @@ public class DM8125Setup extends DeviceSetup {
         jPanel198 = new javax.swing.JPanel();
         deviceField357 = new DeviceField();
         jPanel199 = new javax.swing.JPanel();
+        deviceField523 = new DeviceField();
         deviceField358 = new DeviceField();
         deviceField359 = new DeviceField();
         deviceField360 = new DeviceField();
@@ -718,13 +797,14 @@ public class DM8125Setup extends DeviceSetup {
         jPanel201 = new javax.swing.JPanel();
         deviceField362 = new DeviceField();
         jPanel202 = new javax.swing.JPanel();
+        deviceField524 = new DeviceField();
         deviceField363 = new DeviceField();
         deviceField364 = new DeviceField();
         deviceField365 = new DeviceField();
         deviceField366 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
 
-        setDeviceProvider("localhost:8000");
+        setDeviceProvider("localhost:8001");
         setDeviceType("DM8125");
         setHeight(400);
         setUpdateEvent("");
@@ -816,6 +896,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel14.setName(""); // NOI18N
         jPanel14.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField445.setIdentifier("");
+        deviceField445.setLabelString("C4:");
+        deviceField445.setOffsetNid(753);
+        jPanel14.add(deviceField445);
+
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("C3:");
         deviceField41.setOffsetNid(16);
@@ -861,6 +946,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel16.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel16.setName(""); // NOI18N
         jPanel16.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField446.setIdentifier("");
+        deviceField446.setLabelString("C4:");
+        deviceField446.setOffsetNid(754);
+        jPanel16.add(deviceField446);
 
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("C3:");
@@ -908,6 +998,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel18.setName(""); // NOI18N
         jPanel18.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField447.setIdentifier("");
+        deviceField447.setLabelString("C4:");
+        deviceField447.setOffsetNid(755);
+        jPanel18.add(deviceField447);
+
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("C3:");
         deviceField49.setOffsetNid(34);
@@ -953,6 +1048,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel20.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel20.setName(""); // NOI18N
         jPanel20.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField448.setIdentifier("");
+        deviceField448.setLabelString("C4:");
+        deviceField448.setOffsetNid(756);
+        jPanel20.add(deviceField448);
 
         deviceField53.setIdentifier("");
         deviceField53.setLabelString("C3:");
@@ -1000,6 +1100,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel22.setName(""); // NOI18N
         jPanel22.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField449.setIdentifier("");
+        deviceField449.setLabelString("C4:");
+        deviceField449.setOffsetNid(757);
+        jPanel22.add(deviceField449);
+
         deviceField58.setIdentifier("");
         deviceField58.setLabelString("C3:");
         deviceField58.setOffsetNid(52);
@@ -1045,6 +1150,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel24.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel24.setName(""); // NOI18N
         jPanel24.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField450.setIdentifier("");
+        deviceField450.setLabelString("C4:");
+        deviceField450.setOffsetNid(758);
+        jPanel24.add(deviceField450);
 
         deviceField63.setIdentifier("");
         deviceField63.setLabelString("C3:");
@@ -1092,6 +1202,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel26.setName(""); // NOI18N
         jPanel26.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField451.setIdentifier("");
+        deviceField451.setLabelString("C4:");
+        deviceField451.setOffsetNid(759);
+        jPanel26.add(deviceField451);
+
         deviceField68.setIdentifier("");
         deviceField68.setLabelString("C3:");
         deviceField68.setOffsetNid(70);
@@ -1137,6 +1252,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel28.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel28.setName(""); // NOI18N
         jPanel28.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField452.setIdentifier("");
+        deviceField452.setLabelString("C4:");
+        deviceField452.setOffsetNid(760);
+        jPanel28.add(deviceField452);
 
         deviceField73.setIdentifier("");
         deviceField73.setLabelString("C3:");
@@ -1184,6 +1304,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel205.setName(""); // NOI18N
         jPanel205.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField453.setIdentifier("");
+        deviceField453.setLabelString("C4:");
+        deviceField453.setOffsetNid(761);
+        jPanel205.add(deviceField453);
+
         deviceField368.setIdentifier("");
         deviceField368.setLabelString("C3:");
         deviceField368.setOffsetNid(88);
@@ -1229,6 +1354,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel208.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel208.setName(""); // NOI18N
         jPanel208.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField454.setIdentifier("");
+        deviceField454.setLabelString("C4:");
+        deviceField454.setOffsetNid(762);
+        jPanel208.add(deviceField454);
 
         deviceField373.setIdentifier("");
         deviceField373.setLabelString("C3:");
@@ -1305,6 +1435,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel31.setName(""); // NOI18N
         jPanel31.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField455.setIdentifier("");
+        deviceField455.setLabelString("C4:");
+        deviceField455.setOffsetNid(763);
+        jPanel31.add(deviceField455);
+
         deviceField78.setIdentifier("");
         deviceField78.setLabelString("C3:");
         deviceField78.setOffsetNid(109);
@@ -1350,6 +1485,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel34.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel34.setName(""); // NOI18N
         jPanel34.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField456.setIdentifier("");
+        deviceField456.setLabelString("C4:");
+        deviceField456.setOffsetNid(764);
+        jPanel34.add(deviceField456);
 
         deviceField83.setIdentifier("");
         deviceField83.setLabelString("C3:");
@@ -1397,6 +1537,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel37.setName(""); // NOI18N
         jPanel37.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField457.setIdentifier("");
+        deviceField457.setLabelString("C4:");
+        deviceField457.setOffsetNid(765);
+        jPanel37.add(deviceField457);
+
         deviceField88.setIdentifier("");
         deviceField88.setLabelString("C3:");
         deviceField88.setOffsetNid(127);
@@ -1442,6 +1587,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel40.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel40.setName(""); // NOI18N
         jPanel40.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField458.setIdentifier("");
+        deviceField458.setLabelString("C4:");
+        deviceField458.setOffsetNid(766);
+        jPanel40.add(deviceField458);
 
         deviceField93.setIdentifier("");
         deviceField93.setLabelString("C3:");
@@ -1489,6 +1639,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel43.setName(""); // NOI18N
         jPanel43.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField459.setIdentifier("");
+        deviceField459.setLabelString("C4:");
+        deviceField459.setOffsetNid(767);
+        jPanel43.add(deviceField459);
+
         deviceField98.setIdentifier("");
         deviceField98.setLabelString("C3:");
         deviceField98.setOffsetNid(145);
@@ -1534,6 +1689,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel46.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel46.setName(""); // NOI18N
         jPanel46.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField460.setIdentifier("");
+        deviceField460.setLabelString("C4:");
+        deviceField460.setOffsetNid(768);
+        jPanel46.add(deviceField460);
 
         deviceField103.setIdentifier("");
         deviceField103.setLabelString("C3:");
@@ -1581,6 +1741,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel49.setName(""); // NOI18N
         jPanel49.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField461.setIdentifier("");
+        deviceField461.setLabelString("C4:");
+        deviceField461.setOffsetNid(769);
+        jPanel49.add(deviceField461);
+
         deviceField108.setIdentifier("");
         deviceField108.setLabelString("C3:");
         deviceField108.setOffsetNid(163);
@@ -1626,6 +1791,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel52.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel52.setName(""); // NOI18N
         jPanel52.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField462.setIdentifier("");
+        deviceField462.setLabelString("C4:");
+        deviceField462.setOffsetNid(770);
+        jPanel52.add(deviceField462);
 
         deviceField113.setIdentifier("");
         deviceField113.setLabelString("C3:");
@@ -1673,6 +1843,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel211.setName(""); // NOI18N
         jPanel211.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField463.setIdentifier("");
+        deviceField463.setLabelString("C4:");
+        deviceField463.setOffsetNid(771);
+        jPanel211.add(deviceField463);
+
         deviceField378.setIdentifier("");
         deviceField378.setLabelString("C3:");
         deviceField378.setOffsetNid(181);
@@ -1718,6 +1893,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel214.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel214.setName(""); // NOI18N
         jPanel214.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField464.setIdentifier("");
+        deviceField464.setLabelString("C4:");
+        deviceField464.setOffsetNid(772);
+        jPanel214.add(deviceField464);
 
         deviceField383.setIdentifier("");
         deviceField383.setLabelString("C3:");
@@ -1793,6 +1973,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel55.setName(""); // NOI18N
         jPanel55.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField465.setIdentifier("");
+        deviceField465.setLabelString("C4:");
+        deviceField465.setOffsetNid(773);
+        jPanel55.add(deviceField465);
+
         deviceField118.setIdentifier("");
         deviceField118.setLabelString("C3:");
         deviceField118.setOffsetNid(202);
@@ -1838,6 +2023,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel58.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel58.setName(""); // NOI18N
         jPanel58.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField466.setIdentifier("");
+        deviceField466.setLabelString("C4:");
+        deviceField466.setOffsetNid(774);
+        jPanel58.add(deviceField466);
 
         deviceField123.setIdentifier("");
         deviceField123.setLabelString("C3:");
@@ -1885,6 +2075,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel61.setName(""); // NOI18N
         jPanel61.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField467.setIdentifier("");
+        deviceField467.setLabelString("C4:");
+        deviceField467.setOffsetNid(775);
+        jPanel61.add(deviceField467);
+
         deviceField128.setIdentifier("");
         deviceField128.setLabelString("C3:");
         deviceField128.setOffsetNid(220);
@@ -1930,6 +2125,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel64.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel64.setName(""); // NOI18N
         jPanel64.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField468.setIdentifier("");
+        deviceField468.setLabelString("C4:");
+        deviceField468.setOffsetNid(776);
+        jPanel64.add(deviceField468);
 
         deviceField133.setIdentifier("");
         deviceField133.setLabelString("C3:");
@@ -1977,6 +2177,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel67.setName(""); // NOI18N
         jPanel67.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField469.setIdentifier("");
+        deviceField469.setLabelString("C4:");
+        deviceField469.setOffsetNid(777);
+        jPanel67.add(deviceField469);
+
         deviceField138.setIdentifier("");
         deviceField138.setLabelString("C3:");
         deviceField138.setOffsetNid(238);
@@ -2022,6 +2227,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel70.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel70.setName(""); // NOI18N
         jPanel70.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField470.setIdentifier("");
+        deviceField470.setLabelString("C4:");
+        deviceField470.setOffsetNid(778);
+        jPanel70.add(deviceField470);
 
         deviceField143.setIdentifier("");
         deviceField143.setLabelString("C3:");
@@ -2069,6 +2279,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel73.setName(""); // NOI18N
         jPanel73.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField471.setIdentifier("");
+        deviceField471.setLabelString("C4:");
+        deviceField471.setOffsetNid(779);
+        jPanel73.add(deviceField471);
+
         deviceField148.setIdentifier("");
         deviceField148.setLabelString("C3:");
         deviceField148.setOffsetNid(256);
@@ -2114,6 +2329,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel76.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel76.setName(""); // NOI18N
         jPanel76.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField472.setIdentifier("");
+        deviceField472.setLabelString("C4:");
+        deviceField472.setOffsetNid(780);
+        jPanel76.add(deviceField472);
 
         deviceField153.setIdentifier("");
         deviceField153.setLabelString("C3:");
@@ -2161,6 +2381,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel217.setName(""); // NOI18N
         jPanel217.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField473.setIdentifier("");
+        deviceField473.setLabelString("C4:");
+        deviceField473.setOffsetNid(781);
+        jPanel217.add(deviceField473);
+
         deviceField388.setIdentifier("");
         deviceField388.setLabelString("C3:");
         deviceField388.setOffsetNid(274);
@@ -2206,6 +2431,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel220.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel220.setName(""); // NOI18N
         jPanel220.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField474.setIdentifier("");
+        deviceField474.setLabelString("C4:");
+        deviceField474.setOffsetNid(782);
+        jPanel220.add(deviceField474);
 
         deviceField393.setIdentifier("");
         deviceField393.setLabelString("C3:");
@@ -2281,6 +2511,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel79.setName(""); // NOI18N
         jPanel79.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField475.setIdentifier("");
+        deviceField475.setLabelString("C4:");
+        deviceField475.setOffsetNid(783);
+        jPanel79.add(deviceField475);
+
         deviceField158.setIdentifier("");
         deviceField158.setLabelString("C3:");
         deviceField158.setOffsetNid(295);
@@ -2326,6 +2561,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel82.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel82.setName(""); // NOI18N
         jPanel82.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField476.setIdentifier("");
+        deviceField476.setLabelString("C4:");
+        deviceField476.setOffsetNid(784);
+        jPanel82.add(deviceField476);
 
         deviceField163.setIdentifier("");
         deviceField163.setLabelString("C3:");
@@ -2373,6 +2613,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel85.setName(""); // NOI18N
         jPanel85.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField477.setIdentifier("");
+        deviceField477.setLabelString("C4:");
+        deviceField477.setOffsetNid(785);
+        jPanel85.add(deviceField477);
+
         deviceField168.setIdentifier("");
         deviceField168.setLabelString("C3:");
         deviceField168.setOffsetNid(313);
@@ -2418,6 +2663,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel88.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel88.setName(""); // NOI18N
         jPanel88.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField478.setIdentifier("");
+        deviceField478.setLabelString("C4:");
+        deviceField478.setOffsetNid(786);
+        jPanel88.add(deviceField478);
 
         deviceField173.setIdentifier("");
         deviceField173.setLabelString("C3:");
@@ -2465,6 +2715,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel91.setName(""); // NOI18N
         jPanel91.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField479.setIdentifier("");
+        deviceField479.setLabelString("C4:");
+        deviceField479.setOffsetNid(787);
+        jPanel91.add(deviceField479);
+
         deviceField178.setIdentifier("");
         deviceField178.setLabelString("C3:");
         deviceField178.setOffsetNid(331);
@@ -2510,6 +2765,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel94.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel94.setName(""); // NOI18N
         jPanel94.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField480.setIdentifier("");
+        deviceField480.setLabelString("C4:");
+        deviceField480.setOffsetNid(788);
+        jPanel94.add(deviceField480);
 
         deviceField183.setIdentifier("");
         deviceField183.setLabelString("C3:");
@@ -2557,6 +2817,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel97.setName(""); // NOI18N
         jPanel97.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField481.setIdentifier("");
+        deviceField481.setLabelString("C4:");
+        deviceField481.setOffsetNid(789);
+        jPanel97.add(deviceField481);
+
         deviceField188.setIdentifier("");
         deviceField188.setLabelString("C3:");
         deviceField188.setOffsetNid(349);
@@ -2602,6 +2867,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel100.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel100.setName(""); // NOI18N
         jPanel100.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField482.setIdentifier("");
+        deviceField482.setLabelString("C4:");
+        deviceField482.setOffsetNid(789);
+        jPanel100.add(deviceField482);
 
         deviceField193.setIdentifier("");
         deviceField193.setLabelString("C3:");
@@ -2649,6 +2919,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel223.setName(""); // NOI18N
         jPanel223.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField483.setIdentifier("");
+        deviceField483.setLabelString("C4:");
+        deviceField483.setOffsetNid(791);
+        jPanel223.add(deviceField483);
+
         deviceField398.setIdentifier("");
         deviceField398.setLabelString("C3:");
         deviceField398.setOffsetNid(367);
@@ -2694,6 +2969,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel226.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel226.setName(""); // NOI18N
         jPanel226.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField484.setIdentifier("");
+        deviceField484.setLabelString("C4:");
+        deviceField484.setOffsetNid(792);
+        jPanel226.add(deviceField484);
 
         deviceField403.setIdentifier("");
         deviceField403.setLabelString("C3:");
@@ -2769,6 +3049,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel103.setName(""); // NOI18N
         jPanel103.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField485.setIdentifier("");
+        deviceField485.setLabelString("C4:");
+        deviceField485.setOffsetNid(793);
+        jPanel103.add(deviceField485);
+
         deviceField198.setIdentifier("");
         deviceField198.setLabelString("C3:");
         deviceField198.setOffsetNid(388);
@@ -2814,6 +3099,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel106.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel106.setName(""); // NOI18N
         jPanel106.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField486.setIdentifier("");
+        deviceField486.setLabelString("C4:");
+        deviceField486.setOffsetNid(794);
+        jPanel106.add(deviceField486);
 
         deviceField203.setIdentifier("");
         deviceField203.setLabelString("C3:");
@@ -2861,6 +3151,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel109.setName(""); // NOI18N
         jPanel109.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField487.setIdentifier("");
+        deviceField487.setLabelString("C4:");
+        deviceField487.setOffsetNid(795);
+        jPanel109.add(deviceField487);
+
         deviceField208.setIdentifier("");
         deviceField208.setLabelString("C3:");
         deviceField208.setOffsetNid(406);
@@ -2906,6 +3201,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel112.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel112.setName(""); // NOI18N
         jPanel112.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField488.setIdentifier("");
+        deviceField488.setLabelString("C4:");
+        deviceField488.setOffsetNid(796);
+        jPanel112.add(deviceField488);
 
         deviceField213.setIdentifier("");
         deviceField213.setLabelString("C3:");
@@ -2953,6 +3253,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel115.setName(""); // NOI18N
         jPanel115.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField489.setIdentifier("");
+        deviceField489.setLabelString("C4:");
+        deviceField489.setOffsetNid(797);
+        jPanel115.add(deviceField489);
+
         deviceField218.setIdentifier("");
         deviceField218.setLabelString("C3:");
         deviceField218.setOffsetNid(424);
@@ -2998,6 +3303,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel118.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel118.setName(""); // NOI18N
         jPanel118.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField490.setIdentifier("");
+        deviceField490.setLabelString("C4:");
+        deviceField490.setOffsetNid(798);
+        jPanel118.add(deviceField490);
 
         deviceField223.setIdentifier("");
         deviceField223.setLabelString("C3:");
@@ -3045,6 +3355,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel121.setName(""); // NOI18N
         jPanel121.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField491.setIdentifier("");
+        deviceField491.setLabelString("C4:");
+        deviceField491.setOffsetNid(799);
+        jPanel121.add(deviceField491);
+
         deviceField228.setIdentifier("");
         deviceField228.setLabelString("C3:");
         deviceField228.setOffsetNid(442);
@@ -3090,6 +3405,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel124.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel124.setName(""); // NOI18N
         jPanel124.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField492.setIdentifier("");
+        deviceField492.setLabelString("C4:");
+        deviceField492.setOffsetNid(800);
+        jPanel124.add(deviceField492);
 
         deviceField233.setIdentifier("");
         deviceField233.setLabelString("C3:");
@@ -3137,6 +3457,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel229.setName(""); // NOI18N
         jPanel229.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField493.setIdentifier("");
+        deviceField493.setLabelString("C4:");
+        deviceField493.setOffsetNid(801);
+        jPanel229.add(deviceField493);
+
         deviceField408.setIdentifier("");
         deviceField408.setLabelString("C3:");
         deviceField408.setOffsetNid(460);
@@ -3182,6 +3507,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel232.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel232.setName(""); // NOI18N
         jPanel232.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField494.setIdentifier("");
+        deviceField494.setLabelString("C4:");
+        deviceField494.setOffsetNid(802);
+        jPanel232.add(deviceField494);
 
         deviceField413.setIdentifier("");
         deviceField413.setLabelString("C3:");
@@ -3257,6 +3587,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel127.setName(""); // NOI18N
         jPanel127.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField495.setIdentifier("");
+        deviceField495.setLabelString("C4:");
+        deviceField495.setOffsetNid(803);
+        jPanel127.add(deviceField495);
+
         deviceField238.setIdentifier("");
         deviceField238.setLabelString("C3:");
         deviceField238.setOffsetNid(481);
@@ -3302,6 +3637,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel130.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel130.setName(""); // NOI18N
         jPanel130.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField496.setIdentifier("");
+        deviceField496.setLabelString("C4:");
+        deviceField496.setOffsetNid(804);
+        jPanel130.add(deviceField496);
 
         deviceField243.setIdentifier("");
         deviceField243.setLabelString("C3:");
@@ -3349,6 +3689,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel133.setName(""); // NOI18N
         jPanel133.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField497.setIdentifier("");
+        deviceField497.setLabelString("C4:");
+        deviceField497.setOffsetNid(805);
+        jPanel133.add(deviceField497);
+
         deviceField248.setIdentifier("");
         deviceField248.setLabelString("C3:");
         deviceField248.setOffsetNid(499);
@@ -3394,6 +3739,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel136.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel136.setName(""); // NOI18N
         jPanel136.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField498.setIdentifier("");
+        deviceField498.setLabelString("C4:");
+        deviceField498.setOffsetNid(806);
+        jPanel136.add(deviceField498);
 
         deviceField253.setIdentifier("");
         deviceField253.setLabelString("C3:");
@@ -3441,6 +3791,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel139.setName(""); // NOI18N
         jPanel139.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField499.setIdentifier("");
+        deviceField499.setLabelString("C4:");
+        deviceField499.setOffsetNid(807);
+        jPanel139.add(deviceField499);
+
         deviceField258.setIdentifier("");
         deviceField258.setLabelString("C3:");
         deviceField258.setOffsetNid(517);
@@ -3486,6 +3841,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel142.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel142.setName(""); // NOI18N
         jPanel142.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField500.setIdentifier("");
+        deviceField500.setLabelString("C4:");
+        deviceField500.setOffsetNid(808);
+        jPanel142.add(deviceField500);
 
         deviceField263.setIdentifier("");
         deviceField263.setLabelString("C3:");
@@ -3533,6 +3893,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel145.setName(""); // NOI18N
         jPanel145.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField501.setIdentifier("");
+        deviceField501.setLabelString("C4:");
+        deviceField501.setOffsetNid(809);
+        jPanel145.add(deviceField501);
+
         deviceField268.setIdentifier("");
         deviceField268.setLabelString("C3:");
         deviceField268.setOffsetNid(535);
@@ -3578,6 +3943,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel148.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel148.setName(""); // NOI18N
         jPanel148.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField502.setIdentifier("");
+        deviceField502.setLabelString("C4:");
+        deviceField502.setOffsetNid(810);
+        jPanel148.add(deviceField502);
 
         deviceField273.setIdentifier("");
         deviceField273.setLabelString("C3:");
@@ -3625,6 +3995,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel235.setName(""); // NOI18N
         jPanel235.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField503.setIdentifier("");
+        deviceField503.setLabelString("C4:");
+        deviceField503.setOffsetNid(811);
+        jPanel235.add(deviceField503);
+
         deviceField418.setIdentifier("");
         deviceField418.setLabelString("C3:");
         deviceField418.setOffsetNid(553);
@@ -3670,6 +4045,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel238.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel238.setName(""); // NOI18N
         jPanel238.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField504.setIdentifier("");
+        deviceField504.setLabelString("C4:");
+        deviceField504.setOffsetNid(812);
+        jPanel238.add(deviceField504);
 
         deviceField423.setIdentifier("");
         deviceField423.setLabelString("C3:");
@@ -3745,6 +4125,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel151.setName(""); // NOI18N
         jPanel151.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField505.setIdentifier("");
+        deviceField505.setLabelString("C4:");
+        deviceField505.setOffsetNid(813);
+        jPanel151.add(deviceField505);
+
         deviceField278.setIdentifier("");
         deviceField278.setLabelString("C3:");
         deviceField278.setOffsetNid(574);
@@ -3790,6 +4175,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel154.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel154.setName(""); // NOI18N
         jPanel154.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField506.setIdentifier("");
+        deviceField506.setLabelString("C4:");
+        deviceField506.setOffsetNid(814);
+        jPanel154.add(deviceField506);
 
         deviceField283.setIdentifier("");
         deviceField283.setLabelString("C3:");
@@ -3837,6 +4227,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel157.setName(""); // NOI18N
         jPanel157.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField507.setIdentifier("");
+        deviceField507.setLabelString("C4:");
+        deviceField507.setOffsetNid(815);
+        jPanel157.add(deviceField507);
+
         deviceField288.setIdentifier("");
         deviceField288.setLabelString("C3:");
         deviceField288.setOffsetNid(592);
@@ -3882,6 +4277,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel160.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel160.setName(""); // NOI18N
         jPanel160.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField508.setIdentifier("");
+        deviceField508.setLabelString("C4:");
+        deviceField508.setOffsetNid(816);
+        jPanel160.add(deviceField508);
 
         deviceField293.setIdentifier("");
         deviceField293.setLabelString("C3:");
@@ -3929,6 +4329,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel163.setName(""); // NOI18N
         jPanel163.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField509.setIdentifier("");
+        deviceField509.setLabelString("C4:");
+        deviceField509.setOffsetNid(817);
+        jPanel163.add(deviceField509);
+
         deviceField298.setIdentifier("");
         deviceField298.setLabelString("C3:");
         deviceField298.setOffsetNid(610);
@@ -3974,6 +4379,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel166.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel166.setName(""); // NOI18N
         jPanel166.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField510.setIdentifier("");
+        deviceField510.setLabelString("C4:");
+        deviceField510.setOffsetNid(818);
+        jPanel166.add(deviceField510);
 
         deviceField303.setIdentifier("");
         deviceField303.setLabelString("C3:");
@@ -4021,6 +4431,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel169.setName(""); // NOI18N
         jPanel169.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField511.setIdentifier("");
+        deviceField511.setLabelString("C4:");
+        deviceField511.setOffsetNid(819);
+        jPanel169.add(deviceField511);
+
         deviceField308.setIdentifier("");
         deviceField308.setLabelString("C3:");
         deviceField308.setOffsetNid(628);
@@ -4066,6 +4481,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel172.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel172.setName(""); // NOI18N
         jPanel172.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField512.setIdentifier("");
+        deviceField512.setLabelString("C4:");
+        deviceField512.setOffsetNid(820);
+        jPanel172.add(deviceField512);
 
         deviceField313.setIdentifier("");
         deviceField313.setLabelString("C3:");
@@ -4113,6 +4533,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel241.setName(""); // NOI18N
         jPanel241.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField513.setIdentifier("");
+        deviceField513.setLabelString("C4:");
+        deviceField513.setOffsetNid(821);
+        jPanel241.add(deviceField513);
+
         deviceField428.setIdentifier("");
         deviceField428.setLabelString("C3:");
         deviceField428.setOffsetNid(646);
@@ -4158,6 +4583,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel244.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel244.setName(""); // NOI18N
         jPanel244.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField514.setIdentifier("");
+        deviceField514.setLabelString("C4:");
+        deviceField514.setOffsetNid(822);
+        jPanel244.add(deviceField514);
 
         deviceField433.setIdentifier("");
         deviceField433.setLabelString("C3:");
@@ -4233,6 +4663,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel175.setName(""); // NOI18N
         jPanel175.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField515.setIdentifier("");
+        deviceField515.setLabelString("C4:");
+        deviceField515.setOffsetNid(823);
+        jPanel175.add(deviceField515);
+
         deviceField318.setIdentifier("");
         deviceField318.setLabelString("C3:");
         deviceField318.setOffsetNid(667);
@@ -4278,6 +4713,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel178.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel178.setName(""); // NOI18N
         jPanel178.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField516.setIdentifier("");
+        deviceField516.setLabelString("C4:");
+        deviceField516.setOffsetNid(824);
+        jPanel178.add(deviceField516);
 
         deviceField323.setIdentifier("");
         deviceField323.setLabelString("C3:");
@@ -4325,6 +4765,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel181.setName(""); // NOI18N
         jPanel181.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField517.setIdentifier("");
+        deviceField517.setLabelString("C4:");
+        deviceField517.setOffsetNid(825);
+        jPanel181.add(deviceField517);
+
         deviceField328.setIdentifier("");
         deviceField328.setLabelString("C3:");
         deviceField328.setOffsetNid(685);
@@ -4370,6 +4815,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel184.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel184.setName(""); // NOI18N
         jPanel184.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField518.setIdentifier("");
+        deviceField518.setLabelString("C4:");
+        deviceField518.setOffsetNid(826);
+        jPanel184.add(deviceField518);
 
         deviceField333.setIdentifier("");
         deviceField333.setLabelString("C3:");
@@ -4417,6 +4867,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel187.setName(""); // NOI18N
         jPanel187.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField519.setIdentifier("");
+        deviceField519.setLabelString("C4:");
+        deviceField519.setOffsetNid(827);
+        jPanel187.add(deviceField519);
+
         deviceField338.setIdentifier("");
         deviceField338.setLabelString("C3:");
         deviceField338.setOffsetNid(703);
@@ -4462,6 +4917,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel190.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel190.setName(""); // NOI18N
         jPanel190.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField520.setIdentifier("");
+        deviceField520.setLabelString("C4:");
+        deviceField520.setOffsetNid(828);
+        jPanel190.add(deviceField520);
 
         deviceField343.setIdentifier("");
         deviceField343.setLabelString("C3:");
@@ -4509,6 +4969,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel193.setName(""); // NOI18N
         jPanel193.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField521.setIdentifier("");
+        deviceField521.setLabelString("C4:");
+        deviceField521.setOffsetNid(829);
+        jPanel193.add(deviceField521);
+
         deviceField348.setIdentifier("");
         deviceField348.setLabelString("C3:");
         deviceField348.setOffsetNid(721);
@@ -4554,6 +5019,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel196.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel196.setName(""); // NOI18N
         jPanel196.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField522.setIdentifier("");
+        deviceField522.setLabelString("C4:");
+        deviceField522.setOffsetNid(830);
+        jPanel196.add(deviceField522);
 
         deviceField353.setIdentifier("");
         deviceField353.setLabelString("C3:");
@@ -4601,6 +5071,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel199.setName(""); // NOI18N
         jPanel199.setPreferredSize(new java.awt.Dimension(900, 100));
 
+        deviceField523.setIdentifier("");
+        deviceField523.setLabelString("C4:");
+        deviceField523.setOffsetNid(831);
+        jPanel199.add(deviceField523);
+
         deviceField358.setIdentifier("");
         deviceField358.setLabelString("C3:");
         deviceField358.setOffsetNid(739);
@@ -4646,6 +5121,11 @@ public class DM8125Setup extends DeviceSetup {
         jPanel202.setMinimumSize(new java.awt.Dimension(464, 50));
         jPanel202.setName(""); // NOI18N
         jPanel202.setPreferredSize(new java.awt.Dimension(900, 100));
+
+        deviceField524.setIdentifier("");
+        deviceField524.setLabelString("C4:");
+        deviceField524.setOffsetNid(832);
+        jPanel202.add(deviceField524);
 
         deviceField363.setIdentifier("");
         deviceField363.setLabelString("C3:");
@@ -5047,14 +5527,94 @@ public class DM8125Setup extends DeviceSetup {
     private DeviceField deviceField442;
     private DeviceField deviceField443;
     private DeviceField deviceField444;
+    private DeviceField deviceField445;
+    private DeviceField deviceField446;
+    private DeviceField deviceField447;
+    private DeviceField deviceField448;
+    private DeviceField deviceField449;
     private DeviceField deviceField45;
+    private DeviceField deviceField450;
+    private DeviceField deviceField451;
+    private DeviceField deviceField452;
+    private DeviceField deviceField453;
+    private DeviceField deviceField454;
+    private DeviceField deviceField455;
+    private DeviceField deviceField456;
+    private DeviceField deviceField457;
+    private DeviceField deviceField458;
+    private DeviceField deviceField459;
     private DeviceField deviceField46;
+    private DeviceField deviceField460;
+    private DeviceField deviceField461;
+    private DeviceField deviceField462;
+    private DeviceField deviceField463;
+    private DeviceField deviceField464;
+    private DeviceField deviceField465;
+    private DeviceField deviceField466;
+    private DeviceField deviceField467;
+    private DeviceField deviceField468;
+    private DeviceField deviceField469;
     private DeviceField deviceField47;
+    private DeviceField deviceField470;
+    private DeviceField deviceField471;
+    private DeviceField deviceField472;
+    private DeviceField deviceField473;
+    private DeviceField deviceField474;
+    private DeviceField deviceField475;
+    private DeviceField deviceField476;
+    private DeviceField deviceField477;
+    private DeviceField deviceField478;
+    private DeviceField deviceField479;
     private DeviceField deviceField48;
+    private DeviceField deviceField480;
+    private DeviceField deviceField481;
+    private DeviceField deviceField482;
+    private DeviceField deviceField483;
+    private DeviceField deviceField484;
+    private DeviceField deviceField485;
+    private DeviceField deviceField486;
+    private DeviceField deviceField487;
+    private DeviceField deviceField488;
+    private DeviceField deviceField489;
     private DeviceField deviceField49;
+    private DeviceField deviceField490;
+    private DeviceField deviceField491;
+    private DeviceField deviceField492;
+    private DeviceField deviceField493;
+    private DeviceField deviceField494;
+    private DeviceField deviceField495;
+    private DeviceField deviceField496;
+    private DeviceField deviceField497;
+    private DeviceField deviceField498;
+    private DeviceField deviceField499;
     private DeviceField deviceField50;
+    private DeviceField deviceField500;
+    private DeviceField deviceField501;
+    private DeviceField deviceField502;
+    private DeviceField deviceField503;
+    private DeviceField deviceField504;
+    private DeviceField deviceField505;
+    private DeviceField deviceField506;
+    private DeviceField deviceField507;
+    private DeviceField deviceField508;
+    private DeviceField deviceField509;
     private DeviceField deviceField51;
+    private DeviceField deviceField510;
+    private DeviceField deviceField511;
+    private DeviceField deviceField512;
+    private DeviceField deviceField513;
+    private DeviceField deviceField514;
+    private DeviceField deviceField515;
+    private DeviceField deviceField516;
+    private DeviceField deviceField517;
+    private DeviceField deviceField518;
+    private DeviceField deviceField519;
     private DeviceField deviceField52;
+    private DeviceField deviceField520;
+    private DeviceField deviceField521;
+    private DeviceField deviceField522;
+    private DeviceField deviceField523;
+    private DeviceField deviceField524;
     private DeviceField deviceField53;
     private DeviceField deviceField54;
     private DeviceField deviceField55;

@@ -187,6 +187,7 @@ AC_DEFUN([TS_SELECT],[
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
+      TS_WINEPATH([WINEPATH],["\$(top_builddir)/wfevent" "\$(top_builddir)/setevent"])
       AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["WINEDEBUG=-all "])
@@ -196,19 +197,19 @@ AC_DEFUN([TS_SELECT],[
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["main_path='.;TS_U2WPATH([${srcdir}/trees])' "])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],["subtree_path='.;TS_U2WPATH([${srcdir}/trees/subtree])' "])
       AS_VAR_IF([WINEARCH],[win64],
-		[# WINEARCH win64
-		 AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
-		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PYTHONHOME='${PYTHONHOME}' "])
-		 AS_VAR_APPEND([TESTS_ENVIRONMENT],
-		   ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${srcdir}/python])' "])
-		 AS_VAR_APPEND([TESTS_ENVIRONMENT],["PyLib='python27' "])
-		 AS_VAR_SET([PYTHON],["\$(abs_top_srcdir)/testing/winpython python"])
-		 AS_VAR_APPEND([PY_LOG_COMPILER],
-		   ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])],
-		[# WINEARCH win32
-		 TS_LOG_SKIP([PY_LOG_COMPILER])])
-	  # any wine flavor
-	  AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
+        [# WINEARCH win64
+          AS_VAR_APPEND([WINEPATH],["${PYTHONHOME}"])
+          AS_VAR_APPEND([TESTS_ENVIRONMENT],["PYTHONHOME='${PYTHONHOME}' "])
+          AS_VAR_APPEND([TESTS_ENVIRONMENT],
+            ["PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([${srcdir}/python])' "])
+          AS_VAR_APPEND([TESTS_ENVIRONMENT],["PyLib='python27' "])
+          AS_VAR_SET([PYTHON],["\$(abs_top_srcdir)/testing/winpython python"])
+          AS_VAR_APPEND([PY_LOG_COMPILER],
+            ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])],
+        [# WINEARCH win32
+          TS_LOG_SKIP([PY_LOG_COMPILER])])
+      # any wine flavor
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
       # WINE Valgrind tuning ..
       # see: http://wiki.winehq.org/WineAndValgrind
@@ -233,7 +234,7 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->linux")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\$(abs_top_srcdir)/testing:\${PATH} ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:${MAKEBINDIR}/../setevent:${MAKEBINDIR}/../wfevent:\$(abs_top_srcdir)/testing:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH='\$(abs_top_srcdir)/pydevices;\$(abs_top_srcdir)/python/MDSplus/tests/devices' ")

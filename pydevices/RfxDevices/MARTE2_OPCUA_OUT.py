@@ -36,100 +36,132 @@ class MARTE2_OPCUA_OUT(MC.MARTE2_COMPONENT):
     inputs = [
         {'name': 'In1', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''},
+            {'name': 'Trigger', 'type':'int32', 'value': 1} ]},
         {'name': 'In2', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In3', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In4', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In5', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In6', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In7', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In8', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In9', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In10', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In11', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In12', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In13', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In14', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In15', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In16', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In17', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In18', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In19', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In20', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In21', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In22', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In23', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In24', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In25', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In26', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In27', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In28', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In29', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In30', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In31', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
         {'name': 'In32', 'type': 'int32', 'dimensions': 0, 'parameters': [
             {'name': 'NamespaceIndex', 'type':'int32', 'value': 0},
-            {'name': 'Path', 'type':'string', 'value': ''} ]},
+            {'name': 'Path', 'type':'string', 'value': ''}, 
+            {'name': 'Trigger', 'type':'int32', 'value': 0} ]},
     ]
     
     parameters = [

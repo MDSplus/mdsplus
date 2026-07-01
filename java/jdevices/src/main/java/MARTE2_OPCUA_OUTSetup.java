@@ -30,9 +30,9 @@ public class MARTE2_OPCUA_OUTSetup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceField5 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
+        deviceChoice1 = new DeviceChoice();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -54,19 +54,23 @@ public class MARTE2_OPCUA_OUTSetup extends DeviceSetup {
         deviceField1.setTextOnly(true);
         jPanel2.add(deviceField1);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("RootIdentifierType");
-        deviceField5.setOffsetNid(25);
-        deviceField5.setTextOnly(true);
-        jPanel2.add(deviceField5);
+        deviceChoice2.setChoiceItems(new String[] {"NUMERIC", "STRING"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("RootIdentifier Type");
+        deviceChoice2.setOffsetNid(25);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel2.add(deviceChoice2);
 
         jPanel1.add(jPanel2);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Traverse: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(16);
-        jPanel3.add(deviceField2);
+        deviceChoice1.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice1.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice1.setConvert(true);
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Traverse Hierarchy: ");
+        deviceChoice1.setOffsetNid(16);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice1);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("RootNameSpaceIndex: ");
@@ -94,11 +98,11 @@ public class MARTE2_OPCUA_OUTSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
-    private DeviceField deviceField5;
     private DeviceInputs deviceInputs1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
