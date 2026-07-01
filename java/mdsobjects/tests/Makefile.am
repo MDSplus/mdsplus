@@ -24,3 +24,4 @@ TESTS = \
  MDSplus.MdsTreeNodeTest\
  MDSplus.MdsTreeTest\
  MDSplus.MdsWindowTest
+# MDSplus.MdsRemoteEventTest

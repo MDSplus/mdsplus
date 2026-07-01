@@ -104,6 +104,8 @@ public:
   SaveItem(int dataNid, void *treePtr, MDSplus::Data *startPtr, 
            MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr,  int resampledNid);
 
+  ~SaveItem();
+
   void setNext(SaveItem *itm) { nxt = itm; }
   SaveItem *getNext() { return nxt; }
 

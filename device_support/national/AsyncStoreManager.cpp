@@ -27,15 +27,24 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
   this->treePtr = treePtr;
   this->shot = shot;
   this->streamFactor = streamFactor;
-  this->streamName = streamName;
+  this->streamName = streamName ? strdup(streamName) : NULL;
   this->streamGain = streamGain;
   this->streamOffset = streamOffset;
   this->period = period;
   this->gain = gain;
   this->numCoeffs = numCoeffs;
-  this->coeffs = coeffs;
+  this->coeffs = new float[numCoeffs];
+  memcpy(this->coeffs, coeffs, sizeof(float) * numCoeffs);
   nxt = 0;
   isUpdate = false;
+}
+
+SaveItem::~SaveItem()
+{
+    if(streamName)
+        free(streamName);
+    if(coeffs)
+        delete[] coeffs;
 }
 
 SaveItem::SaveItem(int dataNid, void *treePtr, MDSplus::Data *startPtr, 
@@ -54,6 +63,13 @@ MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr,  int res
 void SaveItem::save()
 {
 
+  if(bufSize <= 0)
+  {
+      printf("\n****INVALID SaveItem with bufSize %d. Save skipped*****\n\n");
+      return;
+  }
+
+  //std::cout << " sampleToRead " << sampleToRead << std::endl;
   // std::cout << "START SAVE" << std::endl;
   //Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
   Tree *tree = (Tree *)treePtr;
@@ -62,8 +78,9 @@ void SaveItem::save()
   dataNode = new TreeNode(dataNid, tree);
   resampledNode = NULL;
   if (resampledNid > 0)
-    resampledNode = new TreeNode(resampledNid, tree);
-
+  {
+      resampledNode = new TreeNode(resampledNid, tree);
+  }
   if (isUpdate == true)
   {
     std::vector<double> dims = dimPtr->getDoubleArray();
@@ -71,7 +88,10 @@ void SaveItem::save()
 
     pthread_mutex_lock(&segmentMutex);
     dataNode->updateSegment(startPtr, endPtr, dimPtr);
-    resampledNode->updateSegment(startPtr, endPtr, dimResPtr);
+    if(resampledNode)
+    {
+      resampledNode->updateSegment(startPtr, endPtr, dimResPtr);
+    }
     pthread_mutex_unlock(&segmentMutex);
     
   }
@@ -138,7 +158,9 @@ void SaveItem::save()
     // if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) *
     // segmentSize) < counter + bufSize )
     // if ((counter % segmentSize) == 0 || sampleToRead == 0)
-     if (sampleToRead >= segmentSize || counter == 0)
+    //if (sampleToRead >= segmentSize || counter == 0 )
+
+    if (sampleToRead >= segmentSize || counter == 0 || sampleToRead == 0)
     {
   //  std::cout << "SAVE 2" << std::endl;
     // Create Segment
@@ -173,7 +195,7 @@ void SaveItem::save()
 
         Data *timeAtIdx0 = new Float32(timeIdx0);
         Data *periodData = new Float64(period);
-        std::cout << "PERIOD: " << period << std::endl;
+        //std::cout << "PERIOD: " << period << std::endl;
         startTime = compileWithArgs(
             "NIADCClockSegment($1, $2, $3, $4, 'start_time', $5)", tree, 5,
             clockNode, startIdx, endIdx, timeAtIdx0, periodData);
@@ -257,6 +279,9 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
       break;
       }
 
+      //std::cout << "Start Idx " << startIdx << " End Idx " << endIdx << " segmentSize " << segmentSize << std::endl;
+
+
       deleteData(startIdx);
       deleteData(endIdx);
       deleteData(startTime);
@@ -265,11 +290,16 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
 
     try
     {
+
       switch (dataType)
       {
+
       case SHORT:
       {
         // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
+
+if(bufSize <= 0) printf("\n\nOILALA....NEGATIVE bufSize %d\n\n\n\n", bufSize);
+
         Int16Array *data = new Int16Array((short *)buffer, bufSize);
 
         pthread_mutex_lock(&segmentMutex);
@@ -282,12 +312,14 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
         }
         catch (const MdsException &exc)
         {
-          printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
+          printf("PUT SEGMENT FAILED FOR NODE : %s: %s\n", dataNode->getFullPath(),
                  exc.what());
         }
         pthread_mutex_unlock(&segmentMutex);
         deleteData(data);
-        delete[](short *) buffer;
+        short *buf = static_cast<short *>(buffer);
+        delete[]buf;
+        buffer = NULL;
       }
       break;
       case FLOAT:
@@ -309,7 +341,9 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
         }
         pthread_mutex_unlock(&segmentMutex);
         deleteData(data);
-        delete[](float *) buffer;
+        float *buf = static_cast<float *>(buffer);
+        delete[]buf;
+        buffer = NULL;
       }
       break;
       }
@@ -556,12 +590,13 @@ void startSave(void **retList)
   *retList = (void *)saveList;
 }
 
-void stopSave(void *listPtr)
+void stopSave(void **listPtr)
 {
-  if (listPtr)
+  if (listPtr && *listPtr)
   {
     SaveList *list = (SaveList *)listPtr;
     list->stop();
     delete list;
+    *listPtr = NULL;
   }
 }
