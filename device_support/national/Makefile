@@ -5,7 +5,7 @@ endif
 CC=g++
 
 #CFLAGS_DEBUG := -fPIC -Werror -Wall -Wextra -O0 -rdynamic -g -DDEBUG
-CFLAGS_DEBUG := -fPIC -O0  -g -DDEBUG
+CFLAGS_DEBUG := -fPIC -O0  -g  -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include -std=c++11 
 LDFLAGS_DEBUG := -Wall -g
 
 # Optimized release builds (default)
@@ -36,7 +36,8 @@ libNiInterface : $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(SHAREDLIB) -shared $(LDFLAGS) 
 
 .cpp.o:
-	$(CC)  -c $(CFLAGS)  $< -o $@
+	$(CC)  -c $(CFLAGS_DEBUG)  $< -o $@
+#	$(CC)  -c $(CFLAGS)  $< -o $@
 
 $(BIN):	$(SOURCES_EXE)
 	$(CC) $(LDFLAGS) -L . -lNiInterface $(CFLAGS)  -o $@ $@.cpp
