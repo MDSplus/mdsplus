@@ -199,26 +199,27 @@ class DM8125(Device):
                     peak_wavelengths.insert(sensor_number, 0)
                     continue
                 
-                wavelength_difference = (peak_wavelengths[sensor_number] - init_wavelength)/init_wavelength
+                #wavelength_difference = (peak_wavelengths[sensor_number] - init_wavelength)/init_wavelength
+
+                measured_wavelength = peak_wavelengths[sensor_number]
 
                 temperature = 0
 
                 if self.c4[fibre_number][sensor_number] != 0:
-                    temperature += self.c4[fibre_number][sensor_number] * pow(wavelength_difference, 4)
-
+                    temperature += self.c4[fibre_number][sensor_number] * pow(measured_wavelength, 4)
+                    
                 if self.c3[fibre_number][sensor_number] != 0:
-                    temperature += self.c3[fibre_number][sensor_number] * pow(wavelength_difference, 3)
+                    temperature = temperature + self.c3[fibre_number][sensor_number] * pow(measured_wavelength, 3)
 
                 if self.c2[fibre_number][sensor_number] != 0:
-                    temperature += self.c2[fibre_number][sensor_number] * pow(wavelength_difference, 2)
+                    temperature = temperature + self.c2[fibre_number][sensor_number] * pow(measured_wavelength, 2)
 
                 if self.c1[fibre_number][sensor_number] != 0:
-                    temperature += self.c1[fibre_number][sensor_number] * pow(wavelength_difference, 1)
+                    temperature = temperature + self.c1[fibre_number][sensor_number] * pow(measured_wavelength, 1)
 
                 if self.c0[fibre_number][sensor_number] != 0:
-                    temperature += self.c0[fibre_number][sensor_number]
+                    temperature = temperature + self.c0[fibre_number][sensor_number]
 
-                
                 self.time[fibre_number][sensor_number][self.data_index[fibre_number][sensor_number]] = relative_time
                 self.temp[fibre_number][sensor_number][self.data_index[fibre_number][sensor_number]] = temperature
                 self.wave[fibre_number][sensor_number][self.data_index[fibre_number][sensor_number]] = peak_wavelengths[sensor_number]
@@ -261,7 +262,6 @@ class DM8125(Device):
 
         print("\n###Data collected###")
         DM8125.STOP_FLAG = False
-        print("Storage stopped after ", time.time() - DM8125.START_TIME, " seconds")
         
         return
     
@@ -289,8 +289,9 @@ class DM8125(Device):
         # Mode: "ref" = 250uS period (Slow and accurate), "fast" = 42uS period (fast but less accurate)
         # fibre_selection: fibre bit mask. (1 fibre = 1, 2 fibres = 3, 3 fibres = 7, 4 fibres = 15, 5 fibres = 31, 6 fibres = 63, 7 fibres = 127, 8 fibres = 255)
         
-        DM8125.FIBREMASK = int(self.getNode(':FIBREMASK').data(), 2)
-
+        DM8125.FIBREMASK = int(self.getNode(':FIBREMASK').data()[::-1], 2)
+        print("FIBRE MASK")
+        print(self.getNode(':FIBREMASK').data()[::-1])
         DM8125.SENSORMASK = np.zeros(DM8125.MAX_FIBRES, dtype=np.int16)
         DM8125.SENSOR_ENABLED = np.zeros([DM8125.MAX_FIBRES, DM8125.MAX_SENSORS], dtype=np.int8)
 
@@ -298,7 +299,8 @@ class DM8125(Device):
         for fibre in range(DM8125.MAX_FIBRES):
             sensor_path = "FIBRE"+str(fibre+1)
             node = getattr(self, sensor_path+":SENSORMASK")
-            DM8125.SENSORMASK[fibre] = int(self.getNode(node).data(), 2)
+            DM8125.SENSORMASK[fibre] = int(self.getNode(node).data()[::-1], 2)
+            
 
             for sensor in range(DM8125.MAX_SENSORS):
                 DM8125.SENSOR_ENABLED[fibre][sensor] = (DM8125.SENSORMASK[fibre] >> sensor) & 1
@@ -352,9 +354,6 @@ class DM8125(Device):
 
         print("###Initial wavelengths written to tree###")
 
-
-
-        
         ## This code will fill the device with some numbers to help verify the netbeans interface
         """ 
         for fibre in range(8):
@@ -373,9 +372,7 @@ class DM8125(Device):
 
         """
 
-        
-        
-        
+
     ### --------------------------------------------------DM8125 Start Store-----------------------------------------------------------------------###
     def start_store(self):
         DM8125.START_TIME = time.time()
@@ -399,7 +396,6 @@ class DM8125(Device):
     ### --------------------------------------------------DM8125 Stop Store------------------------------------------------------------------------###
     def stop_store(self):
         print("\n\n-------------DM8125 Stop Store--------------------")
-        print("Store stop request after ", time.time() - DM8125.START_TIME, " seconds")
         client = self.get_client()
 
         DM8125.STOP_FLAG = True
