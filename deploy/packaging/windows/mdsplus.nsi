@@ -145,40 +145,6 @@ Page Directory "" "" DirectoryLeave
 !define SetSectionFlag   '!insertmacro "SetSectionFlag"'
 
 
-; Obsolete because of the CMake PR 2527, so commented out.
-; ### BEGIN InstallFiles ###
-; !macro InstallFiles source dest logfile
-; 	!define _id_ ${__LINE__}
-; 	Push $0
-; 	Push $1
-; 	FindFirst $0 $1 "${source}\*"
-; 	ClearErrors
-; 	loop${_id_}:
-; 		StrCmp $1 ""   done${_id_}
-; 		StrCmp $1 "."  next${_id_}
-; 		StrCmp $1 ".." next${_id_}
-; 		retry${_id_}:
-; 		Rename "${source}\$1" "${dest}\$1"
-; 		IfErrors 0 ignore${_id_}
-; 		MessageBox MB_ABORTRETRYIGNORE 'File "$1" cannot be moved to "${dest}". File already exists?!' IDIGNORE ignore${_id_} IDRETRY retry${_id_}
-; 		FindClose $0
-; 		FileClose ${logfile}
-; 		Abort
-; 		ignore${_id_}:
-; 		FileWrite ${logfile} "${dest}\$1$\r$\n"
-; 		next${_id_}:
-; 		FindNext $0 $1
-; 		Goto loop${_id_}
-; 	done${_id_}:
-; 	FindClose $0
-; 	Pop $1
-; 	Pop $0
-; 	!undef _id_
-; !macroend ; InstallFiles
-; !define InstallFiles '!insertmacro "InstallFiles"'
-; ### END InstallFiles ###
-
-
 
 ### BEGIN SECTIONS ###
 Function install_core_pre
@@ -680,33 +646,6 @@ Section uninstall
 		Pop $R0
 		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8100"'
 		Pop $R0
-		; Obsolete because of CMake PR 2527, so commented out.
-		; FileOpen $R0 "$INSTDIR\uninstall.dat" r
-		; ${DisableX64FSRedirection}
-		; CreateDirectory "${TEMP_DEL_DIR}"
-		; ClearErrors
-		; loop:
-		; 	FileRead $R0 $R1
-		; 	StrCmp $R1 "" done
-		; 	${UnStrTrimNewLines} $R2 $R1
-		; 	retry:
-		; 	Delete "$R2"
-		; 	IfErrors 0 loop
-		; 	MessageBox MB_ABORTRETRYIGNORE 'File "$R2" could not be deleted. Is it still in use.' IDIGNORE ignore IDRETRY retry
-		; 	FileClose $R0
-		; 	RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
-		; 	Abort
-		; 	ignore:
-		; 	System::Call 'kernel32::GetTickCount()i .R3'
-		; 	${WordFind} "$R2" "\" "-1" $R4
-		; 	Rename "$R2" "${TEMP_DEL_DIR}\$R4$R3"
-		; 	ClearErrors
-		; 	Goto loop
-		; done:
-		; FileClose $R0
-		; ${EnableX64FSRedirection}
-		; RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
-		; Delete uninstall.dat
 	${EndIf}
 	${RemoveFromEnv} PATH "${BINDIR}"
 	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
