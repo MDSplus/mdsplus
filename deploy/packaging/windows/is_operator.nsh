@@ -1,5 +1,8 @@
+; Obsolete. PR 3061 eliminated all calls to this operator.  However,
+; it has been retained just in case it will be useful in the future.
+;
 ;; If operator to check whether section has a flag set
-;; ${If} ${setion} is ${SF_SELECTED}
+;; ${If} ${section} is ${SF_SELECTED}
 Var ISVAR
 !macro _is section flag t f
 	Push `${flag}`		;; In order to process two args without
@@ -15,7 +18,7 @@ Var ISVAR
 	IntCmp $ISVAR 0 `${f}` `${t}` `${t}`	; $ISVAR != 0
 !macroend ; _is
 ; this helper function is required to isolate the jump markers
-; SectionFlagIsSet does not support relative jumps that may be passes by If
+; SectionFlagIsSet does not support relative jumps that may be passed by If
 Function isfun
 	!insertmacro SectionFlagIsSet $0 $1 true false
 true:	StrCpy $ISVAR 1

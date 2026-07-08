@@ -1,3 +1,7 @@
+; Obsolete.  This entire file does not work.  Displaying $R0 indicates that
+; the $INSTDIR is not found.   Fails on both Win11 NTFS and FAT32.
+; This is based on a third-party script published in 2012.
+
 ;; https://nsis.sourceforge.io/mediawiki/index.php?title=Send_to_Recycle_Bin
 
 !define FO_DELETE	0x3
