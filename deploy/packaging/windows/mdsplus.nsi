@@ -19,6 +19,9 @@
 ;   - The uninstaller must not use an unguarded "RmDir /r $INSTDIR" because in some
 ;     scenarios that can wipe system files from the Windows computer.  For more details,
 ;     refer to the Nullsoft documentation.
+;   - VS Code has an NSIS extension that makes it much easier to edit the installer source.
+;     https://marketplace.visualstudio.com/items?itemName=idleberg.nsis
+
 
 
 Name   "MDSplus${BNAME}-${ARCH} ${MAJOR}.${MINOR}-${RELEASE}"
