@@ -1,2 +1,3 @@
---dockerimage=mdsplus/builder:centos-7-x86_64 --distname=el7
+--dockerimage=mdsplus/builder:centos-7-x86_64
+--distname=el7 --platform=redhat
 -DGSI=gcc64 -DENABLE_HDF5=ON -DENABLE_SYBASE=ON

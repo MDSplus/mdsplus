@@ -205,6 +205,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--test-package-install',
+    action=boolean_action,
+    default=False,
+    help='Run a docker image, specified by --dockerimage-target, and test the installation of the generated packages.',
+)
+
+parser.add_argument(
     '--valgrind',
     nargs='?',
     const=True,
@@ -254,6 +261,12 @@ parser.add_argument(
     '--dockerimage',
     metavar='IMAGE',
     help='Create a docker container with this image, and run the build inside there. Can be combined with -i/--interactive to get a shell inside the docker container.',
+)
+
+parser.add_argument(
+    '--dockerimage-target',
+    metavar='IMAGE',
+    help='Specifies the docker image to use for --test-package-install.',
 )
 
 parser.add_argument(
@@ -443,6 +456,148 @@ def build_command_line():
 
     return cli_args
 
+def get_redhat_package_version(version):
+    "Converts from 1.2.3 to 1.2-3"
+    return '-'.join(version.rsplit('.', maxsplit=1))
+get_exe_version = get_redhat_package_version
+
+docker = shutil.which('docker')
+
+def run_docker(image=None, entrypoint='/bin/bash', docker_args=[], network=None, interactive=False):
+    global args, docker
+
+    if image is None:
+        return 0
+
+    if docker is None:
+        print('Unable to find `docker`')
+        exit(1)
+
+    if args.dockerpull:
+        print()
+        print(f'Pulling docker image {image}')
+
+        result = subprocess.run([ docker, 'pull', image ])
+        if result.returncode != 0:
+            print(f'Failed to pull docker image {image}')
+            exit(1)
+
+    if network is not None:
+        print(f'Creating docker network {network}')
+        result = subprocess.run([ docker, 'network', 'create', network ])
+        if result.returncode != 0:
+            result = subprocess.run([ docker, 'network', 'inspect', network ])
+            if result.returncode != 0:
+                print(f'Failed to create docker network {network}')
+                exit(1)
+            print(f'Docker network {network} already exists')
+
+        docker_args.append(f'--network={network}')
+
+    docker_args.append(image)
+
+    print()
+    print('Docker arguments:')
+    for arg in docker_args:
+        print(f"    {arg}")
+
+    if type(entrypoint) is str:
+        entrypoint = [entrypoint]
+
+    print('Docker entrypoint:')
+    print(f"    {' '.join(entrypoint)}")
+
+    docker_args.extend(entrypoint)
+
+    if interactive:
+
+        subprocess.run(
+            [
+                docker, 'run',
+                '--interactive',
+                '--tty',
+                '--rm',
+                *docker_args
+            ]
+        )
+
+        if network is not None:
+            subprocess.run([ docker, 'network', 'rm', network ])
+
+        return 0
+
+    else:
+
+        result = subprocess.run(
+            [
+                docker, 'run',
+                '--detach',
+                *docker_args,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            print(f'Failed to run docker container: {result.stderr.decode()}')
+            exit(1)
+        
+        container_id = result.stdout.decode().strip()
+
+        docker_logs = subprocess.Popen(
+            [
+                docker, 'logs',
+                '--follow',
+                '--timestamps',
+                container_id
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        def kill_docker(signum, frame):
+            print()
+            print(f'Killing docker container {container_id}')
+            
+            subprocess.run([ docker, 'kill', container_id ])
+            subprocess.run([ docker, 'rm', container_id ])
+
+            if network is not None:
+                subprocess.run([ 'docker', 'network', 'rm', network ])
+
+            exit(0)
+
+        signal.signal(signal.SIGINT, kill_docker)
+
+        while True:
+            line = docker_logs.stdout.readline()
+            if not line:
+                break
+
+            print(line.decode().rstrip())
+
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        # Perform an autopsy
+        result = subprocess.run(
+            [
+                docker, 'inspect',
+                container_id,
+                '--format="{{.State.ExitCode}}"'
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        exit_code = int(result.stdout.decode().strip().strip('"'))
+        
+        subprocess.run([ docker, 'rm', container_id ])
+
+        if network is not None:
+            subprocess.run([ docker, 'network', 'rm', network ])
+
+        return exit_code
+
 # CMake Configuration
 
 cmake_cache_filename = os.path.join(build_dir, 'CMakeCache.txt')
@@ -551,21 +706,12 @@ if not args.configure and len(cmake_args) != 0:
 # Stages
 
 def do_docker():
+    global docker
 
-    docker = shutil.which('docker')
     if docker is None:
         print('Unable to find `docker`')
         exit(1)
 
-    if args.dockerpull:
-        print()
-        print(f'Pulling docker image {args.dockerimage}')
-
-        result = subprocess.run([ docker, 'pull', args.dockerimage ])
-        if result.returncode != 0:
-            print(f'Failed to pull docker image {args.dockerimage}')
-            exit(1)
-    
     os.makedirs(args.workspace, exist_ok=True)
 
     docker_args = [
@@ -578,38 +724,14 @@ def do_docker():
         f'--env=HOME={args.workspace}',
 
         # HACK: To allow publish.py to know what docker image to run for publishing packages
-        f'--env=DOCKERIMAGE={args.dockerimage}'
+        f'--env=DOCKERIMAGE={args.dockerimage}',
+
+        # HACK: Without this, we lose track of the processes
+        '--tty',
     ]
-
-    # # Enable colors
-    # if sys.stdout.isatty():
-    #     docker_args.append('--tty')
-    
-    # TODO: Investigate
-    # Without this, we lose track of the processes
-    docker_args.append('--tty')
-
-    if args.dockernetwork is not None:
-        print(f'Creating docker network {args.dockernetwork}')
-        result = subprocess.run([ docker, 'network', 'create', args.dockernetwork ])
-        if result.returncode != 0:
-            result = subprocess.run([ docker, 'network', 'inspect', args.dockernetwork ])
-            if result.returncode != 0:
-                print(f'Failed to create docker network {args.dockernetwork}')
-                exit(1)
-            print(f'Docker network {args.dockernetwork} already exists')
-
-        docker_args.append(f'--network={args.dockernetwork}')
 
     if platform.system() != 'Windows':
         docker_args.append(f'--user={os.getuid()}:{os.getgid()}')
-
-    docker_args.append(args.dockerimage)
-
-    print()
-    print('Docker arguments:')
-    for arg in docker_args:
-        print(f"    {arg}")
 
     passthrough_args = []
     for arg in build_command_line():
@@ -620,6 +742,10 @@ def do_docker():
 
         # We don't want docker to run recursively
         if arg.startswith('--docker'):
+            continue
+
+        # This runs its own container, and cannot be run from within docker
+        if arg.startswith('--test-package-install'):
             continue
         
         passthrough_args.append(arg)
@@ -635,93 +761,16 @@ def do_docker():
         exit(1)
 
     docker_python3 = result.stdout.decode().strip()
-    docker_entrypoint = [ docker_python3, os.path.abspath(__file__) ] + passthrough_args
+    entrypoint = [ docker_python3, os.path.abspath(__file__) ] + passthrough_args
 
-    print('Docker entrypoint:')
-    print(f"    {' '.join(docker_entrypoint)}")
-
-    if args.interactive:
-
-        subprocess.run(
-            [
-                docker, 'run',
-                '--interactive',
-                '--rm',
-            ] + docker_args + docker_entrypoint,
-        )
-
-        if args.dockernetwork is not None:
-            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
-
-    else:
-
-        result = subprocess.run(
-            [
-                docker, 'run',
-                '--detach',
-            ] + docker_args + docker_entrypoint,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            print(f'Failed to run docker container: {result.stderr.decode()}')
-            exit(1)
-        
-        container_id = result.stdout.decode().strip()
-
-        docker_logs = subprocess.Popen(
-            [
-                docker, 'logs',
-                '--follow',
-                '--timestamps',
-                container_id
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        def kill_docker(signum, frame):
-            print()
-            print(f'Killing docker container {container_id}')
-            
-            subprocess.run([ docker, 'kill', container_id ])
-            subprocess.run([ docker, 'rm', container_id ])
-
-            if args.dockernetwork is not None:
-                subprocess.run([ 'docker', 'network', 'rm', args.dockernetwork ])
-
-            exit(0)
-
-        signal.signal(signal.SIGINT, kill_docker)
-
-        while True:
-            line = docker_logs.stdout.readline()
-            if not line:
-                break
-
-            print(line.decode().rstrip())
-
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        # Perform an autopsy
-        result = subprocess.run(
-            [
-                docker, 'inspect',
-                container_id,
-                '--format="{{.State.ExitCode}}"'
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        exit_code = int(result.stdout.decode().strip().strip('"'))
-        
-        subprocess.run([ docker, 'rm', container_id ])
-
-        if args.dockernetwork is not None:
-            subprocess.run([ docker, 'network', 'rm', args.dockernetwork ])
-
+    exit_code = run_docker(
+        image=args.dockerimage,
+        entrypoint=entrypoint,
+        docker_args=docker_args,
+        network=args.dockerimage,
+        interactive=args.interactive
+    )
+    if exit_code != 0:
         exit(exit_code)
 
 def do_interactive():
@@ -974,10 +1023,6 @@ def do_package():
 
     if args.version is None:
         args.version = cmake_cache.get('RELEASE_VERSION', '0.0.0')
-
-    # HACK: Remove after merging cmake branch
-    if args.flavor == 'cmake':
-        args.flavor = 'alpha'
 
     bname = ''
     if args.flavor != 'stable':
@@ -1467,6 +1512,75 @@ def do_test():
     if failed_test_count > 0:
         exit(1)
 
+def do_test_package_install():
+    global docker
+
+    if args.dockerimage_target is None:
+        print('Unable to test the packages for this platform')
+        exit(0)
+
+    print(f'Testing package install')
+
+    if docker is None:
+        print('Unable to find `docker`')
+        exit(1)
+
+    publish_info_filename = f'{args.workspace}/mdsplus-publish.json'
+    if not os.path.exists(publish_info_filename):
+        print('Unable to test the packages without having built them first, please run with --package')
+        exit(1)
+
+    with open(publish_info_filename, 'rt') as file:
+        publish_info = json.load(file)
+
+    target_platform = publish_info['platform']
+    target_packages = publish_info['packages']
+
+    entrypoint = ['/entrypoint.sh']
+    docker_args = []
+    
+    if target_platform == 'debian':
+        entrypoint_filename = f'{source_dir}/deploy/platform/debian/test-install.sh'
+        docker_args.append(f'--volume={entrypoint_filename}:/entrypoint.sh:ro')
+
+        packages_dir = os.path.dirname(target_packages[0])
+        docker_args.append(f'--volume={os.path.join(dist_dir, packages_dir)}:/packages')
+
+        for deb in target_packages:
+            entrypoint.append(os.path.relpath(deb, packages_dir))
+
+    elif target_platform == 'redhat':
+        entrypoint_filename = f'{source_dir}/deploy/platform/redhat/test-install.sh'
+        docker_args.append(f'--volume={entrypoint_filename}:/entrypoint.sh:ro')
+
+        packages_dir = os.path.dirname(target_packages[0])
+        packages_dir = os.path.dirname(packages_dir) # have to skip architecture folder
+        docker_args.append(f'--volume={os.path.join(dist_dir, packages_dir)}:/packages')
+        
+        for rpm in target_packages:
+            entrypoint.append(os.path.relpath(rpm, packages_dir))
+
+    elif target_platform == 'windows':
+        entrypoint_filename = f'{source_dir}/deploy/platform/windows/test-install.sh'
+        docker_args.append(f'--volume={entrypoint_filename}:/entrypoint.sh:ro')
+
+        packages_dir = os.path.dirname(target_packages[0])
+        docker_args.append(f'--volume={os.path.join(dist_dir, packages_dir)}:/packages')
+
+        entrypoint.append(os.path.relpath(target_packages[0], packages_dir))
+    else:
+        print('Unable to test the packages for this platform')
+        exit(0)
+
+    exit_code = run_docker(
+        image=args.dockerimage_target,
+        entrypoint=entrypoint,
+        docker_args=docker_args,
+        interactive=False,
+    )
+
+    if exit_code != 0:
+        exit(exit_code)
 # main
 
 if args.dockerimage is not None:
@@ -1505,3 +1619,6 @@ else:
 
         if args.test:
             do_test()
+        
+if args.test_package_install:
+    do_test_package_install()
