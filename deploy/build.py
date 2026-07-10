@@ -1026,7 +1026,7 @@ def do_package():
 
     bname = ''
     if args.flavor != 'stable':
-        bname = f'-{args.flavor}'
+        bname = f'-{args.flavor}'.lower()
 
     if args.arch is None:
         if args.platform == 'debian':
