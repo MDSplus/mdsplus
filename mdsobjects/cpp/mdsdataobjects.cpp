@@ -831,16 +831,17 @@ Data *MDSplus::compileWithArgs(const char *expr, int nArgs...)
 
   int status;
   Data *res;
+  void * pArgs = (args.empty() ? NULL : &args[0]);
   try
   {
     AutoPointer<Tree> actTree(getActiveTree());
-    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree,
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, pArgs, actTree,
                                           (actTree) ? actTree->getCtx() : NULL,
                                           &status);
   }
   catch (MdsException &exc)
   {
-    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], NULL, NULL,
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, pArgs, NULL, NULL,
                                           &status);
   }
 
@@ -859,16 +860,17 @@ Data *MDSplus::compileWithArgs(const char *expr, Data **argsData, int nArgs)
   }
   int status;
   Data *res;
+  void * pArgs = (nArgs == 0 ? NULL : &args[0]);
   try
   {
     AutoPointer<Tree> actTree(getActiveTree());
-    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree,
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, pArgs, actTree,
                                           (actTree) ? actTree->getCtx() : NULL,
                                           &status);
   }
   catch (MdsException &exc)
   {
-    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], NULL, NULL,
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, pArgs, NULL, NULL,
                                           &status);
   }
   for (i = 0; i < nArgs; i++)
@@ -1826,21 +1828,24 @@ void *Array::convertToDsc()
 
 void *Compound::convertToDsc()
 {
+  void ** pDescs = (void **)(descs.empty() ? NULL : &descs[0]);
   return completeConversionToDsc(
       convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode,
-                           descs.size(), (void **)(&descs[0])));
+                           descs.size(), pDescs));
 }
 
 void *Signal::convertToDsc()
 {
+  void ** pDescs = (void **)(descs.empty() ? NULL : &descs[0]);
   return completeConversionToDsc(convertToCompoundDsc(
-      clazz, dtype, 0, (void *)&opcode, descs.size(), (void **)(&descs[0])));
+      clazz, dtype, 0, (void *)&opcode, descs.size(), pDescs));
 }
 
 void *Apd::convertToDsc()
 {
+  void ** pDescs = (void **)(descs.empty() ? NULL : &descs[0]);
   return completeConversionToDsc(
-      convertToApdDsc(dtype, descs.size(), (void **)&descs[0]));
+      convertToApdDsc(dtype, descs.size(), pDescs));
 }
 
 Data *MDSplus::deserialize(char const *serialized)
