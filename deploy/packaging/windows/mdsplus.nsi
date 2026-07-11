@@ -664,12 +664,12 @@ Section uninstall
 	Var /GLOBAL InstBaseName
 	${GetBaseName} $INSTDIR $InstBaseName
 	${IfNot} "$InstBaseName" == ${MULTIUSER_INSTALLMODE_INSTDIR}
-	    ${ToLog} "Non-standard dir, so MDPlus was unregistered but not deleted."
+	    ${ToLog} "Non-standard dir, so MDSplus was unregistered but not deleted."
 		; Windows Defender chokes on the following MessageBox even though the "/SD" makes it silent.  So use a more verbose approach.
-		; MessageBox MB_OKCANCEL "Non-standard dir, so MDPlus was unregistered but not deleted." /SD IDOK IDOK next
+		; MessageBox MB_OKCANCEL "Non-standard dir, so MDSplus was unregistered but not deleted." /SD IDOK IDOK next
 		IfSilent next gui  ; Note that ${IfSilent} is not available in NSIS v3.09
 			gui: 
-				MessageBox MB_OK "Non-standard dir, so MDPlus was unregistered but not deleted." IDOK next
+				MessageBox MB_OK "Non-standard dir, so MDSplus was unregistered but not deleted." IDOK next
 		next: ;
 
 	; Because of the above check, could probably use "RmDir /r $INSTDIR" here.  Instead, use a more conservative approach.	
