@@ -1,0 +1,2 @@
+--dockerimage=mdsplus/builder:ubuntu-26.04-amd64 --distname=Ubuntu26 --platform=debian
+-DGSI=gcc64 -DENABLE_HDF5=ON
