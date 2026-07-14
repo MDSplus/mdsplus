@@ -299,6 +299,9 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
   }
   if (STATUS_NOT_OK)
     goto badsub;
+  /* Remove trailing scalar dimensions from signals too */
+  if (psig && highdim > highest)
+    highdim = highest;
   /********************************************
   We know the shape and type, so get the space.
   Result is scalar if all indices are scalar.
