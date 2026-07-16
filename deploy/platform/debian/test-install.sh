@@ -13,7 +13,9 @@ DEBIAN_FRONTEND=noninteractive \
 
 echo "=== Testing ==="
 . /usr/local/mdsplus/setup.sh
-mdstcl show version
 
+python3 -c 'import MDSplus; print(MDSplus.__version__)' || exit 42
+
+mdstcl show version
 # MDSplus uses weird return codes
 [ $? -eq 1 ] || exit 42
