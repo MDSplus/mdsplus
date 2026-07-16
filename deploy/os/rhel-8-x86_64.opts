@@ -1,2 +1,4 @@
---dockerimage=mdsplus/builder:rocky-8-x86_64 --distname=el8
+--dockerimage=mdsplus/builder:rocky-8-x86_64
+--dockerimage-target=rockylinux:8
+--distname=el8 --platform=redhat
 -DGSI=gcc64 -DENABLE_HDF5=ON -DENABLE_SYBASE=ON

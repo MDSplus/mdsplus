@@ -1,2 +1,4 @@
---dockerimage=mdsplus/builder:debian-12-arm64 --distname=DebianBookworm --platform=debian
+--dockerimage=mdsplus/builder:debian-12-arm64
+--dockerimage-target=arm64v8/debian:bookworm
+--distname=DebianBookworm --platform=debian
 -DENABLE_LABVIEW=OFF -DENABLE_HDF5=ON

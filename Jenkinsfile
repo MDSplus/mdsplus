@@ -100,6 +100,11 @@ def packageStage(os) {
                 archiveArtifacts artifacts: "packages/*.tgz,packages/*.exe", followSymlinks: false
             }
         }
+
+        stage("Test Packages") {
+            def threads = getNumThreads()
+            sh "deploy/build.py --os=${os} --test-package-install"
+        }
     }
 }
 

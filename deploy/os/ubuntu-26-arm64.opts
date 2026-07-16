@@ -1,2 +1,4 @@
---dockerimage=mdsplus/builder:ubuntu-26.04-arm64 --distname=Ubuntu26 --platform=debian
+--dockerimage=mdsplus/builder:ubuntu-26.04-arm64
+--dockerimage-target=arm64v8/ubuntu:resolute
+--distname=Ubuntu26 --platform=debian
 -DENABLE_LABVIEW=OFF
