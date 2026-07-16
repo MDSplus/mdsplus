@@ -6,7 +6,10 @@ apt upgrade -y
 cd /packages
 
 echo "=== Installing all MDSplus packages ==="
-apt -f install -y "${@/#/./}" # all files must be relative paths
+# all files must be relative paths
+DEBIAN_FRONTEND=noninteractive \
+    apt -f install -yf "${@/#/./}" \
+    --option=Dpkg::Options::=--force-confdef
 
 echo "=== Testing ==="
 . /usr/local/mdsplus/setup.sh
