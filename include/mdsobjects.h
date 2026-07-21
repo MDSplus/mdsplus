@@ -2892,13 +2892,17 @@ namespace MDSplus
       dtype = DTYPE_DICTIONARY;
     }
 
+    // A NULL value represents missing ("*"): it is what execute() returns
+    // for an expression that evaluates to nil, and convertToApdDsc() emits
+    // it as a null descriptor pointer
     Data *getItem(String *strData)
     {
       for (std::size_t i = 0; i < descs.size(); i += 2)
       {
         if (strData->equals(descs[i]))
         {
-          descs[i + 1]->incRefCount();
+          if (descs[i + 1])
+            descs[i + 1]->incRefCount();
           return descs[i + 1];
         }
       }
@@ -2915,9 +2919,11 @@ namespace MDSplus
           descs[i] = strData;
           strData->incRefCount();
 
-          descs[i + 1]->decRefCount();
+          if (descs[i + 1])
+            descs[i + 1]->decRefCount();
           descs[i + 1] = data;
-          data->incRefCount();
+          if (data)
+            data->incRefCount();
           return;
         }
       }
@@ -2925,7 +2931,8 @@ namespace MDSplus
       descs.push_back(strData);
       descs.push_back(data);
       strData->incRefCount();
-      data->incRefCount();
+      if (data)
+        data->incRefCount();
     }
 
     std::size_t len() { return Apd::len() / 2; }
