@@ -334,7 +334,7 @@ class Nci(object):
                 return self._getNci(info)
         else:
             def getter(self):
-                return self._getNciFlag(info)
+                return (int(self.get_flags) & info) != 0
         return property(getter, doc=doc)
 #
 #################################################################
@@ -1120,6 +1120,27 @@ class Tree(object):
                                           _C.c_int32(int(shot)),
                                           _C.c_int32(1)))
 
+    @staticmethod
+    def setVersionDate(date):
+        """Set date for retrieving versions if versioning is enabled in tree.
+        @param date: Reference date for data retrieval. Must be specified in the format: 'mmm-dd-yyyy hh:mm:ss' or 'now','today'
+        or 'yesterday'.
+        @type date: str
+        @rtype: None
+        """
+        _exc.checkStatus(
+            _TreeShr.TreeSetViewDate(_C.byref(_C.c_int64(_mds.DateToQuad(date).data()))))
+
+    @staticmethod
+    def getVersionDate():
+        """Get date used for retrieving versions
+        @return: Reference date for retrieving data is versions enabled
+        @rtype: str
+        """
+        dt = _C.c_ulonglong(0)
+        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
+        return _scr.Uint64(dt.value).date
+
     @classmethodX
     def getTimeContext(self):
         """Get time context for retrieving segmented records (begin,end,delta)
@@ -1138,16 +1159,6 @@ class Tree(object):
             _exc.checkStatus(_TreeShr.TreeGetTimeContext(
                 begin.ref, end.ref, delta.ref))
         return (begin.value, end.value, delta.value)
-
-    @staticmethod
-    def getVersionDate():
-        """Get date used for retrieving versions
-        @return: Reference date for retrieving data is versions enabled
-        @rtype: str
-        """
-        dt = _C.c_ulonglong(0)
-        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
-        return _scr.Uint64(dt.value).date
 
     @classmethodX
     def setTimeContext(self, begin=None, end=None, delta=None):
@@ -1186,17 +1197,6 @@ class Tree(object):
         """
         _exc.checkStatus(
             _TreeShr.TreeSetViewDate(_C.byref(_C.c_int64(_mds.DateToQuad(date).data()))))
-
-    def tcl(self, cmd, *args, **kwargs):
-        """tree specific tcl command"""
-        kwargs['tree'] = self
-        return _dcl.tcl(cmd, *args, **kwargs)
-
-    def tdiCompile(self, *args, **kwargs):
-        """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
-        kwargs['tree'] = self
-        return _dat.TdiCompile(*args, **kwargs)
-
     def tdiExecute(self, *args, **kwargs):
         """Compile and execute a TDI expression. Format: tdiExecute('expression-string',(arg1,...))"""
         kwargs['tree'] = self
