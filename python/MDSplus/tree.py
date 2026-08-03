@@ -356,6 +356,18 @@ class Tree(object):
     def ctx(self):
         return _C.c_void_p(_TreeShr.TreeDbid()) if self.public else self._ctx
 
+    @staticmethod
+    def usingPrivateCtx():
+        return bool(_TreeShr.TreeUsingPrivateCtx())
+
+    @staticmethod
+    def usePrivateCtx(on=True):
+        if on:
+            val = _C.c_int32(1)
+        else:
+            val = _C.c_int32(0)
+        return _TreeShr.TreeUsePrivateCtx(val)
+
     def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
@@ -377,11 +389,6 @@ class Tree(object):
             self.shot = shot
             self.public = False
             self.open(mode)
-
-    def __del__(self):
-        if not self.public and _TreeShr is not None:
-            self.__exit__()
-            _TreeShr.TreeFreeDbid(self._ctx)
 
     def readonly(self, shot=None):
         self.open('READONLY', shot)
@@ -436,6 +443,14 @@ class Tree(object):
             if not self.path is None:
                 _mds.setenv(env_name, old_path)
 
+    def copy(self, mode='NORMAL'):
+        """returns a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str
+        @rtype: Tree
+        """
+        return Tree(self.tree, self.shot, mode)
+
     def write(self):
         """Write out edited tree.
         @rtype: None
@@ -455,26 +470,6 @@ class Tree(object):
         @rtype: None
         """
         _exc.checkStatus(_TreeShr._TreeClose(self.pctx, 0, 0))
-
-    def copy(self, mode='NORMAL'):
-        """returns a local private instance of the tree opend in specified mode
-        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str
-        @rtype: Tree
-        """
-        return Tree(self.tree, self.shot, mode)
-
-    @staticmethod
-    def usingPrivateCtx():
-        return bool(_TreeShr.TreeUsingPrivateCtx())
-
-    @staticmethod
-    def usePrivateCtx(on=True):
-        if on:
-            val = _C.c_int32(1)
-        else:
-            val = _C.c_int32(0)
-        return _TreeShr.TreeUsePrivateCtx(val)
 
     @staticmethod
     def getShotDB(expt, path=None, lower=None, upper=None):
@@ -1187,16 +1182,16 @@ class Tree(object):
             _exc.checkStatus(_TreeShr.TreeSetTimeContext(
                 begin_p, end_p, delta_p))
 
-    @staticmethod
-    def setVersionDate(date):
-        """Set date for retrieving versions if versioning is enabled in tree.
-        @param date: Reference date for data retrieval. Must be specified in the format: 'mmm-dd-yyyy hh:mm:ss' or 'now','today'
-        or 'yesterday'.
-        @type date: str
-        @rtype: None
-        """
-        _exc.checkStatus(
-            _TreeShr.TreeSetViewDate(_C.byref(_C.c_int64(_mds.DateToQuad(date).data()))))
+    def tcl(self, cmd, *args, **kwargs):
+        """tree specific tcl command"""
+        kwargs['tree'] = self
+        return _dcl.tcl(cmd, *args, **kwargs)
+
+    def tdiCompile(self, *args, **kwargs):
+        """Compile a TDI expression. Format: tdiCompile('expression-string',(arg1,...))"""
+        kwargs['tree'] = self
+        return _dat.TdiCompile(*args, **kwargs)
+
     def tdiExecute(self, *args, **kwargs):
         """Compile and execute a TDI expression. Format: tdiExecute('expression-string',(arg1,...))"""
         kwargs['tree'] = self
