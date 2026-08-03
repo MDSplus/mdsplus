@@ -1277,6 +1277,22 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                 self.tree = Tree()
             self._head = head
 
+    def getTree(self):
+        """Return Tree associated with this node
+        @return: Tree associated with this node
+        @rtype: Tree
+        """
+        return self.tree
+
+    def setTree(self, tree):
+        """Set Tree associated with this node
+        @param tree: Tree instance to associated with this node
+        @type tree: Tree
+        @rtype: original type
+        """
+        self.tree = tree
+        return self
+
     def copy(self, mode='NORMAL'):
         """returns the node with a local private instance of the tree opend in specified mode
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
