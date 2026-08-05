@@ -390,6 +390,11 @@ class Tree(object):
             self.public = False
             self.open(mode)
 
+    def __del__(self):
+        if not self.public and _TreeShr is not None:
+            self.__exit__()
+            _TreeShr.TreeFreeDbid(self._ctx)
+
     def readonly(self, shot=None):
         self.open('READONLY', shot)
 
