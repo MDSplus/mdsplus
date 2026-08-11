@@ -90,6 +90,10 @@ static int (*PyCallable_Check)() = NULL;
 static void (*PyErr_Clear)() = NULL;
 static PyObject *(*PyImport_AddModule)() = NULL;
 static PyObject *(*PyModule_AddObject)() = NULL;
+static int (*PyObject_SetAttrString)() = NULL;
+// each TDI python file is executed in its own namespace, see load_python_fun()
+static PyObject *(*PyModule_GetDict)() = NULL;
+static int (*PyDict_SetItemString)() = NULL;
 #ifdef MACOS_ARM64
 static PyObject *(*PyObject_CallFunctionObjArgs)(void *, ...) = NULL;
 #else
@@ -113,10 +117,10 @@ static PyObject *(*PyObject_CallFunction)() = NULL;
 static PyObject *(*PyTuple_New)() = NULL;
 static void (*PyTuple_SetItem)() = NULL;
 #ifdef USE_EXECFILE
-static int (*PyRun_SimpleStringFlags)() = NULL;
+static PyObject *(*PyRun_StringFlags)() = NULL;
 #else
 static FILE *(*_Py_fopen_obj)() = NULL;
-static int (*PyRun_SimpleFileExFlags)() = NULL;
+static PyObject *(*PyRun_FileExFlags)() = NULL;
 #endif
 static PyObject *pointerToObject = NULL;
 static PyObject *makeData = NULL;
@@ -139,7 +143,7 @@ inline static void initialize()
     envsym = "python2.7";
 #ifdef MACOS_ARM64
     const char *aspath = "/opt/local/lib/libpython2.7.dylib";   // (MW) TODO: for MacPorts version
-#else 
+#else
     const char *aspath = "/usr/lib/python2.7.so.1";
 #endif
     setenv("PyLib", envsym, B_FALSE);
@@ -231,6 +235,9 @@ inline static void initialize()
   loadrtn(PyErr_Clear, 1);
   loadrtn(PyImport_AddModule, 1);
   loadrtn(PyModule_AddObject, 1);
+  loadrtn(PyObject_SetAttrString, 1);
+  loadrtn(PyModule_GetDict, 1);
+  loadrtn(PyDict_SetItemString, 1);
   loadrtn(PyObject_CallFunctionObjArgs, 1);
   loadrtn(PyString_FromString, 0);
   if (!PyString_FromString)
@@ -248,10 +255,10 @@ inline static void initialize()
   loadrtn(PyTuple_New, 1);
   loadrtn(PyTuple_SetItem, 1);
 #ifdef USE_EXECFILE
-  loadrtn(PyRun_SimpleStringFlags, 1);
+  loadrtn(PyRun_StringFlags, 1);
 #else
   loadrtn(_Py_fopen_obj, 0);
-  loadrtn(PyRun_SimpleFileExFlags, 1);
+  loadrtn(PyRun_FileExFlags, 1);
 #endif
   loadrtn(PyGILState_Check, 0);
   loadrtn(PyGILState_Release, 1);
@@ -435,25 +442,28 @@ static inline int is_callable(const PyObject *const fun,
 }
 
 #ifdef USE_EXECFILE
-static inline PyObject *get_exec_file(const PyObject *const __main__)
+static inline PyObject *get_exec_file(const PyObject *const module,
+                                      PyObject *const globals)
 {
-  PyObject *execfile = PyObject_GetAttrString(__main__, "execfile");
+  PyObject *execfile = PyObject_GetAttrString(module, "_mds_execfile");
   if (!execfile)
   { // not defined yet, so we define it
     PyErr_Clear();
-    char def[] = "import __main__\ndef execfile(filename):\n with "
+    char def[] = "def _mds_execfile(filename,ns):\n with "
                  "open(filename,'r') as f:\n  "
-                 "exec(compile(f.read(),filename,'exec'),__main__.__dict__,__"
-                 "main__.__dict__)\0";
+                 "exec(compile(f.read(),filename,'exec'),ns,ns)\0";
     int flags = 0;
-    if (PyRun_SimpleStringFlags(def, &flags))
+    PyObject *ans = PyRun_StringFlags(def, Py_file_input, globals, globals,
+                                      &flags);
+    if (!ans)
     {
-      fprintf(stderr, "Error defining execfile\n");
+      fprintf(stderr, "Error defining _mds_execfile\n");
       if (PyErr_Occurred())
         PyErr_Print();
       return NULL;
     }
-    execfile = PyObject_GetAttrString(__main__, "execfile");
+    Py_DecRef(ans);
+    execfile = PyObject_GetAttrString(module, "_mds_execfile");
   }
   return execfile;
 }
@@ -475,64 +485,31 @@ static inline void add__file__fun(const PyObject *const tdi_functions,
   free(__file__fun);
 }
 
+// Each TDI python file gets its own module, named after the function it defines,
+// so that its module level names cannot collide with the caller's globals or with
+// another TDI function's.
+static inline PyObject *get_fun_module(const char *const funname)
+{
+  static const char prefix[] = "tdi_functions.";
+  char *modname = malloc(sizeof(prefix) + strlen(funname));
+  strcpy(modname, prefix);
+  strcat(modname, funname);
+  PyObject *module = PyImport_AddModule(modname);
+  if (!module)
+  {
+    fprintf(stderr, "Error getting module '%s'\n", modname);
+    if (PyErr_Occurred())
+      PyErr_Print();
+  }
+  free(modname);
+  return module;
+}
+
 static inline int load_python_fun(const char *const fullpath,
                                   char **const funname)
 {
-  // get __main__
-  PyObject *__main__ = PyImport_AddModule("__main__");
-  if (!__main__)
-  {
-    fprintf(stderr, "Error getting __main__ module'\n");
-    if (PyErr_Occurred())
-      PyErr_Print();
-    return MDSplusERROR;
-  }
-#ifdef USE_EXECFILE
-  PyObject *execfile = get_exec_file(__main__);
-  if (!execfile)
-    return MDSplusERROR;
-#endif
-  // add __file__=<fullpath> to globals
-  if (PyModule_AddObject(
-          __main__, "__file__",
-          PyString_FromString(fullpath)))
-  { // no need to deref PyString
-    fprintf(stderr, "Failed adding __file__='%s'\n", fullpath);
-    if (PyErr_Occurred())
-      PyErr_Print();
-  }
-  PyObject *__file__ = PyString_FromString(fullpath);
-#ifdef USE_EXECFILE
-  PyObject *ans = PyObject_CallFunctionObjArgs(execfile, __file__, NULL);
-  Py_DecRef(execfile);
-  Py_DecRef(ans);
-  if (!ans)
-  {
-#else
-  int err;
-  INIT_AND_FCLOSE_ON_EXIT(fp);
-  if (_Py_fopen_obj)
-    fp = _Py_fopen_obj(__file__, "r");
-  else
-    fp = fopen(fullpath, "r");
-  if (!fp)
-  {
-    fprintf(stderr, "Error opening file '%s'\n", fullpath);
-    Py_DecRef(__file__);
-    return MDSplusERROR;
-  }
-  int flags = 0;
-  err = PyRun_SimpleFileExFlags(fp, fullpath, 1, &flags);
-  FCLOSE_CANCEL(fp);
-  if (err)
-  {
-#endif
-    fprintf(stderr, "Error compiling file '%s'\n", fullpath);
-    if (PyErr_Occurred())
-      PyErr_Print();
-    Py_DecRef(__file__);
-    return TdiUNKNOWN_VAR;
-  }
+  // The function name is the basename without the trailing '.py', and is needed
+  // before the file runs in order to name its namespace
   const char *c, *p = fullpath;
   for (; (c = strchr(p, '/')); p = c + 1)
     ;
@@ -543,7 +520,68 @@ static inline int load_python_fun(const char *const fullpath,
   const size_t mlen = strlen(p) - 3;
   *funname = memcpy(malloc(mlen + 1), p, mlen);
   funname[0][mlen] = '\0';
-  PyObject *pyFunction = PyObject_GetAttrString(__main__, *funname);
+  PyObject *module = get_fun_module(*funname);
+  if (!module)
+  {
+    free(*funname);
+    *funname = NULL;
+    return MDSplusERROR;
+  }
+  PyObject *globals = PyModule_GetDict(module);
+#ifdef USE_EXECFILE
+  PyObject *execfile = get_exec_file(module, globals);
+  if (!execfile)
+  {
+    free(*funname);
+    *funname = NULL;
+    return MDSplusERROR;
+  }
+#endif
+  PyObject *__file__ = PyString_FromString(fullpath);
+  // add __file__=<fullpath> to the namespace, so the file sees its own path
+  if (PyObject_SetAttrString(module, "__file__", __file__))
+  {
+    fprintf(stderr, "Failed adding __file__='%s'\n", fullpath);
+    if (PyErr_Occurred())
+      PyErr_Print();
+  }
+#ifdef USE_EXECFILE
+  PyObject *ans = PyObject_CallFunctionObjArgs(execfile, __file__, globals, NULL);
+  Py_DecRef(execfile);
+  Py_DecRef(ans);
+  if (!ans)
+  {
+#else
+  PyObject *ans;
+  INIT_AND_FCLOSE_ON_EXIT(fp);
+  if (_Py_fopen_obj)
+    fp = _Py_fopen_obj(__file__, "r");
+  else
+    fp = fopen(fullpath, "r");
+  if (!fp)
+  {
+    fprintf(stderr, "Error opening file '%s'\n", fullpath);
+    Py_DecRef(__file__);
+    free(*funname);
+    *funname = NULL;
+    return MDSplusERROR;
+  }
+  int flags = 0;
+  ans = PyRun_FileExFlags(fp, fullpath, Py_file_input, globals, globals, 1, &flags);
+  FCLOSE_CANCEL(fp);
+  Py_DecRef(ans);
+  if (!ans)
+  {
+#endif
+    fprintf(stderr, "Error compiling file '%s'\n", fullpath);
+    if (PyErr_Occurred())
+      PyErr_Print();
+    Py_DecRef(__file__);
+    free(*funname);
+    *funname = NULL;
+    return TdiUNKNOWN_VAR;
+  }
+  PyObject *pyFunction = PyObject_GetAttrString(module, *funname);
   if (!is_callable(pyFunction, *funname, fullpath))
   {
     free(*funname);
@@ -568,27 +606,13 @@ static inline int call_python_fun(const char *const filename, const int nargs,
                                   mdsdsc_xd_t *const out_ptr)
 {
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions");
-  if (tdi_functions)
+  if (!tdi_functions)
   {
-    PyObject *__main__ = PyImport_AddModule("__main__");
-    char *__file__fun = malloc(strlen(filename) + 9);
-    strcpy(__file__fun, "__file__");
-    strcat(__file__fun, filename);
-    PyObject *__file__ = PyObject_GetAttrString(tdi_functions, __file__fun);
-    free(__file__fun);
-    if (__file__)
-      PyModule_AddObject(__main__, "__file__", __file__);
-    else
-    { // silently fail and set __file__ to None
-      PyModule_AddObject(__main__, "__file__", Py_None);
-      if (PyErr_Occurred())
-        PyErr_Clear();
-    }
-  }
-  else
     fprintf(stderr, "Failed getting module tdi_functions\n");
-  if (PyErr_Occurred())
-    PyErr_Print();
+    if (PyErr_Occurred())
+      PyErr_Print();
+    return MDSplusERROR;
+  }
   if ((strcasecmp("py", filename) == 0) && (MdsSandboxEnabled() == 1))
     return MDSplusSANDBOX;
   PyObject *pyFunction = PyObject_GetAttrString(tdi_functions, filename);
@@ -598,6 +622,24 @@ static inline int call_python_fun(const char *const filename, const int nargs,
       PyErr_Print();
     return MDSplusERROR;
   }
+  // Point __file__ at the function's source file.
+  char *__file__fun = malloc(strlen(filename) + 9);
+  strcpy(__file__fun, "__file__");
+  strcat(__file__fun, filename);
+  PyObject *__file__ = PyObject_GetAttrString(tdi_functions, __file__fun);
+  free(__file__fun);
+  if (__file__)
+  {
+    PyObject *fun_globals = PyObject_GetAttrString(pyFunction, "__globals__");
+    if (fun_globals)
+    {
+      PyDict_SetItemString(fun_globals, "__file__", __file__);
+      Py_DecRef(fun_globals);
+    }
+    Py_DecRef(__file__);
+  }
+  if (PyErr_Occurred())
+    PyErr_Clear();
   PyObject *pyArgs = args_to_tuple(nargs, args);
   PyObject *ans = PyObject_CallObject(pyFunction, pyArgs);
   Py_DecRef(pyFunction);
