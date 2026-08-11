@@ -541,7 +541,7 @@ class Tests(_common.Tests):
             before = set(vars(__main__))
             file_before = __file__
             self._doTdiTest("Py('a=1','a')", 1)
-            self.assertIs(__main__._tb, sentinel)
+            self.assertIs(__main__._tb, sentinel, "Sentinel value was overwritten")
             self.assertEqual(set(vars(__main__)) - before, set())
             self.assertEqual(__file__, file_before)
         finally:
