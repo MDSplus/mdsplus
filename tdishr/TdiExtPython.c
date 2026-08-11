@@ -91,7 +91,6 @@ static void (*PyErr_Clear)() = NULL;
 static PyObject *(*PyImport_AddModule)() = NULL;
 static PyObject *(*PyModule_AddObject)() = NULL;
 static int (*PyObject_SetAttrString)() = NULL;
-// each TDI python file is executed in its own namespace, see load_python_fun()
 static PyObject *(*PyModule_GetDict)() = NULL;
 static int (*PyDict_SetItemString)() = NULL;
 #ifdef MACOS_ARM64
