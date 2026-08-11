@@ -540,6 +540,7 @@ class Tests(_common.Tests):
         try:
             before = set(vars(__main__))
             file_before = __file__
+            self.assertTrue(file_before.endswith("data_case.py"), file_before)
             self._doTdiTest("Py('a=1','a')", 1)
             self.assertIs(__main__._tb, sentinel, "Sentinel value was overwritten")
             self.assertEqual(set(vars(__main__)) - before, set())
