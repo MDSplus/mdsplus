@@ -628,7 +628,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else:
                     if self.hostedInSameSupervisor(value, threadMap): #Reference within same supervisor
                         if self.hostedInSynchronizingThread(value, threadMap):
-                            currSig.pop('Alias')
+                           # currSig.pop('Alias')
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             if  subsamplingRatio > 1:
                                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
@@ -637,7 +637,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      #'Alias' : currSig['Alias'],
+                                                      ###GABRIELE AUG 2026
+                                                      'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
                             else:
@@ -833,8 +834,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam['Inputs'] = inputs
         outputs = []
         for resSig in resampledSyncSigs:
-#            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
-            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+###GABRIELE AUG 2026
+            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+#            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
                 'NumberOfElements': resSig['NumberOfElements'], 'Samples': 1, 'DataSource': self.getMarteDeviceName(self)+'_Res_DDB'})
         retGam['Outputs'] = outputs
         return retGam
