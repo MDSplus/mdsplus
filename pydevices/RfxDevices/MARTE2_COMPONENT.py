@@ -641,6 +641,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
+                                ###GABRIELE AUG 2026
+                                currSig.pop('Alias')
                             else:
                                 currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_Sync'
                         else:
@@ -835,8 +837,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         outputs = []
         for resSig in resampledSyncSigs:
 ###GABRIELE AUG 2026
-            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
-#            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+#            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
+            outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
                 'NumberOfElements': resSig['NumberOfElements'], 'Samples': 1, 'DataSource': self.getMarteDeviceName(self)+'_Res_DDB'})
         retGam['Outputs'] = outputs
         return retGam
@@ -1322,6 +1324,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Returns the dict definition of theIOGAM carrying out synchronized signals
     def handleSynchronoutOutputs(self, syncSignals):
+#        print('HANDLE SYNCHRONOUS ', syncSignals)
         retGam = {}
         retGam['Class'] = 'IOGAM'
         retGam['Name'] = self.getMarteDeviceName(self)+'_Output_Sync_IOGAM'
@@ -1334,7 +1337,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             outputs.append(currOutput)
         retGam['Inputs'] = inputs
         retGam['Outputs'] = outputs
-
+#        print('FATTA', retGam)
         return retGam
  
     #Returns the dict definition of theIOGAM carrying out synchronized signals
