@@ -259,6 +259,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
         nameList.append(name1)
         return name1
     
+    @classmethod
+    def resetReferenceInfo(cls):
+        if hasattr(MARTE2_COMPONENT, 'referenceInfo'):
+            del MARTE2_COMPONENT.referenceInfo
+
     def getParametersDict(self, parRoot):   
         pars = {}
         for parNode in parRoot.getChildren():
