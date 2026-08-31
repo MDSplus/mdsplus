@@ -1380,6 +1380,7 @@ $<APP_NAME> = {
 
 
     def buildConfiguration(self):
+        RfxDevices.MARTE2_COMPONENT.resetReferenceInfo()
         config = self.generateConfiguration()
         #print(config)
         name = self.getNode('NAME').data()
