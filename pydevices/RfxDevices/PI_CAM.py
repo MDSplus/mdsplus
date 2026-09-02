@@ -297,7 +297,12 @@ class PI_CAM(Device):
             PI_CAM.picamlib.Picam_GetParameterEnumeratedType.restype = c_int
             PI_CAM.picamlib.Picam_GetParameterFloatingPointValue.argtypes = [ c_void_p, c_int, POINTER(c_double) ]
             PI_CAM.picamlib.Picam_GetParameterFloatingPointValue.restype = c_int
-            
+ 
+            PI_CAM.picamlib.PicamAdvanced_HasAcquisitionBufferOverrun.argtypes = [ c_void_p, POINTER(c_int) ]
+            PI_CAM.picamlib.PicamAdvanced_HasAcquisitionBufferOverrun.restype = c_int
+
+
+           
             #PI_CAM.picamlib = cdll.picam
             error = PicamError.NoError
 
