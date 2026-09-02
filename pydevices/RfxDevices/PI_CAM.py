@@ -363,7 +363,7 @@ class PI_CAM(Device):
                             byref(camIDs), byref(numCamsAvailable))
                         print (">>>>>>>>>>>> numCamsAvailable ",
                                numCamsAvailable, camIDs)
-                        if numCamsAvailable != 0:
+                        if int(numCamsAvailable.value)!= 0:
                             camIDs = cast(camIDs, POINTER(
                                 (PicamCameraID) * int(numCamsAvailable.value))).contents
                             cameraFound = False
