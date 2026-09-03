@@ -26,6 +26,8 @@
 from numpy import ndarray, array, int32
 from math import log10
 import MDSplus as m
+import sys
+import __main__
 
 
 def _mimport(name, level=1):
@@ -42,7 +44,7 @@ class Tests(_common.Tests):
     TESTS = {
         'data', 'scalars', 'arrays', 'vms',
         'tdi', 'decompile', 'casts', 'tdipy',
-        'deserialize',
+        'deserialize', 'tdipy_namespace',
     }
 
     def _doThreeTest(self, tdiexpr, pyexpr, ans, **kwargs):
@@ -215,7 +217,7 @@ class Tests(_common.Tests):
                         cl(0.08748866), # tand(a) (degrees)
                         cl(2.0), # anint(a/3)
                     ])
-            
+
             if real:
                 results.extend([
                     cl(1), # a mod b
@@ -224,7 +226,7 @@ class Tests(_common.Tests):
                     False, # a < b
                     False, # a <= b
                 ])
-            
+
             m.Data.execute('_a=5%s,_b=2%s' % tuple([suffix]*2))
             a, b = cl(5), cl(2)
             with warnings.catch_warnings():
@@ -275,9 +277,9 @@ class Tests(_common.Tests):
                     scl([5, 4, 2]), # abs1(-a)
                     scl([25, 16, 4]), # abssq(-a)
                 ]
-            
+
                 if almost:
-                    results.extend([    
+                    results.extend([
                         cl([148.413159,  54.5981500,  7.38905610]),  # exp(a)
                         cl([1.60943791,  1.38629436,  0.69314718]),  # log(a)
                         cl([-0.95892427, -0.7568025,  0.90929743]),  # sin(a)
@@ -298,7 +300,7 @@ class Tests(_common.Tests):
                             cl([0.08748866,  0.06992681,  0.03492077]),  # tand(a) (degrees)
                             cl([2, 1, 1]),  # anint(a/3)
                         ])
-                
+
                 if real:
                     results.extend([
                         cl([1, 1, 2]), # a mod b
@@ -307,7 +309,7 @@ class Tests(_common.Tests):
                         array([False, False, True]), # a < b
                         array([False, False, True]), # a <= b
                     ])
-                
+
                 return results
             """ test array """
             m.Data.execute('_a=[5%s,4%s,2%s],_b=[2%s,3%s,5%s]' %
@@ -525,6 +527,40 @@ class Tests(_common.Tests):
         self._doTdiTest("pyfun('str',*,123)", m.String("123"))
         if not self.inThread:
             self._doTdiTest("TEST()", m.Array([1, 2]))
+
+    def tdipy_namespace(self):
+        """
+        All Python TDI functions should run in their own namespaces.
+        Previously, they would overwrite variables in the caller's namespace.
+        """
+        # Py.py assigns _tb, MDSplus and Py at module level.
+        # These assignments should not escape to the caller
+        sentinel = object()
+        __main__._tb = sentinel
+        try:
+            before = set(vars(__main__))
+            file_before = __file__
+            self.assertTrue(file_before.endswith("data_case.py"), file_before)
+            self._doTdiTest("Py('a=1','a')", 1)
+            self.assertIs(__main__._tb, sentinel, "Sentinel value was overwritten")
+            self.assertEqual(set(vars(__main__)) - before, set())
+            self.assertEqual(__file__, file_before)
+        finally:
+            del __main__._tb
+        # Inside the TDI function, __file__ should refer to the source for that function
+        # however, it should also not escape to the caller's globals
+        internal_file = str(m.Data.execute(
+            "Py('import sys; a=sys.modules[\"tdi_functions.Py\"].__file__','a')"
+        ))
+        self.assertNotEqual(internal_file, file_before)
+        self.assertTrue(internal_file.endswith("Py.py"), internal_file)
+        self.assertEqual(__file__, file_before)
+        # All TDI functions should also be isolated from each other,
+        # so the _tb variable assigned in Py.py should not be visible in pyfun.py
+        self._doTdiTest("Py('a=123','a')", m.Int32(123))
+        self._doTdiTest("pyfun('str',*,123)", m.String("123"))
+        self.assertIn("_tb", vars(sys.modules["tdi_functions.Py"]))
+        self.assertNotIn("_tb", vars(sys.modules["tdi_functions.pyfun"]))
 
 
 Tests.main()
