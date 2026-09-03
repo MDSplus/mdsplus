@@ -1,0 +1,98 @@
+# Imported from MDSplus.pth at every interpreter startup: keep the startup path
+# minimal and never let it raise. It sets MDSPLUS_DIR + prepends python/ to
+# sys.path, and (only if the env isn't already sourced) registers a one-shot
+# import hook that sources setup.sh on the first `import MDSplus` -- deferred so
+# startup stays cheap and can't fork-bomb (the env-dump child never imports
+# MDSplus). MDSPLUS_LOCAL_WHEEL_DISABLE=1 disables everything.
+#
+# @MDSPLUS_PREFIX@ is substituted (as a repr literal) by make_wheel.py.
+import os
+import sys
+
+_PREFIX = @MDSPLUS_PREFIX@
+
+_BEGIN = "<<MDSENV>>"
+_END = "<<MDSEND>>"
+
+
+def _source_setup(mdsdir):
+    # Source mdsdir/setup.sh once and merge the resulting environment (so local
+    # envsyms includes/sources are honored). MDSPLUS_DIR is already exported, so
+    # the shell inherits it; the env-dump child never imports MDSplus.
+    setup = os.path.join(mdsdir, "setup.sh")
+    if not os.path.isfile(setup):
+        return
+    import json
+    import subprocess
+
+    def q(s):  # POSIX single-quote escape (py2/py3)
+        return "'" + s.replace("'", "'\\''") + "'"
+
+    dump = ("import os,json,sys;"
+            "sys.stdout.write(%r+json.dumps(dict(os.environ))+%r)" % (_BEGIN, _END))
+    script = ". %s >/dev/null 2>&1; exec %s -c %s" % (
+        q(setup), q(sys.executable), q(dump))
+    try:
+        out = subprocess.check_output(["/bin/sh", "-c", script]).decode(
+            "utf-8", "replace")
+        i, j = out.find(_BEGIN), out.find(_END)
+        env = json.loads(out[i + len(_BEGIN):j]) if 0 <= i < j else {}
+    except Exception:
+        return
+    for k, v in env.items():
+        if os.environ.get(k) != v:  # apply only the delta
+            os.environ[k] = v
+
+
+class _SetupHook(object):
+    # One-shot: populate the full MDSplus environment on the first
+    # `import MDSplus`, then remove itself and defer to the real import.
+    def __init__(self, mdsdir):
+        self._mdsdir = mdsdir
+
+    def _fire(self, name):
+        if name != "MDSplus":
+            return
+        try:
+            sys.meta_path.remove(self)
+        except ValueError:
+            pass
+        _source_setup(self._mdsdir)
+
+    def find_spec(self, name, path=None, target=None):  # py3
+        self._fire(name)
+        return None
+
+    def find_module(self, name, path=None):  # py2
+        self._fire(name)
+        return None
+
+
+def _activate(prefix):
+    if os.environ.get("MDSPLUS_LOCAL_WHEEL_DISABLE"):
+        return
+    # baked install if still present, else whatever the environment points at
+    if os.path.isdir(os.path.join(prefix, "python")):
+        mdsdir = prefix
+    else:
+        mdsdir = os.environ.get("MDSPLUS_DIR")
+    if not mdsdir:
+        return
+    pydir = os.path.join(mdsdir, "python")
+    if not os.path.isdir(pydir):
+        return
+    # keep MDSPLUS_DIR and sys.path on the same install (no half state)
+    changed = os.environ.get("MDSPLUS_DIR") != mdsdir
+    os.environ["MDSPLUS_DIR"] = mdsdir
+    if pydir not in sys.path:
+        sys.path.insert(0, pydir)  # prepend: this install wins
+    # Source setup.sh on first `import MDSplus` if we rewrote MDSPLUS_DIR (a
+    # stale MDS_PATH from a different install won't do) or it isn't sourced yet.
+    if changed or not os.environ.get("MDS_PATH"):
+        sys.meta_path.insert(0, _SetupHook(mdsdir))
+
+
+try:
+    _activate(_PREFIX)
+except Exception:
+    pass  # a .pth must never break interpreter startup

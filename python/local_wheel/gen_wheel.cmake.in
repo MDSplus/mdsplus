@@ -1,0 +1,22 @@
+# Configured by CMake (@ONLY) and run at install time via install(SCRIPT).
+#
+# ${CMAKE_INSTALL_PREFIX} and $ENV{DESTDIR} are evaluated at INSTALL time (they
+# survive @ONLY substitution), so the wheel captures the real install prefix --
+# honoring `cmake --install --prefix ...`. That prefix is baked into the
+# bootstrap so the wheel is tied to this install.
+set(_prefix "${CMAKE_INSTALL_PREFIX}")
+# A wheelhouse dir so the wheel is usable via `pip install --find-links
+# <prefix>/python/wheelhouse MDSplus` from other packages.
+set(_outdir "$ENV{DESTDIR}${_prefix}/python/wheelhouse")
+
+message(STATUS "MDSplus local wheel: baking prefix ${_prefix}, writing to ${_outdir}")
+
+execute_process(
+    COMMAND "@Python_EXECUTABLE@" "@_builder@"
+            "@_source_toml@" "@_pth@" "@_bootstrap_tmpl@"
+            "${_outdir}" "@RELEASE_VERSION@" "${_prefix}"
+    RESULT_VARIABLE _rc
+)
+if(NOT _rc EQUAL 0)
+    message(FATAL_ERROR "Failed to build MDSplus local wheel (exit ${_rc})")
+endif()
