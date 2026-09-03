@@ -1175,22 +1175,18 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent,
                                NODE *subtreetop)
 {
   NID child_nid, parent_nid = {0, 0};
-  /*
-   * make brother_nid volatile so that the optimizer does not
-   * decide to optimize it out and replace it with a zero.
-   */
-  volatile NID brother_nid = {0,0};
+  NID brother_nid = {0,0};
   NODE *brother = brother_of(dblist, parent);
   parent->usage = TreeUSAGE_SUBTREE_REF;
   subtreetop->usage = TreeUSAGE_SUBTREE_TOP;
   node_to_nid(dblist, subtreetop, &child_nid);
   node_to_nid(dblist, parent_of(dblist, parent), &parent_nid);
-  parent->child = *(int *)&child_nid;
+  parent->child = nid_to_int(&child_nid);
   if (brother) {
     node_to_nid(dblist, brother_of(dblist, parent), &brother_nid);
   }
-  subtreetop->brother = *(int *)&brother_nid;
-  subtreetop->parent = *(int *)&parent_nid;
+  subtreetop->brother = nid_to_int(&brother_nid);
+  subtreetop->parent = nid_to_int(&parent_nid);
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
   return;
 }

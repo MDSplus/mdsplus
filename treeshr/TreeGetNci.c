@@ -91,7 +91,7 @@ extern void **TreeCtx();
 static char *Treename(PINO_DATABASE *dblist, int nid_in)
 {
   TREE_INFO *info;
-  NID nid = *(NID *)&nid_in;
+  NID nid = int_to_nid(nid_in);
   unsigned int treenum;
   for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree;
        info = info->next_info)
@@ -220,7 +220,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
   void *dbid = *TreeCtx();
   INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID nid = *(NID *)&nid_in;
+  NID nid = int_to_nid(nid_in);
   int node_number;
   TREE_INFO *info;
   NCI_ITM *itm;
@@ -449,7 +449,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         for (node = child_of(dblist, node); node; count++,
             node = brother_of(dblist, node) ? brother_of(dblist, node) : 0)
           ;
-      *(int *)(itm->pointer) = count;
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciNUMBER_OF_MEMBERS:
       break_on_no_node;
@@ -459,7 +459,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         for (node = member_of(node); node; count++,
             node = brother_of(dblist, node) ? brother_of(dblist, node) : 0)
           ;
-      *(int *)(itm->pointer) = count;
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciNUMBER_OF_ELTS:
       break_on_no_node;
@@ -468,7 +468,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       for (count = 0; swapint16(&cng_node->conglomerate_elt) > count;
            count++, cng_node++)
         ;
-      *(int *)(itm->pointer) = count;
+      memcpy(itm->pointer, &count, sizeof(count));
       break;
     case NciCHILDREN_NIDS:
     {
@@ -665,7 +665,10 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         *(NID *)itm->pointer = out_nid;
       }
       else
-        *(int *)itm->pointer = 0;
+      {  
+        int zero = 0;  
+        memcpy(itm->pointer, &zero, sizeof(zero));  
+      } 
       break;
     }
     case NciDTYPE_STR:
@@ -766,7 +769,7 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
     for (info = dblist->tree_info, i = 0; info && i < nid.tree;
          i++, info = info->next_info)
       ;
-    if ((tag = _TreeFindNodeTags((void *)dblist, *(int *)&nid, &ctx)) != NULL)
+    if ((tag = _TreeFindNodeTags((void *)dblist, nid_to_int(&nid), &ctx)) != NULL)
     {
       string[0] = '\\';
       string[1] = '\0';
