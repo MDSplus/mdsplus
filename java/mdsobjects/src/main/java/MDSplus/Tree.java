@@ -320,9 +320,10 @@ public class Tree
 	 *
 	 * @param date
 	 */
-	public void setViewDate(java.util.Date date) throws MdsException
+	public void setViewDate(java.time.LocalDateTime date) throws MdsException
 	{
-		setTreeViewDate(new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(date));
+		java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss",Locale.ENGLISH);
+		setTreeViewDate(date.format(formatter));
 	}
 
 	/**
