@@ -64,14 +64,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         vector offsets from first element.
 
         For logical array V[3,4,5], steps in unit sizes:
-        loop    count @step     no DIM  DIM=0   optim   DIM=1   DIM=2
-        outer   aft             1 @xx   20 @3   1 @xx   5 @12   1 @60   DIM
-   dimension and number of results middle  bef             1 @1    1 @3    20 @3
-   3 @1    12 @1   product of dims after DIM inner   dim             60 @1   3
-   @1    3 @1    4 @3    5 @12   product of dims before DIM Example, ALL(V,0)
-   chooses elements: [0,1,2] [3,4,5] ... Example, ALL(V,1) chooses elements:
-   [0,3,6,9] [1,4,7,10] [2,5,8,11] / [12,15,18,21] ... Example, ALL(V,2) chooses
-   elements: [0,12,24,36,48] [1,13...], ... [11,...]
+        loop	  | count @step	| no DIM	| DIM=0	| optim	| DIM=1	| DIM=2 |
+        outer	  | aft		      | 1 @xx	  | 20 @3	| 1 @xx	| 5 @12	| 1 @60 |	DIM dimension and number of results
+        middle	| bef		      | 1 @1	  | 1 @3	| 20 @3	| 3 @1	| 12 @1 |	product of dims after DIM
+        inner	  | dim		      | 60 @1	  | 3 @1	| 3 @1	| 4 @3	| 5 @12 |	product of dims before DIM
+        Example, ALL(V,0) chooses elements: [0,1,2] [3,4,5] ...
+        Example, ALL(V,1) chooses elements: [0,3,6,9] [1,4,7,10] [2,5,8,11] / [12,15,18,21] ...
+        Example, ALL(V,2) chooses elements: [0,12,24,36,48] [1,13...], ... [11,...]
 
         Ken Klare, LANL P-4     (c)1989,1990,1991
         NEED units for DERIVATIVE INTEGRAL.
