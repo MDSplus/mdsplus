@@ -32,6 +32,13 @@ if(ENABLE_JAVA AND NOT TEST_WITH_WINE AND NOT ENABLE_SANITIZE)
         -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     )
 
+    if(Java_VERSION VERSION_GREATER_EQUAL 24)
+        # Starting with Java 24, Java restricts all native code by default, including loadLibrary
+        list(APPEND JAVA_TEST_ARGUMENTS
+            --enable-native-access=ALL-UNNAMED
+        )
+    endif()
+
     if(ENABLE_VALGRIND)
 
         # Disable Java runtime optimizations / Just-In-Time (JIT) compilation
