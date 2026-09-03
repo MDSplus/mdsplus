@@ -191,7 +191,7 @@ public class MdsTreeTest
 		// test version
 		node = tree.getNode("versioned");
 		node.putData(new MDSplus.Int32(5552368));
-		final java.util.Date currDate = java.util.Calendar.getInstance().getTime();
+		final java.time.LocalDateTime currDate = java.time.LocalDateTime.now();
 		Thread.sleep(2000);
 		node.putData(new MDSplus.Float64(555.2368));
 		node = tree.getNode("versioned");
