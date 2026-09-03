@@ -1,3 +1,5 @@
+;; To enable logging, uncomment the lines that hav a single leading ";".
+;; It can also be useful to change the path and name of the log file.
 ### BEGIN DEBUG TOOLS ###
 ;Var LOG
 ;; ShowLog show an OK_BOX with $LOG if $LOG is not empty
