@@ -287,7 +287,8 @@ class PI_CAM(Device):
         inited = c_long(0)
 
         if PI_CAM.picamlib is None:
-            PI_CAM.picamlib = windll.LoadLibrary("C:\\Program Files\\Common Files\\Princeton Instruments\\Picam\\Runtime\\Picam.dll")
+            PI_CAM.picamlib = ctypes.WinDLL("C:\\Program Files\\Common Files\\Princeton Instruments\\Picam\\Runtime\\Picam.dll", winmode = 0)
+            #PI_CAM.picamlib = windll.LoadLibrary("C:\\Program Files\\Common Files\\Princeton Instruments\\Picam\\Runtime\\Picam.dll", winmode = 0)
             #PI_CAM.picamlib = cdll.picam
             PI_CAM.picamlib.Picam_GetParameterValueType.argtypes = [ c_void_p, c_int, POINTER(c_int) ]
             PI_CAM.picamlib.Picam_GetParameterValueType.restype = c_int
