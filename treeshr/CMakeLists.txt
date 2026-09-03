@@ -68,3 +68,8 @@ target_compile_definitions(
 mdsplus_add_static_copy(TreeShr _static_target)
 
 install(TARGETS TreeShr ${_static_target})
+
+# Public contract header for out-of-tree tree-file backend plugins (the vtable
+# and "MdsTreeFile<SCHEME>" / "FileIo" loader convention). Self-contained
+# (only includes <sys/types.h>), so it installs standalone.
+install(FILES treefileio.h DESTINATION include)
