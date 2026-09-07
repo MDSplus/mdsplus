@@ -20,6 +20,7 @@ class CHECK_MARTE2(MDSplus.Device):
     del(i)
 
     def check(self):
+        serversOk = True
         for i in range(8):
             try:
                 currSupervisor = self.getNode('.MARTE2_%d:SUPERVISOR'%(i+1)).getData()
@@ -37,7 +38,11 @@ class CHECK_MARTE2(MDSplus.Device):
                 if data != '1234':
                     printf('Internal error: wrong data read')
                     raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-                print('MARTe2 engine at '+currIp+ 'port '+str(currPort)+ ' is alive!')
+                print('MARTe2 engine at '+currIp+ ' port '+str(currPort)+ ' is alive!')
                 s.close()
             except:
-                raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+                serversOk = False
+                print('MARTe2 engine at '+currIp+ ' port '+str(currPort)+ ' IS DEAD!!!!!!')
+
+        if not serversOk:
+            raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
