@@ -330,6 +330,11 @@ Data::~Data()
 
 void MDSplus::deleteData(Data *data)
 {
+  // A NULL Data represents missing ("*"). deleteData() must accept it as a
+  // no-op: RAII wrappers (AutoData) and Apd::propagateDeletion() hand it the
+  // NULL that getItem()/execute() return for a nil result.
+  if (!data)
+    return;
   if (data->refCount <= 1)
   {
     if (data->units)
