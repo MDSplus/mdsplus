@@ -2925,7 +2925,9 @@ namespace MDSplus
       descs.push_back(strData);
       descs.push_back(data);
       strData->incRefCount();
-      data->incRefCount();
+      if (data) {
+        data->incRefCount();
+      }
     }
 
     std::size_t len() { return Apd::len() / 2; }
