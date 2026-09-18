@@ -1,129 +1,129 @@
+/* 
 
-PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
-		     OPTIONAL IN _no_ptdata, OPTIONAL IN _closetree)
+   FINDSIG()
 
-/* This function finds the subtree containing _tag.  It assumes:
-	- Every tag name is unique in the MDSplus tree
-	- With the exception of the PTDATA signals, there is no
-	  tag name that is the same as a PTDATA pointname or pseudopointname
-	  (always check POINTNAME.DAT and GETALLDAT.F before adding new tags)
+   This function finds the subtree containing a specified MDSPLus tag (_tag). 
 
-	- if _no_ptdata is true, if the tree name is PTDATA the signal
-	  will not be recognized
+   Search Order:
+      - Special case: TS pointnames via findts()
+      - Special case: Confinement pointames via the TRANSPORT tree
+      - Default: Search D3D model tree and all of its sub-trees
+      - Special case: EFIT pseudo pointnames via findefit()
+      - Special case: EFIT01 model tree 
+      - Unfound: Exit; the client application can make any relevant ptdata calls itself
 
-   Side effects:  Opens and closes the D3D model, or either the EFIT01 or
-		  EFIT02 models.
+   Expectations:
+      - Any mdsplus tag names, pseudo-tag names, or ptdata pointnames are unique and unambiguous
 
-   Created: 98.02.03  Jeff Schachter
+   Side Effects:
+      - For performance, opened trees are not closed unless the _closetree argument is specified
 
-   20100828 SMF - Remove FINDCER.fun call.  Use the tag names instead of
-                  the old translation routine as cerprof.fun is retired.
-	
-   20140708 SMF - Added auditing to /var/log/mdsplus/findsig.log.  
-
+   Logging Level:
+      - 0: disabled
+      - 1: all requests
+      - 2: only discovered tags
+ 
 */
 
+PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
+		    OPTIONAL IN _no_ptdata, OPTIONAL IN _closetree)
 {
 
-	IF (NOT PRESENT(_no_ptdata)) _no_ptdata=0;
 
+        PRIVATE FUN FS_LOGGING(IN _level, IN _tag, IN _tree) {
+           /* Only log if the server is $MACHINE=D3D */
+           IF (EQ(machine(),"D3D")) {
+              _logfile='/var/log/mdsplus/findsig.log';
+              _cmd = "echo "//_level//" '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> "//_logfile//" &";
+              spawn(_cmd);
+           }
+           return(1);
+        }
+
+
+        /* Default Settings */
+	if (not present(_no_ptdata)) _no_ptdata=0;
+        if (not present(_closetree)) _closetree=0l;
 	_revert=0l;
 	_tree='';
 	_node='';
 	_shotcheck=-1;
-        if (not present(_closetree)) _closetree=0l;
-
-	/* check to see if tag is a special tag */
+        _logging_level=2;
 	_tag=UPCASE(TRIM(_tag));
 
-	/* check TS first, if it is a TS signal, RETURN NOW!!! */
+	/* Special Case - TS */
 	_stat = FINDTS(_tag, _tree, _node, _revert);
 	if (_stat) {
-	  if (EQ(machine(),"D3D")) {
-	    _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &"; 
-	    spawn(_cmd); 
-          }
-	  return (_node);
+           if (_logging_level ge 1) { _dummy = fs_logging(_logging_level,_tag,_tree); }
+	   return (_node);
 	}
 
-        /* check transport */
+
+        /* Special Case - Confinement via TRANSPORT tree */
         _stat=TreeShr->TreeOpen(ref("TRANSPORT\0"),val(_shotcheck));
         _close="TRANSPORT\0";
-
-        /* search open tree(s) for _tag  */
         if (_stat) {
            _tree='';
            _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
         }
         if (_closetree) {
-           _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck));   /* DO NOT CLOSE TREE - performace hit!!! */
+           _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck)); 
         }
 	if (_stat) {
-          if (EQ(machine(),"D3D")) {
-	    _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &";
-            spawn(_cmd);
-          }
-	  return (_node);
+           if (_logging_level ge 1) { _dummy = fs_logging(_logging_level,_tag,_tree); }
+	   return (_node);
   	}
 
-	/* Open D3D tree for next check */
+
+	/* Default - Search the D3D tree and its sub-trees */
 	_stat=TreeShr->TreeOpen(ref("D3D\0"),val(_shotcheck));
 	_close="D3D\0";
-
-	/* search open tree(s) for _tag  */
 	if (_stat) {
            _tree='';
 	   _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
 	}
-
         if (_closetree) {
-           _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck));   /* DO NOT CLOSE TREE - performace hit!!! */ 
+           _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck)); 
         }
 
-	/* if the signal was not found in any of the D3D subtrees, */
-	/*    and it is not a special EFIT signal, check EFIT01    */
 
+        /* Special Case - EFIT pseudo pointnames via runtag */ 
 	if ( not(_stat) ) {
-
-	  /* Now check EFIT */
-	  _stat = FINDEFIT(_tag, _tree);
-	  if (_stat) {
-	    /* signal is a special EFIT signal, so open EFIT tree */
-	    _stat=TreeShr->TreeOpen(ref(_tree//"\0"),val(_shotcheck));
-	    _close=_tree;
-            if (_stat) {
-	      _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
-            }
-	  } 
+	   _stat = FINDEFIT(_tag, _tree);
+	   if (_stat) {
+	      _stat=TreeShr->TreeOpen(ref(_tree//"\0"),val(_shotcheck));
+	      _close=_tree;
+              if (_stat) {
+	         _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
+              }
+	   } 
         } 
 
-	/* if the signal was not found in any of the D3D subtrees, */
-	/*    and it is not a special EFIT signal, check EFIT01    */
 
+        /* Default - EFIT via the EFIT01 tree */
 	if (not(_stat) && (_tree eq "") ) {
-	  _stat = TreeShr->TreeOpen(ref("EFIT01\0"),val(_shotcheck));
-	  if (_stat) {
-	    _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
-          }
-          if (_closetree == 1) {
-	    _dummy = TreeShr->TreeClose(ref("EFIT01\0"),val(_shotcheck)); 
-          }
+	   _stat = TreeShr->TreeOpen(ref("EFIT01\0"),val(_shotcheck));
+	   if (_stat) {
+	      _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
+           }
+           if (_closetree == 1) {
+	      _dummy = TreeShr->TreeClose(ref("EFIT01\0"),val(_shotcheck)); 
+           }
 	}
 
-	IF (_stat) { 
-	  if ((_tree eq "PTDATA") && (_no_ptdata)) {
-	    ABORT(); 
-	  } else {
-            if (EQ(machine(),"D3D")) {
-	      _cmd = "echo '"//date_time()//" "//whoami()//" "//_tag//" "//_tree//"' >> /var/log/mdsplus/findsig.log &";
-              spawn(_cmd);
-            }
-	    RETURN(_node);
-	  }
 
-	} ELSE {
-	
-	  ABORT();
+        /* Compatability - this tree check doesn't really do anything meaningful, but removing it
+                           and the _no_ptdata optional argument would cause unnecessary headaches  */
+	if (_stat) { 
+	   if ((_tree eq "PTDATA") && (_no_ptdata)) {
+	      abort(); 
+	   } else {
+              if (_logging_level ge 1) { _dummy = fs_logging(_logging_level,_tag,_tree); }
+	      return(_node);
+	   }
+	} else {
+           if (_logging_level eq 1) { _dummy = fs_logging(_logging_level,_tag,"UNIDENTIFIED"); }
+	   abort();
 	}
 
 }
