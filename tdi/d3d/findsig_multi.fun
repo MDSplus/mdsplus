@@ -28,7 +28,7 @@ PUBLIC FUN FINDSIG_MULTI (IN _tags, OPTIONAL OUT _trees, OPTIONAL OUT _revert,
         }
 
         /* Adjust return variables to remove first (blank) element */
-        _paths = _paths[1.._num_tags];
-        _trees = _trees[1.._num_tags];
+        _paths = _paths[1:(_num_tags)];
+        _trees = _trees[1:(_num_tags)];
         return(_paths);
 }
