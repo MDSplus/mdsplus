@@ -50,7 +50,7 @@ PUBLIC FUN PCDATA(IN _pointname, IN _shot) {
                                	             REF(_data), REF(_ier), REF(_iarray), REF(_rarray),
                                   	     REF(_ascii), REF(_int16), REF(_int32), REF(_real32));
            		IF ((_ier != 0) and (_ier != 2) and (_ier != 4) and (_ier != 33)) { _error = _ier ; return([0]); }
-           		IF (_ier == 4) { _data = _data[0 .. _iarray[1]-1];  }
+           		IF (_ier == 4) { _data = _data[0:(_iarray[1]-1)];  }
 
 		} ELSE { _data = [0]; }    
 
