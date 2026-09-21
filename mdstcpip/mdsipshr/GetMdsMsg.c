@@ -116,7 +116,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
     unsigned long dlen;
     msg = malloc(msglen);
     msg->h = header;
-    *status = get_bytes_to(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
+    *status = get_bytes_to(c, msg->bytes, msglen - sizeof(MsgHdr), 10000);
     if (IS_OK(*status) && IsCompressed(header.client_type))
     {
       Message *m;
