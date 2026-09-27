@@ -670,14 +670,6 @@ public class MdsIp extends Mds
 		this.getMessage(new Request<>(Int32.class, expr + ";1", args), false);
 	}
 
-	@Override
-	protected void finalize() throws Throwable
-	{
-		if (this.connected)
-			System.err.println(this + " was still connected.");
-		this.close();
-	}
-
 	private final Message getAnswer() throws MdsException
 	{
 		final Message message = this.receiverThread.getMessage();
