@@ -104,26 +104,30 @@ public class MdsConnectionTest
 				}
 			}
 			Assert.assertFalse("Cannot connect to mdsip server", c == null || !c.isConnected);
-			MDSplus.Data data = c.get("zero([1,1,1,1,1,1,1,1],1)");
-			Assert.assertEquals("[[[[[[[[0]]]]]]]]", data.toString());
-			c.openTree("java_test", 1);
-			final MDSplus.Data args[] = new MDSplus.Data[]
-			{ new MDSplus.Int32(5552368), new MDSplus.Float64(111.234) };
-			c.put("test_cnx", "$+10", args);
-			data = c.get("test_cnx");
-			Assert.assertEquals(5552378, data.getInt());
-			c.put("test_cnx", "[$1+10, $2]", args);
-			data = c.get("test_cnx");
-			Assert.assertEquals("[5552378D0,111.234D0]", data.toString());
-			final MDSplus.Data args1[] = new MDSplus.Data[]
-			{ new MDSplus.Int32(5552368), new MDSplus.Int32(111234) };
-			c.put("test_cnx", "[$1+10, $2]", args1);
-			data = c.get("test_cnx");
-			Assert.assertArrayEquals(new int[]
-			{ 5552378, 111234 }, data.getIntArray());
-			c.put("test_cnx", "5552368");
-			data = c.get("test_cnx");
-			Assert.assertEquals(5552368, data.getInt());
+			try (MDSplus.Connection conn = c)
+			{
+				MDSplus.Data data = conn.get("zero([1,1,1,1,1,1,1,1],1)");
+				Assert.assertEquals("[[[[[[[[0]]]]]]]]", data.toString());
+				conn.openTree("java_test", 1);
+				final MDSplus.Data args[] = new MDSplus.Data[]
+				{ new MDSplus.Int32(5552368), new MDSplus.Float64(111.234) };
+				conn.put("test_cnx", "$+10", args);
+				data = conn.get("test_cnx");
+				Assert.assertEquals(5552378, data.getInt());
+				conn.put("test_cnx", "[$1+10, $2]", args);
+				data = conn.get("test_cnx");
+				Assert.assertEquals("[5552378D0,111.234D0]", data.toString());
+				final MDSplus.Data args1[] = new MDSplus.Data[]
+				{ new MDSplus.Int32(5552368), new MDSplus.Int32(111234) };
+				conn.put("test_cnx", "[$1+10, $2]", args1);
+				data = conn.get("test_cnx");
+				Assert.assertArrayEquals(new int[]
+				{ 5552378, 111234 }, data.getIntArray());
+				conn.put("test_cnx", "5552368");
+				data = conn.get("test_cnx");
+				Assert.assertEquals(5552368, data.getInt());
+			}
+			Assert.assertFalse("close() should have disconnected", c.isConnected);
 		}
 		catch (final Exception exc)
 		{
