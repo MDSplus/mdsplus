@@ -57,6 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="UNKNOWN_VAR" value="4126" severity="Error" text="Unknown/undefined variable name"/>
     <status name="STRTOOLON" value="4127" severity="Fatal" text="string is too long (greater than 65535)"/>
     <status name="TIMEOUT" value="4128" severity="Fatal" text="task did not complete in alotted time"/>
+    <status name="DIV_BY_ZERO" value="4129" severity="Fatal" text="Tried to divide an integer by zero"/>
   </facility>
   <facility name="Apd" value="4061">
     <status name="APD_APPEND" value="1" severity="Error" text="First argument must be APD or *"/>

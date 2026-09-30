@@ -69,8 +69,6 @@ struct descriptor *out)
 #endif
 
 extern int CvtConvertFloat();
-extern double WideIntToDouble();
-extern void DoubleToWideInt();
 
 const double radians_to_degrees = 180. / M_PI;
 
@@ -155,15 +153,6 @@ const double radians_to_degrees = 180. / M_PI;
 
 static const int roprand = 0x8000;
 
-static inline double mod_float(double x, double m)
-{
-  if (m == 0.0)
-    return x;
-  double intpart;
-  modf(x / m, &intpart);
-  return x - intpart * m;
-}
-
 #define OperateFloatOne(dtype, routine, p1, p2)                     \
   {                                                                 \
     double a, b, ans;                                               \
@@ -186,7 +175,7 @@ static inline double mod_float(double x, double m)
     {                                                          \
     case 0:                                                    \
     case 3:                                                    \
-      while (nout--)                                           \
+      while (nout--)                                          \
         OperateFloatOne(dtype, routine, in1p++, in2p++) break; \
     case 1:                                                    \
       while (nout--)                                           \
@@ -197,78 +186,6 @@ static inline double mod_float(double x, double m)
     }                                                          \
     break;                                                     \
   }
-
-static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
-{
-  double in2_d = WideIntToDouble(in2, size / sizeof(int), is_signed);
-  double in1_d = WideIntToDouble(in1, size / sizeof(int), is_signed);
-  double ans = mod_float(in1_d, in2_d);
-  DoubleToWideInt(&ans, size / sizeof(int), out);
-}
-
-#define OperateBin(size, is_signed, routine)        \
-  {                                                 \
-    char *in1p = in1->pointer;                      \
-    char *in2p = in2->pointer;                      \
-    char *outp = out->pointer;                      \
-    switch (scalars)                                \
-    {                                               \
-    case 0:                                         \
-    case 3:                                         \
-      while (nout--)                                \
-      {                                             \
-        routine(size, is_signed, in1p, in2p, outp); \
-        in1p += size;                               \
-        in2p += size;                               \
-        outp += size;                               \
-      }                                             \
-      break;                                        \
-    case 1:                                         \
-      while (nout--)                                \
-      {                                             \
-        routine(size, is_signed, in1p, in2p, outp); \
-        in2p += size;                               \
-        outp += size;                               \
-      }                                             \
-      break;                                        \
-    case 2:                                         \
-      while (nout--)                                \
-      {                                             \
-        routine(size, is_signed, in1p, in2p, outp); \
-        in1p += size;                               \
-        outp += size;                               \
-      }                                             \
-      break;                                        \
-    }                                               \
-    break;                                          \
-  }
-
-int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out)
-{
-  SetupArgs switch (in1->dtype)
-  {
-  case DTYPE_B:
-    Operate(int8_t, %) case DTYPE_BU : Operate(uint8_t, %) case DTYPE_W
-        : Operate(int16_t, %) case DTYPE_WU : Operate(uint16_t, %) case DTYPE_L
-        : Operate(int32_t, %) case DTYPE_LU : Operate(uint32_t, %) case DTYPE_Q
-        : Operate(int64_t, %) case DTYPE_QU : Operate(uint64_t, %) case DTYPE_O
-        : OperateBin(in1->length, 1, mod_bin) case DTYPE_OU
-        : OperateBin(in1->length, 0, mod_bin) case DTYPE_F
-        : OperateFloat(float, DTYPE_F, mod_float);
-  case DTYPE_FS:
-    OperateFloat(float, DTYPE_FS, mod_float);
-  case DTYPE_D:
-    OperateFloat(double, DTYPE_D, mod_float);
-  case DTYPE_G:
-    OperateFloat(double, DTYPE_G, mod_float);
-  case DTYPE_FT:
-    OperateFloat(double, DTYPE_FT, mod_float);
-  default:
-    return TdiINVDTYDSC;
-  }
-  return 1;
-}
 
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2,
               struct descriptor *out)
