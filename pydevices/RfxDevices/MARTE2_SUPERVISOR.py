@@ -1621,6 +1621,11 @@ $<APP_NAME> = {
         # KILL MARTe process
         import subprocess
         import os
+        name = self.getNode('NAME').data()
+        shot = self.getTree().shot
+        command ='cp /tmp/MARTe2_'+name+'_Output.log '+ '/tmp/MARTe2_'+name+'_Output_'+str(shot)+'.log'
+        os.system(command)
+
         thisPattern = 'MARTeApp.ex -l RealTimeLoader -f /tmp/'+marteName+'_marte_configuration.cfg'
 #        command = 'kill -KILL `ps -a | grep \"'+thisPattern+'\" | grep -v grep | awk \'{print $1}\'`'
 #        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
