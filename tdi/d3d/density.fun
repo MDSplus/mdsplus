@@ -139,6 +139,14 @@ PUBLIC FUN DENSITY(OPTIONAL IN _LABEL) {
 		_stat     = CONDITIONAL(1,_stat,_mask);
         }
 
+        /* HOTFIX - Strip the first element, as there are cases where V2 is not available and/or good (e.g. 193530)
+                                             which ends up causing issues with the logic and var initialization. */
+        _density  = _density[1:*];
+        _timebase = _timebase[1:*];
+        _stat     = _stat[1:*];
+        _chord    = _chord[1:*];
+          
+        /* Return */
 	PUBLIC __chord = MAKE_SIGNAL( _chord, *, MAKE_WITH_UNITS(_timebase,"ms") );
 	PUBLIC __stat  = MAKE_SIGNAL( _stat,  *, MAKE_WITH_UNITS(_timebase,"ms") ); 
 	_s = MAKE_SIGNAL( MAKE_WITH_UNITS(_density,"/cm^3"), *, MAKE_WITH_UNITS(_timebase,"ms") );

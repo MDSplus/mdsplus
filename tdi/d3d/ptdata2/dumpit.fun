@@ -26,7 +26,7 @@ FUN PUBLIC dumpit(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error) {
                              REF(_ascii), REF(_int16), REF(_int32), REF(_real32));
 
         if (eq(_error,33)) { _error = 0; } /* Ignore error code 33. */
-        _data = _data[0..(_iarray[1]-1)];
+        _data = _data[0:(_iarray[1]-1)];
          
         return(_data);
 
