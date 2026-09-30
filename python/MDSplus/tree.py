@@ -53,14 +53,14 @@ _TreeShr.TreeDbid.restype = _C.c_void_p
 #############################################
 #### Load other python modules referenced ###
 #
-_arr = _mimport('mdsarray')
-_scr = _mimport('mdsscalar')
 _apd = _mimport('apd')
-_dcl = _mimport('mdsdcl')
+_arr = _mimport('mdsarray')
 _cmp = _mimport('compound')
+_con = _mimport('connection')
+_dcl = _mimport('mdsdcl')
 _dsc = _mimport('descriptor')
 _mds = _mimport('_mdsshr')
-_con = _mimport('connection')
+_scr = _mimport('mdsscalar')
 #
 #############################################
 
@@ -177,7 +177,6 @@ class Dbi(object):
 ############### Node Characteristic Options ######
 #
 
-
 class Flags(object):
     STATE = 0x00000001
     PARENT_STATE = 0x00000002
@@ -219,8 +218,7 @@ class Flags(object):
     def segmented(self): return self.flags & Flags.SEGMENTED != 0
 
     @property
-    def setup_information(
-        self): return self.flags & Flags.SETUP_INFORMATION != 0
+    def setup_information(self): return self.flags & Flags.SETUP_INFORMATION != 0
 
     @property
     def write_once(self): return self.flags & Flags.WRITE_ONCE != 0
@@ -250,8 +248,7 @@ class Flags(object):
     def include_in_pulse(self): return self.flags & Flags.INCLUDE_IN_PULSE != 0
 
     @property
-    def compress_segments(
-        self): return self.flags & Flags.COMPRESS_SEGMENTS != 0
+    def compress_segments(self): return self.flags & Flags.COMPRESS_SEGMENTS != 0
 
     @classmethod
     def _nciFlag(cls, mask, doc=None):
@@ -265,7 +262,6 @@ class Flags(object):
         if isinstance(doc, str):
             doc = "%s (settable)" % doc
         return property(getter, setter, doc=doc)
-
 
 class Nci(object):
     _IS_CHILD = 1
@@ -323,8 +319,13 @@ class Nci(object):
                     ("end3", _C.c_void_p)]
 
         def __init__(self, buflen, code, pointer):
-            super(Nci._nci_item, self).__init__(buflen, code,
-                                                pointer, _C.pointer(_C.c_int32(0)), 0, 0, 0, 0)
+            super(Nci._nci_item, self).__init__(
+                buflen,
+                code,
+                pointer,
+                _C.pointer(_C.c_int32(0)),
+                0, 0, 0, 0
+            )
 
     @staticmethod
     def _nciProp(info, doc=None):
@@ -337,7 +338,6 @@ class Nci(object):
         return property(getter, doc=doc)
 #
 #################################################################
-
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -355,6 +355,126 @@ class Tree(object):
     @property
     def ctx(self):
         return _C.c_void_p(_TreeShr.TreeDbid()) if self.public else self._ctx
+
+    @staticmethod
+    def usingPrivateCtx():
+        return bool(_TreeShr.TreeUsingPrivateCtx())
+
+    @staticmethod
+    def usePrivateCtx(on=True):
+        if on:
+            val = _C.c_int32(1)
+        else:
+            val = _C.c_int32(0)
+        return _TreeShr.TreeUsePrivateCtx(val)
+
+    def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
+        """Create a Tree instance. Specify a tree and shot and optionally a mode.
+        If providing the mode argument it should be one of the following strings:
+        'Normal','Edit','New','ReadOnly'.
+        If no arguments provided, create instance of the active tree. (i.e. Tree())
+        @param tree: Name of tree to open
+        @type tree: str
+        @param shot: Shot number
+        @type shot: int
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str
+        """
+        self.public = tree is None
+        if not self.public:
+            if path is not None:
+                self.path = path
+            self._ctx = _C.c_void_p(0)
+            self.tree = tree
+            self.shot = shot
+            self.public = False
+            self.open(mode)
+
+    def __del__(self):
+        if not self.public and _TreeShr is not None:
+            self.__exit__()
+            _TreeShr.TreeFreeDbid(self._ctx)
+
+    def readonly(self, shot=None):
+        self.open('READONLY', shot)
+
+    def edit(self, shot=None):
+        self.open('EDIT', shot)
+
+    def normal(self, shot=None):
+        self.open('NORMAL', shot)
+
+    def open(self, mode='NORMAL', shot=None):
+        if shot is not None:
+            self.shot = shot
+        try:
+            env_name = '%s_path' % self.tree.lower()
+
+            if not self.path is None:
+                old_path = _mds.getenv(env_name)
+                _mds.setenv(env_name, self.path)
+            mode = mode.upper()
+            if mode == 'NORMAL':
+                status = _TreeShr._TreeOpen(self.pctx,
+                                            _C.c_char_p(
+                                                _ver.tobytes(self.tree)),
+                                            _C.c_int32(self.shot),
+                                            _C.c_int32(0))
+            elif mode == 'EDIT':
+                status = _TreeShr._TreeOpenEdit(self.pctx,
+                                                _C.c_char_p(
+                                                    _ver.tobytes(self.tree)),
+                                                _C.c_int32(self.shot),
+                                                _C.c_int32(0))
+            elif mode == 'READONLY':
+                status = _TreeShr._TreeOpen(self.pctx,
+                                            _C.c_char_p(
+                                                _ver.tobytes(self.tree)),
+                                            _C.c_int32(self.shot),
+                                            _C.c_int32(1))
+            elif mode == 'NEW':
+                status = _TreeShr._TreeOpenNew(self.pctx,
+                                               _C.c_char_p(
+                                                   _ver.tobytes(self.tree)),
+                                               _C.c_int32(self.shot))
+            else:
+                raise TypeError(
+                    'Invalid mode specificed, use "normal","edit","new" or "readonly".')
+            _exc.checkStatus(status)
+            if not self.public:
+                self.tree = self.name
+                self.shot = self.shotid
+        finally:
+            if not self.path is None:
+                _mds.setenv(env_name, old_path)
+
+    def copy(self, mode='NORMAL'):
+        """returns a local private instance of the tree opend in specified mode
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str
+        @rtype: Tree
+        """
+        return Tree(self.tree, self.shot, mode)
+
+    def write(self):
+        """Write out edited tree.
+        @rtype: None
+        """
+        with self._lock:
+            _exc.checkStatus(_TreeShr._TreeWriteTree(self.pctx, 0, 0))
+
+    def quit(self):
+        """Close edit session discarding node structure and tag changes.
+        @rtype: None
+        """
+        with self._lock:
+            _exc.checkStatus(_TreeShr._TreeQuitTree(self.pctx, 0, 0))
+
+    def close(self):
+        """Close tree.
+        @rtype: None
+        """
+        _exc.checkStatus(_TreeShr._TreeClose(self.pctx, 0, 0))
 
     @staticmethod
     def getShotDB(expt, path=None, lower=None, upper=None):
@@ -486,122 +606,6 @@ class Tree(object):
                     treeref, _C.c_int32(int(shot)), xd.ref))
         return _ver.tostr(xd.value)
 
-    def copy(self, mode='NORMAL'):
-        """returns a local private instance of the tree opend in specified mode
-        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str
-        @rtype: Tree
-        """
-        return Tree(self.tree, self.shot, mode)
-
-    def readonly(self, shot=None):
-        self.open('READONLY', shot)
-
-    def edit(self, shot=None):
-        self.open('EDIT', shot)
-
-    def normal(self, shot=None):
-        self.open('NORMAL', shot)
-
-    def open(self, mode='NORMAL', shot=None):
-        if shot is not None:
-            self.shot = shot
-        try:
-            env_name = '%s_path' % self.tree.lower()
-
-            if not self.path is None:
-                old_path = _mds.getenv(env_name)
-                _mds.setenv(env_name, self.path)
-            mode = mode.upper()
-            if mode == 'NORMAL':
-                status = _TreeShr._TreeOpen(self.pctx,
-                                            _C.c_char_p(
-                                                _ver.tobytes(self.tree)),
-                                            _C.c_int32(self.shot),
-                                            _C.c_int32(0))
-            elif mode == 'EDIT':
-                status = _TreeShr._TreeOpenEdit(self.pctx,
-                                                _C.c_char_p(
-                                                    _ver.tobytes(self.tree)),
-                                                _C.c_int32(self.shot),
-                                                _C.c_int32(0))
-            elif mode == 'READONLY':
-                status = _TreeShr._TreeOpen(self.pctx,
-                                            _C.c_char_p(
-                                                _ver.tobytes(self.tree)),
-                                            _C.c_int32(self.shot),
-                                            _C.c_int32(1))
-            elif mode == 'NEW':
-                status = _TreeShr._TreeOpenNew(self.pctx,
-                                               _C.c_char_p(
-                                                   _ver.tobytes(self.tree)),
-                                               _C.c_int32(self.shot))
-            else:
-                raise TypeError(
-                    'Invalid mode specificed, use "normal","edit","new" or "readonly".')
-            _exc.checkStatus(status)
-            if not self.public:
-                self.tree = self.name
-                self.shot = self.shotid
-        finally:
-            if not self.path is None:
-                _mds.setenv(env_name, old_path)
-
-    def __init__(self, tree=None, shot=-1, mode='NORMAL', path=None):
-        """Create a Tree instance. Specify a tree and shot and optionally a mode.
-        If providing the mode argument it should be one of the following strings:
-        'Normal','Edit','New','ReadOnly'.
-        If no arguments provided, create instance of the active tree. (i.e. Tree())
-        @param tree: Name of tree to open
-        @type tree: str
-        @param shot: Shot number
-        @type shot: int
-        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
-        @type mode: str
-        """
-        self.public = tree is None
-        if not self.public:
-            if path is not None:
-                self.path = path
-            self._ctx = _C.c_void_p(0)
-            self.tree = tree
-            self.shot = shot
-            self.public = False
-            self.open(mode)
-
-    # support for the with-structure
-    def __enter__(self):
-        """ referenced if using "with Tree() ... " block"""
-        return self
-
-    def __del__(self):
-        if not self.public and _TreeShr is not None:
-            self.__exit__()
-            _TreeShr.TreeFreeDbid(self._ctx)
-
-    def __exit__(self, *args):
-        """ Cleanup for with statement. If tree is open for edit close it. """
-        try:
-            if self.open_for_edit:
-                self.quit()
-            else:
-                self.close()
-        except:
-            pass
-
-    def quit(self):
-        """Close edit session discarding node structure and tag changes.
-        @rtype: None
-        """
-        with self._lock:
-            _exc.checkStatus(_TreeShr._TreeQuitTree(self.pctx, 0, 0))
-
-    def close(self):
-        """Close tree.
-        @rtype: None
-        """
-        _exc.checkStatus(_TreeShr._TreeClose(self.pctx, 0, 0))
-
     def _getDbi(self, info):
         """Return dbi data"""
         code, rtype, buflen = info
@@ -633,42 +637,108 @@ class Tree(object):
         item = Dbi._dbi_item(buflen, code, pointer)
         _exc.checkStatus(_TreeShr._TreeSetDbi(self.ctx, _C.byref(item)))
 
-    name = expt = treename = Dbi._dbiProp(Dbi.NAME,             "Tree name")
-    shotid = Dbi._dbiProp(Dbi.SHOTID,           "Shot number of tree")
-    modified = Dbi._dbiProp(
-        Dbi.MODIFIED,         "True if open for edit and modifications made to tree structure.")
-    open_for_edit = Dbi._dbiProp(
-        Dbi.OPEN_FOR_EDIT,    "True if tree is opened for edit")
-    index = Dbi._dbiProp(
-        Dbi.INDEX,            "Index of tree to use for subsequent information requests")
-    number_opened = Dbi._dbiProp(
-        Dbi.NUMBER_OPENED,    "Number of open trees on tree stack")
-    max_open = Dbi._dbiProp(
-        Dbi.MAX_OPEN,         "Max number of trees to keep open on stack")
-    open_readonly = Dbi._dbiProp(
-        Dbi.OPEN_READONLY,    "True if tree is open readonly")
-    versions_in_model = Dbi._dbiProp(
-        Dbi.VERSIONS_IN_MODEL, "Support versioning of data in model.", True)
-    versions_in_pulse = Dbi._dbiProp(
-        Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
-    dispatch_table = Dbi._dbiProp(
-        Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
-    alternate_compression = Dbi._dbiProp(
-        Dbi.ALTERNATE_COMPRESSION,  "Set to True to enable alternate compression methods", False)
+    # DBI Properties
 
-    @property
-    def default(self):
-        "current default node position in tree (settable)"
-        return self.getDefault()
+    name = expt = treename = Dbi._dbiProp(Dbi.NAME, "Tree name")
+    shotid = Dbi._dbiProp(Dbi.SHOTID, "Shot number of tree")
+    modified = Dbi._dbiProp(Dbi.MODIFIED, "True if open for edit and modifications made to tree structure.")
+    open_for_edit = Dbi._dbiProp(Dbi.OPEN_FOR_EDIT, "True if tree is opened for edit")
+    index = Dbi._dbiProp(Dbi.INDEX, "Index of tree to use for subsequent information requests")
+    number_opened = Dbi._dbiProp(Dbi.NUMBER_OPENED, "Number of open trees on tree stack")
+    max_open = Dbi._dbiProp(Dbi.MAX_OPEN, "Max number of trees to keep open on stack")
+    open_readonly = Dbi._dbiProp(Dbi.OPEN_READONLY, "True if tree is open readonly")
+    versions_in_model = Dbi._dbiProp(Dbi.VERSIONS_IN_MODEL, "Support versioning of data in model.", True)
+    versions_in_pulse = Dbi._dbiProp(Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
+    dispatch_table = Dbi._dbiProp(Dbi.DISPATCH_TABLE, "True if dispatch table is built")
+    alternate_compression = Dbi._dbiProp(Dbi.ALTERNATE_COMPRESSION, "Set to True to enable alternate compression methods", False)
 
-    @default.setter
-    def default(self, treenode):
-        self.setDefault(treenode)
+    # DBI Properties getters/setters
 
-    @property
-    def top(self):  # compatibility
-        "Tree root"
-        return TreeNode(0, self)
+    def isModified(self):
+        """Check to see if tree is open for edit and has been modified
+        @return: True if tree structure has been modified.
+        @rtype: bool
+        """
+        return self.modified
+
+    def isOpenForEdit(self):
+        """Check to see if tree is open for edit
+        @return: True if tree is open for edit
+        @rtype: bool
+        """
+        return self.open_for_edit
+    
+    def getIndex(self):
+        """Get the index of this tree in the tree stack"""
+        return self.index
+
+    def getNumOpened(self):
+        """Get the number of currently open top-level trees in the tree stack"""
+        return self.number_opened
+
+    def getMaxOpen(self):
+        """Get the maximum allowed number of open top-level trees in the tree stack"""
+        return self.max_open
+
+    def isReadOnly(self):
+        """Check to see if tree was opened readonly
+        @return: True if tree is open readonly
+        @rtype: bool
+        """
+        return self.open_readonly
+
+    def setVersionsInModel(self, flag):
+        """Enable/Disable versions in model
+        @param flag: True or False. True enables versions
+        @type flag: bool
+        @rtype: None
+        """
+        self.versions_in_model = bool(flag)
+
+    def versionsInModelEnabled(self):
+        """Check to see if versions in the model are enabled
+        @return: True if versions in model is enabled
+        @rtype: bool
+        """
+        return self.versions_in_model
+
+    def setVersionsInPulse(self, flag):
+        """Enable/Disable versions in pulse
+        @param flag: True or False. True enables versions
+        @type flag: bool
+        @rtype: None
+        """
+        self.versions_in_pulse = bool(flag)
+
+    def versionsInPulseEnabled(self):
+        """Check to see if versions in the pulse are enabled
+        @return: True if versions in pulse is enabled
+        @rtype: bool
+        """
+        return self.versions_in_pulse
+
+    def hasDispatchTable(self):
+        "Check if a dispatch table has been built"
+        return self.dispatch_table
+
+    def setAlternateCompression(self, flag):
+        """Enable/Disable alternate compression methods
+        @param flag: True or False. True enables alternate compression methods
+        @type flag: bool
+        @rtype: None
+        """
+        self.alternate_compression = bool(flag)
+
+    def alternateCompressionEnabled(self):
+        """Check to see if alternate compression methods are enabled
+        @return: True if alternate compression methods are enabled
+        @rtype: bool
+        """
+        return self.alternate_compression
+
+    ########################################
+    # End of DBI Properties
+    ########################################
 
     def __getattr__(self, name):
         """Support for referencing an immediate child or
@@ -681,6 +751,7 @@ class Tree(object):
         If the tree has a top level child or member with
         the name "NODENAME" t.NODENAME will return a
         TreeNode instance."""
+        # TODO: Move into normal properties?
         if name == "tree":
             return self.name
         if name == "shot":
@@ -689,18 +760,6 @@ class Tree(object):
             return _getNodeByAttr(self, name)
         except _exc.TreeNNF:
             raise AttributeError('No such attribute: '+name)
-
-    @staticmethod
-    def usingPrivateCtx():
-        return bool(_TreeShr.TreeUsingPrivateCtx())
-
-    @staticmethod
-    def usePrivateCtx(on=True):
-        if on:
-            val = _C.c_int32(1)
-        else:
-            val = _C.c_int32(0)
-        return _TreeShr.TreeUsePrivateCtx(val)
 
     def __deepcopy__(self, memo):
         return self
@@ -711,6 +770,22 @@ class Tree(object):
         return False
 
     def __ne__(self, obj): return not self.__eq__(obj)
+
+    # support for the with-structure
+    def __enter__(self):
+        """ referenced if using "with Tree() ... " block"""
+        return self
+
+    # support for the with-structure
+    def __exit__(self, *args):
+        """ Cleanup for with statement. If tree is open for edit close it. """
+        try:
+            if self.open_for_edit:
+                self.quit()
+            else:
+                self.close()
+        except:
+            pass
 
     def __repr__(self):
         """Return representation
@@ -732,6 +807,14 @@ class Tree(object):
 
     __str__ = __repr__
 
+    def __dir__(self):
+        """used for tab completion"""
+        return [str(n.node_name) for n in self.top.descendants]+_ver.superdir(Tree, self)
+
+    def dir(self):
+        """Return current default dir"""
+        self.default.dir()
+
     def addDevice(self, nodename, model):
         """Add a device to the tree of the specified device model type.
         @param nodename: Absolute or relative path specification of the head node of the device.
@@ -749,160 +832,6 @@ class Tree(object):
                                          _ver.tobytes(nodename),
                                          _ver.tobytes(model),
                                          _C.byref(nid)))
-        return TreeNode(nid.value, self)
-
-    def addNode(self, nodename, usage='ANY'):
-        """Add a node to the tree. Tree must be in edit mode.
-        @param nodename: Absolute or relative path specification of new node. All ancestors of node must exist.
-        @type nodename: str
-        @param usage: Usage of node.
-        @type usage: str
-        @return: Node created.
-        @rtype: TreeNode
-        """
-        nid = _C.c_int32(0)
-        try:
-            usage_idx = _usage_table[usage.upper()]
-        except KeyError:
-            raise UsageError(usage)
-        usagenum = 1 if usage_idx == 11 else usage_idx
-        with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeAddNode(self.ctx,
-                                      _ver.tobytes(nodename),
-                                      _C.byref(nid),
-                                      _C.c_int32(usagenum)))
-            if usage_idx == 11:
-                _exc.checkStatus(
-                    _TreeShr._TreeSetSubtree(self.ctx, nid))
-        return TreeNode(nid.value, self)
-
-    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
-        """Create pulse.
-    
-        @param shot: Shot number to create
-        @type shot: int
-        @param copy_only_this: Logical flag, defaults to False
-        @type copy_only_this: int
-        @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
-        @type node_or_nid: int or MDSplus.tree.TreeNode
-        @rtype: None
-        """
-
-        if isinstance(node_or_nid, TreeNode):
-            node_or_nid = node_or_nid.getNid()  # Extract node ID
-    
-        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
-
-        _exc.checkStatus(
-            _TreeShr._TreeCreatePulseFile(
-                self.ctx,
-                _C.c_int32(int(shot)),
-                _C.c_int32(int(copy_only_this)),
-                nid_pointer
-            )
-        )
-
-    def deleteNode(self, wild):
-        """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
-        all nodes from that device are also deleted as well as any descendants that they might have.
-        @param wild: Wildcard path speficier of nodes to delete from tree.
-        @type wild: str
-        @rtype: None
-        """
-        with self._lock:
-            first = True
-            nodes = self.getNodeWild(wild)
-            for node in nodes:
-                if first:
-                    reset = _C.c_int32(1)
-                    first = False
-                else:
-                    reset = _C.c_int32(0)
-                _exc.checkStatus(
-                    _TreeShr._TreeDeleteNodeInitialize(self.ctx,
-                                                       node._nid,
-                                                       0,
-                                                       reset))
-            _exc.checkStatus(
-                _TreeShr._TreeDeleteNodeExecute(self.ctx))
-
-    def deletePulse(self, shot):
-        """Delete pulse.
-        @param shot: Shot number to delete
-        @type shot: int
-        @rtype: None
-        """
-        _exc.checkStatus(
-            _TreeShr._TreeDeletePulseFile(self.ctx,
-                                          _C.c_int32(int(shot)),
-                                          _C.c_int32(1)))
-
-    def dir(self):
-        """Return current default dir"""
-        self.default.dir()
-
-    def __dir__(self):
-        """used for tab completion"""
-        return [str(n.node_name) for n in self.top.descendants]+_ver.superdir(Tree, self)
-
-    def findTagsIter(self, wild):
-        """An iterator for the tagnames from a tree given a wildcard specification.
-        @param wild: wildcard spec.
-        @type wild: str
-        @return: iterator of tagnames (strings) that match the wildcard specification
-        @rtype: iterator
-        """
-        nid = _C.c_int32(0)
-        tagctx = _C.c_void_p(0)
-        _TreeShr._TreeFindTagWild.restype = _C.c_char_p
-        try:
-            while True:
-                tag_ptr = _TreeShr._TreeFindTagWild(self.ctx,
-                                                    _C.c_char_p(
-                                                        _ver.tobytes(wild)),
-                                                    _C.byref(nid),
-                                                    _C.byref(tagctx))
-                if tag_ptr is None:
-                    break
-                yield tag_ptr.rstrip()
-        except GeneratorExit:
-            pass
-        _TreeShr.TreeFindTagEnd(_C.byref(tagctx))
-
-    def findTags(self, wild):
-        """Find tags matching wildcard expression
-        @param wild: wildcard string to match tagnames.
-        @type wild: str
-        @return: Array of tag names matching wildcard expression
-        @rtype: ndarray
-        """
-        return tuple(self.findTagsIter(wild))
-
-    @classmethodX
-    def getCurrent(self, tree=None):
-        """Return current shot for specificed tree
-        @param tree: Name of tree
-        @type tree: str
-        @return: Current shot number for the specified tree
-        @rtype: int
-        """
-        if isinstance(self, (Tree,)):
-            tree = self.tree
-        shot = _TreeShr.TreeGetCurrentShotId(_ver.tobytes(tree))
-        if shot == 0:
-            raise _exc.TreeNOCURRENT()
-        return shot
-
-    def getDefault(self):
-        """Return current default TreeNode
-        @return: Current default node
-        @rtype: TreeNode
-        """
-        nid = _C.c_int32(0)
-        _exc.checkStatus(
-            _TreeShr._TreeGetDefaultNid(self.ctx,
-                                        _C.byref(nid)))
         return TreeNode(nid.value, self)
 
     def getNode(self, name):
@@ -971,6 +900,247 @@ class Tree(object):
         """
         return TreeNodeArray([nid for nid in self._getNodeWildIter(name, *usage)], self)
 
+    def addNode(self, nodename, usage='ANY'):
+        """Add a node to the tree. Tree must be in edit mode.
+        @param nodename: Absolute or relative path specification of new node. All ancestors of node must exist.
+        @type nodename: str
+        @param usage: Usage of node.
+        @type usage: str
+        @return: Node created.
+        @rtype: TreeNode
+        """
+        nid = _C.c_int32(0)
+        try:
+            usage_idx = _usage_table[usage.upper()]
+        except KeyError:
+            raise UsageError(usage)
+        usagenum = 1 if usage_idx == 11 else usage_idx
+        with self._lock:
+            _exc.checkStatus(
+                _TreeShr._TreeAddNode(self.ctx,
+                                      _ver.tobytes(nodename),
+                                      _C.byref(nid),
+                                      _C.c_int32(usagenum)))
+            if usage_idx == 11:
+                _exc.checkStatus(
+                    _TreeShr._TreeSetSubtree(self.ctx, nid))
+        return TreeNode(nid.value, self)
+
+    def deleteNode(self, wild):
+        """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
+        all nodes from that device are also deleted as well as any descendants that they might have.
+        @param wild: Wildcard path speficier of nodes to delete from tree.
+        @type wild: str
+        @rtype: None
+        """
+        with self._lock:
+            first = True
+            nodes = self.getNodeWild(wild)
+            for node in nodes:
+                if first:
+                    reset = _C.c_int32(1)
+                    first = False
+                else:
+                    reset = _C.c_int32(0)
+                _exc.checkStatus(
+                    _TreeShr._TreeDeleteNodeInitialize(self.ctx,
+                                                       node._nid,
+                                                       0,
+                                                       reset))
+            _exc.checkStatus(
+                _TreeShr._TreeDeleteNodeExecute(self.ctx))
+
+    def findTagsIter(self, wild):
+        """An iterator for the tagnames from a tree given a wildcard specification.
+        @param wild: wildcard spec.
+        @type wild: str
+        @return: iterator of tagnames (strings) that match the wildcard specification
+        @rtype: iterator
+        """
+        nid = _C.c_int32(0)
+        tagctx = _C.c_void_p(0)
+        _TreeShr._TreeFindTagWild.restype = _C.c_char_p
+        try:
+            while True:
+                tag_ptr = _TreeShr._TreeFindTagWild(self.ctx,
+                                                    _C.c_char_p(
+                                                        _ver.tobytes(wild)),
+                                                    _C.byref(nid),
+                                                    _C.byref(tagctx))
+                if tag_ptr is None:
+                    break
+                yield tag_ptr.rstrip()
+        except GeneratorExit:
+            pass
+        _TreeShr.TreeFindTagEnd(_C.byref(tagctx))
+
+    def findTags(self, wild):
+        """Find tags matching wildcard expression
+        @param wild: wildcard string to match tagnames.
+        @type wild: str
+        @return: Array of tag names matching wildcard expression
+        @rtype: ndarray
+        """
+        return tuple(self.findTagsIter(wild))
+
+    def removeTag(self, tag):
+        """Remove a tagname from the tree
+        @param tag: Tagname to remove.
+        @type tag: str
+        @rtype: None
+        """
+        with self._lock:
+            _exc.checkStatus(
+                _TreeShr._TreeRemoveTag(self.ctx,
+                                        _C.c_char_p(_ver.tobytes(tag))))
+
+    @property
+    def top(self):  # compatibility
+        "Tree root"
+        return TreeNode(0, self)
+
+    @property
+    def default(self):
+        "current default node position in tree (settable)"
+        return self.getDefault()
+
+    @default.setter
+    def default(self, treenode):
+        self.setDefault(treenode)
+
+    def getDefault(self):
+        """Return current default TreeNode
+        @return: Current default node
+        @rtype: TreeNode
+        """
+        nid = _C.c_int32(0)
+        _exc.checkStatus(
+            _TreeShr._TreeGetDefaultNid(self.ctx,
+                                        _C.byref(nid)))
+        return TreeNode(nid.value, self)
+
+    def setDefault(self, node):
+        """Set current default TreeNode.
+        @param node: Node to make current default. Relative node paths will use the current default when resolving node lookups.
+        @type node: TreeNode
+        @return: Previous default node
+        @rtype: TreeNode
+        """
+        old = self.default
+        if not isinstance(node, TreeNode):
+            raise TypeError('default node must be a TreeNode')
+        if not node.ctx.value == self.ctx.value:
+            raise TypeError('TreeNode must be in same tree')
+        _exc.checkStatus(
+            _TreeShr._TreeSetDefaultNid(self.ctx,
+                                        node._nid))
+        return old
+
+    @classmethodX
+    def getCurrent(self, tree=None):
+        """Return current shot for specificed tree
+        @param tree: Name of tree
+        @type tree: str
+        @return: Current shot number for the specified tree
+        @rtype: int
+        """
+        if isinstance(self, (Tree,)):
+            tree = self.tree
+        shot = _TreeShr.TreeGetCurrentShotId(_ver.tobytes(tree))
+        if shot == 0:
+            raise _exc.TreeNOCURRENT()
+        return shot
+
+    @classmethodX
+    def setCurrent(self, tree=None, shot=None):
+        """Set current shot for specified tree
+        @param tree: Name of tree
+        @type tree: str
+        @param shot: Shot number
+        @type shot: int
+        @rtype None
+        """
+        if isinstance(self, (Tree,)):  # instancemethod: args shifted by one
+            shot = self.shot if tree is None else tree
+            tree = self.tree
+        _exc.checkStatus(
+            _TreeShr.TreeSetCurrentShotId(_C.c_char_p(_ver.tobytes(tree)),
+                                          _C.c_int32(int(shot))))
+
+    @classmethodX
+    def incrementCurrent(self, tree=None, inc=1):
+        """Increments current shot for specified tree by inc
+        @param tree: Name of tree
+        @type tree: str
+        @param inc: Increment (default: 1)
+        @rtype int
+        """
+        if isinstance(self, (Tree,)):  # instancemethod: args shifted by one
+            if tree is not None:
+                inc = tree
+            tree = self.tree
+        shot = Tree.getCurrent(tree)+inc
+        Tree.setCurrent(tree, shot)
+        return shot
+
+    def createPulse(self, shot, copy_only_this=False, node_or_nid=0):
+        """Create pulse.
+    
+        @param shot: Shot number to create
+        @type shot: int
+        @param copy_only_this: Logical flag, defaults to False
+        @type copy_only_this: int
+        @param node_or_nid: Either an integer (node ID) or a TreeNode object (defaults to 0)
+        @type node_or_nid: int or MDSplus.tree.TreeNode
+        @rtype: None
+        """
+
+        if isinstance(node_or_nid, TreeNode):
+            node_or_nid = node_or_nid.getNid()  # Extract node ID
+    
+        nid_pointer = _C.cast(_C.pointer(_C.c_int32(int(node_or_nid))),_C.c_void_p)
+
+        _exc.checkStatus(
+            _TreeShr._TreeCreatePulseFile(
+                self.ctx,
+                _C.c_int32(int(shot)),
+                _C.c_int32(int(copy_only_this)),
+                nid_pointer
+            )
+        )
+
+    def deletePulse(self, shot):
+        """Delete pulse.
+        @param shot: Shot number to delete
+        @type shot: int
+        @rtype: None
+        """
+        _exc.checkStatus(
+            _TreeShr._TreeDeletePulseFile(self.ctx,
+                                          _C.c_int32(int(shot)),
+                                          _C.c_int32(1)))
+
+    @staticmethod
+    def setVersionDate(date):
+        """Set date for retrieving versions if versioning is enabled in tree.
+        @param date: Reference date for data retrieval. Must be specified in the format: 'mmm-dd-yyyy hh:mm:ss' or 'now','today'
+        or 'yesterday'.
+        @type date: str
+        @rtype: None
+        """
+        _exc.checkStatus(
+            _TreeShr.TreeSetViewDate(_C.byref(_C.c_int64(_mds.DateToQuad(date).data()))))
+
+    @staticmethod
+    def getVersionDate():
+        """Get date used for retrieving versions
+        @return: Reference date for retrieving data is versions enabled
+        @rtype: str
+        """
+        dt = _C.c_ulonglong(0)
+        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
+        return _scr.Uint64(dt.value).date
+
     @classmethodX
     def getTimeContext(self):
         """Get time context for retrieving segmented records (begin,end,delta)
@@ -989,97 +1159,6 @@ class Tree(object):
             _exc.checkStatus(_TreeShr.TreeGetTimeContext(
                 begin.ref, end.ref, delta.ref))
         return (begin.value, end.value, delta.value)
-
-    @staticmethod
-    def getVersionDate():
-        """Get date used for retrieving versions
-        @return: Reference date for retrieving data is versions enabled
-        @rtype: str
-        """
-        dt = _C.c_ulonglong(0)
-        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
-        return _scr.Uint64(dt.value).date
-
-    @classmethodX
-    def incrementCurrent(self, tree=None, inc=1):
-        """Increments current shot for specified tree by inc
-        @param tree: Name of tree
-        @type tree: str
-        @param inc: Increment (default: 1)
-        @rtype int
-        """
-        if isinstance(self, (Tree,)):  # instancemethod: args shifted by one
-            if tree is not None:
-                inc = tree
-            tree = self.tree
-        shot = Tree.getCurrent(tree)+inc
-        Tree.setCurrent(tree, shot)
-        return shot
-
-    def isModified(self):
-        """Check to see if tree is open for edit and has been modified
-        @return: True if tree structure has been modified.
-        @rtype: bool
-        """
-        return self.modified
-
-    def isOpenForEdit(self):
-        """Check to see if tree is open for edit
-        @return: True if tree is open for edit
-        @rtype: bool
-        """
-        return self.open_for_edit
-
-    def isReadOnly(self):
-        """Check to see if tree was opened readonly
-        @return: True if tree is open readonly
-        @rtype: bool
-        """
-        return self.open_readonly
-
-    def removeTag(self, tag):
-        """Remove a tagname from the tree
-        @param tag: Tagname to remove.
-        @type tag: str
-        @rtype: None
-        """
-        with self._lock:
-            _exc.checkStatus(
-                _TreeShr._TreeRemoveTag(self.ctx,
-                                        _C.c_char_p(_ver.tobytes(tag))))
-
-    @classmethodX
-    def setCurrent(self, tree=None, shot=None):
-        """Set current shot for specified tree
-        @param tree: Name of tree
-        @type tree: str
-        @param shot: Shot number
-        @type shot: int
-        @rtype None
-        """
-        if isinstance(self, (Tree,)):  # instancemethod: args shifted by one
-            shot = self.shot if tree is None else tree
-            tree = self.tree
-        _exc.checkStatus(
-            _TreeShr.TreeSetCurrentShotId(_C.c_char_p(_ver.tobytes(tree)),
-                                          _C.c_int32(int(shot))))
-
-    def setDefault(self, node):
-        """Set current default TreeNode.
-        @param node: Node to make current default. Relative node paths will use the current default when resolving node lookups.
-        @type node: TreeNode
-        @return: Previous default node
-        @rtype: TreeNode
-        """
-        old = self.default
-        if not isinstance(node, TreeNode):
-            raise TypeError('default node must be a TreeNode')
-        if not node.ctx.value == self.ctx.value:
-            raise TypeError('TreeNode must be in same tree')
-        _exc.checkStatus(
-            _TreeShr._TreeSetDefaultNid(self.ctx,
-                                        node._nid))
-        return old
 
     @classmethodX
     def setTimeContext(self, begin=None, end=None, delta=None):
@@ -1107,69 +1186,6 @@ class Tree(object):
         else:
             _exc.checkStatus(_TreeShr.TreeSetTimeContext(
                 begin_p, end_p, delta_p))
-
-    @staticmethod
-    def setVersionDate(date):
-        """Set date for retrieving versions if versioning is enabled in tree.
-        @param date: Reference date for data retrieval. Must be specified in the format: 'mmm-dd-yyyy hh:mm:ss' or 'now','today'
-        or 'yesterday'.
-        @type date: str
-        @rtype: None
-        """
-        _exc.checkStatus(
-            _TreeShr.TreeSetViewDate(_C.byref(_C.c_int64(_mds.DateToQuad(date).data()))))
-
-    def setVersionsInModel(self, flag):
-        """Enable/Disable versions in model
-        @param flag: True or False. True enables versions
-        @type flag: bool
-        @rtype: None
-        """
-        self.versions_in_model = bool(flag)
-
-    def setVersionsInPulse(self, flag):
-        """Enable/Disable versions in pulse
-        @param flag: True or False. True enables versions
-        @type flag: bool
-        @rtype: None
-        """
-        self.versions_in_pulse = bool(flag)
-
-    def versionsInModelEnabled(self):
-        """Check to see if versions in the model are enabled
-        @return: True if versions in model is enabled
-        @rtype: bool
-        """
-        return self.versions_in_model
-
-    def versionsInPulseEnabled(self):
-        """Check to see if versions in the pulse are enabled
-        @return: True if versions in pulse is enabled
-        @rtype: bool
-        """
-        return self.versions_in_pulse
-
-    def setAlternateCompression(self, flag):
-        """Enable/Disable alternate compression methods
-        @param flag: True or False. True enables alternate compression methods
-        @type flag: bool
-        @rtype: None
-        """
-        self.alternate_compression = bool(flag)
-
-    def alternateCompressionEnabled(self):
-        """Check to see if alternate compression methods are enabled
-        @return: True if alternate compression methods are enabled
-        @rtype: bool
-        """
-        return self.alternate_compression
-
-    def write(self):
-        """Write out edited tree.
-        @rtype: None
-        """
-        with self._lock:
-            _exc.checkStatus(_TreeShr._TreeWriteTree(self.pctx, 0, 0))
 
     def tcl(self, cmd, *args, **kwargs):
         """tree specific tcl command"""
@@ -1200,7 +1216,6 @@ class Tree(object):
         """Alias for self.top.copyTo(dst, **kwargs), see TreeNode.copyTo for details"""
         return self.top.copyTo(dst, **kwargs)
 
-
 # HINT: TreeNode begin  (maybe subclass of _scr.Int32 some day)
 class TreeNode(_dat.TreeRef, _dat.Data):
     """Class to represent an MDSplus node reference (nid).
@@ -1218,8 +1233,10 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     _path = None
 
     @property
-    def ctx(self): return _C.c_void_p(_TreeShr.TreeDbid()
-                                      ) if self.tree is None else self.tree.ctx
+    def ctx(self):
+        if self.tree is None:
+            return _C.c_void_p(_TreeShr.TreeDbid())
+        return self.tree.ctx
 
     @property
     def _lock(self): return self.tree._lock
@@ -1264,6 +1281,22 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             else:
                 self.tree = Tree()
             self._head = head
+
+    def getTree(self):
+        """Return Tree associated with this node
+        @return: Tree associated with this node
+        @rtype: Tree
+        """
+        return self.tree
+
+    def setTree(self, tree):
+        """Set Tree associated with this node
+        @param tree: Tree instance to associated with this node
+        @type tree: Tree
+        @rtype: original type
+        """
+        self.tree = tree
+        return self
 
     def copy(self, mode='NORMAL'):
         """returns the node with a local private instance of the tree opend in specified mode
@@ -1378,146 +1411,76 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         _exc.checkStatus(_TreeShr._TreeSetNci(
             self.ctx, self._nid, _C.byref(item)))
 
+    ### NCI Flags
+
     cached = Nci._nciProp(Flags.CACHED, "True if data is cached")
-    compress_segments = Flags._nciFlag(
-        Flags.COMPRESS_SEGMENTS, "should segments be compressed")
-    compressible = Nci._nciProp(
-        Flags.COMPRESSIBLE, "is the data stored in this node compressible")
-    essential = Flags._nciFlag(
-        Flags.ESSENTIAL, "essential action defined in this node")
-    do_not_compress = Flags._nciFlag(
-        Flags.DO_NOT_COMPRESS, "is this node set to disable any compression of data stored in it")
-    compress_on_put = Flags._nciFlag(
-        Flags.COMPRESS_ON_PUT, "should data be compressed when stored in this node")
-    include_in_pulse = Flags._nciFlag(
-        Flags.INCLUDE_IN_PULSE, "include subtree in pulse")
-    nid_reference = Nci._nciProp(
-        Flags.NID_REFERENCE, "node data contains nid references")
-    no_write_model = Flags._nciFlag(
-        Flags.NO_WRITE_MODEL, "is storing data in this node disabled if model tree")
-    no_write_shot = Flags._nciFlag(
-        Flags.NO_WRITE_SHOT, "is storing data in this node disabled if not model tree")
+    compress_segments = Flags._nciFlag(Flags.COMPRESS_SEGMENTS, "should segments be compressed")
+    compressible = Nci._nciProp(Flags.COMPRESSIBLE, "is the data stored in this node compressible")
+    essential = Flags._nciFlag(Flags.ESSENTIAL, "essential action defined in this node")
+    do_not_compress = Flags._nciFlag(Flags.DO_NOT_COMPRESS, "is this node set to disable any compression of data stored in it")
+    compress_on_put = Flags._nciFlag(Flags.COMPRESS_ON_PUT, "should data be compressed when stored in this node")
+    include_in_pulse = Flags._nciFlag(Flags.INCLUDE_IN_PULSE, "include subtree in pulse")
+    nid_reference = Nci._nciProp(Flags.NID_REFERENCE, "node data contains nid references")
+    no_write_model = Flags._nciFlag(Flags.NO_WRITE_MODEL, "is storing data in this node disabled if model tree")
+    no_write_shot = Flags._nciFlag(Flags.NO_WRITE_SHOT, "is storing data in this node disabled if not model tree")
     parent_state = Nci._nciProp(Flags.PARENT_STATE, "is parent disabled")
-    path_reference = Nci._nciProp(
-        Flags.PATH_REFERENCE, "node data contains path references")
+    path_reference = Nci._nciProp(Flags.PATH_REFERENCE, "node data contains path references")
     segmented = Nci._nciProp(Flags.SEGMENTED, "is data segmented")
-    setup_information = setup = Nci._nciProp(
-        Flags.SETUP_INFORMATION, "was this data present in the model")
-    state = Flags._nciFlag(
-        Flags.STATE, "Use on property instead. on/off state of this node. False=on,True=off.")
+    setup_information = setup = Nci._nciProp(Flags.SETUP_INFORMATION, "was this data present in the model")
+    state = Flags._nciFlag(Flags.STATE, "Use on property instead. on/off state of this node. False=on,True=off.")
     versions = Nci._nciProp(Flags.VERSIONS, "does the data contain versions")
     write_once = Flags._nciFlag(Flags.WRITE_ONCE, "is no write once")
 
+    ### NCI Properties
+
     brother = Nci._nciProp(Nci.BROTHER, "brother node of this node")
     child = Nci._nciProp(Nci.CHILD, "child node of this node")
-    class_str = Nci._nciProp(
-        Nci.CLASS_STR, "class name of the data stored in this node")
-    conglomerate_elt = Nci._nciProp(
-        Nci.CONGLOMERATE_ELT, "what element of a conglomerate is this node")
-    conglomerate_nids = Nci._nciProp(
-        Nci.CONGLOMERATE_NIDS, "what are the nodes of the conglomerate this node belongs to")
-    data_in_nci = Nci._nciProp(
-        Nci.DATA_IN_NCI, "is the data of this node stored in its nci")
-    depth = Nci._nciProp(
-        Nci.DEPTH, "what is the depth of this node in the tree structure")
-    dtype = Nci._nciProp(
-        Nci.DTYPE, "the numeric value of the data type stored in this node")
-    dtype_str = Nci._nciProp(
-        Nci.DTYPE_STR, "the name of the data type stored in this node")
-    error_on_put = Nci._nciProp(
-        Nci.ERROR_ON_PUT, "was there an error storing data for this node")
+    mclass = _class = Nci._nciProp(Nci.CLASS, "class of the data stored in this node")
+    class_str = Nci._nciProp(Nci.CLASS_STR, "class name of the data stored in this node")
+    compression_method = Nci._nciProp(Nci.COMPRESSION_METHOD, "numerical code for the compression method to use for this node")
+    compression_method_str = Nci._nciProp(Nci.COMPRESSION_METHOD_STR, "name of the compression algorithm to use for this node")
+    conglomerate_elt = conglomerate_element_index = Nci._nciProp(Nci.CONGLOMERATE_ELT, "what element of a conglomerate is this node")
+    conglomerate_nids = Nci._nciProp(Nci.CONGLOMERATE_NIDS, "what are the nodes of the conglomerate this node belongs to")
+    data_in_nci = Nci._nciProp(Nci.DATA_IN_NCI, "is the data of this node stored in its nci")
+    depth = Nci._nciProp(Nci.DEPTH, "what is the depth of this node in the tree structure")
+    dtype = Nci._nciProp(Nci.DTYPE, "the numeric value of the data type stored in this node")
+    dtype_str = Nci._nciProp(Nci.DTYPE_STR, "the name of the data type stored in this node")
+    error_on_put = Nci._nciProp(Nci.ERROR_ON_PUT, "was there an error storing data for this node")
     fullpath = Nci._nciProp(Nci.FULLPATH, "full node path")
     get_flags = Nci._nciProp(Nci.GET_FLAGS, "numeric flags mask for this node")
-    length = Nci._nciProp(
-        Nci.LENGTH, "length of data stored in this node (uncompressed)")
-    mclass = _class = Nci._nciProp(
-        Nci.CLASS, "class of the data stored in this node")
-    member = Nci._nciProp(
-        Nci.MEMBER, "first member immediate descendant of this node")
-    minpath = Nci._nciProp(
-        Nci.MINPATH, "minimum path string for this node based on current default node")
+    length = Nci._nciProp(Nci.LENGTH, "length of data stored in this node (uncompressed)")
+    member = Nci._nciProp(Nci.MEMBER, "first member immediate descendant of this node")
+    minpath = Nci._nciProp(Nci.MINPATH, "minimum path string for this node based on current default node")
     node_name = name = Nci._nciProp(Nci.NODE_NAME, "node name")
-    number_of_children = Nci._nciProp(
-        Nci.NUMBER_OF_CHILDREN, "number of children")
-    number_of_elts = Nci._nciProp(
-        Nci.NUMBER_OF_ELTS, "number of nodes in a conglomerate")
-    number_of_members = Nci._nciProp(
-        Nci.NUMBER_OF_MEMBERS, "number of members")
-    original_part_name = Nci._nciProp(
-        Nci.ORIGINAL_PART_NAME, "original part name of this node")
-    owner_id = Nci._nciProp(
-        Nci.OWNER_ID, "id of the last person to write to this node")
+    number_of_children = Nci._nciProp(Nci.NUMBER_OF_CHILDREN, "number of children")
+    number_of_elts = number_of_conglomerate_elements = Nci._nciProp(Nci.NUMBER_OF_ELTS, "number of nodes in a conglomerate")
+    number_of_members = Nci._nciProp(Nci.NUMBER_OF_MEMBERS, "number of members")
+    original_part_name = Nci._nciProp(Nci.ORIGINAL_PART_NAME, "original part name of this node")
+    owner_id = Nci._nciProp(Nci.OWNER_ID, "id of the last person to write to this node")
     parent = Nci._nciProp(Nci.PARENT, "parent node of this node")
-    parent_relationship = Nci._nciProp(
-        Nci.PARENT_RELATIONSHIP, "parent relationship")
+    parent_relationship = Nci._nciProp(Nci.PARENT_RELATIONSHIP, "parent relationship")
     rfa = Nci._nciProp(Nci.RFA, "data offset in datafile")
     rlength = Nci._nciProp(Nci.RLENGTH, "length of data in node")
     status = Nci._nciProp(Nci.STATUS, "status of action execution")
-    time_inserted = Nci._nciProp(
-        Nci.TIME_INSERTED, "64-bit timestamp when data was stored")
-    usage_str = Nci._nciProp(
-        Nci.USAGE_STR, "formal name of the usage of this node")
-    compression_method = Nci._nciProp(
-        Nci.COMPRESSION_METHOD, "numerical code for the compression method to use for this node")
-    compression_method_str = Nci._nciProp(
-        Nci.COMPRESSION_METHOD_STR, "name of the compression algorithm to use for this node")
-    
+    time_inserted = Nci._nciProp(Nci.TIME_INSERTED, "64-bit timestamp when data was stored")
+    usage_str = Nci._nciProp(Nci.USAGE_STR, "formal name of the usage of this node")
+
     __children_nids = Nci._nciProp(Nci.CHILDREN_NIDS)
     __member_nids = Nci._nciProp(Nci.MEMBER_NIDS)
 
+    @compression_method.setter
+    def compression_method(self, compression_method): 
+        self.setCompressionMethod(compression_method) 
+
     @property
     def children_nids(self):
-        """children nodes of this node"""
-        try:
-            return self.__children_nids
-        except _exc.TreeNNF:
-            return TreeNodeArray([], self.tree)
+        "All immediate children nodes"
+        return self.getChildren()
 
     @property
     def member_nids(self):
-        """all member immediate descendants of this node"""
-        try:
-            return self.__member_nids
-        except _exc.TreeNNF:
-            return TreeNodeArray([], tree=self.tree)
-
-    @property
-    def descendants(self):
-        "Get all the immediate descendants of this node"
-        return self.children_nids+self.member_nids
-
-    @property
-    def number_of_descendants(self):
-        "Number of immediate descendants of this node."
-        return self.number_of_children+self.number_of_members
-
-    @property
-    def disabled(self):
-        "is this node disabled (settable)"
-        return self.isDisabled()
-
-    @disabled.setter
-    def disabled(self, value): self.setOn(not value)
-
-    @property
-    def is_child(self):
-        "is this a child node?"
-        return self.isChild()
-
-    @property
-    def is_member(self):
-        "is this a member node?"
-        return self.isMember()
-
-    @property
-    def local_path(self):
-        "Return path relative to top of tree this node is part of."
-        return self.getLocalPath()
-
-    @property
-    def local_tree(self):
-        "Return name of the tree this node is part of."
-        return self.getLocalTree()
+        "All immediate member nodes"
+        return self.getMembers()
 
     @property
     def nid_number(self):
@@ -1543,28 +1506,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             self._nid = _C.c_int32(int(value))
 
     @property
-    def on(self):
-        "Is this node turned on (settable)"
-        return self.isOn()
-
-    @on.setter
-    def on(self, value): self.setOn(value)
-
-    @property
-    def parent_disabled(self):
-        return self.isParentDisabled()
-
-    @parent_disabled.setter
-    def parent_disabled(self, value): self.setParentOn(not value)
-
-    @property
-    def parent_on(self):
-        return self.isParentOn()
-
-    @parent_on.setter
-    def parent_on(self, value):  self.setParentOn(value)
-
-    @property
     def path(self):
         """path to this node"""
         try:
@@ -1573,61 +1514,693 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             return '%s /*tree closed*/' % self._path
         return self._path
 
+    ### NCI Derived Properties
+
     @property
-    def record(self):
-        "Data contents of node (settable)"
-        return self.getRecord()
+    def on(self):
+        "Is this node turned on (settable)"
+        return self.isOn()
 
-    @record.setter
-    def record(self, value):
-        self.putData(value)
+    @on.setter
+    def on(self, value):
+        self.setOn(value)
 
-    def data(self, *altvalue):
-        return self.record.data(*altvalue)
+    @property
+    def disabled(self):
+        "Is this node disabled (settable)"
+        return self.isDisabled()
+
+    @disabled.setter
+    def disabled(self, value):
+        self.setDisabled(value)
+
+    @property
+    def number_of_descendants(self):
+        "Number of immediate descendants (members and children) of this node."
+        return self.getNumDescendants()
+
+    @property
+    def parent_on(self):
+        "Is the parent node turned on (settable)"
+        return self.isParentOn()
+
+    @parent_on.setter
+    def parent_on(self, value):
+        self.setParentOn(value)
+
+    @property
+    def parent_disabled(self):
+        "Is the parent node disabled (settable)"
+        return self.isParentDisabled()
+
+    @parent_disabled.setter
+    def parent_disabled(self, value):
+        self.setParentDisabled(value)
+
+    @property
+    def is_child(self):
+        "Is this node a child of its parent"
+        return self.isChild()
+
+    @property
+    def is_member(self):
+        "Is this node a member of its parent"
+        return self.isMember()
+
+    @property
+    def descendants(self):
+        "All the immediate descendants (members and children) of this node"
+        return self.getDescendants()
 
     @property
     def subtree(self):
-        "Is this node a subtree reference. (settable)"
-        return str(self.usage) == "SUBTREE"
+        "Is this node a subtree reference (settable)"
+        return self.isSubtree()
 
     @subtree.setter
-    def subtree(self, value): self.setSubtree(value)
+    def subtree(self, value):
+        self.setSubtree(value)
 
     @property
-    def tags(self):
-        "All tags defined for this node. (settable - note existing tags replace by new tags"
-        return self.getTags()
-
-    @tags.setter
-    def tags(self, names): self.addTags(names, replace=True)
+    def local_path(self):
+        "Path relative to top of the tree this node is part of"
+        return self.getLocalPath()
 
     @property
-    def tag(self):
-        "tags defined for this node (settable to add a tag)."
-        return self.tags
-
-    @tag.setter
-    def tag(self, names): self.addTags(names, replace=False)
+    def local_tree(self):
+        "Name of the tree this node is part of"
+        return self.getLocalTree()
 
     @property
     def usage(self):
-        "Usage of this node."
-        return _scr.String(str(self.usage_str)[10:])
+        "Usage of this node (settable)"
+        return self.getUsage()
 
     @usage.setter
-    def usage(self, usage): self.setUsage(usage)
+    def usage(self, usage):
+        self.setUsage(usage)
 
-    @property
-    def compression_method(self):
-        "compression method to use for this node."
-        return _scr.String(str(self.compression_method_str))
+    ### NCI Properties getters/setters
+    
+    def setCompressionMethod(self, compression_method):
+        """Set compression method of a node
+        @param compression_method: name of compression method from predfined list.
+        @type usage: str
+        @rtype: None
+        """
+        try:
+          compressionmethodnum = _compression_methods_table[compression_method.lower()]
+        except KeyError:
+          raise CompressionMethodError(compression_method)
+        self._setNci(Nci.COMPRESSION_METHOD, compressionmethodnum)
 
-    @compression_method.setter
-    def compression_method(self, compression_method): 
-        self.setCompressionMethod(compression_method) 
+    ### NCI Flags getters/setters
+
+    def isCached(self):
+        """True if the data in this node is cached
+        @rtype: bool
+        """
+        return self.cached
+
+    def isCompressSegments(self):
+        """True if this node is set to compress segments
+        @rtype: bool
+        """
+        return self.compress_segments
+
+    def setCompressSegments(self, flag = True):
+        """Set compress segments state of this node
+        @param flag: State to set the compress segments characteristic
+        @type flag: bool
+        @return: self
+        """
+        self.compress_segments = flag
+        return self
+
+    def isCompressible(self):
+        """Return true if node contains data which can be compressed
+        @return: True of this node contains compressible data
+        @rtype: bool
+        """
+        return self.compressible
+
+    def isEssential(self):
+        """Return true if successful action completion is essential
+        @return: True if this node is marked essential.
+        @rtype: bool
+        """
+        return self.essential
+
+    def setEssential(self, flag = True):
+        """Set essential state of this node
+        @param flag: State to set the essential characteristic. This is used on action nodes when phases are dispacted.
+        @type flag: bool
+        @rtype: original type
+        """
+        self.essential = flag
+
+    def isDoNotCompress(self):
+        """Return true if compression is disabled for this node
+        @return: True if this node has compression disabled
+        @rtype: bool
+        """
+        return self.do_not_compress
+
+    def setDoNotCompress(self, flag = True):
+        """Set do not compress state of this node
+        @param flag: True do disable compression, False to enable compression
+        @type flag: bool
+        @rtype: None
+        """
+        self.do_not_compress = flag
+
+    def isCompressOnPut(self):
+        """Return true if node is set to compress on put
+        @return: True if compress on put
+        @rtype: bool
+        """
+        return self.compress_on_put
+
+    def setCompressOnPut(self, flag = True):
+        """Set compress on put state of this node
+        @param flag: State to set the compress on put characteristic
+        @type flag: bool
+        @rtype: original type
+        """
+        self.compress_on_put = flag
+
+    def isIncludeInPulse(self):
+        """Return true if this subtree is to be included in pulse file
+        @return: True if subtree is to be included in pulse file creation.
+        @rtype: bool
+        """
+        return self.include_in_pulse
+
+    def setIncludeInPulse(self, flag = True):
+        """Set include in pulse state of this node
+        @param flag: State to set the include in pulse characteristic.
+        If true and this node is the top node of a subtree the subtree will be included in the pulse.
+        @type flag: bool
+        @rtype: original type
+        """
+        self.include_in_pulse = flag
+
+    # TODO: This is very similar to Data.hasNodeReference() and the two are both available on TreeNode/TreeNodeArray
+    def hasNodeReferences(self):
+        """Return True if this node contains data that includes references
+        to other nodes in the same tree
+        @return: True of data references other nodes
+        @rtype: bool
+        """
+        return self.nid_reference
+
+    def isNoWriteModel(self):
+        """Return true if data storage to model is disabled for this node
+        @return: Return True if storing data in this node in the model tree is disabled
+        @rtype: bool
+        """
+        return self.no_write_model
+
+    def setNoWriteModel(self, flag = True):
+        """Set no write model state for this node
+        @param flag: State to set the no write in model characteristic.
+        If true then no data can be stored in this node in the model.
+        @type flag: bool
+        @rtype: original type
+        """
+        self.no_write_model = flag
+
+    def isNoWriteShot(self):
+        """Return true if data storage to pulse file is disabled for this node
+        @return: Return True if storing data in this node in the pulse tree is disabled
+        @rtype: bool
+        """
+        return self.no_write_shot
+
+    def setNoWriteShot(self, flag = True):
+        """Set no write shot state for this node
+        @param flag: State to set the no write in shot characteristic.
+        If true then no data can be stored in this node in a shot file.
+        @type flag: bool
+        @rtype: original type
+        """
+        self.no_write_shot = flag
+
+    def hasPathReferences(self):
+        """Return True if this node contains node references using paths.
+        This usually means the data references nodes from other subtrees.
+        @return: True if data contains node path references
+        @rtype: bool
+        """
+        return self.path_reference
+
+    def isSegmented(self):
+        """Return true if this node contains segmented records
+        @return: True if node contains segmented records
+        @rtype: bool
+        """
+        return self.segmented
+
+    def isSetup(self):
+        """Return true if data is setup information.
+        @return: True if data is setup information (originally written in the model)
+        @rtype: bool
+        """
+        return self.setup
+    
+    def containsVersions(self):
+        """Return true if this node contains data versions
+        @return: True if node contains versions
+        @rtype: bool
+        """
+        return self.versions
+
+    def isWriteOnce(self):
+        """Return true if node is set write once
+        @return: Return True if data overwrite in this node is disabled
+        @rtype: bool
+        """
+        return self.write_once
+    
+    def setWriteOnce(self, flag = True):
+        """Set write once state of node
+        @param flag: State to set the write once characteristic. If true then data can only be written if the node is empty.
+        @type flag: bool
+        @rtype: original type
+        """
+        self.write_once = flag
+
+    ### NCI Properties getters/setters
+
+    def getBrother(self):
+        """Return sibling of this node
+        @return: Sibling of this node
+        @rtype: TreeNode
+        """
+        return self.brother
+
+    def getChild(self):
+        """Return first child of this node.
+        @return: Return first child of this node or None if it has no children.
+        @rtype: TreeNode
+        """
+        return self.child
+
+    def getClassID(self):
+        """Return the numeric value of the class of data stored in this node
+        @return: MDSplus ID of the class of data stored in this node.
+        @rtype: int
+        """
+        return self.mclass
+    
+    def getClass(self):
+        """Return MDSplus class name of this node
+        @return: MDSplus class name of the data stored in this node.
+        @rtype: String
+        """
+        return self.class_str
+
+    def getCompressionMethodID(self):
+        """Return the numeric index of the compression method for this Node
+        @return: the numeric index of the compression method for this Node
+        @rtype: int
+        """
+        return self.compression_method
+
+    def getCompressionMethod(self):
+        """Return the name of the compression method for this Node
+        @return: the name of the compression method for this Node
+        @rtype: str
+        """
+        return self.compression_method_str
+
+    def getConglomerateElt(self):
+        """Return index of this node in a conglomerate
+        @return: element index of this node in a conglomerate. 0 if not in a conglomerate.
+        @rtype: Int32
+        """
+        return self.conglomerate_elt
+    getConglomerateElementIndex = getConglomerateElt
+
+    def getConglomerateNodes(self):
+        """Return TreeNodeArray of conglomerate elements
+        @return: Nodes in this conglomerate.
+        @rtype: TreeNodeArray
+        """
+        return self.conglomerate_nids
+    getConglomerateElements = getConglomerateNodes
+
+    def isDataInNci(self):
+        """Return True if the data is small enough, and therefore stored in the NCI
+        @return: True if the data is stored in the NCI
+        """
+        return self.data_in_nci
+
+    def getDepth(self):
+        """Get depth of this node in the tree
+        @return: number of levels between this node and the top of the currently opened tree.
+        @rtype: Int32
+        """
+        return self.depth
+
+    def getDtypeID(self):
+        """Return the numeric value of the data type stored in this node
+        @return: MDSplus data type ID of data stored in this node.
+        @rtype: int
+        """
+        return self.dtype
+
+    def getDtype(self):
+        """Return the name of the data type stored in this node
+        @return: MDSplus data type name of data stored in this node.
+        @rtype: String
+        """
+        return self.dtype_str
+
+    def hadErrorOnPut(self):
+        """Return true if there was an error storing data for this node
+        @return: True if there was an error storing data for this node
+        @rtype: bool
+        """
+        return self.error_on_put
+
+    def getFullPath(self):
+        """Return tuple of fullpaths
+        @return: Full node paths
+        @rtype: tuple of String's
+        """
+        return self.fullpath
+
+    def getFlags(self):
+        """Return the numeric flags mask for this node
+        @return: The numeric flags mask for this node
+        @rtype: int
+        """
+        return self.get_flags
+
+    def getLength(self):
+        """Return uncompressed data length of this node
+        @return: Uncompressed data length of this node
+        @rtype: int
+        """
+        return self.length
+
+    def getMember(self):
+        """Return first member node
+        @return: First member of thie node
+        @rtype: TreeNode
+        """
+        return self.member
+
+    def getMinPath(self):
+        """Return shortest path string for this node
+        @return: shortest path designation depending on the current node default and whether the node has tag names or not.
+        @rtype: String
+        """
+        return self.minpath
+
+    def getNid(self):
+        """Return node index
+        @return: Internal node index of this node
+        @rtype: int
+        """
+        return self.nid
+
+    def getNodeName(self):
+        """Return node name
+        @return: Node name of this node. 1 to 12 characters
+        @rtype: String
+        """
+        return self.node_name
+
+    def getNumChildren(self):
+        """Return number of children nodes.
+        @return: Number of children
+        @rtype: Int32
+        """
+        return self.number_of_children
+
+    def getNumElts(self):
+        """Return number of nodes in this conglomerate
+        @return: Number of nodes in this conglomerate or 0 if not in a conglomerate.
+        @rtype: Int32
+        """
+        return self.number_of_elts
+    getNumElements = getNumElts
+
+    def getNumMembers(self):
+        """Return number of members
+        @return: number of members
+        @rtype: int
+        """
+        return self.number_of_members
+
+    def getOriginalPartName(self):
+        """Return the original part name of node in conglomerate
+        @return: Original part name of this node when conglomerate was first instantiated.
+        @rtype: String
+        """
+        return self.original_part_name
+
+    def getOwnerId(self):
+        """Get id/gid value of account which wrote data to this node
+        @return: Return user id of last account used to write data to this node
+        @rtype: int
+        """
+        return self.owner_id
+
+    def getParent(self):
+        """Return parent of this node
+        @return: Parent of this node
+        @rtype: TreeNode
+        """
+        return self.parent
+    
+    def getPath(self):
+        """Return path of this node
+        @return: Path to this node.
+        @rtype: String
+        """
+        return self.path
+
+    def getRFA(self):
+        """Return the record file address (RFA), the offset into the datafile of the record
+        @return: The datafile offset of this record
+        @rtype: int
+        """
+        return self.rfa
+
+    def getCompressedLength(self):
+        """Return compressed data length of this node
+        @return: Compress data length of this node
+        @rtype: int
+        """
+        return self.rlength
+
+    def getStatus(self):
+        """Return action completion status
+        @return: action completion status stored by dispatcher if this node is a dispacted action. Low bit set is success.
+        @rtype: int
+        """
+        return self.status
+
+    def getFullPath(self):
+        """Return full path of this node
+        @return: full path specification of this node.
+        @rtype: String
+        """
+        return self.fullpath
+
+    def getTimeInserted(self):
+        """Return time data was written
+        @return: time data was written to this node as Uint64. Use answer.date to retrieve date/time string
+        @rtype: Uint64
+        """
+        return self.time_inserted
+
+    ### NCI Derived Properties getters/setters
+
+    def isOn(self):
+        """Return True if node is turned on, False if not.
+        @return: Return True if node is turned on
+        @rtype: bool
+        """
+        return (int(self.get_flags) & 3) == 0
+
+    def setOn(self, flag = True):
+        """Turn node on or off
+        @param flag: State to set the on characteristic.
+        If true then the node is turned on. If false the node is turned off.
+        @type flag: bool
+        @rtype: None
+        """
+        method = _TreeShr._TreeTurnOn if flag else _TreeShr._TreeTurnOff
+        _exc.checkStatus(method(self.ctx, self._nid))
+        return self
+
+    def isDisabled(self):
+        """Return true if this node is disabled (opposite of isOn)
+        @return: True if node is off
+        @rtype: bool
+        """
+        return not self.isOn()
+
+    def setDisabled(self, flag = True):
+        """Set this node disabled or not (opposite of setOn)
+        @rtype: None
+        """
+        self.setOn(not flag)
+        return self
+
+    def isChild(self):
+        """Return true if this is a child node
+        @return: True if this is a child node instead of a member node.
+        @rtype: bool
+        """
+        return int(self.parent_relationship) == Nci._IS_CHILD
+
+    def isMember(self):
+        """Return true if this is a member node
+        @return:  True if this is a member node
+        @rtype: bool
+        """
+        return int(self.parent_relationship) == Nci._IS_MEMBER
+
+    def isParentOn(self):
+        """Return True if parent is on
+        @return: Return True if parent is turned on
+        @rtype: bool
+        """
+        return (int(self.get_flags) & 2) == 0
+
+    def setParentOn(self, flag = True):
+        """Turn parent node on or off
+        @param flag: State to set the on characteristic.
+        If true then the node is turned on. If false the node is turned off.
+        @type flag: bool
+        @rtype: None
+        """
+        self.parent.on = flag
+
+    def isParentDisabled(self):
+        """Return True if parent is disabled
+        @return: Return True if parent is turned off
+        @rtype: bool
+        """
+        return not self.isParentOn()
+
+    def setParentDisabled(self, flag = True):
+        """Set this parent disabled or not (opposite of setParentOn)
+        @rtype: None
+        """
+        self.setParentOn(not flag)
+
+    def isSubtree(self):
+        """Return true if this Node is a subtree reference
+        @return: True if this Node is a subtree reference
+        @rtype: bool
+        """
+        return self.usage_str == "TreeUSAGE_SUBTREE"
+
+    def setSubtree(self, flag = True):
+        """Enable/Disable node as a subtree
+        @param flag: True to make node a subtree reference.
+        Node must be a child node with no descendants.
+        @type flag: bool
+        @rtype: original type
+        """
+        method = _TreeShr._TreeSetSubtree if flag else _TreeShr._TreeSetNoSubtree
+        _exc.checkStatus(method(self.ctx, self._nid))
+        return self
+    
+    def getLocalPath(self):
+        """Return path relative to top of local tree
+        @return: Path relative to top of local tree
+        @rtype: str
+        """
+        path = ''
+        top = self
+        while top.nid & 0xffffff:
+            if top.is_member:
+                delim = ':'
+            else:
+                delim = '.'
+            path = delim + top.node_name + path
+            top = top.parent
+        return path
+
+    def getLocalTree(self):
+        """Return tree containing this node
+        @return: Name of tree containing this node
+        @rtype: str
+        """
+        top = self
+        while top.nid & 0xffffff:
+            top = top.parent
+        if top.node_name == 'TOP':
+            return self.tree.tree
+        else:
+            return top.node_name
+
+    def getUsage(self):
+        """Return usage of this node
+        @return: usage of this node
+        @rtype: str
+        """
+        return _scr.String(str(self.usage_str)[10:])
+
+    def setUsage(self, usage):
+        """Set the usage of a node
+        @param usage: Usage string.
+        @type usage: str
+        @rtype: original type
+        """
+        try:
+            usagenum = _usage_table[usage.upper()]
+        except KeyError:
+            raise UsageError(usage)
+        _exc.checkStatus(
+            _TreeShr._TreeSetUsage(self.ctx,
+                                   self._nid,
+                                   _C.c_int32(usagenum)))
+        return self
+    
+    def getChildren(self):
+        """Return TreeNodeArray of children nodes.
+        @return: Children of this node
+        @rtype: TreeNodeArray
+        """
+        try:
+            return self.__children_nids
+        except _exc.TreeNNF:
+            return TreeNodeArray([], self.tree)
+
+    def getMembers(self):
+        """Return TreeNodeArray of this nodes members
+        @return: members of this node
+        @rtype: TreeNodeArray
+        """
+        try:
+            return self.__member_nids
+        except _exc.TreeNNF:
+            return TreeNodeArray([], self.tree)
+
+    def getDescendants(self):
+        """Return TreeNodeArray of first level descendants (children and members).
+        @return: First level descendants of this node
+        @rtype: TreeNodeArray
+        """
+        return self.getChildren() + self.getMembers()
+
+    def getNumDescendants(self):
+        """Return number of first level descendants (children and members)
+        @return: total number of first level descendants of this node
+        @rtype: int
+        """
+        return self.number_of_children + self.number_of_members
 
     ########################################
-    # End of Node Properties
+    # End of NCI Properties
     ########################################
 
     def __deepcopy__(self, dummy):
@@ -1695,6 +2268,34 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         except:
             return "NODEREF(%d)" % (self._nid.value,)
 
+    def __dir__(self):
+        """used for tab completion"""
+        return [str(n.node_name) for n in self.descendants]+_ver.superdir(TreeNode, self)
+
+    def dir(self):
+        """list descendants"""
+        for desc in self.descendants:
+            print('%-12s    %s' % (desc.node_name, desc.usage))
+
+    def tcl(self, cmd):
+        """Issue a tcl command with this node being the default node
+        @param cmd: tcl command string
+        @type cmd: str
+        @rtype: int
+        """
+        olddef = self.tree.default
+        self.tree.default = self
+        try:
+            return self.tree.tcl(cmd)
+        finally:
+            self.tree.default = olddef
+
+    def setDefault(self):
+        """Set compress segments state of this node
+        @rtype: None
+        """
+        self.tree.setDefault(self)
+
     def addDevice(self, name, model):
         """Add device descendant.
         @param name: Node name of device. 1-12 characters, no path delimiters
@@ -1732,6 +2333,46 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                 name = self.fullpath+":"+name
         return self.tree.addNode(name, usage)
 
+    @property
+    def tags(self):
+        "All tags defined for this node. (settable - note existing tags replace by new tags"
+        return self.getTags()
+
+    @tags.setter
+    def tags(self, names): self.addTags(names, replace=True)
+
+    @property
+    def tag(self):
+        "tags defined for this node (settable to add a tag)."
+        return self.tags
+
+    @tag.setter
+    def tag(self, names): self.addTags(names, replace=False)
+
+    def getTags(self):
+        """Return tags of this node
+        @return: Tag names pointing to this node
+        @rtype: ndarray
+        """
+        with self._lock:
+            ctx = _C.c_void_p(0)
+            tags = list()
+            fnt = _TreeShr._TreeFindNodeTags
+            fnt.restype = _C.c_void_p
+            while True:
+                tag_ptr = _TreeShr._TreeFindNodeTags(self.ctx,
+                                                     self._nid,
+                                                     _C.byref(ctx))
+                if not tag_ptr:
+                    break
+                try:
+                    value = _C.cast(tag_ptr, _C.c_char_p).value
+                    tags.append(_ver.tostr(value.rstrip()))
+                finally:
+                    _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
+        tags = _arr.Array(tags)
+        return tags
+
     def addTags(self, names, replace=False):
         """Add tag or list of tags to a node.
         Use replace=True if any existing tags should be removed.
@@ -1765,98 +2406,63 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                  self._nid,
                                  _C.c_char_p(str.encode(tag))))
 
-    def beginSegment(self, start, end, dim, array, idx=-1):
-        """Begin a record segment, rows_filled = 0
-        @param start: Index of first row of data
-        @type start: Data
-        @param end: Index of last row of data
-        @type end: Data
-        @param dim: Dimension information of segment
-        @type dim: Dimension
-        @param array: Initial data array. Defines shape of segment
-        @type array: Array
-        @rtype: None
+    def removeTag(self, tag):
+        """Remove a tagname from this node
+        @param tag: Tagname to remove from this node
+        @type tag: str
+        @rtype: original type
         """
-        start, end, dim, array = map(_dat.Data, (start, end, dim, array))
-        _exc.checkStatus(
-            _TreeShr._TreeBeginSegment(self.ctx,
-                                       self._nid,
-                                       _dat.Data.byref(start),
-                                       _dat.Data.byref(end),
-                                       _dat.Data.byref(dim),
-                                       _dat.Data.byref(array),
-                                       _C.c_int32(int(idx))))
+        try:
+            tag = _ver.tostr(tag)
+            n = self.tree.getNode('\\'+tag)
+            if n.nid != self.nid:
+                raise TreeNodeException(
+                    "Node %s does not have a tag called %s. That tag refers to %s" % (str(self), tag, str(n)))
+        except _exc.TreeNNF:
+            raise TreeNodeException("Tag %s is not defined" % (tag,))
+        self.tree.removeTag(tag)
+        return self
 
-    def beginSegmentResampled(self,start,end,dim,array,resNode,resFactor,idx=-1):
-        """Begin a resampled record segment, using an average, rows_filled = 0
-        @param start: Index of first row of data
-        @type start: Data
-        @param end: Index of last row of data
-        @type end: Data
-        @param dim: Dimension information of segment
-        @type dim: Dimension
-        @param array: Initial data array. Defines shape of segment
-        @type array: Array
-        @param resNode: TreeNode of the node to write the resampled data into
-        @type resNode: TreeNode
-        @param resFactor: Number of samples to resample together
-        @type resFactor: Data
+    def move(self, parent, newname=None):
+        """Move node to another location in the tree and optionally rename the node
+        @param parent: New parent of this node
+        @type parent: TreeNode
+        @param newname: Optional new node name of this node. 1-12 characters, no path delimiters.
+        @type newname: str
         @rtype: None
         """
-        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        if newname is None:
+            newname = _ver.tostr(self.node_name)
+        newpath = _ver.tostr(parent.path)
+        newpath += "." if self.isChild() else ":"
+        newpath += newname
         _exc.checkStatus(
-            _TreeShr._TreeBeginSegmentResampled(self.ctx,
-                                                self._nid,
-                                                _dat.Data.byref(start),
-                                                _dat.Data.byref(end),
-                                                _dat.Data.byref(dim),
-                                                _dat.Data.byref(array),
-                                                _C.c_int32(int(idx)),
-                                                resNode._nid,
-                                                _C.c_int32(int(resFactor))))
+            _TreeShr._TreeRenameNode(self.ctx,
+                                     self._nid,
+                                     _ver.tobytes(newpath)))
 
-    def beginSegmentMinMax(self,start,end,dim,array,resNode,resFactor,idx=-1):
-        """Begin a resampled record segment, using the min and max values
-        @param start: Index of first row of data
-        @type start: Data
-        @param end: Index of last row of data
-        @type end: Data
-        @param dim: Dimension information of segment
-        @type dim: Dimension
-        @param array: Initial data array. Defines shape of segment
-        @type array: Array
-        @param resNode: TreeNode of the node to write the resampled data into
-        @type resNode: TreeNode
-        @param resFactor: Number of samples to resample together
-        @type resFactor: Data
-        @rtype: None
+    def rename(self, newname):
+        """Rename node this node
+        @param newname: new name of this node. 1-12 characters, no path delimiters.
+        @type newname: str
+        @rtype: original type
         """
-        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
-        _exc.checkStatus(
-            _TreeShr._TreeBeginSegmentMinMax(self.ctx,
+        if newname.find(':') >= 0 or newname.find('.') >= 0:
+            raise TreeNodeException(
+                "Invalid node name, do not include path delimiters in nodename")
+        with self._lock:
+            olddefault = self.tree.default
+            try:
+                self.tree.setDefault(self.parent)
+                if self.isChild():
+                    newname = "."+_ver.tostr(newname)
+                _exc.checkStatus(
+                    _TreeShr._TreeRenameNode(self.ctx,
                                              self._nid,
-                                             _dat.Data.byref(start),
-                                             _dat.Data.byref(end),
-                                             _dat.Data.byref(dim),
-                                             _dat.Data.byref(array),
-                                             _C.c_int32(int(idx)),
-                                             resNode._nid,
-                                             _C.c_int32(int(resFactor))))
-
-    def beginTimestampedSegment(self,array,idx=-1):
-        """Allocate space for a timestamped segment
-        @param array: Initial data array to define shape of segment
-        @type array: Array
-        @param idx: Optional segment index. Defaults to -1 meaning next segment.
-        @type idx: int
-        @rtype: None
-        """
-        array = _dat.Data(array)
-        _exc.checkStatus(
-            _TreeShr._TreeBeginTimestampedSegment(self.ctx,
-                                                  self._nid,
-                                                  _dat.Data.byref(array),
-                                                  _C.c_int32(int(idx))))
+                                             _C.c_char_p(_ver.tobytes(newname))))
+            finally:
+                self.tree.setDefault(olddefault)
+        return self
 
     def compare(self, value, contents=True):
         """Returns True if this node contains the same data as specified in the value argument
@@ -1876,13 +2482,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         else:
             return isinstance(value, TreeNode) and (str(self) == str(value)) and (self.tree == value.tree)
 
-    def containsVersions(self):
-        """Return true if this node contains data versions
-        @return: True if node contains versions
-        @rtype: bool
-        """
-        return self.versions
-
     def delete(self):
         """Delete this node from the tree
         @rtype: None
@@ -1894,15 +2493,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         @rtype: None
         """
         self.putData(None)
-
-    def dir(self):
-        """list descendants"""
-        for desc in self.descendants:
-            print('%-12s    %s' % (desc.node_name, desc.usage))
-
-    def __dir__(self):
-        """used for tab completion"""
-        return [str(n.node_name) for n in self.descendants]+_ver.superdir(TreeNode, self)
 
     def dispatch(self, wait=True):
         """Dispatch an action node
@@ -1959,54 +2549,14 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     def fromDescriptor(cls, d):
         return cls(_C.cast(d.pointer, _C.POINTER(_C.c_int32)).contents.value, d.tree)
 
-    def getBrother(self):
-        """Return sibling of this node
-        @return: Sibling of this node
-        @rtype: TreeNode
-        """
-        return self.brother
+    @property
+    def record(self):
+        "Data contents of node (settable)"
+        return self.getRecord()
 
-    def getChild(self):
-        """Return first child of this node.
-        @return: Return first child of this node or None if it has no children.
-        @rtype: TreeNode
-        """
-        return self.child
-
-    def getChildren(self):
-        """Return TreeNodeArray of children nodes.
-        @return: Children of this node
-        @rtype: TreeNodeArray
-        """
-        return self.children_nids
-
-    def getClass(self):
-        """Return MDSplus class name of this node
-        @return: MDSplus class name of the data stored in this node.
-        @rtype: String
-        """
-        return self.class_str
-
-    def getCompressedLength(self):
-        """Return compressed data length of this node
-        @return: Compress data length of this node
-        @rtype: int
-        """
-        return self.rlength
-
-    def getConglomerateElt(self):
-        """Return index of this node in a conglomerate
-        @return: element index of this node in a conglomerate. 0 if not in a conglomerate.
-        @rtype: Int32
-        """
-        return self.conglomerate_elt
-
-    def getConglomerateNodes(self):
-        """Return TreeNodeArray of conglomerate elements
-        @return: Nodes in this conglomerate.
-        @rtype: TreeNodeArray
-        """
-        return self.conglomerate_nids
+    @record.setter
+    def record(self, value):
+        self.putData(value)
 
     def getRecord(self, *altvalue):
         """Return data
@@ -2023,33 +2573,31 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             raise _exc.MDSplusException(status)
     getData = getRecord
 
+    def putData(self, value):
+        """Store data
+        @param value: Data to store in this node.
+        @type value: Data
+        @rtype: None
+        """
+        if value is None:
+            ref = _C.c_void_p(0)
+        else:
+            if isinstance(value, _dat.TreeRef) and value.__hasBadTreeReferences__(self.tree):
+                data = value.__fixTreeReferences__(self.tree)
+            else:
+                data = _dat.Data(value)
+            ref = _dat.Data.byref(data)
+        _exc.checkStatus(_TreeShr._TreePutRecord(self.ctx, self._nid, ref, 0))
+
+    def data(self, *altvalue):
+        return self.record.data(*altvalue)
+
     def getDataNoRaise(self):
         """Return data
         @return: data stored in this node
         @rtype: Data
         """
         return self.getData(None)
-
-    def getDepth(self):
-        """Get depth of this node in the tree
-        @return: number of levels between this node and the top of the currently opened tree.
-        @rtype: Int32
-        """
-        return self.depth
-
-    def getDescendants(self):
-        """Return TreeNodeArray of first level descendants (children and members).
-        @return: First level descendants of this node
-        @rtype: TreeNodeArray
-        """
-        return self.descendants
-
-    def getDtype(self):
-        """Return the name of the data type stored in this node
-        @return: MDSplus data type name of data stored in this node.
-        @rtype: String
-        """
-        return self.dtype_str
 
     def getExtendedAttribute(self, name):
         """Get extended attribute of node
@@ -2071,6 +2619,26 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         else:
             return None
 
+    def setExtendedAttribute(self, name, value):
+        """Set extended attribute of node
+        @param name: Name of attribute
+        @type name: str
+        @param value: value of attribute
+        @type value: MDSplus data type
+        """
+        if value is None:
+            ref = _C.c_void_p(0)
+        else:
+            data = _dat.Data(value)
+            if data.__hasBadTreeReferences__(self.tree):
+                data = data.__fixTreeReferences__(self.tree)
+            ref = _dat.Data.byref(data)
+        _exc.checkStatus(
+            _TreeShr._TreeSetXNci(self.ctx,
+                                  self.nid,
+                                  _C.c_char_p(_ver.tobytes(name)),
+                                  ref))
+
     def getExtendedAttributes(self):
         """Get all extended attributes of a node
         @return: Dictionary of attributes or None if no attributes
@@ -2088,77 +2656,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             return ans
         else:
             return None
-
-    def getFullPath(self):
-        """Return full path of this node
-        @return: full path specification of this node.
-        @rtype: String
-        """
-        return self.fullpath
-
-    def getLength(self):
-        """Return uncompressed data length of this node
-        @return: Uncompressed data length of this node
-        @rtype: int
-        """
-        return self.length
-
-    def getLocalTree(self):
-        """Return tree containing this node
-        @return: Name of tree containing this node
-        @rtype: str
-        """
-        top = self
-        while top.nid & 0xffffff:
-            top = top.parent
-        if top.node_name == 'TOP':
-            return self.tree.tree
-        else:
-            return top.node_name
-
-    def getLocalPath(self):
-        """Return path relative to top of local tree
-        @return: Path relative to top of local tree
-        @rtype: str
-        """
-        path = ''
-        top = self
-        while top.nid & 0xffffff:
-            if top.is_member:
-                delim = ':'
-            else:
-                delim = '.'
-            path = delim + top.node_name + path
-            top = top.parent
-        return path
-
-    def getMember(self):
-        """Return first member node
-        @return: First member of thie node
-        @rtype: TreeNode
-        """
-        return self.member
-
-    def getMembers(self):
-        """Return TreeNodeArray of this nodes members
-        @return: members of this node
-        @rtype: TreeNodeArray
-        """
-        return self.member_nids
-
-    def getMinPath(self):
-        """Return shortest path string for this node
-        @return: shortest path designation depending on the current node default and whether the node has tag names or not.
-        @rtype: String
-        """
-        return self.minpath
-
-    def getNid(self):
-        """Return node index
-        @return: Internal node index of this node
-        @rtype: int
-        """
-        return self.nid
 
     def getNode(self, path):
         """Return tree node where path is relative to this node
@@ -2178,13 +2675,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                                _C.byref(nidout)))
             return TreeNode(int(nidout.value), self.tree)
         return ans
-
-    def getNodeName(self):
-        """Return node name
-        @return: Node name of this node. 1 to 12 characters
-        @rtype: String
-        """
-        return self.node_name
 
     def getNodeWild(self, path, *usage):
         """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found.
@@ -2222,34 +2712,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             pass
         _TreeShr._TreeFindNodeEnd(self.ctx, _C.pointer(ctx))
 
-    def getNumChildren(self):
-        """Return number of children nodes.
-        @return: Number of children
-        @rtype: Int32
-        """
-        return self.number_of_children
-
-    def getNumDescendants(self):
-        """Return number of first level descendants (children and members)
-        @return: total number of first level descendants of this node
-        @rtype: int
-        """
-        return self.number_of_descendants
-
-    def getNumElts(self):
-        """Return number of nodes in this conglomerate
-        @return: Number of nodes in this conglomerate or 0 if not in a conglomerate.
-        @rtype: Int32
-        """
-        return self.number_of_elts
-
-    def getNumMembers(self):
-        """Return number of members
-        @return: number of members
-        @rtype: int
-        """
-        return self.number_of_members
-
     def getNumSegments(self):
         """return number of segments contained in this node
         @rtype: int
@@ -2260,34 +2722,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                          self._nid,
                                          _C.byref(num)))
         return num.value
-
-    def getOriginalPartName(self):
-        """Return the original part name of node in conglomerate
-        @return: Original part name of this node when conglomerate was first instantiated.
-        @rtype: String
-        """
-        return self.original_part_name
-
-    def getOwnerId(self):
-        """Get id/gid value of account which wrote data to this node
-        @return: Return user id of last account used to write data to this node
-        @rtype: int
-        """
-        return self.owner_id
-
-    def getParent(self):
-        """Return parent of this node
-        @return: Parent of this node
-        @rtype: TreeNode
-        """
-        return self.parent
-
-    def getPath(self):
-        """Return path of this node
-        @return: Path to this node.
-        @rtype: String
-        """
-        return self.path
 
     def getSegment(self, idx):
         """Return segment
@@ -2426,190 +2860,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         else:
             return None
 
-    def getStatus(self):
-        """Return action completion status
-        @return: action completion status stored by dispatcher if this node is a dispacted action. Low bit set is success.
-        @rtype: int
-        """
-        return self.status
-
-    def getTimeInserted(self):
-        """Return time data was written
-        @return: time data was written to this node as Uint64. Use answer.date to retrieve date/time string
-        @rtype: Uint64
-        """
-        return self.time_inserted
-
-    def getTags(self):
-        """Return tags of this node
-        @return: Tag names pointing to this node
-        @rtype: ndarray
-        """
-        with self._lock:
-            ctx = _C.c_void_p(0)
-            tags = list()
-            fnt = _TreeShr._TreeFindNodeTags
-            fnt.restype = _C.c_void_p
-            while True:
-                tag_ptr = _TreeShr._TreeFindNodeTags(self.ctx,
-                                                     self._nid,
-                                                     _C.byref(ctx))
-                if not tag_ptr:
-                    break
-                try:
-                    value = _C.cast(tag_ptr, _C.c_char_p).value
-                    tags.append(_ver.tostr(value.rstrip()))
-                finally:
-                    _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
-        tags = _arr.Array(tags)
-        return tags
-
-    def getTree(self):
-        """Return Tree associated with this node
-        @return: Tree associated with this node
-        @rtype: Tree
-        """
-        return self.tree
-
-    def getUsage(self):
-        """Return usage of this node
-        @return: usage of this node
-        @rtype: str
-        """
-        return self.usage
-
-    def hasNodeReferences(self):
-        """Return True if this node contains data that includes references
-        to other nodes in the same tree
-        @return: True of data references other nodes
-        @rtype: bool
-        """
-        return self.node_reference
-
-    def hasPathReferences(self):
-        """Return True if this node contains node references using paths.
-        This usually means the data references nodes from other subtrees.
-        @return: True if data contains node path references
-        @rtype: bool
-        """
-        return self.path_reference
-
-    def isChild(self):
-        """Return true if this is a child node
-        @return: True if this is a child node instead of a member node.
-        @rtype: bool
-        """
-        return int(self.parent_relationship) == Nci._IS_CHILD
-
-    def isCompressible(self):
-        """Return true if node contains data which can be compressed
-        @return: True of this node contains compressible data
-        @rtype: bool
-        """
-        return self.compressible
-
-    def isCompressOnPut(self):
-        """Return true if node is set to compress on put
-        @return: True if compress on put
-        @rtype: bool
-        """
-        return self.compress_on_put
-
-    def isCompressSegments(self):
-        """Return true if node is set to compress segments"""
-        return self.compress_segments
-
-    def isDisabled(self):
-        """Return true if this node is disabled (opposite of isOn)
-        @return: True if node is off
-        @rtype: bool
-        """
-        return not self.isOn()
-
-    def isDoNotCompress(self):
-        """Return true if compression is disabled for this node
-        @return: True if this node has compression disabled
-        @rtype: bool
-        """
-        return self.do_not_compress
-
-    def isEssential(self):
-        """Return true if successful action completion is essential
-        @return: True if this node is marked essential.
-        @rtype: bool
-        """
-        return self.essential
-
-    def isIncludeInPulse(self):
-        """Return true if this subtree is to be included in pulse file
-        @return: True if subtree is to be included in pulse file creation.
-        @rtype: bool
-        """
-        return self.include_in_pulse
-
-    def isMember(self):
-        """Return true if this is a member node
-        @return:  True if this is a member node
-        @rtype: bool
-        """
-        return int(self.parent_relationship) == Nci._IS_MEMBER
-
-    def isNoWriteModel(self):
-        """Return true if data storage to model is disabled for this node
-        @return: Return True if storing data in this node in the model tree is disabled
-        @rtype: bool
-        """
-        return self.no_write_model
-
-    def isNoWriteShot(self):
-        """Return true if data storage to pulse file is disabled for this node
-        @return: Return True if storing data in this node in the pulse tree is disabled
-        @rtype: bool
-        """
-        return self.no_write_shot
-
-    def isOn(self):
-        """Return True if node is turned on, False if not.
-        @return: Return True if node is turned on
-        @rtype: bool
-        """
-        return (int(self.get_flags) & 3) == 0
-
-    def isParentDisabled(self):
-        """Return True if parent is disabled
-        @return: Return True if parent is turned off
-        @rtype: bool
-        """
-        return not self.isParentOn()
-
-    def isParentOn(self):
-        """Return True if parent is on
-        @return: Return True if parent is turned on
-        @rtype: bool
-        """
-        return (int(self.get_flags) & 2) == 0
-
-    def isSegmented(self):
-        """Return true if this node contains segmented records
-        @return: True if node contains segmented records
-        @rtype: bool
-        """
-        return self.segmented
-
-    def isSetup(self):
-        """Return true if data is setup information.
-        @return: True if data is setup information (originally written in the model)
-        @rtype: bool
-        """
-        return self.setup
-
-    def isWriteOnce(self):
-        """Return true if node is set write once
-        @return: Return True if data overwrite in this node is disabled
-        @rtype: bool
-        """
-        return self.write_once
-
     def makeSegment(self, start, end, dim, array, idx=-1, rows_filled=-1):
         """Make a record segment
         @param start: Index of first row of data
@@ -2639,7 +2889,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                           _dat.Data.byref(array),
                                           _C.c_int32(int(idx)),
                                           _C.c_int32(int(rows_filled))))
-
 
     def makeSegmentResampled(self,start,end,dim,array,resNode,resFactor,idx=-1,rows_filled=-1):
         """Make a resampled record segment, using an average
@@ -2676,7 +2925,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                                    resNode._nid,
                                                    _C.c_int32(int(resFactor))))
 
-
     def makeSegmentMinMax(self,start,end,dim,array,resNode,resFactor,idx=-1,rows_filled=-1):
         """Make a resampled record segment, using the min and max values
         @param start: Index of first row of data
@@ -2712,43 +2960,98 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                                 resNode._nid,
                                                 _C.c_int32(int(resFactor))))
 
-    def move(self,parent,newname=None):
-        """Move node to another location in the tree and optionally rename the node
-        @param parent: New parent of this node
-        @type parent: TreeNode
-        @param newname: Optional new node name of this node. 1-12 characters, no path delimiters.
-        @type newname: str
+    def beginSegment(self, start, end, dim, array, idx=-1):
+        """Begin a record segment, rows_filled = 0
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
         @rtype: None
         """
-        if newname is None:
-            newname = _ver.tostr(self.node_name)
-        newpath = _ver.tostr(parent.path)
-        newpath += "." if self.isChild() else ":"
-        newpath += newname
+        start, end, dim, array = map(_dat.Data, (start, end, dim, array))
         _exc.checkStatus(
-            _TreeShr._TreeRenameNode(self.ctx,
-                                     self._nid,
-                                     _ver.tobytes(newpath)))
+            _TreeShr._TreeBeginSegment(self.ctx,
+                                       self._nid,
+                                       _dat.Data.byref(start),
+                                       _dat.Data.byref(end),
+                                       _dat.Data.byref(dim),
+                                       _dat.Data.byref(array),
+                                       _C.c_int32(int(idx))))
 
-    def putData(self, value):
-        """Store data
-        @param value: Data to store in this node.
-        @type value: Data
+    def beginSegmentResampled(self,start,end,dim,array,resNode,resFactor,idx=-1):
+        """Begin a resampled record segment, using an average, rows_filled = 0
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
         @rtype: None
         """
-        if value is None:
-            ref = _C.c_void_p(0)
-        else:
-            if isinstance(value, _dat.TreeRef) and value.__hasBadTreeReferences__(self.tree):
-                data = value.__fixTreeReferences__(self.tree)
-            else:
-                data = _dat.Data(value)
-            ref = _dat.Data.byref(data)
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
         _exc.checkStatus(
-            _TreeShr._TreePutRecord(self.ctx,
-                                    self._nid,
-                                    ref,
-                                    0))
+            _TreeShr._TreeBeginSegmentResampled(self.ctx,
+                                                self._nid,
+                                                _dat.Data.byref(start),
+                                                _dat.Data.byref(end),
+                                                _dat.Data.byref(dim),
+                                                _dat.Data.byref(array),
+                                                _C.c_int32(int(idx)),
+                                                resNode._nid,
+                                                _C.c_int32(int(resFactor))))
+
+    def beginSegmentMinMax(self,start,end,dim,array,resNode,resFactor,idx=-1):
+        """Begin a resampled record segment, using the min and max values
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
+        @rtype: None
+        """
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        _exc.checkStatus(
+            _TreeShr._TreeBeginSegmentMinMax(self.ctx,
+                                             self._nid,
+                                             _dat.Data.byref(start),
+                                             _dat.Data.byref(end),
+                                             _dat.Data.byref(dim),
+                                             _dat.Data.byref(array),
+                                             _C.c_int32(int(idx)),
+                                             resNode._nid,
+                                             _C.c_int32(int(resFactor))))
+
+    def beginTimestampedSegment(self,array,idx=-1):
+        """Allocate space for a timestamped segment
+        @param array: Initial data array to define shape of segment
+        @type array: Array
+        @param idx: Optional segment index. Defaults to -1 meaning next segment.
+        @type idx: int
+        @rtype: None
+        """
+        array = _dat.Data(array)
+        _exc.checkStatus(
+            _TreeShr._TreeBeginTimestampedSegment(self.ctx,
+                                                  self._nid,
+                                                  _dat.Data.byref(array),
+                                                  _C.c_int32(int(idx))))
 
     def putRow(self, bufsize, data, timestamp):
         """Load a timestamped segment row
@@ -2825,151 +3128,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                                  _C.c_int32(int(idx)),
                                                  _C.c_int32(int(rows_filled))))
 
-    def removeTag(self, tag):
-        """Remove a tagname from this node
-        @param tag: Tagname to remove from this node
-        @type tag: str
-        @rtype: original type
-        """
-        try:
-            tag = _ver.tostr(tag)
-            n = self.tree.getNode('\\'+tag)
-            if n.nid != self.nid:
-                raise TreeNodeException(
-                    "Node %s does not have a tag called %s. That tag refers to %s" % (str(self), tag, str(n)))
-        except _exc.TreeNNF:
-            raise TreeNodeException("Tag %s is not defined" % (tag,))
-        self.tree.removeTag(tag)
-        return self
-
-    def rename(self, newname):
-        """Rename node this node
-        @param newname: new name of this node. 1-12 characters, no path delimiters.
-        @type newname: str
-        @rtype: original type
-        """
-        if newname.find(':') >= 0 or newname.find('.') >= 0:
-            raise TreeNodeException(
-                "Invalid node name, do not include path delimiters in nodename")
-        with self._lock:
-            olddefault = self.tree.default
-            try:
-                self.tree.setDefault(self.parent)
-                if self.isChild():
-                    newname = "."+_ver.tostr(newname)
-                _exc.checkStatus(
-                    _TreeShr._TreeRenameNode(self.ctx,
-                                             self._nid,
-                                             _C.c_char_p(_ver.tobytes(newname))))
-            finally:
-                self.tree.setDefault(olddefault)
-        return self
-
-    def setCompressOnPut(self, flag):
-        """Set compress on put state of this node
-        @param flag: State to set the compress on put characteristic
-        @type flag: bool
-        @rtype: original type
-        """
-        self.compress_on_put = flag
-
-    def setCompressSegments(self, flag):
-        """Set compress segments state of this node
-        @param flag: State to set the compress segments characteristic
-        @type flag: bool
-        @rtype: original type
-        """
-        self.compress_segments = flag
-
-    def setDefault(self):
-        """Set compress segments state of this node
-        @rtype: None
-        """
-        self.tree.setDefault(self)
-
-    def setDoNotCompress(self, flag):
-        """Set do not compress state of this node
-        @param flag: True do disable compression, False to enable compression
-        @type flag: bool
-        @rtype: None
-        """
-        self.do_not_compress = flag
-
-    def setEssential(self, flag):
-        """Set essential state of this node
-        @param flag: State to set the essential characteristic. This is used on action nodes when phases are dispacted.
-        @type flag: bool
-        @rtype: original type
-        """
-        self.essential = flag
-
-    def setExtendedAttribute(self, name, value):
-        """Set extended attribute of node
-        @param name: Name of attribute
-        @type name: str
-        @param value: value of attribute
-        @type value: MDSplus data type
-        """
-        if value is None:
-            ref = _C.c_void_p(0)
-        else:
-            data = _dat.Data(value)
-            if data.__hasBadTreeReferences__(self.tree):
-                data = data.__fixTreeReferences__(self.tree)
-            ref = _dat.Data.byref(data)
-        _exc.checkStatus(
-            _TreeShr._TreeSetXNci(self.ctx,
-                                  self.nid,
-                                  _C.c_char_p(_ver.tobytes(name)),
-                                  ref))
-
-    def setIncludeInPulse(self, flag):
-        """Set include in pulse state of this node
-        @param flag: State to set the include in pulse characteristic.
-        If true and this node is the top node of a subtree the subtree will be included in the pulse.
-        @type flag: bool
-        @rtype: original type
-        """
-        self.include_in_pulse = flag
-
-    def setNoWriteModel(self, flag):
-        """Set no write model state for this node
-        @param flag: State to set the no write in model characteristic.
-        If true then no data can be stored in this node in the model.
-        @type flag: bool
-        @rtype: original type
-        """
-        self.no_write_model = flag
-
-    def setNoWriteShot(self, flag):
-        """Set no write shot state for this node
-        @param flag: State to set the no write in shot characteristic.
-        If true then no data can be stored in this node in a shot file.
-        @type flag: bool
-        @rtype: original type
-        """
-        self.no_write_shot = flag
-
-    def setParentOn(self, flag):
-        """Turn parent node on or off
-        @param flag: State to set the on characteristic.
-        If true then the node is turned on. If false the node is turned off.
-        @type flag: bool
-        @rtype: None
-        """
-        self.parent.on = flag
-
-    def setOn(self, flag):
-        """Turn node on or off
-        @param flag: State to set the on characteristic.
-        If true then the node is turned on. If false the node is turned off.
-        @type flag: bool
-        @rtype: None
-        """
-        method = _TreeShr._TreeTurnOn if flag else _TreeShr._TreeTurnOff
-        _exc.checkStatus(method(self.ctx, self._nid))
-        return self
-
     def setSegmentScale(self, scale):
         """sets the scale expression of a segmetned Node
         @param scale: expression for the data field; should contain $VALUE
@@ -3000,62 +3158,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                           self._nid,
                                           _dat.Data.byref(scale)))
 
-    def setSubtree(self, flag):
-        """Enable/Disable node as a subtree
-        @param flag: True to make node a subtree reference.
-        Node must be a child node with no descendants.
-        @type flag: bool
-        @rtype: original type
-        """
-        method = _TreeShr._TreeSetSubtree if flag else _TreeShr._TreeSetNoSubtree
-        _exc.checkStatus(method(self.ctx, self._nid))
-        return self
-
-    def setUsage(self, usage):
-        """Set the usage of a node
-        @param usage: Usage string.
-        @type usage: str
-        @rtype: original type
-        """
-        try:
-            usagenum = _usage_table[usage.upper()]
-        except KeyError:
-            raise UsageError(usage)
-        _exc.checkStatus(
-            _TreeShr._TreeSetUsage(self.ctx,
-                                   self._nid,
-                                   _C.c_int32(usagenum)))
-        return self
-
-    def setCompressionMethod(self, compression_method):
-        """Set the usage of a node
-        @param compression_method: name of compression method from predfined list.
-        @type usage: str
-        @rtype: original type
-        """
-        try:
-          compressionmethodnum = _compression_methods_table[compression_method.lower()]
-        except KeyError:
-          raise CompressionMethodError(compression_method)
-        self._setNci(Nci.COMPRESSION_METHOD[0], compressionmethodnum)
-     
-    def setTree(self, tree):
-        """Set Tree associated with this node
-        @param tree: Tree instance to associated with this node
-        @type tree: Tree
-        @rtype: original type
-        """
-        self.tree = tree
-        return self
-
-    def setWriteOnce(self, flag):
-        """Set write once state of node
-        @param flag: State to set the write once characteristic. If true then data can only be written if the node is empty.
-        @type flag: bool
-        @rtype: original type
-        """
-        self.write_once = flag
-
     def setRowsFilled(self, rows_filled=-1):
         """ updates the rows_filled value; influences the length of the last segment
         @param rows_filled: length of last segment
@@ -3066,19 +3168,6 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             _TreeShr._TreeSetRowsFilled(self.ctx,
                                         self._nid,
                                         _C.c_int32(int(rows_filled))))
-
-    def tcl(self, cmd):
-        """Issue a tcl command with this node being the default node
-        @param cmd: tcl command string
-        @type cmd: str
-        @rtype: int
-        """
-        olddef = self.tree.default
-        self.tree.default = self
-        try:
-            return self.tree.tcl(cmd)
-        finally:
-            self.tree.default = olddef
 
     def updateSegment(self, start, end, dim, idx):
         """Update a segment
