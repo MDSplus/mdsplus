@@ -304,24 +304,48 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, +) case DTYPE_BU : Operate(uint8_t, +) case DTYPE_W
-        : Operate(uint16_t, +) case DTYPE_WU : Operate(uint16_t, +) case DTYPE_L
-        : Operate(uint32_t, +) case DTYPE_LU : Operate(uint32_t, +) case DTYPE_Q
-        : Operate(int64_t, +) case DTYPE_QU : Operate(uint64_t, +) case DTYPE_O
-        : Operate128(int128, add) case DTYPE_OU
-        : Operate128(uint128, add) case DTYPE_F
-        : OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +) case DTYPE_FS
-        : OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +) case DTYPE_D
-        : OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +) case DTYPE_G
-        : OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +) case DTYPE_FT
-        : OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +) case DTYPE_FC
-        : OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +) case DTYPE_FSC
-        : OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +) case DTYPE_GC
-        : OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +) case DTYPE_DC
-        : OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +) case DTYPE_FTC
-        : OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +) default
-        : return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, +); 
+    case DTYPE_BU : 
+      Operate(uint8_t, +); 
+    case DTYPE_W: 
+      Operate(uint16_t, +); 
+    case DTYPE_WU : 
+      Operate(uint16_t, +); 
+    case DTYPE_L: 
+      Operate(uint32_t, +); 
+    case DTYPE_LU : 
+      Operate(uint32_t, +); 
+    case DTYPE_Q: 
+      Operate(int64_t, +); 
+    case DTYPE_QU : 
+      Operate(uint64_t, +); 
+    case DTYPE_O: 
+      Operate128(int128, add); 
+    case DTYPE_OU: 
+      Operate128(uint128, add); 
+    case DTYPE_F: 
+      OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +); 
+    case DTYPE_FS: 
+      OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +); 
+    case DTYPE_D: 
+      OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +); 
+    case DTYPE_G: 
+      OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +); 
+    case DTYPE_FT: 
+      OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +); 
+    case DTYPE_FC: 
+      OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +); 
+    case DTYPE_FSC: 
+      OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +); 
+    case DTYPE_GC: 
+      OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +); 
+    case DTYPE_DC: 
+      OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +); 
+    case DTYPE_FTC: 
+      OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +); 
+    default: 
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -331,24 +355,48 @@ int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, -) case DTYPE_BU : Operate(uint8_t, -) case DTYPE_W
-        : Operate(uint16_t, -) case DTYPE_WU : Operate(uint16_t, -) case DTYPE_L
-        : Operate(uint32_t, -) case DTYPE_LU : Operate(uint32_t, -) case DTYPE_Q
-        : Operate(int64_t, -) case DTYPE_QU : Operate(uint64_t, -) case DTYPE_O
-        : Operate128(int128, sub) case DTYPE_OU
-        : Operate128(uint128, sub) case DTYPE_F
-        : OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -) case DTYPE_FS
-        : OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -) case DTYPE_D
-        : OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -) case DTYPE_G
-        : OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -) case DTYPE_FT
-        : OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -) case DTYPE_FC
-        : OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -) case DTYPE_FSC
-        : OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -) case DTYPE_GC
-        : OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -) case DTYPE_DC
-        : OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -) case DTYPE_FTC
-        : OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -) default
-        : return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, -); 
+    case DTYPE_BU : 
+      Operate(uint8_t, -); 
+    case DTYPE_W: 
+      Operate(uint16_t, -); 
+    case DTYPE_WU : 
+      Operate(uint16_t, -); 
+    case DTYPE_L: 
+      Operate(uint32_t, -); 
+    case DTYPE_LU : 
+      Operate(uint32_t, -); 
+    case DTYPE_Q: 
+      Operate(int64_t, -); 
+    case DTYPE_QU : 
+      Operate(uint64_t, -); 
+    case DTYPE_O: 
+      Operate128(int128, sub); 
+    case DTYPE_OU: 
+      Operate128(uint128, sub); 
+    case DTYPE_F: 
+      OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -); 
+    case DTYPE_FS: 
+      OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -); 
+    case DTYPE_D: 
+      OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -); 
+    case DTYPE_G: 
+      OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -); 
+    case DTYPE_FT: 
+      OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -); 
+    case DTYPE_FC: 
+      OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -); 
+    case DTYPE_FSC: 
+      OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -); 
+    case DTYPE_GC: 
+      OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -); 
+    case DTYPE_DC: 
+      OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -); 
+    case DTYPE_FTC: 
+      OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -); 
+    default: 
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -358,24 +406,48 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, *) case DTYPE_BU : Operate(uint8_t, *) case DTYPE_W
-        : Operate(uint16_t, *) case DTYPE_WU : Operate(uint16_t, *) case DTYPE_L
-        : Operate(uint32_t, *) case DTYPE_LU : Operate(uint32_t, *) case DTYPE_Q
-        : Operate(int64_t, *) case DTYPE_QU : Operate(uint64_t, *) case DTYPE_O
-        : Operate128(int128, mul) case DTYPE_OU
-        : Operate128(uint128, mul) case DTYPE_F
-        : OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *) case DTYPE_FS
-        : OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *) case DTYPE_D
-        : OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *) case DTYPE_G
-        : OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *) case DTYPE_FT
-        : OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *) case DTYPE_FC
-        : MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT) case DTYPE_FSC
-        : MultiplyComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT) case DTYPE_GC
-        : MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE) case DTYPE_DC
-        : MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE) case DTYPE_FTC
-        : MultiplyComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE) default
-        : return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, *); 
+    case DTYPE_BU : 
+      Operate(uint8_t, *); 
+    case DTYPE_W: 
+      Operate(uint16_t, *); 
+    case DTYPE_WU : 
+      Operate(uint16_t, *); 
+    case DTYPE_L: 
+      Operate(uint32_t, *); 
+    case DTYPE_LU : 
+      Operate(uint32_t, *); 
+    case DTYPE_Q: 
+      Operate(int64_t, *); 
+    case DTYPE_QU : 
+      Operate(uint64_t, *); 
+    case DTYPE_O: 
+      Operate128(int128, mul); 
+    case DTYPE_OU: 
+      Operate128(uint128, mul); 
+    case DTYPE_F: 
+      OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *); 
+    case DTYPE_FS: 
+      OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *); 
+    case DTYPE_D: 
+      OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *); 
+    case DTYPE_G: 
+      OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *); 
+    case DTYPE_FT: 
+      OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *); 
+    case DTYPE_FC: 
+      MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT); 
+    case DTYPE_FSC: 
+      MultiplyComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT); 
+    case DTYPE_GC: 
+      MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE); 
+    case DTYPE_DC: 
+      MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE); 
+    case DTYPE_FTC: 
+      MultiplyComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE); 
+    default: 
+      return TdiINVDTYDSC;
   }
   return 1;
 }

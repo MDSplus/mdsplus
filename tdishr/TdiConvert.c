@@ -1266,28 +1266,28 @@ static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, c
   case MAXTYPE *DTYPE_##a + DTYPE_##b: \
     a##_##b(lena, pa, lenb, pb, numb); \
     break;
-#define defset(a)                                                                             \
-  defcase(a, BU)                                                                              \
-      defcase(a, WU)                                                                          \
-          defcase(a, LU)                                                                      \
-              defcase(a, QU)                                                                  \
-                  defcase(a, OU)                                                              \
-                      defcase(a, B)                                                           \
-                          defcase(a, W)                                                       \
-                              defcase(a, L)                                                   \
-                                  defcase(a, Q)                                               \
-                                      defcase(a, O)                                           \
-                                          defcase(a, F)                                       \
-                                              defcase(a, D)                                   \
-                                                  defcase(a, G)                               \
-                                                      defcase(a, FC)                          \
-                                                          defcase(a, DC)                      \
-                                                              defcase(a, GC)                  \
-                                                                  defcase(a, T)               \
-                                                                      defcase(a, FS)          \
-                                                                          defcase(a, FT)      \
-                                                                              defcase(a, FSC) \
-                                                                                  defcase(a, FTC)
+#define defset(a)   \
+    defcase(a, BU);  \
+    defcase(a, WU);  \
+    defcase(a, LU);  \
+    defcase(a, QU);  \
+    defcase(a, OU);  \
+    defcase(a, B);   \
+    defcase(a, W);   \
+    defcase(a, L);   \
+    defcase(a, Q);   \
+    defcase(a, O);   \
+    defcase(a, F);   \
+    defcase(a, D);   \
+    defcase(a, G);   \
+    defcase(a, FC);  \
+    defcase(a, DC);  \
+    defcase(a, GC);  \
+    defcase(a, T);   \
+    defcase(a, FS);  \
+    defcase(a, FT);  \
+    defcase(a, FSC); \
+    defcase(a, FTC);
 
 EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
 {
@@ -1367,27 +1367,29 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     n = MAXTYPE * dtypea + dtypeb;
     switch (n)
     {
-      defset(BU)
-          defset(WU)
-              defset(LU)
-                  defset(QU)
-                      defset(OU)
-                          defset(B)
-                              defset(W)
-                                  defset(L)
-                                      defset(Q)
-                                          defset(O)
-                                              defset(F)
-                                                  defset(D)
-                                                      defset(G)
-                                                          defset(FC)
-                                                              defset(DC)
-                                                                  defset(GC)
-                                                                      defset(T)
-                                                                          defset(FS)
-                                                                              defset(FT)
-                                                                                  defset(FSC)
-                                                                                      defset(FTC) default : return TdiINVDTYDSC;
+      defset(BU);
+      defset(WU);
+      defset(LU);
+      defset(QU);
+      defset(OU);
+      defset(B);
+      defset(W);
+      defset(L);
+      defset(Q);
+      defset(O);
+      defset(F);
+      defset(D);
+      defset(G);
+      defset(FC);
+      defset(DC);
+      defset(GC);
+      defset(T);
+      defset(FS);
+      defset(FT);
+      defset(FSC);
+      defset(FTC); 
+      default: 
+        return TdiINVDTYDSC;
     }
   }
   return status;

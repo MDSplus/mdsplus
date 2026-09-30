@@ -248,24 +248,38 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, %) case DTYPE_BU : Operate(uint8_t, %) case DTYPE_W
-        : Operate(int16_t, %) case DTYPE_WU : Operate(uint16_t, %) case DTYPE_L
-        : Operate(int32_t, %) case DTYPE_LU : Operate(uint32_t, %) case DTYPE_Q
-        : Operate(int64_t, %) case DTYPE_QU : Operate(uint64_t, %) case DTYPE_O
-        : OperateBin(in1->length, 1, mod_bin) case DTYPE_OU
-        : OperateBin(in1->length, 0, mod_bin) case DTYPE_F
-        : OperateFloat(float, DTYPE_F, mod_float);
-  case DTYPE_FS:
-    OperateFloat(float, DTYPE_FS, mod_float);
-  case DTYPE_D:
-    OperateFloat(double, DTYPE_D, mod_float);
-  case DTYPE_G:
-    OperateFloat(double, DTYPE_G, mod_float);
-  case DTYPE_FT:
-    OperateFloat(double, DTYPE_FT, mod_float);
-  default:
-    return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, %);
+    case DTYPE_BU :
+      Operate(uint8_t, %);
+    case DTYPE_W:
+      Operate(int16_t, %);
+    case DTYPE_WU :
+      Operate(uint16_t, %);
+    case DTYPE_L:
+      Operate(int32_t, %);
+    case DTYPE_LU :
+      Operate(uint32_t, %);
+    case DTYPE_Q:
+      Operate(int64_t, %);
+    case DTYPE_QU :
+      Operate(uint64_t, %);
+    case DTYPE_O:
+      OperateBin(in1->length, 1, mod_bin);
+    case DTYPE_OU:
+      OperateBin(in1->length, 0, mod_bin);
+    case DTYPE_F:
+      OperateFloat(float, DTYPE_F, mod_float);
+    case DTYPE_FS:
+      OperateFloat(float, DTYPE_FS, mod_float);
+    case DTYPE_D:
+      OperateFloat(double, DTYPE_D, mod_float);
+    case DTYPE_G:
+      OperateFloat(double, DTYPE_G, mod_float);
+    case DTYPE_FT:
+      OperateFloat(double, DTYPE_FT, mod_float);
+    default:
+      return TdiINVDTYDSC;
   }
   return 1;
 }
