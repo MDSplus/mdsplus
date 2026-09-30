@@ -575,7 +575,7 @@ public class MdsIp extends Mds
 		String user = System.getProperty("user.name");
 		if (Provider.PREFIX_LOCAL.equals(prefix))
 		{
-			this.connection = new MdsIpFile("mdsip", "-P", "tunnel");
+			this.connection = new MdsIpFile("mdsip-client-local");
 		}
 		else if (Provider.PREFIX_SSH.equals(prefix))
 		{
