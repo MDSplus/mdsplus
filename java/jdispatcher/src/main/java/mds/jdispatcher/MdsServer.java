@@ -393,9 +393,10 @@ class MdsServer extends AsyncMdsConnection
 	}
 
 	@Override
-	protected void finalize()
+	public void close() throws Exception
 	{
 		shutdown();
+		super.close();
 	}
 
 	public String getFullPath(final String tree, final int shot, final int nid)
