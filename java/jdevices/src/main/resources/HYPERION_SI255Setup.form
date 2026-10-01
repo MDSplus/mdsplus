@@ -1,0 +1,1752 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
+    <Property name="deviceTitle" type="java.lang.String" value="Hyperion SI255 - Peak acquisition and routing master"/>
+    <Property name="deviceType" type="java.lang.String" value="HYPERION_SI255"/>
+    <Property name="height" type="int" value="650"/>
+    <Property name="width" type="int" value="1180"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-118,0,0,4,-100"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="mainPanel">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="generalPanel">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Interrogator"/>
+              </Border>
+            </Property>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="First"/>
+            </Constraint>
+          </Constraints>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="1"/>
+            <Property name="horizontalGap" type="int" value="0"/>
+            <Property name="rows" type="int" value="3"/>
+            <Property name="verticalGap" type="int" value="2"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="identityPanel">
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+                <Property name="horizontalGap" type="int" value="8"/>
+                <Property name="verticalGap" type="int" value="3"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="nameField">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Name:"/>
+                    <Property name="numCols" type="int" value="16"/>
+                    <Property name="offsetNid" type="int" value="1"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="commentField">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Comment:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="2"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceDispatch" name="deviceDispatch1">
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="acquisitionPanel">
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+                <Property name="horizontalGap" type="int" value="8"/>
+                <Property name="verticalGap" type="int" value="3"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="ipAddressField">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="IP address:"/>
+                    <Property name="numCols" type="int" value="16"/>
+                    <Property name="offsetNid" type="int" value="3"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="acquisitionModeChoice">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="1">
+                        <StringItem index="0" value="PEAK"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Acquisition mode:"/>
+                    <Property name="offsetNid" type="int" value="4"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="frequencyField">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Frequency [Hz]:"/>
+                    <Property name="numCols" type="int" value="7"/>
+                    <Property name="offsetNid" type="int" value="5"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="matchingPanel">
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+                <Property name="horizontalGap" type="int" value="8"/>
+                <Property name="verticalGap" type="int" value="3"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="toleranceField">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="WL tolerance [nm]:"/>
+                    <Property name="numCols" type="int" value="7"/>
+                    <Property name="offsetNid" type="int" value="6"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="time0Field">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Time0 [ns]:"/>
+                    <Property name="numCols" type="int" value="22"/>
+                    <Property name="offsetNid" type="int" value="7"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="time0Note">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="0 = first sample; a node reference/expression is preserved."/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JTabbedPane" name="channelsTabbedPane">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="Center"/>
+            </Constraint>
+          </Constraints>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="channelPanel01">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 01">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 01"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel01">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel01">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel01">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="14"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice01">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="9"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_01_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel01">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard01">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="8"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_01_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField01">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="11"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote01">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard01">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="8"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_01_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField01">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote01">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard01">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="8"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_01_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField01">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote01">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel02">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 02">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 02"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel02">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel02">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel02">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="21"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice02">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="16"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_02_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel02">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard02">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="15"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_02_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField02">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="18"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote02">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard02">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="15"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_02_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField02">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote02">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard02">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="15"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_02_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField02">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote02">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel03">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 03">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 03"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel03">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel03">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel03">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="28"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice03">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="23"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_03_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel03">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard03">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="22"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_03_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField03">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="25"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote03">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard03">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="22"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_03_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField03">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="24"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote03">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard03">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="22"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_03_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField03">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="24"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote03">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel04">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 04">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 04"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel04">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel04">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel04">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="35"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice04">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="30"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_04_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel04">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard04">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="29"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_04_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField04">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="32"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote04">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard04">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="29"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_04_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField04">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="31"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote04">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard04">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="29"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_04_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField04">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="31"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote04">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel05">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 05">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 05"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel05">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel05">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel05">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="42"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice05">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="37"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_05_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel05">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard05">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="36"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_05_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField05">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="39"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote05">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard05">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="36"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_05_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField05">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="38"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote05">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard05">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="36"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_05_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField05">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="38"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote05">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel06">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 06">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 06"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel06">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel06">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel06">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="49"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice06">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="44"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_06_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel06">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard06">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="43"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_06_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField06">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="46"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote06">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard06">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="43"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_06_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField06">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="45"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote06">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard06">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="43"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_06_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField06">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="45"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote06">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel07">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 07">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 07"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel07">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel07">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel07">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="56"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice07">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="51"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_07_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel07">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard07">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="50"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_07_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField07">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="53"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote07">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard07">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="50"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_07_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField07">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="52"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote07">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard07">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="50"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_07_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField07">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="52"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote07">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="channelPanel08">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Channel 08">
+                    <Property name="tabTitle" type="java.lang.String" value="Channel 08"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="routingPanel08">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Routing"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                    <Property name="verticalGap" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="commonRoutingPanel08">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="horizontalGap" type="int" value="8"/>
+                        <Property name="verticalGap" type="int" value="3"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="rawPeaksChannel08">
+                          <Properties>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value="Store diagnostic raw peaks"/>
+                            <Property name="offsetNid" type="int" value="63"/>
+                            <Property name="showVal" type="java.lang.String" value=""/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                <Component class="DeviceChoice" name="inputModeChoice08">
+                  <Properties>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="DIRECT"/>
+                        <StringItem index="1" value="MUX"/>
+                        <StringItem index="2" value="FOS"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Input mode:"/>
+                    <Property name="offsetNid" type="int" value="58"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_08_MODE"/>
+                  </Properties>
+                </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="modeCardsPanel08">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceChannel" name="directCard08">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="57"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="DIRECT"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_08_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="DIRECT"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="nominalWavelengthField08">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Nominal WL [nm]:"/>
+                    <Property name="numCols" type="int" value="10"/>
+                    <Property name="offsetNid" type="int" value="60"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="directNote08">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Match one peak around NOMINAL_WL and store it in PEAK."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="muxCard08">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="57"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="MUX"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_08_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="MUX"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="muxPathField08">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="MUX path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="59"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="muxNote08">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_MUX device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="DeviceChannel" name="fosCard08">
+                          <Properties>
+                            <Property name="borderVisible" type="boolean" value="false"/>
+                            <Property name="inSameLine" type="boolean" value="true"/>
+                            <Property name="labelString" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="57"/>
+                            <Property name="showState" type="boolean" value="false"/>
+                            <Property name="showVal" type="java.lang.String" value="FOS"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value="HYPERION_CHANNEL_08_MODE"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                              <CardConstraints cardName="FOS"/>
+                            </Constraint>
+                          </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                            <Property name="horizontalGap" type="int" value="8"/>
+                            <Property name="verticalGap" type="int" value="3"/>
+                          </Layout>
+                          <SubComponents>
+                <Component class="DeviceField" name="fosPathField08">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="FOS path:"/>
+                    <Property name="numCols" type="int" value="34"/>
+                    <Property name="offsetNid" type="int" value="59"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="fosNote08">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Reference the head node of a HYPERION_FOS device."/>
+                  </Properties>
+                </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Properties>
+        <Property name="checkExpressions" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="checkMessages" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="methods" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="init"/>
+            <StringItem index="1" value="startAcquisition"/>
+            <StringItem index="2" value="stopAcquisition"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+  </SubComponents>
+</Form>
