@@ -3,6 +3,7 @@
 
 #include <pylon/PylonIncludes.h>
 #include <GenApi/IEnumerationT.h>
+#include <atomic>
 
 #include <pylon/BaslerUniversalInstantCamera.h>    // 20231030 fede: Universal interface for both USB and GIGE cameras
 typedef Pylon::CBaslerUniversalInstantCamera Camera_t;// 20231030 
@@ -73,8 +74,9 @@ int printAllParameters(int camHandle);
                        int highLim, int adjRoiX, int adjRoiY, int adjRoiW,
                        int adjRoiH, const char *deviceName);
 
-  int setTriggerMode(int camHandle, int triggerMode, double burstDuration,
-                     int numTrigger);
+  int setTriggerMode( int camHandle, int triggerMode, double burstDuration, 
+                      int numTrigger, int extTrigLine, const char *trigEventName);
+
   int softwareTrigger(int camHandle);
   int setTreeInfo(int camHandle, void *treePtr, int framesNid, int timebaseNid,
                   int framesMetadNid, int frame0TimeNid);
@@ -123,6 +125,10 @@ class BASLER_ACA : public Counted<BASLER_ACA>
 
 	    void run()
 	    {
+
+printf("RICEVUTO EVENTO trigger Mode: %d\n", baslerACA->triggerMode);
+		if(baslerACA->triggerMode != 2)
+		    return;
 		size_t bufSize;
 		const char *name = getName(); //Get the name of the event
 		char *date = getTime()->getDate(); //Get the event reception date in string format
@@ -132,15 +138,16 @@ class BASLER_ACA : public Counted<BASLER_ACA>
 		str[bufSize] = 0;
 		//MDSevent trigger is set if camera is in acquisition, Frame store is enabled and camera is not saving frame.
 		//An event trigger received during acquisition can reset the trigger count to extend the acquisition
-		if(baslerACA->acqFlag && baslerACA->storeEnabled && baslerACA->startStoreTrg == 0)
+		if(baslerACA->acqFlag.load() && baslerACA->storeEnabled.load() && baslerACA->startStoreTrg.load() == 0)
 		{   
 		    printf("%s EVENT Trigger Start!!!!\n", baslerACA->ipAddress);
-		    baslerACA->eventTrigger = 1;
+		    baslerACA->eventTrigger.store(1);
 		} else {
 		    printf("%s EVENT Trigger Reset!!!!\n", baslerACA->ipAddress);
-		    baslerACA->eventTrigger = 0;
+		    baslerACA->eventTrigger.store(0);
 		}
-		printf("%s RECEIVED EVENT %s AT %s WITH DATA %s Event Trig %d \n", baslerACA->ipAddress, name, date, str, baslerACA->eventTrigger);
+		printf("%s RECEIVED EVENT %s AT %s WITH DATA %s Event Trig %d \n", baslerACA->ipAddress, name, date, str, baslerACA->eventTrigger.load());
+		delete [] str;
 	    }
      };
 
@@ -162,11 +169,11 @@ private:
   double exposure;
   double internalTemperature;
 
-  int storeEnabled;
+  std::atomic<int> storeEnabled;
   int triggerMode;
-  int startStoreTrg;
+  std::atomic<int> startStoreTrg;
   int autoCalibration;
-  int eventTrigger; //CT on MDSplus event trigger flag
+  std::atomic<int> eventTrigger; //CT on MDSplus event trigger flag
 
   int streamingEnabled;
   int streamingSkipFrameNumber;
@@ -195,8 +202,8 @@ private:
   int framesMetadNid;
   int frame0TimeNid;
 
-  int acqFlag;
-  int acqStopped;
+  std::atomic<int> acqFlag;
+  std::atomic<int> acqStopped;
   char error[512];
   int incompleteFrame;
 
@@ -210,7 +217,7 @@ public:
   // camera
   BASLER_ACA(const char *ipAddress);
   BASLER_ACA(); // new 23 July 2013 for test purposes
-  ~BASLER_ACA();
+  ~BASLER_ACA() noexcept;
 
   // info
   int baslerIsConnected();
@@ -232,7 +239,8 @@ public:
                        unsigned int lowLim, unsigned int highLim, int adjRoiX,
                        int adjRoiY, int adjRoiW, int adjRoiH,
                        const char *deviceName);
-  int setTriggerMode(int triggerMode, double burstDuration, int numTrigger);
+  int setTriggerMode(int triggerMode, double burstDuration, int numTrigger,
+                     int extTrigLine, const char *trigEventName);
   int setTreeInfo(void *treePtr, int frameNid, int timebaseNid,
                   int framesMetadNid, int frame0TimeNid);
   void getLastError(char *msg);
