@@ -61,10 +61,16 @@ class EPICA(MDSplus.Device):
     ]
     for i in range(8):
         parts.extend([
-            {'path': '.CHANNEL_%d' % (i+1), 'type': 'structure'},
-            {'path': '.CHANNEL_%d:V' % (i+1), 'type': 'signal', 'options': (
+            {'path': '.MODULE_%d' % (i+1), 'type': 'structure'},
+            {'path': '.MODULE_%d.CHAN_A' % (i+1), 'type': 'structure'},
+            {'path': '.MODULE_%d.CHAN_A:V' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
-            {'path': '.CHANNEL_%d:I' % (i+1), 'type': 'signal', 'options': (
+            {'path': '.MODULE_%d.CHAN_A:I' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
+           {'path': '.MODULE_%d.CHAN_B' % (i+1), 'type': 'structure'},
+            {'path': '.MODULE_%d.CHAN_B:V' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
+            {'path': '.MODULE_%d.CHAN_B:I' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
        ])
 
@@ -197,9 +203,11 @@ class EPICA(MDSplus.Device):
 
         EPICA.socketDict[self.getNid()] = sock
         for chan in range(8):
-            self.getNode('.CHANNEL_%d:V' % (chan+1)).deleteData()
-            self.getNode('.CHANNEL_%d:I' % (chan+1)).deleteData()
-
+            self.getNode('.MODULE_%d.CHAN_A:V' % (chan+1)).deleteData()
+            self.getNode('.MODULE_%d.CHAN_A:I' % (chan+1)).deleteData()
+            self.getNode('.MODULE_%d.CHAN_B:V' % (chan+1)).deleteData()
+            self.getNode('.MODULE_%d.CHAN_B:I' % (chan+1)).deleteData()
+ 
 
 
     def arm(self):
@@ -269,7 +277,7 @@ class EPICA(MDSplus.Device):
             print('PTS: ', pts)
             print('Active Chans: ', activeChans)
             numDmaSamples = pts * activeChans
-            dmaSamples = np.frombuffer(recvall(sock, 2 * numDmaSamples), dtype = np.int16)  
+            dmaSamples = np.frombuffer(recvall(sock, 4 * numDmaSamples), dtype = np.int16)  
             print('LETTI SAMPLES')          
         except:
             print("SCannot read samples")
@@ -291,15 +299,15 @@ class EPICA(MDSplus.Device):
         except:
             print('Store called without calling firt trigger!')
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-        decimationDict = {0:32,1:64,2:128,2:256,4:512,5:1024,6:2048,7:4096};   
+        decimationDict = {0:32,1:64,2:128,3:256,4:512,5:1024,6:2048,7:4096};   
         freq = 20E6/decimationDict[decimation]
         startTime = MDSplus.Float64(EPICA.triggerTime + trigTime) 
         endTime = MDSplus.Float64(EPICA.triggerTime + trigTime + pts/freq)        
         timebase = MDSplus.Range(startTime, endTime, MDSplus.Float64(1/freq))   
         for chan in range(int(activeChans/2)):
-            self.getNode('.CHANNEL_%d:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(2 * chan) * pts:(2 * chan) * pts + pts])))
-            self.getNode('.CHANNEL_%d:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(2 * chan +1 ) * pts:(2 * chan + 1) * pts + pts])))
-
-    
+            self.getNode('.MODULE_%d.CHAN_A:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(dmaSamples[(8 * chan * pts):(8 * chan * pts + 2 * pts)]))
+            self.getNode('.MODULE_%d.CHAN_A:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(8 * chan *pts + 2 * pts):(8 * chan *pts + 4 * pts)])))
+            self.getNode('.MODULE_%d.CHAN_B:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(dmaSamples[(8 * chan * pts + 4 * pts):(8 * chan * pts + 6 * pts)]))
+            self.getNode('.MODULE_%d.CHAN_B:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array((dmaSamples[(8 * chan *pts + 6 * pts):(8 * chan * pts + 8 * pts)])))
 
 
