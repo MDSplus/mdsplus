@@ -4,6 +4,8 @@
 #include <sys/errno.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include <dispatch/dispatch.h>
 
@@ -56,7 +58,13 @@ _timer_handler(void *arg)
 static inline void _default_timer_expiration(union sigval sv)
 {
   (void) sv;
-  signal(SIGALRM, NULL);
+  /* When timer_create() is called with a NULL sigevent (as the test
+   * harness does), a POSIX timer would deliver SIGALRM to the process on
+   * expiration. Emulate that here so the harness' SIGALRM handler runs and
+   * kills the timed-out child. The previous signal(SIGALRM, NULL) only reset
+   * the SIGALRM disposition and never raised it, so test timeouts silently
+   * never fired on macOS and a hung/crashed child stalled the runner. */
+  kill(getpid(), SIGALRM);
 }
 
 static inline int
