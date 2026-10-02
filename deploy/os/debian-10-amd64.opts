@@ -1,3 +1,0 @@
---dockerimage=mdsplus/builder:debian-10-amd64
---distname=DebianBuster --platform=debian
--DGSI=gcc64
