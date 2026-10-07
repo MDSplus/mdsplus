@@ -1,3 +1,29 @@
+; Developer tips:
+;   - Include files not found in the MDSplus repo are part of the Nullsoft framework.
+;     Refer to the Jenkins Docker image, mdsplus/builder:windows-x86-x64.
+;     The include files are located in /usr/share/nsis/Include
+;   - Silent mode is useful for scripted installs and can be done with these commands:
+;        <installer_exe> /S /AllUsers
+;        <installer_exe> /S /CurrentUser
+;   - Nullsoft (aka NSIS) makes extensive use of macros and a pre-processor, plus the 
+;     syntax is a bit odd.  For details, refer to the following documentation:
+;        https://nsis.sourceforge.io/Main_Page
+;        https://documentation.help/NSIS/Contents.html
+;   - Windows Defender can quarantine Nullsoft installers if they contain patterns
+;     that Defender considers a security breach.  Thus, it is essential to test the 
+;     installer on a Windows system before merging a PR.
+;   - The ${ToLog} macro is useful for troubleshooting installer issues (see debug.nsh).
+;     Unfortunately, "PrintDetail", cannot be used because it is broken in Nullsoft v3.09.
+;   - Nullsoft does not automatically create a list of all installed files, thus
+;     the uninstaller is more complicated than expected.
+;   - The uninstaller must not use an unguarded "RmDir /r $INSTDIR" because in some
+;     scenarios that can wipe system files from the Windows computer.  For more details,
+;     refer to the Nullsoft documentation.
+;   - VS Code has an NSIS extension that makes it much easier to edit the installer source.
+;     https://marketplace.visualstudio.com/items?itemName=idleberg.nsis
+
+
+
 Name   "MDSplus${BNAME}-${ARCH} ${MAJOR}.${MINOR}-${RELEASE}"
 OutFile ${OUTDIR}/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}-${ARCH}.exe
 ;SetCompress off
@@ -33,7 +59,7 @@ InstType "Minimal"
 	!define GCC_LIB libgcc_s_dw2-1.dll
 !endif
 
-!define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
+!define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relics.delete_me"
 
 !define MDSPLUS_DIR			"$INSTDIR"
 !define MDS_PATH			"$INSTDIR\tdi"
@@ -43,7 +69,7 @@ InstType "Minimal"
 !define subtree_path		"$INSTDIR\trees\subtree"
 !define BINDIR				"$INSTDIR\bin"
 
-;;allows admins to decide if the want to install for current or allusers
+;; allows admins to decide if the want to install for current or allusers
 !define MULTIUSER_EXECUTIONLEVEL Highest
 !define MULTIUSER_MUI
 !define MULTIUSER_INSTALLMODE_INSTDIR MDSplus
@@ -64,9 +90,11 @@ ${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
 ;; used to get filename in ignore branch of uninstaller
 !include "WordFunc.nsh"
 
+;; used by the uninstallation script to obtain the filename from a filepath
+!include "FileFunc.nsh"
+
 !addincludedir ${INCLUDE}
 !include debug.nsh		; define debug tools
-!include recycle.nsh		; define Recycle, Delete, and TryRecycle
 !include in_operator.nsh	; define in
 !include is_operator.nsh	; define is
 !include registry.nsh		; define AllUsers, registry and env add/remove
@@ -86,11 +114,19 @@ Var StartMenuFolder
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 ;; !insertmacro MUI_PAGE_DIRECTORY
 ;; replace with warning if selected folder already exists
+; This function is only called during an interactive install when the user 
+; changes the path to select an existing directory, such as "C:\Program Files"
+; instead of "C:\Program Files\MDSplus".  Thus, don't delete the directory; also
+; don't install MDSplus over the directory.  The Abort stops the callback, but
+; does not stop the installer.
 Function DirectoryLeave
 ${If} ${FileExists} "$InstDir"
-	MessageBox MB_YESNO `"$InstDir" already exists.$\r$\nDo you want to continue and DELETE all it's content?` IDYES yes
-	Abort
-	yes:
+	MessageBox MB_OK `"$InstDir" already exists. $\r$\n$\r$\n \
+	On the next dialog, do this: $\r$\n \
+	- either enter a new directory or $\r$\n \
+	- click on the CANCEL button.` IDOK stopit
+	stopit:
+		Abort
 ${EndIf}
 FunctionEnd
 Page Directory "" "" DirectoryLeave
@@ -113,43 +149,8 @@ Page Directory "" "" DirectoryLeave
 
 
 
-### BEGIN InstallFiles ###
-!macro InstallFiles source dest logfile
-	!define _id_ ${__LINE__}
-	Push $0
-	Push $1
-	FindFirst $0 $1 "${source}\*"
-	ClearErrors
-	loop${_id_}:
-		StrCmp $1 ""   done${_id_}
-		StrCmp $1 "."  next${_id_}
-		StrCmp $1 ".." next${_id_}
-		retry${_id_}:
-		Rename "${source}\$1" "${dest}\$1"
-		IfErrors 0 ignore${_id_}
-		MessageBox MB_ABORTRETRYIGNORE 'File "$1" cannot be moved to "${dest}". File already exists?!' IDIGNORE ignore${_id_} IDRETRY retry${_id_}
-		FindClose $0
-		FileClose ${logfile}
-		Abort
-		ignore${_id_}:
-		FileWrite ${logfile} "${dest}\$1$\r$\n"
-		next${_id_}:
-		FindNext $0 $1
-		Goto loop${_id_}
-	done${_id_}:
-	FindClose $0
-	Pop $1
-	Pop $0
-	!undef _id_
-!macroend ; InstallFiles
-!define InstallFiles '!insertmacro "InstallFiles"'
-### END InstallFiles ###
-
-
-
 ### BEGIN SECTIONS ###
 Function install_core_pre
-	${TryRecycle} "$INSTDIR"
 	SetOutPath "$INSTDIR"
 	writeUninstaller "$INSTDIR\uninstall.exe"
 	File icons/mdsplus.ico
@@ -473,6 +474,7 @@ SectionEnd
 
 
 ### BEGIN SECTION LOGIC ###
+; PR 3061 commented this out
 ; Function .onSelChange
 ; 	; pydevices depend on python
 ; 	${If}   $0 == ${apis}
@@ -546,10 +548,10 @@ Function Init
 			Abort
 		; Run the uninstaller
 		uninst:
-		; The uninstaller would create a temp copy before executing
-		; This ensures the the original file can be uninstalled
-		; however this brease the wait functionality of execwait
-		; This is why we create a tempfile manually
+		; The uninstaller is copied to a temp dir before executing.
+		; That ensures the original uninstaller can be uninstalled.
+		; However that also breaks the wait functionality of execwait, which 
+		; is why we create a tempfile manually.
 		Push $R1
 		Push $R2
 		${ReadkeyStr} $R2 ${UNINSTALL_KEY} "Uninstaller"
@@ -647,35 +649,8 @@ Section uninstall
 		Pop $R0
 		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8100"'
 		Pop $R0
-		FileOpen $R0 "$INSTDIR\uninstall.dat" r
-		${DisableX64FSRedirection}
-		CreateDirectory "${TEMP_DEL_DIR}"
-		ClearErrors
-		loop:
-			FileRead $R0 $R1
-			StrCmp $R1 "" done
-			${UnStrTrimNewLines} $R2 $R1
-			retry:
-			Delete "$R2"
-			IfErrors 0 loop
-			MessageBox MB_ABORTRETRYIGNORE 'File "$R2" could not be deleted. Is it still in use.' IDIGNORE ignore IDRETRY retry
-			FileClose $R0
-			RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
-			Abort
-			ignore:
-			System::Call 'kernel32::GetTickCount()i .R3'
-			${WordFind} "$R2" "\" "-1" $R4
-			Rename "$R2" "${TEMP_DEL_DIR}\$R4$R3"
-			ClearErrors
-			Goto loop
-		done:
-		FileClose $R0
-		${EnableX64FSRedirection}
-		RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
-		Delete uninstall.dat
-	${Else}
-		${RemoveFromEnv} PATH "${BINDIR}"
 	${EndIf}
+	${RemoveFromEnv} PATH "${BINDIR}"
 	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
 	RMDir /r "$SMPROGRAMS\$StartMenuFolder"
 	${DeleteEnv}		MDSPLUS_DIR
@@ -686,7 +661,36 @@ Section uninstall
 	${RemoveFromEnv}	MDS_PYDEVICE_PATH	"${MDS_PYDEVICE_PATH}"
 	${DeleteKey} "${UNINSTALL_KEY}"
 	SetOutPath "$SYSDIR" ; avoid access to $INSTDIR so it may be deleted
-	${TryRecycle} "$INSTDIR"
+	Var /GLOBAL InstBaseName
+	${GetBaseName} $INSTDIR $InstBaseName
+	${IfNot} "$InstBaseName" == ${MULTIUSER_INSTALLMODE_INSTDIR}
+	    ${ToLog} "Non-standard dir, so MDSplus was unregistered but not deleted."
+		; Windows Defender chokes on the following MessageBox even though the "/SD" makes it silent.  So use a more verbose approach.
+		; MessageBox MB_OKCANCEL "Non-standard dir, so MDSplus was unregistered but not deleted." /SD IDOK IDOK next
+		IfSilent next gui  ; Note that ${IfSilent} is not available in NSIS v3.09
+			gui: 
+				MessageBox MB_OK "Non-standard dir, so MDSplus was unregistered but not deleted." IDOK next
+		next: ;
+
+	; Because of the above check, could probably use "RmDir /r $INSTDIR" here.  Instead, use a more conservative approach.	
+	${Else}
+		RmDir /r /REBOOTOK "$INSTDIR\bin"
+		RmDir /r /REBOOTOK "$INSTDIR\devtools"
+		RmDir /r /REBOOTOK "$INSTDIR\epics"
+		RmDir /r /REBOOTOK "$INSTDIR\idl"
+		RmDir /r /REBOOTOK "$INSTDIR\include"
+		RmDir /r /REBOOTOK "$INSTDIR\java"
+		RmDir /r /REBOOTOK "$INSTDIR\LabView"
+		RmDir /r /REBOOTOK "$INSTDIR\matlab"
+		RmDir /r /REBOOTOK "$INSTDIR\pydevices"
+		RmDir /r /REBOOTOK "$INSTDIR\python"
+		RmDir /r /REBOOTOK "$INSTDIR\tdi"
+		RmDir /r /REBOOTOK "$INSTDIR\trees"
+		RmDir /r /REBOOTOK "$INSTDIR\xml"
+		Delete /REBOOTOK "$INSTDIR\*"
+		RmDir "$INSTDIR"
+	${EndIf}
+
 	Pop $R2
 	Pop $R1
 	Pop $R0
