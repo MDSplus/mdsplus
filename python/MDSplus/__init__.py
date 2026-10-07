@@ -121,8 +121,10 @@ def load_package(gbls, version_check=False):
         for key in mod.__dict__:
             if not key.startswith('_'):
                 gbls[key] = mod.__dict__[key]
+                
     for name in ('os', 'sys', 'numpy', 'ctypes', 'libs', '__version__'):
         gbls[name] = globals()[name]
+        
     loadmod_full('version', gbls)
     loadmod_full('mdsdata', gbls)
     loadmod_full('mdsscalar', gbls)
@@ -132,13 +134,18 @@ def load_package(gbls, version_check=False):
     loadmod_full('apd', gbls)
     loadmod_full('event', gbls)
     loadmod_full('tree', gbls)
-    loadmod_full('scope', gbls)
+    
+    if sys.version_info >= (3, 10):
+        loadmod_full('scope', gbls)
+        
     loadmod_full('_mdsshr', gbls)
     loadmod_full('mdsExceptions', gbls)
     loadmod_full('mdsdcl', gbls)
+    
     if libs.MdsIpShr is not None:
         loadmod_full('connection', gbls)
-    gbls["PyLib"] = os.getenv("PyLib")
+        
+    gbls["PyLib"] = os.getenv("PyLib")   
     return gbls
 
 
