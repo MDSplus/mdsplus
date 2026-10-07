@@ -387,23 +387,43 @@ extern void DoubleToWideInt();
     {                                                                         \
     case DTYPE_B:                                                             \
     case DTYPE_BU:                                                            \
-      Operate(unsigned char, operator) case DTYPE_W : case DTYPE_WU           \
-          : Operate(unsigned short, operator) case DTYPE_L : case DTYPE_LU    \
-          : Operate(unsigned int, operator) case DTYPE_Q                      \
-          : OperateSpecial(2, operator) case DTYPE_QU                         \
-          : OperateSpecial(2, operator) case DTYPE_O                          \
-          : OperateSpecial(4, operator) case DTYPE_OU                         \
-          : OperateSpecial(4, operator) case DTYPE_F                          \
-          : OperateFloat(DTYPE_F, operator) case DTYPE_FS                     \
-          : OperateFloat(DTYPE_FS, operator) case DTYPE_G                     \
-          : OperateDouble(DTYPE_G, operator) case DTYPE_D                     \
-          : OperateDouble(DTYPE_D, operator) case DTYPE_FT                    \
-          : OperateDouble(DTYPE_FT, operator) case DTYPE_FC                   \
-          : OperateFloatC(DTYPE_F, operator) case DTYPE_FSC                   \
-          : OperateFloatC(DTYPE_FS, operator) case DTYPE_GC                   \
-          : OperateDoubleC(DTYPE_G, operator) case DTYPE_DC                   \
-          : OperateDoubleC(DTYPE_D, operator) case DTYPE_FTC                  \
-          : OperateDoubleC(DTYPE_FT, operator) default : return TdiINVDTYDSC; \
+      Operate(unsigned char, operator);                                       \
+    case DTYPE_W:                                                             \
+    case DTYPE_WU:                                                            \
+      Operate(unsigned short, operator);                                      \
+    case DTYPE_L:                                                             \
+    case DTYPE_LU:                                                            \
+      Operate(unsigned int, operator);                                        \
+    case DTYPE_Q:                                                             \
+      OperateSpecial(2, operator);                                            \
+    case DTYPE_QU:                                                            \
+      OperateSpecial(2, operator);                                            \
+    case DTYPE_O:                                                             \
+      OperateSpecial(4, operator);                                            \
+    case DTYPE_OU:                                                            \
+      OperateSpecial(4, operator);                                            \
+    case DTYPE_F:                                                             \
+      OperateFloat(DTYPE_F, operator);                                        \
+    case DTYPE_FS:                                                            \
+      OperateFloat(DTYPE_FS, operator);                                       \
+    case DTYPE_G:                                                             \
+      OperateDouble(DTYPE_G, operator);                                       \
+    case DTYPE_D:                                                             \
+      OperateDouble(DTYPE_D, operator);                                       \
+    case DTYPE_FT:                                                            \
+      OperateDouble(DTYPE_FT, operator);                                      \
+    case DTYPE_FC:                                                            \
+      OperateFloatC(DTYPE_F, operator);                                       \
+    case DTYPE_FSC:                                                           \
+      OperateFloatC(DTYPE_FS, operator);                                      \
+    case DTYPE_GC:                                                            \
+      OperateDoubleC(DTYPE_G, operator);                                      \
+    case DTYPE_DC:                                                            \
+      OperateDoubleC(DTYPE_D, operator);                                      \
+    case DTYPE_FTC:                                                           \
+      OperateDoubleC(DTYPE_FT, operator);                                     \
+    default :                                                                 \
+      return TdiINVDTYDSC;                                                    \
     }                                                                         \
     return 1;                                                                 \
   }

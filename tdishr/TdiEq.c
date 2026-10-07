@@ -288,23 +288,45 @@ int Tdi3_Eq(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
 
   switch (in1_ptr->dtype)
   {
-  case DTYPE_T:
-    testc(unsigned char) case DTYPE_BU : test(uint8_t) case DTYPE_WU
-        : test(uint16_t) case DTYPE_LU : test(uint32_t) case DTYPE_QU
-        : test(uint64_t) case DTYPE_OU : testn(unsigned int, 4, 0) case DTYPE_B
-        : test(int8_t) case DTYPE_W : test(int16_t) case DTYPE_L
-        : test(int32_t) case DTYPE_Q : test(int64_t) case DTYPE_O
-        : testn(int, 4, 1) case DTYPE_F
-        : testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT) case DTYPE_FS
-        : testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT) case DTYPE_G
-        : testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE) case DTYPE_D
-        : testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE) case DTYPE_FT
-        : testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE) case DTYPE_FC
-        : case DTYPE_FSC : if (op != OP_EQ && op != OP_NE)
-    {
-      status = TdiINVDTYDSC;
-      break;
-    }
+    case DTYPE_T:
+      testc(unsigned char);
+    case DTYPE_BU:
+      test(uint8_t);
+    case DTYPE_WU:
+      test(uint16_t);
+    case DTYPE_LU:
+      test(uint32_t);
+    case DTYPE_QU:
+      test(uint64_t);
+    case DTYPE_OU:
+      testn(unsigned int, 4, 0);
+    case DTYPE_B:
+      test(int8_t);
+    case DTYPE_W:
+      test(int16_t);
+    case DTYPE_L:
+      test(int32_t);
+    case DTYPE_Q:
+      test(int64_t);
+    case DTYPE_O:
+      testn(int, 4, 1);
+    case DTYPE_F:
+      testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT);
+    case DTYPE_FS:
+      testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT);
+    case DTYPE_G:
+      testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE);
+    case DTYPE_D:
+      testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE);
+    case DTYPE_FT:
+      testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE);
+    case DTYPE_FC:
+    case DTYPE_FSC:
+      if (op != OP_EQ && op != OP_NE)
+      {
+        status = TdiINVDTYDSC;
+        break;
+      }
     testn(int, 2, 0) case DTYPE_GC : case DTYPE_DC : case DTYPE_FTC
         : if (op != OP_EQ && op != OP_NE)
     {

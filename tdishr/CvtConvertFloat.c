@@ -567,10 +567,6 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value,
 static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL intermediate_value,
                         uint32_t options __attribute__((unused)));
 
-extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
-                                         void *output_value,
-                                         uint32_t output_type)
-
 /*
 **=============================================================================
 **
@@ -635,6 +631,9 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
 **
 **=============================================================================
 */
+extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
+                                         void *output_value,
+                                         uint32_t output_type)
 {
   /*
    ** Local variable definitions.
