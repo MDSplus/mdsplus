@@ -257,7 +257,7 @@ typedef ARRAY(struct descriptor *) array_dsc;
 int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid)
 {
   int status = 1;
-  unsigned char tree = ((NID *)&nid)->tree;
+  unsigned char tree = int_to_nid(nid).tree;
   if (dsc_ptr == NULL)
     status = 1;
   else
