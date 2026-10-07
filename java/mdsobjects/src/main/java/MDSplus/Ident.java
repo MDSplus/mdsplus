@@ -169,10 +169,4 @@ public class Ident extends Data
 
 	public Ident()
 	{}
-
-	@Override
-	public void finalize() throws Throwable
-	{
-		super.finalize();
-	}
 }

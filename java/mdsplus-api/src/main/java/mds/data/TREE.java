@@ -452,14 +452,6 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		return this.api.treeDoMethod(this.ctx, nid, method, args).getData();
 	}
 
-	@Override
-	protected final void finalize() throws MdsException
-	{
-		if (this.is_open())
-			System.err.println(this + " was still open.");
-		this.quitTree();
-	}
-
 	public Nid[] findNodesWild(final byte usage) throws MdsException
 	{
 		return this.findNodesWild("***", usage);
