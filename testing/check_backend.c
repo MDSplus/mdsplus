@@ -39,6 +39,10 @@ extern char *strsignal(int);
 #include <sys/wait.h>
 #endif
 
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
+
 #include <check.h>
 #include <check_list.h>
 #include <check_impl.h>
@@ -758,6 +762,21 @@ int __setup_child()
   {
     setpgid(0, 0);
     group_pid = getpgrp();
+
+#ifdef __APPLE__
+    // On macOS a hardware fault (null deref, bad instruction, ...) is caught
+    // by the task-level Mach exception port (the system crash reporter), which
+    // parks the faulting thread instead of terminating the process. The child
+    // then never dies, the parent blocks forever in waitpid(), and the whole
+    // run stalls. Clearing the exception ports lets the fault fall through to
+    // the default action, so a crashing test dies promptly and is reported,
+    // just as on Linux.
+    task_set_exception_ports(mach_task_self(),
+                             EXC_MASK_BAD_ACCESS | EXC_MASK_BAD_INSTRUCTION |
+                                 EXC_MASK_ARITHMETIC,
+                             MACH_PORT_NULL, EXCEPTION_DEFAULT, 0);
+#endif
+
     return 1;
   }
 #endif
