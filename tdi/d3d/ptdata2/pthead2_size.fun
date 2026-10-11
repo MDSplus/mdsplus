@@ -33,8 +33,8 @@ PUBLIC FUN PTHEAD2_SIZE(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error) {
                      	     REF(_data), REF(_error), REF(_iarray), REF(_rarray),
                      	     REF(_ascii), REF(_int16), REF(_int32), REF(_real32));
 
-        IF (_iarray[5] > 50) { _size = [_iarray[35..38],9,50,_iarray[39]]; }   
-        ELSE { _size = [_iarray[35..38],9,_iarray[5],_iarray[39]]; }
+        IF (_iarray[5] > 50) { _size = [_iarray[35:38],9,50,_iarray[39]]; }   
+        ELSE { _size = [_iarray[35:38],9,_iarray[5],_iarray[39]]; }
 
 	IF ( EQ(_error,0) || EQ(_error,2) ) { RETURN(_size); } 
 	ELSE { RETURN(ZERO(7,0)); }  

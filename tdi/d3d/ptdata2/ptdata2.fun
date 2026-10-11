@@ -59,7 +59,7 @@ PUBLIC FUN PTDATA2(IN _pointname, OPTIONAL IN _shot, OPTIONAL IN _ical, OPTIONAL
 		        		     REF(_data), REF(_ier), REF(_iarray), REF(_rarray), 
                         	       	     REF(_ascii), REF(_int16), REF(_int32), REF(_real32));   
 	      		IF ( NE(_ier,0) && NE(_ier,2) && NE(_ier,4) && NE(_ier,33)) { return([0]); }
-              		IF (_ier == 4) { _data = _data[0 .. _iarray[1]-1]; } 
+              		IF (_ier == 4) { _data = _data[0:(_iarray[1]-1)]; } 
 
               		/*** PCS POINTNAMES - CALL PTDATA64 FOR THE TIMEBASE ***/
               		IF (  EQ(_idfi,65)   || EQ(_idfi,66)   || EQ(_idfi,119)  || EQ(_idfi,120)  || 
@@ -92,11 +92,11 @@ PUBLIC FUN PTDATA2(IN _pointname, OPTIONAL IN _shot, OPTIONAL IN _ical, OPTIONAL
 						     REF(_real64t), REF(_time64t));
 
                  		_mask = [ZERO(20, 0), ZERO(_npts, 0)+1];
-                 		_rarray = [_rarray[0..19],ramp(_npts)*_rarrayt[8]+_rarrayt[7]]; 
+                 		_rarray = [_rarray[0:19],ramp(_npts)*_rarrayt[8]+_rarrayt[7]]; 
               		} ELSE { _mask = [ZERO(20, 0), ZERO(_iarray[1], 0)+1]; }
 
 	      		/*** IDFI 2200 - THIS DFI ONLY CONTAINS A PCS TIMEBASE.  NOTHING MORE TO DO ***/
-	      		IF ( EQ(_idfi,2200) ) {  RETURN( _t[0..(_npts/2.-1)] ); }
+	      		IF ( EQ(_idfi,2200) ) {  RETURN( _t[0:(_npts/2.-1)] ); }
 	
     		} ELSE { RETURN([0]); }  
 

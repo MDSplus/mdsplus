@@ -20,7 +20,8 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
  	/* Some old psuedopointnames are also in ptdata, but we want to give preference
            to their pseudopointname version.  So provide a way to skip the check */
 	_skipcheck = 0;
-        if ( EQ(UPCASE(_pointname),'LOGFNR') ) { _skipcheck=1;}
+        if ( EQ(UPCASE(_pointname),'LOGFNR') )   { _skipcheck=1; }
+        if ( ("TS" == EXTRACT(0,2,UPCASE(_pointname))) ) { ABORT(); }
 
         _pointname = UPCASE(_pointname//"          ");
 
@@ -54,8 +55,8 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
                                    _shot, _msefitfun, REF(_label), REF(_xmin), REF(_xmax),
                                    REF(_x), REF(_y), REF(_npts), _nchan, REF(_err), _npts,
                                   _ibksub);
-           _x = _x[0.._npts-1];
-           _y = _y[0.._npts-1];
+           _x = _x[0:(_npts-1)];
+           _y = _y[0:(_npts-1)];
            PUBLIC __pseudo_signal=MAKE_SIGNAL(_y, *, _x);
            return(__pseudo_signal); 
         }
@@ -75,8 +76,8 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
                                    _shot, _msefitfun, REF(_label), REF(_xmin), REF(_xmax),
                                    REF(_x), REF(_y), REF(_npts), _nchan, REF(_err), _npts,
                                    _ibksub);
-           _x = _x[0.._npts-1];
-           _y = _y[0.._npts-1];
+           _x = _x[0:(_npts-1)];
+           _y = _y[0:(_npts-1)];
            PUBLIC __pseudo_signal=MAKE_SIGNAL(_y, *, _x);
            return(__pseudo_signal); 
         }
@@ -91,8 +92,8 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
            _status = BUILD_CALL(0, PSEUDO_LIBRARY(), _pseudo_function,
                                    _shot, _pointname, REF(_x), REF(_y), REF(_npts), REF(_ulab), REF(_label), 
                                    REF(_TMIN), REF(_TMAX), REF(_XMIN), REF(_XMAX),REF(_err), REF(_nwrite) );
-           _x = _x[0.._npts-1];
-           _y = _y[0.._npts-1];
+           _x = _x[0:(_npts-1)];
+           _y = _y[0:(_npts-1)];
            PUBLIC __pseudo_signal=MAKE_SIGNAL(_y, *, _x);
            return(__pseudo_signal); 
         }
@@ -127,8 +128,8 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
            return([0.0]);
         }      
  
-        _x = _x[0.._npts-1];
-        _y = _y[0.._npts-1];   
+        _x = _x[0:(_npts-1)];
+        _y = _y[0:(_npts-1)];   
         _time64 = [0d0,0d0];
 
         PUBLIC __pseudo_signal=MAKE_SIGNAL(MAKE_WITH_UNITS(_y, _ulab), *, MAKE_WITH_UNITS(_x, "ms"));

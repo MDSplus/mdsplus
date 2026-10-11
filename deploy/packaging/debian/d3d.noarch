@@ -3,8 +3,8 @@
 ./usr/local/mdsplus/tdi/d3d/cerprof.fun
 ./usr/local/mdsplus/tdi/d3d/cerprof2.fun
 ./usr/local/mdsplus/tdi/d3d/cerrotsign.fun
+./usr/local/mdsplus/tdi/d3d/checkpermissions.py
 ./usr/local/mdsplus/tdi/d3d/create_efitrt_test.fun
-./usr/local/mdsplus/tdi/d3d/d3d_phase_table.fun
 ./usr/local/mdsplus/tdi/d3d/d3ddispatch.fun
 ./usr/local/mdsplus/tdi/d3d/damphase.fun
 ./usr/local/mdsplus/tdi/d3d/density.fun
@@ -85,6 +85,7 @@
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_ascii.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_ifix.fun
+./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_pfi.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_real32.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_size.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata_historic/README
@@ -115,6 +116,9 @@
 ./usr/local/mdsplus/tdi/d3d/transp_error.fun
 ./usr/local/mdsplus/tdi/d3d/transp_status.fun
 ./usr/local/mdsplus/tdi/d3d/tree_from_tag.fun
+./usr/local/mdsplus/tdi/d3d/ts_lase.fun
 ./usr/local/mdsplus/tdi/d3d/tsslice.fun
+./usr/local/mdsplus/tdi/d3d/tsslice_label.py
+./usr/local/mdsplus/tdi/d3d/tsslice_rz.py
 ./usr/local/mdsplus/tdi/d3d/tsslice2.fun
 ./usr/local/mdsplus/tdi/d3d/using_signal.fun
