@@ -34,6 +34,7 @@ public class EPICASetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceChoice17 = new DeviceChoice();
+        deviceField6 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -153,6 +154,11 @@ public class EPICASetup extends DeviceSetup {
         deviceChoice17.setOffsetNid(6);
         deviceChoice17.setUpdateIdentifier("");
         jPanel4.add(deviceChoice17);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Duration (ms):");
+        deviceField6.setOffsetNid(7);
+        jPanel4.add(deviceField6);
 
         jPanel1.add(jPanel4);
 
@@ -662,6 +668,7 @@ public class EPICASetup extends DeviceSetup {
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;

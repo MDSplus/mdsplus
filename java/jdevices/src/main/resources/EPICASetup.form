@@ -103,6 +103,13 @@
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
+            <Component class="DeviceField" name="deviceField6">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Duration (ms):"/>
+                <Property name="offsetNid" type="int" value="7"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
