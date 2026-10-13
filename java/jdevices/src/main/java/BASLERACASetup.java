@@ -180,7 +180,7 @@ public class BASLERACASetup extends DeviceSetup
 		jPanel4.setLayout(new java.awt.GridLayout(3, 1));
 		jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Synchronization"));
 		deviceChoice4.setChoiceItems(new String[]
-		{ "INTERNAL", "EXTERNAL" });
+		{ "INTERNAL", "EXTERNAL", "MDSEVENT" });
 		deviceChoice4.setIdentifier("");
 		deviceChoice4.setLabelString("Trigger Mode:");
 		deviceChoice4.setOffsetNid(16);

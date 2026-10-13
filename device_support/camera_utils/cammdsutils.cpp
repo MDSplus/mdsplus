@@ -491,8 +491,10 @@ class SaveFrameList
 
     void stop()
     {
+		pthread_mutex_lock(&mutex);
 		stopReq = true;
 		pthread_cond_signal(&itemAvailable);
+		pthread_mutex_unlock(&mutex);
 		if(threadCreated)
 		{
 			pthread_join(thread, NULL);
@@ -654,5 +656,4 @@ void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int
     SaveFrameList *saveList = (SaveFrameList *)saveListPtr;
     saveList->addFrame(bufFrame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx);
 }
-
 

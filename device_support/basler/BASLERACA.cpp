@@ -39,6 +39,14 @@ using namespace std;
 
 #include <math.h>
 #include <sys/time.h>
+#include <pthread.h>
+
+#include <pylon/ReusableImage.h>
+#include <pylon/ImageFormatConverter.h>
+
+#include <pylon/PylonIncludes.h>
+#include <GenApi/GenApi.h>
+
 
 #define BUFFER_COUNT 16 
 
@@ -52,6 +60,7 @@ using namespace std;
 #define MAX_CAM 10
 static BASLER_ACA *camPtr[MAX_CAM] = {0};
 static char errorOnOpen[512];
+static pthread_mutex_t camPtrMutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 #ifdef __cplusplus 
@@ -65,6 +74,7 @@ int baslerOpen(const char *ipAddress, int *camHandle)
 	BASLER_ACA *cam;
 	int cameraHandle;
 
+	pthread_mutex_lock(&camPtrMutex);
 	errorOnOpen[0] = 0;
 
 	cam = new BASLER_ACA(ipAddress);
@@ -73,6 +83,7 @@ int baslerOpen(const char *ipAddress, int *camHandle)
 	{
 		cam->getLastError(errorOnOpen); 
 		delete(cam);
+		pthread_mutex_unlock(&camPtrMutex);
 		return ERROR;
 	}
 
@@ -82,12 +93,15 @@ int baslerOpen(const char *ipAddress, int *camHandle)
 	{
 		camPtr[cameraHandle] = cam;
  		*camHandle = cameraHandle;
+		pthread_mutex_unlock(&camPtrMutex);
 		return SUCCESS;
 	}
 	else
 	{
 		sprintf(errorOnOpen, "Exceed maximum number (10) of opened cameras ");
 		*camHandle = -1;
+		delete(cam);
+		pthread_mutex_unlock(&camPtrMutex);
 		return ERROR;
 	}
 }
@@ -105,8 +119,15 @@ int baslerIsConnected( int camHandle )
 
 int baslerClose(int camHandle)
 {
+	pthread_mutex_lock(&camPtrMutex);
+	if( baslerIsConnected( camHandle ) != SUCCESS )
+	{
+		pthread_mutex_unlock(&camPtrMutex);
+		return ERROR;
+	}
 	delete(camPtr[camHandle]);
 	camPtr[camHandle] = 0;
+	pthread_mutex_unlock(&camPtrMutex);
 	
 	return SUCCESS;
 }
@@ -216,10 +237,10 @@ int setAcquisitionMode( int camHandle,  int storeEnabled,  int acqSkipFrameNumbe
 	return ERROR;
 }
 
-int setTriggerMode( int camHandle, int triggerMode, double burstDuration, int numTrigger )
+int setTriggerMode( int camHandle, int triggerMode, double burstDuration, int numTrigger, int extTrigLine, const char *trigEventName)
 {
 	if( baslerIsConnected( camHandle ) == SUCCESS )
-		return camPtr[camHandle]->setTriggerMode(  triggerMode,  burstDuration, numTrigger );
+		return camPtr[camHandle]->setTriggerMode(  triggerMode,  burstDuration, numTrigger, extTrigLine, trigEventName );
 	return ERROR;
 }
 
@@ -281,20 +302,69 @@ void  getLastError(int camHandle, char *msg)
 
 BASLER_ACA::BASLER_ACA(const char *ipAddress)
 { 
+   this->pDevice = NULL;
+   this->pCamera = NULL;
+   this->trigEvent = NULL;
+   this->x = 0;
+   this->y = 0;
+   this->width = 0;
+   this->height = 0;
+   this->pixelFormat = 0;
+   this->Bpp = 0;
+   this->frameRate = 0;
+   this->gain = 0;
+   this->exposure = 0;
+   this->internalTemperature = 0;
+   this->storeEnabled.store(0);
+   this->triggerMode = 0;
+   this->startStoreTrg.store(0);
+   this->autoCalibration = 0;
+   this->eventTrigger.store(0);
+   this->streamingEnabled = 0;
+   this->streamingSkipFrameNumber = 0;
+   this->streamingServer[0] = 0;
+   this->streamingPort = 0;
+   this->autoScale = 0;
+   this->lowLim = 0;
+   this->highLim = 0;
+   this->minLim = 0;
+   this->maxLim = 0;
+   this->autoAdjustLimit = false;
+   this->adjRoiX = 0;
+   this->adjRoiY = 0;
+   this->adjRoiW = 0;
+   this->adjRoiH = 0;
+   this->deviceName[0] = 0;
+   this->imageMode = 0;
+   this->acqSkipFrameNumber = 0;
+   this->burstDuration = 0;
+   this->numTrigger = 0;
+   this->treePtr = NULL;
+   this->framesNid = -1;
+   this->timebaseNid = -1;
+   this->framesMetadNid = -1;
+   this->frame0TimeNid = -1;
+   this->acqFlag.store(0);
+   this->acqStopped.store(1);
+   this->incompleteFrame = 0;
+   this->lastOpRes = ERROR;
+   this->currTime = 0;
+   this->lastTime = 0;
+   this->currIdx = 0;
+   this->lastIdx = 0;
+   this->triggered = 0;
+   this->tickFreq = 0;
    try
    {
      memset(error, 0, sizeof(error));
      memcpy(this->ipAddress, ipAddress, strlen(ipAddress)+1);
-     this->pCamera = NULL; 
-     this->trigEvent = NULL;
 
      //printf("\n Init COUNT = %d %d\n", this->getCount());
      if( this->getCount() == 1)
      {     
         printf("\n\n%s:Pylon Inizialize.\n\n",this->ipAddress);
         PylonInitialize();
-     }
-
+     } 
      CTlFactory& TlFactory = CTlFactory::GetInstance();
      CDeviceInfo di;
 
@@ -327,12 +397,6 @@ BASLER_ACA::BASLER_ACA(const char *ipAddress)
         //pCamera->GetStreamGrabberParams().DestinationAddr = "192.168.1.X";
      }
 
-     printf("EVENTO abilitato \n");
-     //CT MDSplus acquisition Triggered on MDSevent 
-     eventTrigger = 0;
-     trigEvent = new TriggerMdsEvent("__CCD_TRIGGER__", this);
-     trigEvent->start();
-
    }
    catch (const GenericException & e)
    {
@@ -349,22 +413,61 @@ BASLER_ACA::BASLER_ACA()  //new 25/07/2013: let to use the device without the ca
 }
 
 
-BASLER_ACA::~BASLER_ACA()
+BASLER_ACA::~BASLER_ACA() noexcept
 {
 //   printf("COUNT = %d %d\n", this->getCount(), pCamera);
-/*
-   if ( pCamera != NULL && pCamera->IsOpen() )
-        pCamera->Close();
-*/
+   if(this->trigEvent != NULL)
+   {
+      try
+      {
+         trigEvent->stop();
+         delete trigEvent;
+      }
+      catch (...)
+      {
+         cerr << this->ipAddress << ": Error closing MDSplus event handler." << endl;
+      }
+      trigEvent = NULL;
+   }
+
+   if ( pCamera != NULL )
+   {
+      try
+      {
+         if(pCamera->IsGrabbing())
+            pCamera->StopGrabbing();
+         if(pCamera->IsOpen())
+            pCamera->Close();
+      }
+      catch (const GenericException & e)
+      {
+         cerr << this->ipAddress << ": Error closing camera. Reason: " << e.GetDescription() << endl;
+      }
+      try
+      {
+         delete pCamera;
+      }
+      catch (...)
+      {
+         cerr << this->ipAddress << ": Error deleting Pylon camera." << endl;
+      }
+      pCamera = NULL;
+      pDevice = NULL;
+   }
+
    if( this->getCount() == 1)
    {
       printf("PylonTerminate.\n");
-      PylonTerminate();
+      try
+      {
+         PylonTerminate();
+      }
+      catch (...)
+      {
+         cerr << this->ipAddress << ": Error terminating Pylon." << endl;
+      }
    }
    printf("%s: Device Disconnected.\n", this->ipAddress);
-
-   if(this->trigEvent != NULL)
-      delete trigEvent;
 }
 
 
@@ -423,6 +526,7 @@ int BASLER_ACA::setExposure(double exposure)
    if (IsWritable(pCamera->ExposureTimeAbs)) // 20231128: GIGE cameras
    {
      pCamera->ExposureTimeAbs.SetValue(exposure);
+     //pCamera->ExposureTimeRaw.SetValue(exposure);  //not to use!
      cout << this->ipAddress << ": Exposure set to: " << exposure << endl;  
    }  
 
@@ -614,6 +718,31 @@ int BASLER_ACA::setPixelFormat(char *pixelFormat)
   CEnumerationPtr pFormat(nodeMap.GetNode("PixelFormat"));
   try
   {
+  // The same packed YUV 4:2:2 format has different GenICam names on
+  // different Basler transports/camera generations.  camera_utils calls it
+  // YUYV422; accept both names exposed by the cameras and the historical
+  // device alias YUV422P.
+  if(strcmp(pixelFormat, "YUV422P") == 0 ||
+     strcmp(pixelFormat, "YUV422Packed") == 0 ||
+     strcmp(pixelFormat, "YUV422_YUYV_Packed") == 0)
+  {
+    const char *cameraPixelFormat = NULL;
+    if(IsAvailable(pFormat->GetEntryByName("YUV422_YUYV_Packed")))
+      cameraPixelFormat = "YUV422_YUYV_Packed";
+    else if(IsAvailable(pFormat->GetEntryByName("YUV422Packed")))
+      cameraPixelFormat = "YUV422Packed";
+
+    if(cameraPixelFormat != NULL)
+    {
+      pFormat->FromString(cameraPixelFormat);
+      cout << this->ipAddress << ": PixelFormat set to : "
+           << pFormat->ToString() << endl;
+      this->pixelFormat = CSU_PIX_FMT_YUYV422;
+      this->Bpp = 2;
+      return SUCCESS;
+    }
+  }
+
   if(IsAvailable( pFormat->GetEntryByName(pixelFormat))==false) //if not available set to Mono12 or Mono8
   {
     if(IsAvailable( pFormat->GetEntryByName("Mono12")))	
@@ -652,16 +781,12 @@ int BASLER_ACA::setPixelFormat(char *pixelFormat)
        this->pixelFormat = CSU_PIX_FMT_BAYER_RGGB8;
        this->Bpp = 1;
      }
-     if(strcmp(pixelFormat, "YUV422Packed")==0)
-     {
-       this->pixelFormat = CSU_PIX_FMT_YUV422_Packed;
-       this->Bpp = 2;
-     }
      return SUCCESS;
   }
  }catch (const GenericException &e)
      {
-       cout << this->ipAddress << ": DEBUG TO REMOVE exception in pixelFormat " << endl;
+       sprintf(error, "%s: Cannot set PixelFormat. Reason: %s", this->ipAddress, e.GetDescription());
+       cout << error << endl;
      }
  return ERROR;
 }
@@ -716,7 +841,7 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    {
      throw RUNTIME_EXCEPTION( "The camera doesn't support chunk features");
    }
-
+   // Enable time stamp chunks.
    CEnumerationPtr ChunkSelector(nodeMap.GetNode("ChunkSelector"));
    if(IsAvailable(ChunkSelector->GetEntryByName("Timestamp")))
    {
@@ -765,7 +890,6 @@ int BASLER_ACA::startAcquisition(int *width, int *height, int *payloadSize)
    // The parameter MaxNumBuffer can be used to control the count of buffers
    // allocated for grabbing. The default value of this parameter is 10.
    pCamera->MaxNumBuffer = 20;
-//   pCamera->MaxNumBuffer = 50;
 
    if(IsAvailable(nodeMap.GetNode("SensorReadoutTime")))  //available on USB cameras
    {
@@ -796,25 +920,50 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 {
    // This smart pointer will receive the grab result data.
    CGrabResultPtr ptrGrabResult;
+   bool retRes = false;
 
-   if(pCamera->IsGrabbing())
+   if(pCamera->IsGrabbing())//&& pCamera->CanWaitForFrameTriggerReady()
    {
-      // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
-      try{
-         pCamera->RetrieveResult( 5000, ptrGrabResult, TimeoutHandling_ThrowException);
-      }catch (const GenericException &e) 
+      //printf("%s: camera is grabbing...\n", this->ipAddress);
+      try
       {
-        // Error handling.
-        cerr << this->ipAddress << "An exception occurred." << endl << e.GetDescription() << endl;
-       // exitCode = 1;
-        *status=3; //timeout
-        printf("-> 5s timeout reached in getFrame\n");
-      }   
+//RetrieveResult(timeout, pointer, timeoutHandling)
+//timeout in internal mode work with 5000 (5s) but with external trigger goes in core dump. 
+//TimeoutHandling_ThrowException : exception CANNOT BE catched. I tried catch (const GenICam::GenericException &e),(const std::exception &e),(...) BUT none WORKS. 
 
-      if (ptrGrabResult->GrabSucceeded()) // Image grabbed successfully
+             if (pCamera->GetGrabResultWaitObject().Wait(5000)) //timeout: 5s
+             {
+                retRes=pCamera->RetrieveResult( 0, ptrGrabResult, TimeoutHandling_Return);
+                if(!retRes)//frame not available
+                {
+                  *status=2; //incomplete
+                  printf("%s: Grab error frame incomplete...\n", this->ipAddress);
+                  return ERROR;
+                 } 
+             } 
+             else
+             {
+                *status=99; //trigger not received OR timeout
+                return SUCCESS;
+             } 
+      }       
+      catch(...) 
+      { 
+         printf("Exception in RetrieveResult()!!! \n");
+         return ERROR;
+      } 
+
+      if(  ptrGrabResult && ptrGrabResult->GrabSucceeded() ) // Image grabbed successfully
       {
-          *status=1; //complete
-	  unsigned int width = ptrGrabResult->GetWidth();
+          if(this->triggerMode==1) //1=EXTERNAL TRIGGER
+          {
+            *status=4; //complete + trigger
+          }
+          else
+          {
+            *status=1; //complete
+          }
+	  unsigned int width  = ptrGrabResult->GetWidth();
  	  unsigned int height = ptrGrabResult->GetHeight();
 	  const uint8_t *dataPtr = (uint8_t *) ptrGrabResult->GetBuffer();     //use always char* also 4 bigger images
           memcpy( frame , (unsigned char *)dataPtr, width*height*this->Bpp );
@@ -902,11 +1051,113 @@ int BASLER_ACA::getFrame(int *status, void *frame, void *metaData)
 
        }// if (ptrGrabResult->GrabSucceeded()
        else
-       {
-         cout << this->ipAddress << ": Grab Error: " << ptrGrabResult->GetErrorCode() << " " << ptrGrabResult->GetErrorDescription() << endl;
+       { 
+         if(ptrGrabResult)
+         {
+           cout << this->ipAddress << ": Grab Error: " << ptrGrabResult->GetErrorCode() << " " << ptrGrabResult->GetErrorDescription() << endl;
+         }
+         else
+         {
+           cout << "ptrGrabResult is null!" << endl;
+         }
        }
     }//if(camera.IsGrabbing())
+    else
+    {
+     printf("%s: camera is NOT grabbing...\n", this->ipAddress);
+    }
 }
+
+/* manage color camera as grey cameras, to be finished
+int BASLER_ACA::convertFrame(void *frame) 
+{
+   //try frame conversion
+   CImageFormatConverter imageFormatConverter;
+   CPylonImage convertedImage;
+   INodeMap& nodeMap = pCamera->GetNodeMap();
+   CEnumerationPtr pFormat(nodeMap.GetNode("PixelFormat"));
+   try
+   {
+     if( strcmp(pFormat->ToString(), "BayerRG8") == 0 )
+     {
+      imageFormatConverter.OutputPixelFormat  = PixelType_Mono8;
+      imageFormatConverter.OutputBitAlignment = OutputBitAlignment_LsbAligned;
+     }
+     if( strcmp(pFormat->ToString(), "BayerRG12") == 0 )
+     {
+      imageFormatConverter.OutputPixelFormat  = PixelType_Mono16;
+      imageFormatConverter.OutputBitAlignment = OutputBitAlignment_LsbAligned;
+     }
+     if( strcmp(pFormat->ToString(), "YUV422_YUYV_Packed") == 0 )
+     {
+      imageFormatConverter.OutputPixelFormat  = PixelType_RGBA8packed;
+      imageFormatConverter.OutputBitAlignment = OutputBitAlignment_LsbAligned;
+     }
+   }
+   catch (const GenericException &e) 
+   {
+      // Error handling.
+      cerr << this->ipAddress << "An exception occurred." << endl << e.GetDescription() << endl;
+   }
+          //convert Bayer frames to Mono
+          if( strcmp(pFormat->ToString(), "BayerRG8") == 0 || strcmp(pFormat->ToString(), "BayerRG12") == 0 )
+          {
+            try
+              {
+                   imageFormatConverter.Convert( convertedImage, ptrGrabResult);
+                   dataPtr = (uint8_t *) convertedImage.GetBuffer();
+
+                   if( strcmp(pFormat->ToString(), "BayerRG8") == 0 )
+                   {
+                    cout << this->ipAddress << ": PixelFormat BayerRG8 converted to Mono8." << endl;
+                   }
+                   else
+                   {
+                    cout << this->ipAddress << ": PixelFormat BayerRG12 converted to Mono12." << endl;
+                   }                    
+                   //printf("Conv Width  %d\n", convertedImage.GetWidth());
+                   //printf("Conv Height %d\n", convertedImage.GetHeight());
+                   //printf("Conv Size   %d\n", convertedImage.GetImageSize());
+                } 
+                catch (const GenericException &e) 
+                {
+                   cerr << this->ipAddress << "An exception occurred." << endl << e.GetDescription() << endl;
+                }
+            } 
+
+            //convert YUV422 frames to RGB
+            if(strcmp(pFormat->ToString(), "YUV422_YUYV_Packed") == 0)
+            {
+               printf("Try manual color conversion from YUV422 to ARGB");
+               int pRGB=0;
+
+               unsigned int *colorBuffer = (unsigned int *) calloc(1, width * height * sizeof(int));
+               for(int i=0; i<width*height; i++)
+               {        
+		  colorBuffer[i] = 0x0000FF00;
+
+//genicam pfnc2.1 eq.3 pg.46
+//R=Y + 1.402 * (Cr-128)
+//G=Y - 0.34414 * (Cb-128) - 0.71414(Cr-128)
+//B=Y + 1.772 * (Cb - 128)
+//with Y,Cb,Cr in range [0,255]
+      //          unsigned char Y0 = (unsigned int *)dataPtr[i] &
+      //          (unsigned int *)frame[pRGB]= (unsigned char *)dataPtr[i] + (unsigned char *)dataPtr[i+1] << 8 +;
+      //          (unsigned int *)frame[pRGB+1]= (unsigned char *)dataPtr[i] + (unsigned char *)dataPtr[i+1] << 8 +;
+                //pRGB+=2;
+               } 
+               memcpy( frame , (unsigned char *)colorBuffer, width*height*this->Bpp );
+               free(colorBuffer);
+            }
+            else
+            {
+                memcpy( frame , (unsigned char *)dataPtr, width*height*this->Bpp );
+            }
+                        
+             convertedImage.Release(); //20240201: fede release buffer used for frame conversion
+             imageFormatConverter.Uninitialize(); //delete all data structures used for the conversion
+}
+*/
 
 
 int BASLER_ACA::setStreamingMode( int streamingEnabled,  bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, int adjRoiX, int adjRoiY, int adjRoiW, int adjRoiH, const char *deviceName)
@@ -938,24 +1189,106 @@ int BASLER_ACA::setStreamingMode( int streamingEnabled,  bool autoAdjustLimit, c
 int BASLER_ACA::setAcquisitionMode( int storeEnabled , int acqSkipFrameNumber)
 {
 
-   this->storeEnabled = storeEnabled;
+   this->storeEnabled.store(storeEnabled);
    this->acqSkipFrameNumber = acqSkipFrameNumber;
    return SUCCESS;
 }
 
 
-int BASLER_ACA::setTriggerMode( int triggerMode, double burstDuration, int numTrigger )
+int BASLER_ACA::setTriggerMode( int triggerMode, double burstDuration, int numTrigger, int extTrigLine, const char *trigEventName)
 {
 	this->triggerMode = triggerMode;
 	this->burstDuration = burstDuration;
 	this->numTrigger = numTrigger;
+	eventTrigger.store(0);
+	startStoreTrg.store(0);
+
+	if(this->trigEvent != NULL)
+	{
+		delete trigEvent;
+		trigEvent = NULL;
+	}
+
+	if(triggerMode==2) //MDSEVENT
+	{
+		if(trigEventName == NULL || strlen(trigEventName) == 0)
+		{
+			sprintf(error, "%s: Invalid MDSplus trigger event name\n", this->ipAddress);
+			return ERROR;
+		}
+		printf("%s: MDSplus trigger event enabled: %s\n", this->ipAddress, trigEventName);
+		trigEvent = new TriggerMdsEvent(trigEventName, this);
+		trigEvent->start();
+	}
+
+        //fede 20241126: added camera configuration to manage hw trigger
+        //pCamera->TriggerActivation.SetValue(TriggerActivation_LevelHigh);   ????????????? TriggerActivation_LevelHigh   o  TriggerActivation_RisingEdge
+
+        pCamera->AcquisitionMode.SetValue(AcquisitionMode_Continuous); //AcquisitionMode_MultiFrame(EXCEPTION) - AcquisitionMode_Continuous - AcquisitionMode_SingleFrame
+        //pCamera->AcquisitionFrameCount.SetValue(1); //1-255  number of frame to acquire
+
+        if(triggerMode==1) //1=external trigger   
+        {
+            pCamera->TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
+	    pCamera->TriggerMode.SetValue(TriggerMode_Off);
+	    pCamera->TriggerSource.SetValue(TriggerSource_Software);
+	    pCamera->TriggerActivation.SetValue(TriggerActivation_RisingEdge);
+
+            pCamera->TriggerSelector.SetValue(TriggerSelector_FrameStart);
+	    pCamera->TriggerMode.SetValue(TriggerMode_On);
+            if(extTrigLine==1)
+            {
+               pCamera->TriggerSource.SetValue(TriggerSource_Line1);
+               pCamera->LineSelector.SetValue(LineSelector_Line1);
+               pCamera->LineMode.SetValue(LineMode_Input);
+            }
+            else if(extTrigLine==2)
+            {
+               pCamera->TriggerSource.SetValue(TriggerSource_Line2);
+               pCamera->LineSelector.SetValue(LineSelector_Line2);
+               pCamera->LineMode.SetValue(LineMode_Input);
+            }
+            else if(extTrigLine==3)
+            {
+               pCamera->TriggerSource.SetValue(TriggerSource_Line3);
+               pCamera->LineSelector.SetValue(LineSelector_Line3);
+               pCamera->LineMode.SetValue(LineMode_Input);
+            }
+            else
+            {
+               sprintf(error, "%s: Invalid external trigger line %d\n", this->ipAddress, extTrigLine);
+               return ERROR;
+            }
+
+            printf("%s: External trigger configured on Line%d\n", this->ipAddress, extTrigLine);
+          	    
+	    pCamera->TriggerActivation.SetValue(TriggerActivation_RisingEdge);
+        }
+        else  //internal trigger or MDSevent trigger
+        {
+            pCamera->TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
+	    pCamera->TriggerMode.SetValue(TriggerMode_Off);
+	    pCamera->TriggerSource.SetValue(TriggerSource_Software);
+	    pCamera->TriggerActivation.SetValue(TriggerActivation_RisingEdge);
+
+            pCamera->TriggerSelector.SetValue(TriggerSelector_FrameStart);
+	    pCamera->TriggerMode.SetValue(TriggerMode_Off);
+	    pCamera->TriggerSource.SetValue(TriggerSource_Software);	    
+	    pCamera->TriggerActivation.SetValue(TriggerActivation_RisingEdge);
+        }        
+
 
         return SUCCESS; 
 }
 
 int BASLER_ACA::softwareTrigger()
 {
-	this->startStoreTrg = 1; 
+	if(triggerMode != 0)
+	{
+		sprintf(error, "%s: Software trigger is enabled only in INTERNAL mode\n", this->ipAddress);
+		return ERROR;
+	}
+	this->startStoreTrg.store(1);
 	return SUCCESS;
 }
 
@@ -990,19 +1323,23 @@ int BASLER_ACA::stopFramesAcquisition()
 {
 	int count = 0;
 
-	if (acqFlag == 0)
+	if (acqFlag.load() == 0)
 		return SUCCESS;
  
-	acqStopped = 0;
-	acqFlag = 0;
-//	while( !acqStopped & count < 20 )
-	while( !acqStopped & count < 100 ) //to stop fast USB camera acquisition (500 fps) bigger timeout is required
+	acqStopped.store(0);
+	acqFlag.store(0);
+	while( !acqStopped.load() && count < 100 )  //20,60,100: to stop fast USB camera acquisition (500 fps) bigger timeout is required
 	{
 		count++;
-		usleep(50000);
+		usleep(100000); //100ms
+       
+               // Add some debug logging to track the state of the acquisition loop
+                printf("Waiting for acquisition to stop. Count: %d\n", count);
+                printf("acqFlag: %d, acqStopped: %d\n", acqFlag.load(), acqStopped.load());
+
 	}
 
-	if(count == 20)
+	if(count == 100)
 	{
 		sprintf(error, "%s: Cannot stop acquisition loop\n", this->ipAddress);
 		return ERROR;
@@ -1027,35 +1364,49 @@ int BASLER_ACA::startFramesAcquisition()
 	float frameTime = 0.0;
         float timeOffset = 0.0; //20180605
 
-	void *saveList;
-	void *streamingList;
+	void *saveList = NULL;
+	void *streamingList = NULL;
 
-        void *frameBuffer;
-	unsigned char *metaData;
-	unsigned char *frame8bit;
+        void *frameBuffer = NULL;
+	unsigned char *metaData = NULL;
+	unsigned char *frame8bit = NULL;
 
         struct timeval tv;  //manage frame timestamp in internal mode
-        int64_t timeStamp;
-        int64_t timeStamp0;     
-        TreeNode *t0Node;
+        int64_t timeStamp = 0;
+        int64_t timeStamp0 = 0;     
+        TreeNode *t0Node = NULL;
+        Data *t0Data = NULL;
         try{
              t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
-             Data *nodeData = t0Node->getData();
-             timeStamp0 = (int64_t)nodeData->getLong();
+             t0Data = t0Node->getData();
+             timeStamp0 = (int64_t)t0Data->getLong();
+             delete t0Data;
+             t0Data = NULL;
         }catch(MdsException *exc)
          {
+            if(t0Data != NULL)
+               delete t0Data;
             sprintf(error, "%s: Error getting frame0 time\n", this->ipAddress);
          }
   
         //if ( triggerMode != 1 ) //in internal mode use the timebaseNid as T0 offset (ex. T_START_SPIDER)
         {                         //20210325: In external trigger, triggered on event must be set timeOffest
-         TreeNode *tStartOffset;
+         TreeNode *tStartOffset = NULL;
+         Data *timebaseData = NULL;
+         vector<float> timebaseArray;
          try{
              tStartOffset = new TreeNode(timebaseNid, (Tree *)treePtr);
-             Data *nodeData = tStartOffset->getData();
-             timeOffset = (float)nodeData->getFloatArray()[0];
+             timebaseData = tStartOffset->getData();
+             timebaseArray = timebaseData->getFloatArray();
+             timeOffset = (float)timebaseArray[0];
+             delete timebaseData;
+             delete tStartOffset;
          }catch(MdsException *exc)
           {
+            if(timebaseData != NULL)
+               delete timebaseData;
+            if(tStartOffset != NULL)
+               delete tStartOffset;
             sprintf(error, "%s: Error getting timebaseNid (offset time set to 0.0s)\n", this->ipAddress);
             timeOffset=0.0;
           }
@@ -1069,6 +1420,10 @@ int BASLER_ACA::startFramesAcquisition()
         {
           frameBuffer = (short *) calloc(1, width * height * sizeof(short));
         }
+        if(this->Bpp==4)
+        {
+          frameBuffer = (int *) calloc(1, width * height * sizeof(int));
+        }
 	frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
         metaSize = sizeof(BASLERMETADATA);
@@ -1077,49 +1432,95 @@ int BASLER_ACA::startFramesAcquisition()
         camStartSave(&saveList); //  # Initialize save frame Linked list reference
    	camStartStreaming(&streamingList); //  # Initialize streaming frame Linked list reference
 	burstNframe = (int)(burstDuration * frameRate + 1. + 0.5);//CT 2021 03 20 
-	acqFlag = 1;
+	acqFlag.store(1);
 	frameTriggerCounter = 0;
 	frameCounter = 0;
         incompleteFrame = 0;
 	enqueueFrameNumber = 0;
-	startStoreTrg = 0;  //manage the mdsplus saving process. SAVE always start with a SW or HW trigger. (0=no-save; 1=save)
+	startStoreTrg.store(0);  //manage the mdsplus saving process. SAVE always start with a SW or HW trigger. (0=no-save; 1=save)
+	eventTrigger.store(0);
 
-        while ( acqFlag )
+        while ( acqFlag.load() )
 	{
-
         getFrame( &frameStatus, frameBuffer, metaData);   //get the frame  
 
-        if(storeEnabled)
+//      printf("GET FRAME STATUS:%d\n",frameStatus);
+
+        if(frameStatus!=99) //99=waiting for external trigger
         {
-          if ( triggerMode == 1 )        // External trigger source
-	  {
+         if(frameStatus==4)
+           printf("%s: External trigger frame received\n", this->ipAddress);
+         if(storeEnabled.load())
+         {
+          if ( triggerMode == 0 )        // #0=INTERNAL  1=EXTERNAL  2=MDSEVENT
+          {
+               //Multiple trigger acquisition: first trigger save 64bit timestamp
+               timebaseNid = -1;  //used in cammdsutils to use internal      
+	       triggered = 1; //debug
+               if(startStoreTrg.load() == 1)
+               {
+                  gettimeofday(&tv, NULL); 				  
+                  timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
 
-           	if ( (frameStatus == 4 || eventTrigger == 1 ) && (startStoreTrg == 0) )       //start data storing @ 1st trigger seen (trigger is on image header!)
-		{                                                                             //CT In External Trigger Mode acquisitio is also triggered on MDSevent 
-            	  startStoreTrg = 1;
+                  if(timeStamp0==0)
+                  {           
+                     if(t0Node != NULL)
+                     {
+                        Int64 *tsMDS = new Int64(timeStamp);
+                        t0Node->putData(tsMDS);
+                        delete tsMDS;
+                     }
+                     timeStamp0=timeStamp; 
+                  }
+                  else
+                  {   
+                    frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
+                   // printf("frameTime: %f", frameTime);      
+                  }
+              }//if startStoreTrg == 1 
 
-                  if( eventTrigger == 1 )//For debug in Event trigger mode is disable time base and use local time frame time stamp
+       	      if ( frameTriggerCounter == burstNframe )
+              {
+                   startStoreTrg.store(0);   //disable storing
+                   frameTriggerCounter = 0;
+                   NtriggerCount++; 
+            	   printf("%s: Stop Internal trigger acquisition time:%f dur:%f fps:%f\n", this->ipAddress, frameTime, burstDuration, frameRate);
+                   //storeEnabled=0;  //infinite trigger until stop acquisition
+		   //break;
+              }
+          } 
+          else // 1=EXTERNAL  2=MDSEVENT 	
+          { 
+	          	if ( ( (triggerMode == 1 && frameStatus == 4) || (triggerMode == 2 && eventTrigger.load() == 1) ) && (startStoreTrg.load() == 0) )       //start data storing @ 1st trigger seen (trigger is on image header!)
+		{
+            	  startStoreTrg.store(1);
+
+                  if( triggerMode == 2 && eventTrigger.load() == 1 )//For debug in Event trigger mode is disable time base and use local time frame time stamp
                   {
                       timebaseNid = -1;
                       if(NtriggerCount == 0 ) timeStamp0 = 0;
                   }
 
-                  eventTrigger = 0;                                                            //CT Reset MDSplus trigger event flag
+                  eventTrigger.store(0);                                                            //CT Reset MDSplus trigger event flag
             	  printf("%s: TRIGGERED:\n", this->ipAddress);	
 		}
 
 /* Time stamp for acquisition in Event trigger */
-                if(startStoreTrg == 1)
+                if(startStoreTrg.load() == 1)
                 {
                     gettimeofday(&tv, NULL); 				  
                     timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
 
                     if(timeStamp0==0)
                     {           
-                        Int64 *tsMDS = new Int64(timeStamp);
-                        t0Node->putData(tsMDS);
-                        timeStamp0=timeStamp;
-                        printf("frameTime stamp 0: %ld", timeStamp0); 
+                         if(t0Node != NULL)
+                         {
+                            Int64 *tsMDS = new Int64(timeStamp);
+                            t0Node->putData(tsMDS);
+                            delete tsMDS;
+                         }
+                         timeStamp0=timeStamp;
+                        printf("frameTime stamp 0: %lld", (long long)timeStamp0);
                     }
                     else
                     {   
@@ -1130,10 +1531,10 @@ int BASLER_ACA::startFramesAcquisition()
 
 /*************************/
 
-           	if (frameTriggerCounter == burstNframe) 
+           	if (triggerMode != 1 && frameTriggerCounter == burstNframe) 
 		{
 		  triggered = 0;
-		  startStoreTrg   = 0;   //disable storing                  
+		  startStoreTrg.store(0);   //disable storing
 		  NtriggerCount++; 
     
                   printf("%s: ACQUIRED ALL FRAMES %d FOR TRIGGER : %d\n", this->ipAddress, frameTriggerCounter,  NtriggerCount );	
@@ -1142,53 +1543,22 @@ int BASLER_ACA::startFramesAcquisition()
 	          if ( NtriggerCount == numTrigger ) //stop store when all trigger will be received
 		  { 
 	            printf("%s: ACQUIRED ALL FRAME BURST: %d\n", this->ipAddress, numTrigger );
-                    storeEnabled=0;	
+                    storeEnabled.store(0);
 	            //break;             
 		  }
 		 }//if (frameTriggerCounter == burstNframe) 
-
-          } 
-          else //( triggerMode == 1 ) 	//Internal trigger source
-          { 
-               //Multiple trigger acquisition: first trigger save 64bit timestamp
-               timebaseNid = -1;  //used in cammdsutils to use internal      
-	       triggered = 1; //debug
-               if(startStoreTrg == 1)
-               {
-                  gettimeofday(&tv, NULL); 				  
-                  timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
-
-                  if(timeStamp0==0)
-                  {           
-                    Int64 *tsMDS = new Int64(timeStamp);
-                    t0Node->putData(tsMDS);
-                    timeStamp0=timeStamp; 
-                  }
-                  else
-                  {   
-                    frameTime = (float)((timeStamp-timeStamp0)/1000.0); //interval from first frame [s]
-                    //printf("frameTime: %f", frameTime);      
-                  }
-              }//if startStoreTrg == 1 
-
-       	      if ( frameTriggerCounter == burstNframe )
-              {
-                   startStoreTrg   = 0;   //disable storing   
-                   frameTriggerCounter = 0;
-                   NtriggerCount++; 
-            	   printf("%s: Stop Internal trigger acquisition time:%f dur:%f fps:%f\n", this->ipAddress, frameTime, burstDuration, frameRate);
-                   //storeEnabled=0;  //infinite trigger until stop acquisition
-		   //break;
-              }
-	  }//else Internal trigger source
-        }//if(storeEnabled)
+	  }//else 
+         }//if(storeEnabled)
 
  
 	//frameStatus -> status=1 complete # status=2 incomplete # status=3 timeout # status=4 triggered frame + complete
-	if( (frameStatus != 3 ) && ( storeEnabled == 1 && startStoreTrg == 1 ) && ( acqSkipFrameNumber <= 0 || (frameTriggerCounter % (acqSkipFrameNumber + 1) ) == 0 ) )
+	if( (frameStatus != 3 ) && ( storeEnabled.load() == 1 && startStoreTrg.load() == 1 ) && ( acqSkipFrameNumber <= 0 || (frameTriggerCounter % (acqSkipFrameNumber + 1) ) == 0 ) )
 	{
 	  int frameTimeBaseIdx;
-	  frameTimeBaseIdx = NtriggerCount * burstNframe + frameTriggerCounter;
+	  if(triggerMode==1)
+	    frameTimeBaseIdx = NtriggerCount;
+	  else
+	    frameTimeBaseIdx = NtriggerCount * burstNframe + frameTriggerCounter;
 	  //printf("SAVE Frame : %d timebase Idx : %d\n", frameTriggerCounter,  frameTimeBaseIdx);
 	
 	  // CT: routine camSaveFrame uses frame index in acquisition. Index is used to determine the frame timestamp using the base time array
@@ -1200,9 +1570,20 @@ int BASLER_ACA::startFramesAcquisition()
           camSaveFrame((void *)frameBuffer, width, height, frameTime+timeOffset, 8*this->Bpp, (void *)treePtr, framesNid, timebaseNid, frameTimeBaseIdx, (void *)metaData, metaSize, framesMetadNid, saveList); 
 	  enqueueFrameNumber++;
 
+	  if(triggerMode==1)
+	  {
+	    NtriggerCount++;
+	    startStoreTrg.store(0);
+	    if(NtriggerCount == numTrigger)
+	    {
+	      printf("%s: ACQUIRED ALL EXTERNAL TRIGGER FRAMES: %d\n", this->ipAddress, numTrigger);
+	      storeEnabled.store(0);
+	    }
+	  }
+
 	} 
 
-        if( streamingEnabled )
+        if( streamingEnabled && (frameStatus != 3 ))
 	{
            if( tcpStreamHandle == -1) 
 	   {                             
@@ -1223,25 +1604,38 @@ int BASLER_ACA::startFramesAcquisition()
 	    {
  	        camStreamingFrame( tcpStreamHandle, frameBuffer, width, height, pixelFormat, 0, autoAdjustLimit, &lowLim, &highLim, minLim, maxLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, this->deviceName, streamingList);
 	    }             
-	} // if( streamingEnabled )
-        frameCounter++;           //never resetted, used for frame timestamp     
-        if ( startStoreTrg == 1 ) //increment saved frame index only if acquisition has been triggered
-        {
-          frameTriggerCounter++;     
-        }
-    }//endwhile
+	 } // if( streamingEnabled )
+         frameCounter++;           //never resetted, used for frame timestamp     
+         if ( startStoreTrg.load() == 1 ) //increment saved frame index only if acquisition has been triggered
+         {
+           frameTriggerCounter++;     
+         }
 
+     }//if(frameStatus!=99)
+     else
+     {
+        //usleep(5000); //5 ms wait when polling in external trigger
+        printf("wait for external trigger...\n");
+     }
+    }//endwhile
 
     int numSavedFrame = camSavedFrame(saveList);
     int numBlackFrame = camBlackFrame(saveList);
 
-
+    printf("Stopping save thread...\n");
     camStopSave(saveList); // Stop asynhronous store stream
+    printf("Save thread stopped\n");
+
+    printf("Stopping streaming thread...\n");
     camStopStreaming(streamingList); // Stop asynhronous frame streaming
+    printf("Streaming thread stopped\n");
 
     if( tcpStreamHandle != -1 )
+    {
       camCloseTcpConnection(&tcpStreamHandle);  
+    }
 
+    printf("Stopping Pylon acquisition...\n");
     rstatus = stopAcquisition();  //stop camera acquisition
     if (rstatus < 0)
 	sprintf(error,"%s: Cannot stop camera acquisition\n", this->ipAddress);
@@ -1249,13 +1643,15 @@ int BASLER_ACA::startFramesAcquisition()
     free(frameBuffer);
     free(frame8bit);
     free(metaData);
+    if(t0Node != NULL)
+       delete t0Node;
 
     //printf("%s: Acquisition Statistics : Total frames read %d, \n\t\t\t\t\tTotal frames stored %d (expected %d), \n\t\t\t\t\tNumber of trigger %d (expected %d), \n\t\t\t\t\tIncomplete frame %d\n", this->ipAddress, frameCounter, enqueueFrameNumber, numTrigger * ( (int)( burstDuration * (frameRate - acqSkipFrameNumber)) + 1), NtriggerCount + startStoreTrg, numTrigger, incompleteFrame );
 
-    printf("%s: Acquisition Statistics : Total frames read %d, \n\t\t\t\t\tTotal frames stored %d (expected %d), \n\t\t\t\t\tTotal black frame %d, \n\t\t\t\t\tNumber of trigger %d (expected %d), \n\t\t\t\t\tIncomplete frame %d\n", this->ipAddress, frameCounter, numSavedFrame, numTrigger * ( (int)( burstDuration * (frameRate - acqSkipFrameNumber)) + 1), numBlackFrame, NtriggerCount + startStoreTrg, numTrigger, incompleteFrame );
+    printf("%s: Acquisition Statistics : Total frames read %d, \n\t\t\t\t\tTotal frames stored %d (expected %d), \n\t\t\t\t\tTotal black frame %d, \n\t\t\t\t\tNumber of trigger %d (expected %d), \n\t\t\t\t\tIncomplete frame %d\n", this->ipAddress, frameCounter, numSavedFrame, (triggerMode == 1) ? numTrigger : numTrigger * ( (int)( burstDuration * (frameRate - acqSkipFrameNumber)) + 1), numBlackFrame, NtriggerCount + startStoreTrg.load(), numTrigger, incompleteFrame );
 
 
-    acqStopped = 1;
+    acqStopped.store(1);
 
     return rstatus;
 }
