@@ -37,60 +37,84 @@ public class EPICASetup extends DeviceSetup {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
+        deviceChoice26 = new DeviceChoice();
+        deviceField1 = new DeviceField();
+        jPanel2 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
         jPanel7 = new javax.swing.JPanel();
         deviceChoice1 = new DeviceChoice();
         deviceChoice2 = new DeviceChoice();
         deviceChoice18 = new DeviceChoice();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField8 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        deviceChoice3 = new DeviceChoice();
-        deviceChoice4 = new DeviceChoice();
-        deviceChoice19 = new DeviceChoice();
-        jPanel11 = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
-        deviceField10 = new DeviceField();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChoice5 = new DeviceChoice();
-        deviceChoice6 = new DeviceChoice();
-        deviceChoice20 = new DeviceChoice();
-        jPanel14 = new javax.swing.JPanel();
-        jPanel15 = new javax.swing.JPanel();
-        deviceField12 = new DeviceField();
-        jPanel16 = new javax.swing.JPanel();
-        deviceChoice7 = new DeviceChoice();
-        deviceChoice8 = new DeviceChoice();
-        deviceChoice21 = new DeviceChoice();
-        jPanel17 = new javax.swing.JPanel();
-        jPanel18 = new javax.swing.JPanel();
-        deviceField14 = new DeviceField();
-        jPanel19 = new javax.swing.JPanel();
-        deviceChoice9 = new DeviceChoice();
-        deviceChoice10 = new DeviceChoice();
-        deviceChoice22 = new DeviceChoice();
-        jPanel20 = new javax.swing.JPanel();
-        jPanel21 = new javax.swing.JPanel();
-        deviceField16 = new DeviceField();
-        jPanel22 = new javax.swing.JPanel();
-        deviceChoice11 = new DeviceChoice();
-        deviceChoice12 = new DeviceChoice();
-        deviceChoice23 = new DeviceChoice();
-        jPanel23 = new javax.swing.JPanel();
-        jPanel24 = new javax.swing.JPanel();
-        deviceField18 = new DeviceField();
-        jPanel25 = new javax.swing.JPanel();
-        deviceChoice13 = new DeviceChoice();
-        deviceChoice14 = new DeviceChoice();
-        deviceChoice24 = new DeviceChoice();
-        jPanel26 = new javax.swing.JPanel();
-        jPanel27 = new javax.swing.JPanel();
+        jPanel29 = new javax.swing.JPanel();
+        jPanel30 = new javax.swing.JPanel();
+        deviceChoice27 = new DeviceChoice();
+        deviceField7 = new DeviceField();
+        jPanel31 = new javax.swing.JPanel();
+        deviceField9 = new DeviceField();
+        jPanel32 = new javax.swing.JPanel();
+        deviceChoice28 = new DeviceChoice();
+        deviceChoice29 = new DeviceChoice();
+        deviceChoice30 = new DeviceChoice();
+        jPanel33 = new javax.swing.JPanel();
+        jPanel34 = new javax.swing.JPanel();
+        deviceChoice31 = new DeviceChoice();
+        deviceField11 = new DeviceField();
+        jPanel35 = new javax.swing.JPanel();
+        deviceField13 = new DeviceField();
+        jPanel36 = new javax.swing.JPanel();
+        deviceChoice32 = new DeviceChoice();
+        deviceChoice33 = new DeviceChoice();
+        deviceChoice34 = new DeviceChoice();
+        jPanel37 = new javax.swing.JPanel();
+        jPanel38 = new javax.swing.JPanel();
+        deviceChoice35 = new DeviceChoice();
+        deviceField15 = new DeviceField();
+        jPanel39 = new javax.swing.JPanel();
+        deviceField17 = new DeviceField();
+        jPanel40 = new javax.swing.JPanel();
+        deviceChoice36 = new DeviceChoice();
+        deviceChoice37 = new DeviceChoice();
+        deviceChoice38 = new DeviceChoice();
+        jPanel41 = new javax.swing.JPanel();
+        jPanel42 = new javax.swing.JPanel();
+        deviceChoice39 = new DeviceChoice();
+        deviceField19 = new DeviceField();
+        jPanel43 = new javax.swing.JPanel();
+        deviceField21 = new DeviceField();
+        jPanel44 = new javax.swing.JPanel();
+        deviceChoice40 = new DeviceChoice();
+        deviceChoice41 = new DeviceChoice();
+        deviceChoice42 = new DeviceChoice();
+        jPanel45 = new javax.swing.JPanel();
+        jPanel46 = new javax.swing.JPanel();
+        deviceChoice43 = new DeviceChoice();
         deviceField20 = new DeviceField();
-        jPanel28 = new javax.swing.JPanel();
-        deviceChoice15 = new DeviceChoice();
-        deviceChoice16 = new DeviceChoice();
-        deviceChoice25 = new DeviceChoice();
+        jPanel47 = new javax.swing.JPanel();
+        deviceField22 = new DeviceField();
+        jPanel48 = new javax.swing.JPanel();
+        deviceChoice44 = new DeviceChoice();
+        deviceChoice45 = new DeviceChoice();
+        deviceChoice46 = new DeviceChoice();
+        jPanel49 = new javax.swing.JPanel();
+        jPanel50 = new javax.swing.JPanel();
+        deviceChoice47 = new DeviceChoice();
+        deviceField23 = new DeviceField();
+        jPanel51 = new javax.swing.JPanel();
+        deviceField24 = new DeviceField();
+        jPanel52 = new javax.swing.JPanel();
+        deviceChoice48 = new DeviceChoice();
+        deviceChoice49 = new DeviceChoice();
+        deviceChoice50 = new DeviceChoice();
+        jPanel53 = new javax.swing.JPanel();
+        jPanel54 = new javax.swing.JPanel();
+        deviceChoice51 = new DeviceChoice();
+        deviceField25 = new DeviceField();
+        jPanel55 = new javax.swing.JPanel();
+        deviceField26 = new DeviceField();
+        jPanel56 = new javax.swing.JPanel();
+        deviceChoice52 = new DeviceChoice();
+        deviceChoice53 = new DeviceChoice();
+        deviceChoice54 = new DeviceChoice();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("EPICA");
@@ -118,7 +142,7 @@ public class EPICASetup extends DeviceSetup {
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Delay(us):");
-        deviceField4.setOffsetNid(14);
+        deviceField4.setOffsetNid(6);
         jPanel4.add(deviceField4);
 
         deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5, 6, 7});
@@ -126,7 +150,7 @@ public class EPICASetup extends DeviceSetup {
         deviceChoice17.setConvert(true);
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Frequency: ");
-        deviceChoice17.setOffsetNid(5);
+        deviceChoice17.setOffsetNid(6);
         deviceChoice17.setUpdateIdentifier("");
         jPanel4.add(deviceChoice17);
 
@@ -134,23 +158,37 @@ public class EPICASetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
-        jPanel5.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel5.setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("FIFO: ");
-        deviceField6.setNumCols(40);
-        deviceField6.setOffsetNid(6);
-        deviceField6.setTextOnly(true);
-        jPanel6.add(deviceField6);
+        deviceChoice26.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice26.setIdentifier("");
+        deviceChoice26.setLabelString("Mode: ");
+        deviceChoice26.setOffsetNid(79);
+        deviceChoice26.setUpdateIdentifier("");
+        jPanel6.add(deviceChoice26);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("DC Value: ");
+        deviceField1.setOffsetNid(81);
+        jPanel6.add(deviceField1);
 
         jPanel5.add(jPanel6);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Ramp: ");
+        deviceField5.setNumCols(35);
+        deviceField5.setOffsetNid(80);
+        deviceField5.setTextOnly(true);
+        jPanel2.add(deviceField5);
+
+        jPanel5.add(jPanel2);
 
         deviceChoice1.setChoiceIntValues(new int[] {0, 1, 2, 3});
         deviceChoice1.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
         deviceChoice1.setConvert(true);
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Shunt A: ");
-        deviceChoice1.setOffsetNid(15);
+        deviceChoice1.setOffsetNid(47);
         deviceChoice1.setUpdateIdentifier("");
         jPanel7.add(deviceChoice1);
 
@@ -159,7 +197,7 @@ public class EPICASetup extends DeviceSetup {
         deviceChoice2.setConvert(true);
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Shunt B: ");
-        deviceChoice2.setOffsetNid(23);
+        deviceChoice2.setOffsetNid(48);
         deviceChoice2.setUpdateIdentifier("");
         jPanel7.add(deviceChoice2);
 
@@ -167,8 +205,8 @@ public class EPICASetup extends DeviceSetup {
         deviceChoice18.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
         deviceChoice18.setConvert(true);
         deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("");
-        deviceChoice18.setOffsetNid(31);
+        deviceChoice18.setLabelString("Config: ");
+        deviceChoice18.setOffsetNid(46);
         deviceChoice18.setUpdateIdentifier("");
         jPanel7.add(deviceChoice18);
 
@@ -176,299 +214,397 @@ public class EPICASetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Module 1", jPanel5);
 
-        jPanel8.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel29.setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("FIFO: ");
-        deviceField8.setNumCols(40);
-        deviceField8.setOffsetNid(7);
-        deviceField8.setTextOnly(true);
-        jPanel9.add(deviceField8);
+        deviceChoice27.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice27.setIdentifier("");
+        deviceChoice27.setLabelString("Mode: ");
+        deviceChoice27.setOffsetNid(83);
+        deviceChoice27.setUpdateIdentifier("");
+        jPanel30.add(deviceChoice27);
 
-        jPanel8.add(jPanel9);
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("DC Value: ");
+        deviceField7.setOffsetNid(85);
+        jPanel30.add(deviceField7);
 
-        deviceChoice3.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice3.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice3.setConvert(true);
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Shunt A: ");
-        deviceChoice3.setOffsetNid(16);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice3);
+        jPanel29.add(jPanel30);
 
-        deviceChoice4.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice4.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice4.setConvert(true);
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Shunt B: ");
-        deviceChoice4.setOffsetNid(24);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice4);
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Ramp: ");
+        deviceField9.setNumCols(35);
+        deviceField9.setOffsetNid(84);
+        deviceField9.setTextOnly(true);
+        jPanel31.add(deviceField9);
 
-        deviceChoice19.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice19.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice19.setConvert(true);
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("");
-        deviceChoice19.setOffsetNid(32);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice19);
+        jPanel29.add(jPanel31);
 
-        jPanel8.add(jPanel10);
+        deviceChoice28.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice28.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice28.setConvert(true);
+        deviceChoice28.setIdentifier("");
+        deviceChoice28.setLabelString("Shunt A: ");
+        deviceChoice28.setOffsetNid(51);
+        deviceChoice28.setUpdateIdentifier("");
+        jPanel32.add(deviceChoice28);
 
-        jTabbedPane1.addTab("Module 2", jPanel8);
+        deviceChoice29.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice29.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice29.setConvert(true);
+        deviceChoice29.setIdentifier("");
+        deviceChoice29.setLabelString("Shunt B: ");
+        deviceChoice29.setOffsetNid(52);
+        deviceChoice29.setUpdateIdentifier("");
+        jPanel32.add(deviceChoice29);
 
-        jPanel11.setLayout(new java.awt.GridLayout(2, 0));
+        deviceChoice30.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice30.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice30.setConvert(true);
+        deviceChoice30.setIdentifier("");
+        deviceChoice30.setLabelString("Config: ");
+        deviceChoice30.setOffsetNid(50);
+        deviceChoice30.setUpdateIdentifier("");
+        jPanel32.add(deviceChoice30);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("FIFO: ");
-        deviceField10.setNumCols(40);
-        deviceField10.setOffsetNid(8);
-        deviceField10.setTextOnly(true);
-        jPanel12.add(deviceField10);
+        jPanel29.add(jPanel32);
 
-        jPanel11.add(jPanel12);
+        jTabbedPane1.addTab("Module 2", jPanel29);
 
-        deviceChoice5.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice5.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice5.setConvert(true);
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Shunt A: ");
-        deviceChoice5.setOffsetNid(17);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice5);
+        jPanel33.setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice6.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice6.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice6.setConvert(true);
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Shunt B: ");
-        deviceChoice6.setOffsetNid(25);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice6);
+        deviceChoice31.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice31.setIdentifier("");
+        deviceChoice31.setLabelString("Mode: ");
+        deviceChoice31.setOffsetNid(87);
+        deviceChoice31.setUpdateIdentifier("");
+        jPanel34.add(deviceChoice31);
 
-        deviceChoice20.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice20.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice20.setConvert(true);
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("");
-        deviceChoice20.setOffsetNid(33);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice20);
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("DC Value: ");
+        deviceField11.setOffsetNid(89);
+        jPanel34.add(deviceField11);
 
-        jPanel11.add(jPanel13);
+        jPanel33.add(jPanel34);
 
-        jTabbedPane1.addTab("Module 3", jPanel11);
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Ramp: ");
+        deviceField13.setNumCols(35);
+        deviceField13.setOffsetNid(88);
+        deviceField13.setTextOnly(true);
+        jPanel35.add(deviceField13);
 
-        jPanel14.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel33.add(jPanel35);
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("FIFO: ");
-        deviceField12.setNumCols(40);
-        deviceField12.setOffsetNid(9);
-        deviceField12.setTextOnly(true);
-        jPanel15.add(deviceField12);
+        deviceChoice32.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice32.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice32.setConvert(true);
+        deviceChoice32.setIdentifier("");
+        deviceChoice32.setLabelString("Shunt A: ");
+        deviceChoice32.setOffsetNid(55);
+        deviceChoice32.setUpdateIdentifier("");
+        jPanel36.add(deviceChoice32);
 
-        jPanel14.add(jPanel15);
+        deviceChoice33.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice33.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice33.setConvert(true);
+        deviceChoice33.setIdentifier("");
+        deviceChoice33.setLabelString("Shunt B: ");
+        deviceChoice33.setOffsetNid(56);
+        deviceChoice33.setUpdateIdentifier("");
+        jPanel36.add(deviceChoice33);
 
-        deviceChoice7.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice7.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice7.setConvert(true);
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Shunt A: ");
-        deviceChoice7.setOffsetNid(18);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice7);
+        deviceChoice34.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice34.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice34.setConvert(true);
+        deviceChoice34.setIdentifier("");
+        deviceChoice34.setLabelString("Config: ");
+        deviceChoice34.setOffsetNid(54);
+        deviceChoice34.setUpdateIdentifier("");
+        jPanel36.add(deviceChoice34);
 
-        deviceChoice8.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice8.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice8.setConvert(true);
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Shunt B: ");
-        deviceChoice8.setOffsetNid(26);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice8);
+        jPanel33.add(jPanel36);
 
-        deviceChoice21.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice21.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice21.setConvert(true);
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("");
-        deviceChoice21.setOffsetNid(34);
-        deviceChoice21.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice21);
+        jTabbedPane1.addTab("Module 3", jPanel33);
 
-        jPanel14.add(jPanel16);
+        jPanel37.setLayout(new java.awt.GridLayout(3, 0));
 
-        jTabbedPane1.addTab("Module 4", jPanel14);
+        deviceChoice35.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice35.setIdentifier("");
+        deviceChoice35.setLabelString("Mode: ");
+        deviceChoice35.setOffsetNid(91);
+        deviceChoice35.setUpdateIdentifier("");
+        jPanel38.add(deviceChoice35);
 
-        jPanel17.setLayout(new java.awt.GridLayout(2, 0));
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("DC Value: ");
+        deviceField15.setOffsetNid(93);
+        jPanel38.add(deviceField15);
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("FIFO: ");
-        deviceField14.setNumCols(40);
-        deviceField14.setOffsetNid(10);
-        deviceField14.setTextOnly(true);
-        jPanel18.add(deviceField14);
+        jPanel37.add(jPanel38);
 
-        jPanel17.add(jPanel18);
+        deviceField17.setIdentifier("");
+        deviceField17.setLabelString("Ramp: ");
+        deviceField17.setNumCols(35);
+        deviceField17.setOffsetNid(92);
+        deviceField17.setTextOnly(true);
+        jPanel39.add(deviceField17);
 
-        deviceChoice9.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice9.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice9.setConvert(true);
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("Shunt A: ");
-        deviceChoice9.setOffsetNid(19);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice9);
+        jPanel37.add(jPanel39);
 
-        deviceChoice10.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice10.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice10.setConvert(true);
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("Shunt B: ");
-        deviceChoice10.setOffsetNid(27);
-        deviceChoice10.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice10);
+        deviceChoice36.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice36.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice36.setConvert(true);
+        deviceChoice36.setIdentifier("");
+        deviceChoice36.setLabelString("Shunt A: ");
+        deviceChoice36.setOffsetNid(59);
+        deviceChoice36.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice36);
 
-        deviceChoice22.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice22.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice22.setConvert(true);
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("");
-        deviceChoice22.setOffsetNid(35);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice22);
+        deviceChoice37.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice37.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice37.setConvert(true);
+        deviceChoice37.setIdentifier("");
+        deviceChoice37.setLabelString("Shunt B: ");
+        deviceChoice37.setOffsetNid(60);
+        deviceChoice37.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice37);
 
-        jPanel17.add(jPanel19);
+        deviceChoice38.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice38.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice38.setConvert(true);
+        deviceChoice38.setIdentifier("");
+        deviceChoice38.setLabelString("Config: ");
+        deviceChoice38.setOffsetNid(58);
+        deviceChoice38.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice38);
 
-        jTabbedPane1.addTab("Module 5", jPanel17);
+        jPanel37.add(jPanel40);
 
-        jPanel20.setLayout(new java.awt.GridLayout(2, 0));
+        jTabbedPane1.addTab("Module 4", jPanel37);
 
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("FIFO: ");
-        deviceField16.setNumCols(40);
-        deviceField16.setOffsetNid(11);
-        deviceField16.setTextOnly(true);
-        jPanel21.add(deviceField16);
+        jPanel41.setLayout(new java.awt.GridLayout(3, 0));
 
-        jPanel20.add(jPanel21);
+        deviceChoice39.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice39.setIdentifier("");
+        deviceChoice39.setLabelString("Mode: ");
+        deviceChoice39.setOffsetNid(95);
+        deviceChoice39.setUpdateIdentifier("");
+        jPanel42.add(deviceChoice39);
 
-        deviceChoice11.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice11.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice11.setConvert(true);
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("Shunt A: ");
-        deviceChoice11.setOffsetNid(20);
-        deviceChoice11.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice11);
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("DC Value: ");
+        deviceField19.setOffsetNid(97);
+        jPanel42.add(deviceField19);
 
-        deviceChoice12.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice12.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice12.setConvert(true);
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("Shunt B: ");
-        deviceChoice12.setOffsetNid(28);
-        deviceChoice12.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice12);
+        jPanel41.add(jPanel42);
 
-        deviceChoice23.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice23.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice23.setConvert(true);
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("");
-        deviceChoice23.setOffsetNid(36);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice23);
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Ramp: ");
+        deviceField21.setNumCols(35);
+        deviceField21.setOffsetNid(96);
+        deviceField21.setTextOnly(true);
+        jPanel43.add(deviceField21);
 
-        jPanel20.add(jPanel22);
+        jPanel41.add(jPanel43);
 
-        jTabbedPane1.addTab("Module 6", jPanel20);
+        deviceChoice40.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice40.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice40.setConvert(true);
+        deviceChoice40.setIdentifier("");
+        deviceChoice40.setLabelString("Shunt A: ");
+        deviceChoice40.setOffsetNid(63);
+        deviceChoice40.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice40);
 
-        jPanel23.setLayout(new java.awt.GridLayout(2, 0));
+        deviceChoice41.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice41.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice41.setConvert(true);
+        deviceChoice41.setIdentifier("");
+        deviceChoice41.setLabelString("Shunt B: ");
+        deviceChoice41.setOffsetNid(64);
+        deviceChoice41.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice41);
 
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("FIFO: ");
-        deviceField18.setNumCols(40);
-        deviceField18.setOffsetNid(12);
-        deviceField18.setTextOnly(true);
-        jPanel24.add(deviceField18);
+        deviceChoice42.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice42.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice42.setConvert(true);
+        deviceChoice42.setIdentifier("");
+        deviceChoice42.setLabelString("Config: ");
+        deviceChoice42.setOffsetNid(62);
+        deviceChoice42.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice42);
 
-        jPanel23.add(jPanel24);
+        jPanel41.add(jPanel44);
 
-        deviceChoice13.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice13.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice13.setConvert(true);
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("Shunt A: ");
-        deviceChoice13.setOffsetNid(21);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice13);
+        jTabbedPane1.addTab("Module 5", jPanel41);
 
-        deviceChoice14.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice14.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice14.setConvert(true);
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("Shunt B: ");
-        deviceChoice14.setOffsetNid(29);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice14);
+        jPanel45.setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice24.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice24.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice24.setConvert(true);
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString("");
-        deviceChoice24.setOffsetNid(37);
-        deviceChoice24.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice24);
-
-        jPanel23.add(jPanel25);
-
-        jTabbedPane1.addTab("Module 7", jPanel23);
-
-        jPanel26.setLayout(new java.awt.GridLayout(2, 0));
+        deviceChoice43.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice43.setIdentifier("");
+        deviceChoice43.setLabelString("Mode: ");
+        deviceChoice43.setOffsetNid(99);
+        deviceChoice43.setUpdateIdentifier("");
+        jPanel46.add(deviceChoice43);
 
         deviceField20.setIdentifier("");
-        deviceField20.setLabelString("FIFO: ");
-        deviceField20.setNumCols(40);
-        deviceField20.setOffsetNid(13);
-        deviceField20.setTextOnly(true);
-        jPanel27.add(deviceField20);
+        deviceField20.setLabelString("DC Value: ");
+        deviceField20.setOffsetNid(101);
+        jPanel46.add(deviceField20);
 
-        jPanel26.add(jPanel27);
+        jPanel45.add(jPanel46);
 
-        deviceChoice15.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice15.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice15.setConvert(true);
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("Shunt A: ");
-        deviceChoice15.setOffsetNid(22);
-        deviceChoice15.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice15);
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("Ramp: ");
+        deviceField22.setNumCols(35);
+        deviceField22.setOffsetNid(100);
+        deviceField22.setTextOnly(true);
+        jPanel47.add(deviceField22);
 
-        deviceChoice16.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice16.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
-        deviceChoice16.setConvert(true);
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("Shunt B: ");
-        deviceChoice16.setOffsetNid(30);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice16);
+        jPanel45.add(jPanel47);
 
-        deviceChoice25.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
-        deviceChoice25.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
-        deviceChoice25.setConvert(true);
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString("");
-        deviceChoice25.setOffsetNid(38);
-        deviceChoice25.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice25);
+        deviceChoice44.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice44.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice44.setConvert(true);
+        deviceChoice44.setIdentifier("");
+        deviceChoice44.setLabelString("Shunt A: ");
+        deviceChoice44.setOffsetNid(67);
+        deviceChoice44.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice44);
 
-        jPanel26.add(jPanel28);
+        deviceChoice45.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice45.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice45.setConvert(true);
+        deviceChoice45.setIdentifier("");
+        deviceChoice45.setLabelString("Shunt B: ");
+        deviceChoice45.setOffsetNid(68);
+        deviceChoice45.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice45);
 
-        jTabbedPane1.addTab("Module 8", jPanel26);
+        deviceChoice46.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice46.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice46.setConvert(true);
+        deviceChoice46.setIdentifier("");
+        deviceChoice46.setLabelString("Config: ");
+        deviceChoice46.setOffsetNid(66);
+        deviceChoice46.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice46);
+
+        jPanel45.add(jPanel48);
+
+        jTabbedPane1.addTab("Module 6", jPanel45);
+
+        jPanel49.setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice47.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice47.setIdentifier("");
+        deviceChoice47.setLabelString("Mode: ");
+        deviceChoice47.setOffsetNid(103);
+        deviceChoice47.setUpdateIdentifier("");
+        jPanel50.add(deviceChoice47);
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("DC Value: ");
+        deviceField23.setOffsetNid(105);
+        jPanel50.add(deviceField23);
+
+        jPanel49.add(jPanel50);
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("Ramp: ");
+        deviceField24.setNumCols(35);
+        deviceField24.setOffsetNid(104);
+        deviceField24.setTextOnly(true);
+        jPanel51.add(deviceField24);
+
+        jPanel49.add(jPanel51);
+
+        deviceChoice48.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice48.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice48.setConvert(true);
+        deviceChoice48.setIdentifier("");
+        deviceChoice48.setLabelString("Shunt A: ");
+        deviceChoice48.setOffsetNid(71);
+        deviceChoice48.setUpdateIdentifier("");
+        jPanel52.add(deviceChoice48);
+
+        deviceChoice49.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice49.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice49.setConvert(true);
+        deviceChoice49.setIdentifier("");
+        deviceChoice49.setLabelString("Shunt B: ");
+        deviceChoice49.setOffsetNid(72);
+        deviceChoice49.setUpdateIdentifier("");
+        jPanel52.add(deviceChoice49);
+
+        deviceChoice50.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice50.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice50.setConvert(true);
+        deviceChoice50.setIdentifier("");
+        deviceChoice50.setLabelString("Config: ");
+        deviceChoice50.setOffsetNid(70);
+        deviceChoice50.setUpdateIdentifier("");
+        jPanel52.add(deviceChoice50);
+
+        jPanel49.add(jPanel52);
+
+        jTabbedPane1.addTab("Module 7", jPanel49);
+
+        jPanel53.setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice51.setChoiceItems(new String[] {"DC", "RAMP"});
+        deviceChoice51.setIdentifier("");
+        deviceChoice51.setLabelString("Mode: ");
+        deviceChoice51.setOffsetNid(107);
+        deviceChoice51.setUpdateIdentifier("");
+        jPanel54.add(deviceChoice51);
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("DC Value: ");
+        deviceField25.setOffsetNid(109);
+        jPanel54.add(deviceField25);
+
+        jPanel53.add(jPanel54);
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("Ramp: ");
+        deviceField26.setNumCols(35);
+        deviceField26.setOffsetNid(108);
+        deviceField26.setTextOnly(true);
+        jPanel55.add(deviceField26);
+
+        jPanel53.add(jPanel55);
+
+        deviceChoice52.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice52.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice52.setConvert(true);
+        deviceChoice52.setIdentifier("");
+        deviceChoice52.setLabelString("Shunt A: ");
+        deviceChoice52.setOffsetNid(75);
+        deviceChoice52.setUpdateIdentifier("");
+        jPanel56.add(deviceChoice52);
+
+        deviceChoice53.setChoiceIntValues(new int[] {0, 1, 2, 3});
+        deviceChoice53.setChoiceItems(new String[] {"1mA", "10mA", "100mA", "1A"});
+        deviceChoice53.setConvert(true);
+        deviceChoice53.setIdentifier("");
+        deviceChoice53.setLabelString("Shunt B: ");
+        deviceChoice53.setOffsetNid(76);
+        deviceChoice53.setUpdateIdentifier("");
+        jPanel56.add(deviceChoice53);
+
+        deviceChoice54.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5});
+        deviceChoice54.setChoiceItems(new String[] {"All open", "A floating & B floating", "A Single LP & B Floating", "A Floating & B Single LP", "A & B Single LP", "Double Probe "});
+        deviceChoice54.setConvert(true);
+        deviceChoice54.setIdentifier("");
+        deviceChoice54.setLabelString("Config: ");
+        deviceChoice54.setOffsetNid(74);
+        deviceChoice54.setUpdateIdentifier("");
+        jPanel56.add(deviceChoice54);
+
+        jPanel53.add(jPanel56);
+
+        jTabbedPane1.addTab("Module 8", jPanel53);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -477,68 +613,92 @@ public class EPICASetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice10;
-    private DeviceChoice deviceChoice11;
-    private DeviceChoice deviceChoice12;
-    private DeviceChoice deviceChoice13;
-    private DeviceChoice deviceChoice14;
-    private DeviceChoice deviceChoice15;
-    private DeviceChoice deviceChoice16;
     private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice18;
-    private DeviceChoice deviceChoice19;
     private DeviceChoice deviceChoice2;
-    private DeviceChoice deviceChoice20;
-    private DeviceChoice deviceChoice21;
-    private DeviceChoice deviceChoice22;
-    private DeviceChoice deviceChoice23;
-    private DeviceChoice deviceChoice24;
-    private DeviceChoice deviceChoice25;
-    private DeviceChoice deviceChoice3;
-    private DeviceChoice deviceChoice4;
-    private DeviceChoice deviceChoice5;
-    private DeviceChoice deviceChoice6;
-    private DeviceChoice deviceChoice7;
-    private DeviceChoice deviceChoice8;
-    private DeviceChoice deviceChoice9;
-    private DeviceField deviceField10;
-    private DeviceField deviceField12;
-    private DeviceField deviceField14;
-    private DeviceField deviceField16;
-    private DeviceField deviceField18;
+    private DeviceChoice deviceChoice26;
+    private DeviceChoice deviceChoice27;
+    private DeviceChoice deviceChoice28;
+    private DeviceChoice deviceChoice29;
+    private DeviceChoice deviceChoice30;
+    private DeviceChoice deviceChoice31;
+    private DeviceChoice deviceChoice32;
+    private DeviceChoice deviceChoice33;
+    private DeviceChoice deviceChoice34;
+    private DeviceChoice deviceChoice35;
+    private DeviceChoice deviceChoice36;
+    private DeviceChoice deviceChoice37;
+    private DeviceChoice deviceChoice38;
+    private DeviceChoice deviceChoice39;
+    private DeviceChoice deviceChoice40;
+    private DeviceChoice deviceChoice41;
+    private DeviceChoice deviceChoice42;
+    private DeviceChoice deviceChoice43;
+    private DeviceChoice deviceChoice44;
+    private DeviceChoice deviceChoice45;
+    private DeviceChoice deviceChoice46;
+    private DeviceChoice deviceChoice47;
+    private DeviceChoice deviceChoice48;
+    private DeviceChoice deviceChoice49;
+    private DeviceChoice deviceChoice50;
+    private DeviceChoice deviceChoice51;
+    private DeviceChoice deviceChoice52;
+    private DeviceChoice deviceChoice53;
+    private DeviceChoice deviceChoice54;
+    private DeviceField deviceField1;
+    private DeviceField deviceField11;
+    private DeviceField deviceField13;
+    private DeviceField deviceField15;
+    private DeviceField deviceField17;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
+    private DeviceField deviceField21;
+    private DeviceField deviceField22;
+    private DeviceField deviceField23;
+    private DeviceField deviceField24;
+    private DeviceField deviceField25;
+    private DeviceField deviceField26;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
-    private DeviceField deviceField6;
-    private DeviceField deviceField8;
+    private DeviceField deviceField5;
+    private DeviceField deviceField7;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanel15;
-    private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
-    private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel21;
-    private javax.swing.JPanel jPanel22;
-    private javax.swing.JPanel jPanel23;
-    private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel25;
-    private javax.swing.JPanel jPanel26;
-    private javax.swing.JPanel jPanel27;
-    private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
+    private javax.swing.JPanel jPanel35;
+    private javax.swing.JPanel jPanel36;
+    private javax.swing.JPanel jPanel37;
+    private javax.swing.JPanel jPanel38;
+    private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel40;
+    private javax.swing.JPanel jPanel41;
+    private javax.swing.JPanel jPanel42;
+    private javax.swing.JPanel jPanel43;
+    private javax.swing.JPanel jPanel44;
+    private javax.swing.JPanel jPanel45;
+    private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
+    private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel50;
+    private javax.swing.JPanel jPanel51;
+    private javax.swing.JPanel jPanel52;
+    private javax.swing.JPanel jPanel53;
+    private javax.swing.JPanel jPanel54;
+    private javax.swing.JPanel jPanel55;
+    private javax.swing.JPanel jPanel56;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
