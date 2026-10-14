@@ -7,6 +7,9 @@ import time
 import subprocess
 import struct
 
+def signed16(value):
+    value = int(value) & 0xFFFF
+    return value if value < 0x8000 else value - 0x10000
 
 def removeBlanksInString(msg):
     inString = False
@@ -386,15 +389,19 @@ class EPICA(MDSplus.Device):
                     pts -= 1
         #################################################             
                 print(len(chanArray), pts//2)
-
+                sampleCount = np.uint32(0)
                 for sampleCount in range(pts):
                     data = chanArray[sampleCount]
+                    volt = signed16(data)
+                    curr = signed16(data >> 16)
+
+
                     if sampleCount % 2 == 0:
-                        currChanAVolt[sampleCount//2] =  data & np.uint32(0x0000FFFF)
-                        currChanACurr[sampleCount//2] = (data & np.uint32(0xFFFF0000)) >> 16
+                        currChanAVolt[sampleCount//2] = volt
+                        currChanACurr[sampleCount//2] = curr
                     else:
-                        currChanBVolt[sampleCount//2] =  data & np.uint32(0x0000FFFF)
-                        currChanBCurr[sampleCount//2] = (data & np.uint32(0xFFFF0000)) >> 16
+                        currChanBVolt[sampleCount//2] = volt
+                        currChanBCurr[sampleCount//2] = curr
 
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanACurr))
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanAVolt))
