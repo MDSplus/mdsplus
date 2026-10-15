@@ -842,48 +842,35 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
  <!-- dist first -->
   <external_packages dist="Ubuntu26">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
    <libxml package="libxml2-16"/>
  </external_packages>
 
   <external_packages dist="Ubuntu24">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu22">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu20">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="Ubuntu18">
-   <numpy package="python3-numpy"/>
    <readline package="libreadline7"/>
  </external_packages>
 
+ <external_packages dist="DebianTrixie">
+ </external_packages>
+
  <external_packages dist="DebianBookworm">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="DebianBullseye">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="DebianBuster">
-   <numpy package="python3-numpy"/>
-   <readline package="libreadline8"/>
  </external_packages>
 
  <external_packages dist="DebianStretch">
-   <numpy package="python3-numpy"/>
    <readline package="libreadline7"/>
  </external_packages>
 
@@ -923,8 +910,9 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  </external_packages>
 
  <external_packages platform="debian">
-   <numpy package="python-numpy"/>
+   <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
+   <readline package="libreadline8"/>
    <libmotif package="libmrm4"/>
    <libxml package="libxml2"/>
  </external_packages>

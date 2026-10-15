@@ -1,0 +1,4 @@
+--dockerimage=mdsplus/builder:debian-13-arm64
+--dockerimage-target=arm64v8/debian:trixie
+--distname=DebianTrixie --platform=debian
+-DENABLE_LABVIEW=OFF -DENABLE_HDF5=ON
