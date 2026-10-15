@@ -11,6 +11,8 @@ def OSList = [
     ['RHEL 9 (x86_64)',                 'rhel-9-x86_64',    'docker && linux-amd64'],
     ['Debian 12 (amd64)',               'debian-12-amd64',  'docker && linux-amd64'],
     ['Debian 12 (arm64)',               'debian-12-arm64',  'docker && linux-aarch64'],
+    ['Debian 13 (amd64)',               'debian-13-amd64',  'docker && linux-amd64'],
+    ['Debian 13 (arm64)',               'debian-13-arm64',  'docker && linux-aarch64'],
     ['Windows (x86)',                   'windows-x86',      'docker && linux-amd64'],
     ['Windows (x64)',                   'windows-x64',      'docker && linux-amd64'],
     ['MacOSX (homebrew)',               'macosx-homebrew',  'macosx'],
