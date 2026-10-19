@@ -81,7 +81,20 @@ class EPFES(Device):
 
                 self.local = 0
 
+                self.contextInitialized = False
+
+            def checkTree(self):
+                if not self.contextInitialized :
+                   print("Copio")
+                   self.contextInitialized = True
+                   self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
+                   self.device = self.device.copy()
+
+
+
             def doAllOn(self):
+
+                self.checkTree()
 
                 try:
                     ip = self.device.getNode('IP').data()
@@ -123,6 +136,8 @@ class EPFES(Device):
 
             def doAllOff(self):
 
+                self.checkTree()
+
                 try:
                     ip = self.device.getNode('IP').data()
                 except:
@@ -162,6 +177,8 @@ class EPFES(Device):
                 sock.close()
 
             def doProgram(self):
+
+                self.checkTree()
 
                 now = datetime.datetime.now()
 
