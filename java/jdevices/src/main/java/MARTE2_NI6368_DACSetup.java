@@ -60,7 +60,7 @@ public class MARTE2_NI6368_DACSetup extends DeviceSetup {
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id:");
-        deviceField1.setNumCols(2);
+        deviceField1.setNumCols(20);
         deviceField1.setOffsetNid(10);
         jPanel1.add(deviceField1);
 

@@ -312,7 +312,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 
 	public void RemoveEvent(String event) throws IOException
 	{
-		((MdsWaveInterface) wi).AddEvent(this, event);
+		((MdsWaveInterface) wi).RemoveEvent(this, event);
 	}
 
 	@Override

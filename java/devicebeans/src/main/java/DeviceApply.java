@@ -13,6 +13,7 @@ public class DeviceApply extends DeviceControl
 	@Override
 	protected void doOperation(DeviceSetup deviceSetup)
 	{
+		deviceSetup.applyCallback();
 		if (check())
 			deviceSetup.apply();
 	}

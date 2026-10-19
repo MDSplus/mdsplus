@@ -6,12 +6,11 @@ class CHECK_MARTE2(MDSplus.Device):
     parts = [
         {'path':':COMMENT','type':'text'}, 
     ]
-    for i in range(8):
+    for i in range(16):
         parts.extend([
             {'path':'.MARTE2_%d'%(i+1),'type':'structure'},
             {'path':'.MARTE2_%d:IP'%(i+1),'type':'text'},
-            {'path':'.MARTE2_%d:PORT'%(i+1),'type':'numeric'},
-            {'path':'.MARTE2_%d:DESCRIPTION'%(i+1),'type':'text'},
+            {'path':'.MARTE2_%d:SUPERVISOR'%(i+1),'type':'numeric'},
         ])
     parts.extend([
         {'path':':CHECK_ACTION','type':'action',
@@ -21,21 +20,29 @@ class CHECK_MARTE2(MDSplus.Device):
     del(i)
 
     def check(self):
+        serversOk = True
         for i in range(8):
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
+                currSupervisor = self.getNode('.MARTE2_%d:SUPERVISOR'%(i+1)).getData()
+                if not currSupervisor.isOn():
+                    continue 
                 currIp = self.getNode('.MARTE2_%d:IP'%(i+1)).data()
-                currPort = self.getNode('.MARTE2_%d:PORT'%(i+1)).data()
+                currPort = currSupervisor.getNode(':ALIVE_PORT').data()
             except:
                 continue
             try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((currIp, currPort))
                 s.sendall('1234')
                 data = s.recv(4)
                 if data != '1234':
                     printf('Internal error: wrong data read')
                     raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
-                print('MARTe2 engine at '+currIp+ 'port '+str(currPort)+ ' is alive!')
+                print('MARTe2 engine at '+currIp+ ' port '+str(currPort)+ ' is alive!')
                 s.close()
             except:
-                raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+                serversOk = False
+                print('MARTe2 engine at '+currIp+ ' port '+str(currPort)+ ' IS DEAD!!!!!!')
+
+        if not serversOk:
+            raise MDSplus.mdsExceptions.TclFAILED_ESSENTIAL

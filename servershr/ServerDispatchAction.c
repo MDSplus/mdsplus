@@ -59,7 +59,7 @@ dsc$descriptor *tree, int *shot, int *nid, void (*ast)(), int astprm, int
 #include "servershrp.h"
 
 EXPORT int ServerDispatchAction(int *id, char *server, char *tree, int shot,
-                                int nid, void (*ast)(), void *astprm,
+                                int nid, void (*ast)(void *, char*), void *astprm,
                                 int *retstatus, pthread_rwlock_t *lock,
                                 int *socket, void (*before_ast)())
 {

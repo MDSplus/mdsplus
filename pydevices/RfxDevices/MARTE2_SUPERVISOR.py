@@ -1380,6 +1380,7 @@ $<APP_NAME> = {
 
 
     def buildConfiguration(self):
+        RfxDevices.MARTE2_COMPONENT.resetReferenceInfo()
         config = self.generateConfiguration()
         #print(config)
         name = self.getNode('NAME').data()
@@ -1483,8 +1484,10 @@ $<APP_NAME> = {
         commandFile = open(fileName, 'w')  
         commandFile.write(fileContent)
         commandFile.close()
-        f = Path(fileName)
-        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
+        st = os.stat(fileName)
+        os.chmod(fileName, st.st_mode | stat.S_IEXEC)
+#        f = Path(fileName)
+#        f.chmod(f.stat().st_mode | stat.S_IEXEC) 
         return fileName    
  
     def convertGamNodes(self, gams):
@@ -1618,6 +1621,11 @@ $<APP_NAME> = {
         # KILL MARTe process
         import subprocess
         import os
+        name = self.getNode('NAME').data()
+        shot = self.getTree().shot
+        command ='cp /tmp/MARTe2_'+name+'_Output.log '+ '/tmp/MARTe2_'+name+'_Output_'+str(shot)+'.log'
+        os.system(command)
+
         thisPattern = 'MARTeApp.ex -l RealTimeLoader -f /tmp/'+marteName+'_marte_configuration.cfg'
 #        command = 'kill -KILL `ps -a | grep \"'+thisPattern+'\" | grep -v grep | awk \'{print $1}\'`'
 #        command = 'kill -KILL `ps -a | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'`'
@@ -1625,7 +1633,7 @@ $<APP_NAME> = {
 #        print(command)
 #        os.system(command)
 
-        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName])
+        subprocess.call(["pkill", "-9", "-f", "MARTeApp.ex.*" + marteName+'_marte_configuration' ])
         return 1
 
         command = 'ps | grep MARTeApp.ex | grep -v grep | awk \'{print $1}\'' % (

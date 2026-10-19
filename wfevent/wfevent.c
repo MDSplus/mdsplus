@@ -193,13 +193,17 @@ int main(int argc, char **argv)
         printf("Event %s occurred with data = \\%.*s\\\n", event, len, data);
       else
       {
-        printf("Event %s occured with data = [", event);
+        printf("Event %s occurred with data = [", event);
         for (i = 0; i < len - 1; i++)
         {
           printf("%0dB,", (int)data[i]);
         }
         printf("%dB]\n", (int)data[i]);
       }
+    }
+    else
+    {
+      printf("Event %s occurred.\n", event);
     }
     return (0);
   }

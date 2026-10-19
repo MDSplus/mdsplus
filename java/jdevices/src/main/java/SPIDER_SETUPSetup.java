@@ -63,7 +63,6 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField6 = new DeviceField();
         jPanel54 = new javax.swing.JPanel();
-        deviceField29 = new DeviceField();
         deviceChoice10 = new DeviceChoice();
         jPanel52 = new javax.swing.JPanel();
         deviceField42 = new DeviceField();
@@ -98,29 +97,45 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave4 = new DeviceWave();
         jPanel14 = new javax.swing.JPanel();
         deviceWave7 = new DeviceWave();
-        jPanel48 = new javax.swing.JPanel();
-        deviceWave22 = new DeviceWave();
+        jPanel86 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        deviceChoice3 = new DeviceChoice();
+        deviceField29 = new DeviceField();
+        deviceField81 = new DeviceField();
+        deviceField82 = new DeviceField();
         jTabbedPane8 = new javax.swing.JTabbedPane();
         jPanel15 = new javax.swing.JPanel();
         deviceWave8 = new DeviceWave();
         jPanel16 = new javax.swing.JPanel();
         deviceWave9 = new DeviceWave();
-        jPanel49 = new javax.swing.JPanel();
-        deviceWave23 = new DeviceWave();
+        jPanel87 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        deviceChoice13 = new DeviceChoice();
+        deviceField83 = new DeviceField();
+        deviceField84 = new DeviceField();
+        deviceField85 = new DeviceField();
         jTabbedPane9 = new javax.swing.JTabbedPane();
         jPanel50 = new javax.swing.JPanel();
         deviceWave24 = new DeviceWave();
         jPanel64 = new javax.swing.JPanel();
         deviceWave25 = new DeviceWave();
-        jPanel65 = new javax.swing.JPanel();
-        deviceWave26 = new DeviceWave();
+        jPanel88 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        deviceChoice14 = new DeviceChoice();
+        deviceField86 = new DeviceField();
+        deviceField87 = new DeviceField();
+        deviceField88 = new DeviceField();
         jTabbedPane10 = new javax.swing.JTabbedPane();
         jPanel66 = new javax.swing.JPanel();
         deviceWave27 = new DeviceWave();
         jPanel67 = new javax.swing.JPanel();
         deviceWave28 = new DeviceWave();
-        jPanel68 = new javax.swing.JPanel();
-        deviceWave29 = new DeviceWave();
+        jPanel89 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        deviceChoice15 = new DeviceChoice();
+        deviceField89 = new DeviceField();
+        deviceField90 = new DeviceField();
+        deviceField91 = new DeviceField();
         jPanel12 = new javax.swing.JPanel();
         deviceWave5 = new DeviceWave();
         jPanel1 = new javax.swing.JPanel();
@@ -265,7 +280,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceField79 = new DeviceField();
         deviceField80 = new DeviceField();
 
-        setDeviceProvider("soserver.nbtf:9000");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("SPIDER Experiment Setup");
         setDeviceType("SPIDER_SETUP");
         setHeight(650);
@@ -414,16 +429,13 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
 
         jPanel33.add(jPanel53);
 
-        deviceField29.setIdentifier("isrf_te_v");
-        deviceField29.setLabelString("ISRF TE V:");
-        deviceField29.setOffsetNid(323);
-        jPanel54.add(deviceField29);
-
-        deviceChoice10.setChoiceItems(new String[] {"None", "Frequency"});
+        deviceChoice10.setChoiceIntValues(new int[] {0, 1, 2, 3, 4});
+        deviceChoice10.setChoiceItems(new String[] {"Standard", "RF1 Master", "RF2 Master", "RF3 Master", "RF4 Master"});
+        deviceChoice10.setConvert(true);
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("RF Control Mode:");
         deviceChoice10.setOffsetNid(324);
-        deviceChoice10.setUpdateIdentifier("");
+        deviceChoice10.setUpdateIdentifier("123");
         jPanel54.add(deviceChoice10);
 
         jPanel33.add(jPanel54);
@@ -575,116 +587,212 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         deviceWave4.setIdentifier("rf1_power");
+        deviceWave4.setMinYVisible(true);
         deviceWave4.setOffsetNid(39);
         deviceWave4.setUpdateExpression("");
+        deviceWave4.setUpdateIdentifier("");
         jPanel10.add(deviceWave4, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane7.addTab("RF1 Power [W]", jPanel10);
+        jTabbedPane7.addTab("RF1 Power [kW]", jPanel10);
 
         jPanel14.setLayout(new java.awt.BorderLayout());
 
         deviceWave7.setIdentifier("");
+        deviceWave7.setMinYVisible(true);
         deviceWave7.setOffsetNid(45);
         deviceWave7.setUpdateExpression("");
         jPanel14.add(deviceWave7, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane7.addTab("RF1 Frequeny [Hz]", jPanel14);
+        jLabel5.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel5.setText("jLabel5");
+        jPanel86.add(jLabel5);
 
-        jPanel48.setLayout(new java.awt.BorderLayout());
+        deviceChoice3.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice3.setChoiceItems(new String[] {"OFF", "ON"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("Automatch: ");
+        deviceChoice3.setOffsetNid(375);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel86.add(deviceChoice3);
 
-        deviceWave22.setIdentifier("");
-        deviceWave22.setOffsetNid(51);
-        deviceWave22.setUpdateExpression("");
-        jPanel48.add(deviceWave22, java.awt.BorderLayout.CENTER);
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("Initial Freq(Automatch):");
+        deviceField29.setOffsetNid(376);
+        jPanel86.add(deviceField29);
 
-        jTabbedPane7.addTab("RF1 Capacitance [pF]", jPanel48);
+        deviceField81.setIdentifier("");
+        deviceField81.setLabelString("VSWR: ");
+        deviceField81.setOffsetNid(377);
+        jPanel86.add(deviceField81);
+
+        deviceField82.setIdentifier("");
+        deviceField82.setLabelString("Phase: ");
+        deviceField82.setOffsetNid(378);
+        jPanel86.add(deviceField82);
+
+        jPanel14.add(jPanel86, java.awt.BorderLayout.NORTH);
+
+        jTabbedPane7.addTab("RF1 Frequeny [kHz]", jPanel14);
 
         jTabbedPane2.addTab("RF1 Setup", jTabbedPane7);
 
         jPanel15.setLayout(new java.awt.BorderLayout());
 
         deviceWave8.setIdentifier("rf2_power");
+        deviceWave8.setMinYVisible(true);
         deviceWave8.setOffsetNid(57);
         deviceWave8.setUpdateExpression("");
+        deviceWave8.setUpdateIdentifier("");
         jPanel15.add(deviceWave8, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane8.addTab("RF2 Power [W]", jPanel15);
+        jTabbedPane8.addTab("RF2 Power [kW]", jPanel15);
 
         jPanel16.setLayout(new java.awt.BorderLayout());
 
         deviceWave9.setIdentifier("");
+        deviceWave9.setMinYVisible(true);
         deviceWave9.setOffsetNid(213);
         deviceWave9.setUpdateExpression("");
         jPanel16.add(deviceWave9, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane8.addTab("RF2 Frequeny [Hz]", jPanel16);
+        jLabel11.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel11.setText("jLabel11");
+        jPanel87.add(jLabel11);
 
-        jPanel49.setLayout(new java.awt.BorderLayout());
+        deviceChoice13.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice13.setChoiceItems(new String[] {"OFF", "ON"});
+        deviceChoice13.setConvert(true);
+        deviceChoice13.setIdentifier("");
+        deviceChoice13.setLabelString("Automatch: ");
+        deviceChoice13.setOffsetNid(380);
+        deviceChoice13.setUpdateIdentifier("");
+        jPanel87.add(deviceChoice13);
 
-        deviceWave23.setIdentifier("");
-        deviceWave23.setOffsetNid(220);
-        deviceWave23.setUpdateExpression("");
-        jPanel49.add(deviceWave23, java.awt.BorderLayout.CENTER);
+        deviceField83.setIdentifier("");
+        deviceField83.setLabelString("Initial Freq(Automatch):");
+        deviceField83.setOffsetNid(381);
+        jPanel87.add(deviceField83);
 
-        jTabbedPane8.addTab("RF2 Capacitance [pF]", jPanel49);
+        deviceField84.setIdentifier("");
+        deviceField84.setLabelString("VSWR: ");
+        deviceField84.setOffsetNid(382);
+        jPanel87.add(deviceField84);
+
+        deviceField85.setIdentifier("");
+        deviceField85.setLabelString("Phase: ");
+        deviceField85.setOffsetNid(383);
+        jPanel87.add(deviceField85);
+
+        jPanel16.add(jPanel87, java.awt.BorderLayout.NORTH);
+
+        jTabbedPane8.addTab("RF2 Frequency (kHz)", jPanel16);
 
         jTabbedPane2.addTab("RF2 Setup", jTabbedPane8);
 
         jPanel50.setLayout(new java.awt.BorderLayout());
 
         deviceWave24.setIdentifier("rf3_power");
+        deviceWave24.setMinYVisible(true);
         deviceWave24.setOffsetNid(227);
         deviceWave24.setUpdateExpression("");
+        deviceWave24.setUpdateIdentifier("");
         jPanel50.add(deviceWave24, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane9.addTab("RF3 Power [W]", jPanel50);
+        jTabbedPane9.addTab("RF3 Power [kW]", jPanel50);
 
         jPanel64.setLayout(new java.awt.BorderLayout());
 
         deviceWave25.setIdentifier("");
+        deviceWave25.setMinYVisible(true);
         deviceWave25.setOffsetNid(234);
         deviceWave25.setUpdateExpression("");
         jPanel64.add(deviceWave25, java.awt.BorderLayout.CENTER);
 
+        jLabel12.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel12.setText("jLabel12");
+        jPanel88.add(jLabel12);
+
+        deviceChoice14.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice14.setChoiceItems(new String[] {"OFF", "ON"});
+        deviceChoice14.setConvert(true);
+        deviceChoice14.setIdentifier("");
+        deviceChoice14.setLabelString("Automatch: ");
+        deviceChoice14.setOffsetNid(385);
+        deviceChoice14.setUpdateIdentifier("");
+        jPanel88.add(deviceChoice14);
+
+        deviceField86.setIdentifier("");
+        deviceField86.setLabelString("Initial Freq(Automatch):");
+        deviceField86.setOffsetNid(386);
+        jPanel88.add(deviceField86);
+
+        deviceField87.setIdentifier("");
+        deviceField87.setLabelString("VSWR: ");
+        deviceField87.setOffsetNid(387);
+        jPanel88.add(deviceField87);
+
+        deviceField88.setIdentifier("");
+        deviceField88.setLabelString("Phase: ");
+        deviceField88.setOffsetNid(388);
+        jPanel88.add(deviceField88);
+
+        jPanel64.add(jPanel88, java.awt.BorderLayout.NORTH);
+
         jTabbedPane9.addTab("RF3 Frequeny [Hz]", jPanel64);
-
-        jPanel65.setLayout(new java.awt.BorderLayout());
-
-        deviceWave26.setIdentifier("");
-        deviceWave26.setOffsetNid(241);
-        deviceWave26.setUpdateExpression("");
-        jPanel65.add(deviceWave26, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane9.addTab("RF3 Capacitance [pF]", jPanel65);
 
         jTabbedPane2.addTab("RF3 Setup", jTabbedPane9);
 
         jPanel66.setLayout(new java.awt.BorderLayout());
 
         deviceWave27.setIdentifier("rf4_power");
+        deviceWave27.setMinYVisible(true);
         deviceWave27.setOffsetNid(248);
         deviceWave27.setUpdateExpression("");
+        deviceWave27.setUpdateIdentifier("");
         jPanel66.add(deviceWave27, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane10.addTab("RF4 Power [W]", jPanel66);
+        jTabbedPane10.addTab("RF4 Power [kW]", jPanel66);
 
         jPanel67.setLayout(new java.awt.BorderLayout());
 
         deviceWave28.setIdentifier("");
+        deviceWave28.setMinYVisible(true);
         deviceWave28.setOffsetNid(255);
         deviceWave28.setUpdateExpression("");
         jPanel67.add(deviceWave28, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane10.addTab("RF4 Frequeny [Hz]", jPanel67);
+        jLabel16.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel16.setText("jLabel16");
+        jPanel89.add(jLabel16);
 
-        jPanel68.setLayout(new java.awt.BorderLayout());
+        deviceChoice15.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice15.setChoiceItems(new String[] {"OFF", "ON"});
+        deviceChoice15.setConvert(true);
+        deviceChoice15.setIdentifier("");
+        deviceChoice15.setLabelString("Automatch: ");
+        deviceChoice15.setOffsetNid(390);
+        deviceChoice15.setUpdateIdentifier("");
+        jPanel89.add(deviceChoice15);
 
-        deviceWave29.setIdentifier("");
-        deviceWave29.setOffsetNid(262);
-        deviceWave29.setUpdateExpression("");
-        jPanel68.add(deviceWave29, java.awt.BorderLayout.CENTER);
+        deviceField89.setIdentifier("");
+        deviceField89.setLabelString("Initial Freq(Automatch):");
+        deviceField89.setOffsetNid(391);
+        jPanel89.add(deviceField89);
 
-        jTabbedPane10.addTab("RF4 Capacitance [pF]", jPanel68);
+        deviceField90.setIdentifier("");
+        deviceField90.setLabelString("VSWR: ");
+        deviceField90.setOffsetNid(392);
+        jPanel89.add(deviceField90);
+
+        deviceField91.setIdentifier("");
+        deviceField91.setLabelString("Phase: ");
+        deviceField91.setOffsetNid(393);
+        jPanel89.add(deviceField91);
+
+        jPanel67.add(jPanel89, java.awt.BorderLayout.NORTH);
+
+        jTabbedPane10.addTab("RF4 Frequeny [kHz]", jPanel67);
 
         jTabbedPane2.addTab("RF4 Setup", jTabbedPane10);
 
@@ -986,7 +1094,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave10.setUpdateExpression("");
         jPanel21.add(deviceWave10, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("Pressure Modulation %", jPanel21);
+        jTabbedPane4.addTab("Line Pressure [barG]", jPanel21);
 
         jPanel22.setLayout(new java.awt.BorderLayout());
 
@@ -1350,7 +1458,54 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         // TODO add your handling code here:
     }//GEN-LAST:event_deviceField17PropertyChange
 
+    public void fireUpdate(String id, String val)
+    {
+        super.fireUpdate(id, val);
+        //System.out.println("FIRE UPDATE ID: "+id +"  VAL: " + val);
+        if(val.equals("RF1 Master"))
+        {
+            jLabel5.setText("Master");
+            jLabel11.setText("Slave");
+            jLabel12.setText("Slave");
+            jLabel16.setText("Slave");
+        }
+        else if (val.equals("RF2 Master"))
+        {
+            jLabel5.setText("Slave");
+            jLabel11.setText("Master");
+            jLabel12.setText("Slave");
+            jLabel16.setText("Slave");
+        }
+        else if (val.equals("RF3 Master"))
+        {
+            jLabel5.setText("Slave");
+            jLabel11.setText("Slave");
+            jLabel12.setText("Master");
+            jLabel16.setText("Slave");
+        }
+        else if (val.equals("RF4 Master"))
+        {
+            jLabel5.setText("Slave");
+            jLabel11.setText("Slave");
+            jLabel12.setText("Slave");
+            jLabel16.setText("Master");
+        }
+        else if (val.equals("Standard"))
+        {
+            jLabel5.setText("Master");
+            jLabel11.setText("Master");
+            jLabel12.setText("Master");
+            jLabel16.setText("Master");
+        }
+        
+    }
+
+
     
+    public void applyCallback()
+    {
+        updateWaves();
+    }
     private void updateWaves()
     {
         float maxX = 0, minX = 0;
@@ -1401,14 +1556,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
         deviceWave13.updateXLimit(minX, maxX);
         deviceWave14.updateXLimit(minX, maxX);        
         //deviceWave21.updateXLimit(minX, maxX); Reconnect Wave x limit fixed from 0 to 1
-        deviceWave22.updateXLimit(minX, maxX);
-        deviceWave23.updateXLimit(minX, maxX);
         deviceWave24.updateXLimit(minX, maxX);
         deviceWave25.updateXLimit(minX, maxX);
-        deviceWave26.updateXLimit(minX, maxX);
         deviceWave27.updateXLimit(minX, maxX);
         deviceWave28.updateXLimit(minX, maxX);
-        deviceWave29.updateXLimit(minX, maxX);        
     }
     
     private void deviceField17FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_deviceField17FocusLost
@@ -1441,7 +1592,11 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceChoice deviceChoice10;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
+    private DeviceChoice deviceChoice13;
+    private DeviceChoice deviceChoice14;
+    private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
@@ -1527,7 +1682,18 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField79;
     private DeviceField deviceField8;
     private DeviceField deviceField80;
+    private DeviceField deviceField81;
+    private DeviceField deviceField82;
+    private DeviceField deviceField83;
+    private DeviceField deviceField84;
+    private DeviceField deviceField85;
+    private DeviceField deviceField86;
+    private DeviceField deviceField87;
+    private DeviceField deviceField88;
+    private DeviceField deviceField89;
     private DeviceField deviceField9;
+    private DeviceField deviceField90;
+    private DeviceField deviceField91;
     private DeviceWave deviceWave1;
     private DeviceWave deviceWave10;
     private DeviceWave deviceWave11;
@@ -1536,14 +1702,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave14;
     private DeviceWave deviceWave2;
     private DeviceWave deviceWave21;
-    private DeviceWave deviceWave22;
-    private DeviceWave deviceWave23;
     private DeviceWave deviceWave24;
     private DeviceWave deviceWave25;
-    private DeviceWave deviceWave26;
     private DeviceWave deviceWave27;
     private DeviceWave deviceWave28;
-    private DeviceWave deviceWave29;
     private DeviceWave deviceWave3;
     private DeviceWave deviceWave4;
     private DeviceWave deviceWave5;
@@ -1553,9 +1715,12 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
@@ -1566,6 +1731,7 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -1612,8 +1778,6 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
     private javax.swing.JPanel jPanel47;
-    private javax.swing.JPanel jPanel48;
-    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel50;
     private javax.swing.JPanel jPanel51;
@@ -1631,10 +1795,8 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel62;
     private javax.swing.JPanel jPanel63;
     private javax.swing.JPanel jPanel64;
-    private javax.swing.JPanel jPanel65;
     private javax.swing.JPanel jPanel66;
     private javax.swing.JPanel jPanel67;
-    private javax.swing.JPanel jPanel68;
     private javax.swing.JPanel jPanel69;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel70;
@@ -1654,6 +1816,10 @@ public class SPIDER_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel83;
     private javax.swing.JPanel jPanel84;
     private javax.swing.JPanel jPanel85;
+    private javax.swing.JPanel jPanel86;
+    private javax.swing.JPanel jPanel87;
+    private javax.swing.JPanel jPanel88;
+    private javax.swing.JPanel jPanel89;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane10;

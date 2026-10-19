@@ -165,6 +165,27 @@ class CAENDT5724(Device):
             self.triggerSourceNid = triggerSourceNid
             self.saveList = c_void_p(0)
 
+            self.treeName = self.device.getTree().name
+            self.treeShot = c_int(self.device.getTree().shot)
+            self.numChannels = self.device.num_channels.data()
+            self.clockNid = self.device.clock_source.getNid()
+            self.triggNid = self.device.trig_source.getNid()
+
+            self.chanNid = []
+
+            if self.acqMode == "TRANSIENT RECORDER":
+                self.numTrigger = len(self.device.trig_source.getData())
+            else:
+                # continuous
+                self.numTrigger = -1
+
+            for chan in range(0, self.numChannels):
+                self.chanNid.append(
+                    getattr(self.device, 'channel_%d_seg_raw' % (chan+1)).getNid())
+
+
+
+
         def run(self):
 
             class DT5720Data(Structure):
@@ -173,7 +194,8 @@ class CAENDT5724(Device):
 
             treePtr = c_void_p(0)
             status = CAENDT5724.caenInterfaceLib.openTree(c_char_p(
-                self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
+                self.treeName), self.treeShot, byref(treePtr))
+#                self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
 
             CAENDT5724.caenInterfaceLib.startSave(byref(self.saveList))
 
@@ -182,26 +204,24 @@ class CAENDT5724(Device):
             #currStartIdx    = self.segmentSamples - self.pts + self.startIdx
             #currEndIdx      = self.segmentSamples - self.pts + self.endIdx
             #currChanSamples = currEndIdx - currStartIdx
-            numChannels = self.device.num_channels.data()
-            clockNid = self.device.clock_source.getNid()
-            triggNid = self.device.trig_source.getNid()
+            #numChannels = self.device.num_channels.data()
+            #clockNid = self.device.clock_source.getNid()
+            #triggNid = self.device.trig_source.getNid()
             numTrigger = 0
 
-            channels = []
-            chanNid = []
+            #chanNid = []
 
-            if self.acqMode == "TRANSIENT RECORDER":
-                numTrigger = len(self.device.trig_source.getData())
-            else:
-                # continuous
-                numTrigger = -1
+            #if self.acqMode == "TRANSIENT RECORDER":
+            #    numTrigger = len(self.device.trig_source.getData())
+            #else:
+            #    # continuous
+            #    numTrigger = -1
 
-            for chan in range(0, numChannels):
-                channels.append([])
-                chanNid.append(
-                    getattr(self.device, 'channel_%d_seg_raw' % (chan+1)).getNid())
+            #for chan in range(0, self.numChannels):
+            #    chanNid.append(
+            #        getattr(self.device, 'channel_%d_seg_raw' % (chan+1)).getNid())
 
-            chanNid_c = (c_int * len(chanNid))(*chanNid)
+            chanNid_c = (c_int * len(self.chanNid))(*self.chanNid)
 
             #currSegmentIdx = 0
             segmentCounter = 0
@@ -225,12 +245,12 @@ class CAENDT5724(Device):
                     print ('Error reading number of acquired segments')
                     continue
 
-                segmentCounter = CAENDT5724.caenInterfaceLib.readAndSaveSegments(self.handle, c_int(vmeAddress), c_int(numChannels), c_int(self.nActChans), c_int(self.segmentSamples), c_int(self.segmentSize),
+                segmentCounter = CAENDT5724.caenInterfaceLib.readAndSaveSegments(self.handle, c_int(vmeAddress), c_int(self.numChannels), c_int(self.nActChans), c_int(self.segmentSamples), c_int(self.segmentSize),
                                                                                  c_int(self.startIdx), c_int(self.endIdx), c_int(self.pts),  c_int(
                                                                                      self.useCounter),  c_int(self.chanMask), c_int(segmentCounter),
-                                                                                 c_int(numTrigger), chanNid_c, clockNid, triggNid, treePtr, self.saveList)
+                                                                                 c_int(self.numTrigger), chanNid_c, self.clockNid, self.triggNid, treePtr, self.saveList)
 
-                if self.acqMode == "TRANSIENT RECORDER" and segmentCounter == numTrigger:
+                if self.acqMode == "TRANSIENT RECORDER" and segmentCounter == self.numTrigger:
                     print('Transient Recoder acquisition completed!!!!')
                     break
 

@@ -203,7 +203,6 @@ static void MessageAst(void *dummy __attribute__((unused)), char *reply)
   }
   free(event->msg);
   free(event);
-  CheckIn(0);
 }
 
 inline static void _EventUpdate(LinkedEvent *event)

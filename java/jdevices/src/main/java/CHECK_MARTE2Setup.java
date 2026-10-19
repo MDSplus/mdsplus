@@ -32,37 +32,53 @@ public class CHECK_MARTE2Setup extends DeviceSetup {
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
+        deviceField56 = new DeviceField();
         deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField8 = new DeviceField();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        deviceField13 = new DeviceField();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField14 = new DeviceField();
-        deviceField15 = new DeviceField();
-        deviceField16 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField17 = new DeviceField();
-        deviceField18 = new DeviceField();
-        deviceField19 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField20 = new DeviceField();
-        deviceField21 = new DeviceField();
-        deviceField22 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        deviceField23 = new DeviceField();
-        deviceField24 = new DeviceField();
-        deviceField25 = new DeviceField();
+        jPanel11 = new javax.swing.JPanel();
+        deviceField26 = new DeviceField();
+        deviceField27 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceField28 = new DeviceField();
+        deviceField29 = new DeviceField();
+        jPanel13 = new javax.swing.JPanel();
+        deviceField30 = new DeviceField();
+        deviceField31 = new DeviceField();
+        jPanel14 = new javax.swing.JPanel();
+        deviceField32 = new DeviceField();
+        deviceField33 = new DeviceField();
+        jPanel15 = new javax.swing.JPanel();
+        deviceField34 = new DeviceField();
+        deviceField35 = new DeviceField();
+        jPanel16 = new javax.swing.JPanel();
+        deviceField36 = new DeviceField();
+        deviceField37 = new DeviceField();
+        jPanel17 = new javax.swing.JPanel();
+        deviceField38 = new DeviceField();
+        deviceField39 = new DeviceField();
+        jPanel18 = new javax.swing.JPanel();
+        deviceField40 = new DeviceField();
+        deviceField41 = new DeviceField();
+        jPanel19 = new javax.swing.JPanel();
+        deviceField42 = new DeviceField();
+        deviceField43 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceField44 = new DeviceField();
+        deviceField45 = new DeviceField();
+        jPanel21 = new javax.swing.JPanel();
+        deviceField46 = new DeviceField();
+        deviceField47 = new DeviceField();
+        jPanel22 = new javax.swing.JPanel();
+        deviceField48 = new DeviceField();
+        deviceField49 = new DeviceField();
+        jPanel23 = new javax.swing.JPanel();
+        deviceField50 = new DeviceField();
+        deviceField51 = new DeviceField();
+        jPanel24 = new javax.swing.JPanel();
+        deviceField52 = new DeviceField();
+        deviceField53 = new DeviceField();
+        jPanel25 = new javax.swing.JPanel();
+        deviceField54 = new DeviceField();
+        deviceField55 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Check Alive");
@@ -80,16 +96,15 @@ public class CHECK_MARTE2Setup extends DeviceSetup {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        jPanel1.setLayout(new java.awt.GridLayout(8, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(16, 1));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Description: ");
-        deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(5);
-        deviceField4.setTextOnly(true);
-        jPanel3.add(deviceField4);
+        deviceField56.setIdentifier("");
+        deviceField56.setLabelString("Supervisor: ");
+        deviceField56.setNumCols(30);
+        deviceField56.setOffsetNid(4);
+        jPanel3.add(deviceField56);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Ip Address: ");
@@ -98,181 +113,262 @@ public class CHECK_MARTE2Setup extends DeviceSetup {
         deviceField2.setTextOnly(true);
         jPanel3.add(deviceField2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Port: ");
-        deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(4);
-        jPanel3.add(deviceField3);
-
         jPanel1.add(jPanel3);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel11.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Description: ");
-        deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(9);
-        deviceField5.setTextOnly(true);
-        jPanel4.add(deviceField5);
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("Supervisor: ");
+        deviceField26.setNumCols(30);
+        deviceField26.setOffsetNid(7);
+        jPanel11.add(deviceField26);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Ip Address: ");
-        deviceField6.setNumCols(15);
-        deviceField6.setOffsetNid(7);
-        deviceField6.setTextOnly(true);
-        jPanel4.add(deviceField6);
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("Ip Address: ");
+        deviceField27.setNumCols(15);
+        deviceField27.setOffsetNid(6);
+        deviceField27.setTextOnly(true);
+        jPanel11.add(deviceField27);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Port: ");
-        deviceField7.setNumCols(6);
-        deviceField7.setOffsetNid(8);
-        jPanel4.add(deviceField7);
+        jPanel1.add(jPanel11);
 
-        jPanel1.add(jPanel4);
+        jPanel12.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("Supervisor: ");
+        deviceField28.setNumCols(30);
+        deviceField28.setOffsetNid(10);
+        jPanel12.add(deviceField28);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Description: ");
-        deviceField8.setNumCols(15);
-        deviceField8.setOffsetNid(13);
-        deviceField8.setTextOnly(true);
-        jPanel5.add(deviceField8);
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("Ip Address: ");
+        deviceField29.setNumCols(15);
+        deviceField29.setOffsetNid(9);
+        deviceField29.setTextOnly(true);
+        jPanel12.add(deviceField29);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Ip Address: ");
-        deviceField9.setNumCols(15);
-        deviceField9.setOffsetNid(7);
-        deviceField9.setTextOnly(true);
-        jPanel5.add(deviceField9);
+        jPanel1.add(jPanel12);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Port: ");
-        deviceField10.setNumCols(6);
-        deviceField10.setOffsetNid(12);
-        jPanel5.add(deviceField10);
+        jPanel13.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jPanel1.add(jPanel5);
+        deviceField30.setIdentifier("");
+        deviceField30.setLabelString("Supervisor: ");
+        deviceField30.setNumCols(30);
+        deviceField30.setOffsetNid(13);
+        jPanel13.add(deviceField30);
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        deviceField31.setIdentifier("");
+        deviceField31.setLabelString("Ip Address: ");
+        deviceField31.setNumCols(15);
+        deviceField31.setOffsetNid(12);
+        deviceField31.setTextOnly(true);
+        jPanel13.add(deviceField31);
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Description: ");
-        deviceField11.setNumCols(15);
-        deviceField11.setOffsetNid(17);
-        deviceField11.setTextOnly(true);
-        jPanel6.add(deviceField11);
+        jPanel1.add(jPanel13);
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Ip Address: ");
-        deviceField12.setNumCols(15);
-        deviceField12.setOffsetNid(15);
-        deviceField12.setTextOnly(true);
-        jPanel6.add(deviceField12);
+        jPanel14.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Port: ");
-        deviceField13.setNumCols(6);
-        deviceField13.setOffsetNid(16);
-        jPanel6.add(deviceField13);
+        deviceField32.setIdentifier("");
+        deviceField32.setLabelString("Supervisor: ");
+        deviceField32.setNumCols(30);
+        deviceField32.setOffsetNid(16);
+        jPanel14.add(deviceField32);
 
-        jPanel1.add(jPanel6);
+        deviceField33.setIdentifier("");
+        deviceField33.setLabelString("Ip Address: ");
+        deviceField33.setNumCols(15);
+        deviceField33.setOffsetNid(15);
+        deviceField33.setTextOnly(true);
+        jPanel14.add(deviceField33);
 
-        jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel1.add(jPanel14);
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Description: ");
-        deviceField14.setNumCols(15);
-        deviceField14.setOffsetNid(21);
-        deviceField14.setTextOnly(true);
-        jPanel7.add(deviceField14);
+        jPanel15.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("Ip Address: ");
-        deviceField15.setNumCols(15);
-        deviceField15.setOffsetNid(19);
-        deviceField15.setTextOnly(true);
-        jPanel7.add(deviceField15);
+        deviceField34.setIdentifier("");
+        deviceField34.setLabelString("Supervisor: ");
+        deviceField34.setNumCols(30);
+        deviceField34.setOffsetNid(19);
+        jPanel15.add(deviceField34);
 
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Port: ");
-        deviceField16.setNumCols(6);
-        deviceField16.setOffsetNid(20);
-        jPanel7.add(deviceField16);
+        deviceField35.setIdentifier("");
+        deviceField35.setLabelString("Ip Address: ");
+        deviceField35.setNumCols(15);
+        deviceField35.setOffsetNid(18);
+        deviceField35.setTextOnly(true);
+        jPanel15.add(deviceField35);
 
-        jPanel1.add(jPanel7);
+        jPanel1.add(jPanel15);
 
-        jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel16.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Description: ");
-        deviceField17.setNumCols(15);
-        deviceField17.setOffsetNid(25);
-        deviceField17.setTextOnly(true);
-        jPanel8.add(deviceField17);
+        deviceField36.setIdentifier("");
+        deviceField36.setLabelString("Supervisor: ");
+        deviceField36.setNumCols(30);
+        deviceField36.setOffsetNid(22);
+        jPanel16.add(deviceField36);
 
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Ip Address: ");
-        deviceField18.setNumCols(15);
-        deviceField18.setOffsetNid(23);
-        deviceField18.setTextOnly(true);
-        jPanel8.add(deviceField18);
+        deviceField37.setIdentifier("");
+        deviceField37.setLabelString("Ip Address: ");
+        deviceField37.setNumCols(15);
+        deviceField37.setOffsetNid(21);
+        deviceField37.setTextOnly(true);
+        jPanel16.add(deviceField37);
 
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Port: ");
-        deviceField19.setNumCols(6);
-        deviceField19.setOffsetNid(24);
-        jPanel8.add(deviceField19);
+        jPanel1.add(jPanel16);
 
-        jPanel1.add(jPanel8);
+        jPanel17.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        deviceField38.setIdentifier("");
+        deviceField38.setLabelString("Supervisor: ");
+        deviceField38.setNumCols(30);
+        deviceField38.setOffsetNid(25);
+        jPanel17.add(deviceField38);
 
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Description: ");
-        deviceField20.setNumCols(15);
-        deviceField20.setOffsetNid(29);
-        deviceField20.setTextOnly(true);
-        jPanel9.add(deviceField20);
+        deviceField39.setIdentifier("");
+        deviceField39.setLabelString("Ip Address: ");
+        deviceField39.setNumCols(15);
+        deviceField39.setOffsetNid(24);
+        deviceField39.setTextOnly(true);
+        jPanel17.add(deviceField39);
 
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Ip Address: ");
-        deviceField21.setNumCols(15);
-        deviceField21.setOffsetNid(27);
-        deviceField21.setTextOnly(true);
-        jPanel9.add(deviceField21);
+        jPanel1.add(jPanel17);
 
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Port: ");
-        deviceField22.setNumCols(6);
-        deviceField22.setOffsetNid(28);
-        jPanel9.add(deviceField22);
+        jPanel18.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jPanel1.add(jPanel9);
+        deviceField40.setIdentifier("");
+        deviceField40.setLabelString("Supervisor: ");
+        deviceField40.setNumCols(30);
+        deviceField40.setOffsetNid(28);
+        jPanel18.add(deviceField40);
 
-        jPanel10.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        deviceField41.setIdentifier("");
+        deviceField41.setLabelString("Ip Address: ");
+        deviceField41.setNumCols(15);
+        deviceField41.setOffsetNid(27);
+        deviceField41.setTextOnly(true);
+        jPanel18.add(deviceField41);
 
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Description: ");
-        deviceField23.setNumCols(15);
-        deviceField23.setOffsetNid(33);
-        deviceField23.setTextOnly(true);
-        jPanel10.add(deviceField23);
+        jPanel1.add(jPanel18);
 
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("Ip Address: ");
-        deviceField24.setNumCols(15);
-        deviceField24.setOffsetNid(31);
-        deviceField24.setTextOnly(true);
-        jPanel10.add(deviceField24);
+        jPanel19.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Port: ");
-        deviceField25.setNumCols(6);
-        deviceField25.setOffsetNid(32);
-        jPanel10.add(deviceField25);
+        deviceField42.setIdentifier("");
+        deviceField42.setLabelString("Supervisor: ");
+        deviceField42.setNumCols(30);
+        deviceField42.setOffsetNid(31);
+        jPanel19.add(deviceField42);
 
-        jPanel1.add(jPanel10);
+        deviceField43.setIdentifier("");
+        deviceField43.setLabelString("Ip Address: ");
+        deviceField43.setNumCols(15);
+        deviceField43.setOffsetNid(30);
+        deviceField43.setTextOnly(true);
+        jPanel19.add(deviceField43);
+
+        jPanel1.add(jPanel19);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField44.setIdentifier("");
+        deviceField44.setLabelString("Supervisor: ");
+        deviceField44.setNumCols(30);
+        deviceField44.setOffsetNid(34);
+        jPanel20.add(deviceField44);
+
+        deviceField45.setIdentifier("");
+        deviceField45.setLabelString("Ip Address: ");
+        deviceField45.setNumCols(15);
+        deviceField45.setOffsetNid(33);
+        deviceField45.setTextOnly(true);
+        jPanel20.add(deviceField45);
+
+        jPanel1.add(jPanel20);
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField46.setIdentifier("");
+        deviceField46.setLabelString("Supervisor: ");
+        deviceField46.setNumCols(30);
+        deviceField46.setOffsetNid(37);
+        jPanel21.add(deviceField46);
+
+        deviceField47.setIdentifier("");
+        deviceField47.setLabelString("Ip Address: ");
+        deviceField47.setNumCols(15);
+        deviceField47.setOffsetNid(36);
+        deviceField47.setTextOnly(true);
+        jPanel21.add(deviceField47);
+
+        jPanel1.add(jPanel21);
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField48.setIdentifier("");
+        deviceField48.setLabelString("Supervisor: ");
+        deviceField48.setNumCols(30);
+        deviceField48.setOffsetNid(40);
+        jPanel22.add(deviceField48);
+
+        deviceField49.setIdentifier("");
+        deviceField49.setLabelString("Ip Address: ");
+        deviceField49.setNumCols(15);
+        deviceField49.setOffsetNid(39);
+        deviceField49.setTextOnly(true);
+        jPanel22.add(deviceField49);
+
+        jPanel1.add(jPanel22);
+
+        jPanel23.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField50.setIdentifier("");
+        deviceField50.setLabelString("Supervisor: ");
+        deviceField50.setNumCols(30);
+        deviceField50.setOffsetNid(43);
+        jPanel23.add(deviceField50);
+
+        deviceField51.setIdentifier("");
+        deviceField51.setLabelString("Ip Address: ");
+        deviceField51.setNumCols(15);
+        deviceField51.setOffsetNid(42);
+        deviceField51.setTextOnly(true);
+        jPanel23.add(deviceField51);
+
+        jPanel1.add(jPanel23);
+
+        jPanel24.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField52.setIdentifier("");
+        deviceField52.setLabelString("Supervisor: ");
+        deviceField52.setNumCols(30);
+        deviceField52.setOffsetNid(46);
+        jPanel24.add(deviceField52);
+
+        deviceField53.setIdentifier("");
+        deviceField53.setLabelString("Ip Address: ");
+        deviceField53.setNumCols(15);
+        deviceField53.setOffsetNid(45);
+        deviceField53.setTextOnly(true);
+        jPanel24.add(deviceField53);
+
+        jPanel1.add(jPanel24);
+
+        jPanel25.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        deviceField54.setIdentifier("");
+        deviceField54.setLabelString("Supervisor: ");
+        deviceField54.setNumCols(30);
+        deviceField54.setOffsetNid(49);
+        jPanel25.add(deviceField54);
+
+        deviceField55.setIdentifier("");
+        deviceField55.setLabelString("Ip Address: ");
+        deviceField55.setNumCols(15);
+        deviceField55.setOffsetNid(48);
+        deviceField55.setTextOnly(true);
+        jPanel25.add(deviceField55);
+
+        jPanel1.add(jPanel25);
 
         jScrollPane1.setViewportView(jPanel1);
 
@@ -283,40 +379,56 @@ public class CHECK_MARTE2Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
-    private DeviceField deviceField10;
-    private DeviceField deviceField11;
-    private DeviceField deviceField12;
-    private DeviceField deviceField13;
-    private DeviceField deviceField14;
-    private DeviceField deviceField15;
-    private DeviceField deviceField16;
-    private DeviceField deviceField17;
-    private DeviceField deviceField18;
-    private DeviceField deviceField19;
     private DeviceField deviceField2;
-    private DeviceField deviceField20;
-    private DeviceField deviceField21;
-    private DeviceField deviceField22;
-    private DeviceField deviceField23;
-    private DeviceField deviceField24;
-    private DeviceField deviceField25;
-    private DeviceField deviceField3;
-    private DeviceField deviceField4;
-    private DeviceField deviceField5;
-    private DeviceField deviceField6;
-    private DeviceField deviceField7;
-    private DeviceField deviceField8;
-    private DeviceField deviceField9;
+    private DeviceField deviceField26;
+    private DeviceField deviceField27;
+    private DeviceField deviceField28;
+    private DeviceField deviceField29;
+    private DeviceField deviceField30;
+    private DeviceField deviceField31;
+    private DeviceField deviceField32;
+    private DeviceField deviceField33;
+    private DeviceField deviceField34;
+    private DeviceField deviceField35;
+    private DeviceField deviceField36;
+    private DeviceField deviceField37;
+    private DeviceField deviceField38;
+    private DeviceField deviceField39;
+    private DeviceField deviceField40;
+    private DeviceField deviceField41;
+    private DeviceField deviceField42;
+    private DeviceField deviceField43;
+    private DeviceField deviceField44;
+    private DeviceField deviceField45;
+    private DeviceField deviceField46;
+    private DeviceField deviceField47;
+    private DeviceField deviceField48;
+    private DeviceField deviceField49;
+    private DeviceField deviceField50;
+    private DeviceField deviceField51;
+    private DeviceField deviceField52;
+    private DeviceField deviceField53;
+    private DeviceField deviceField54;
+    private DeviceField deviceField55;
+    private DeviceField deviceField56;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

@@ -259,6 +259,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
         nameList.append(name1)
         return name1
     
+    @classmethod
+    def resetReferenceInfo(cls):
+        if hasattr(MARTE2_COMPONENT, 'referenceInfo'):
+            del MARTE2_COMPONENT.referenceInfo
+
     def getParametersDict(self, parRoot):   
         pars = {}
         for parNode in parRoot.getChildren():
@@ -285,7 +290,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     try:
                         val = val.data()
                     except:
-                        raise Exception('Cannot get value for parameter '+name)
+                        raise Exception('Cannot get value for parameter '+name + ' in '+parRoot.getPath())
             pars[name] = val
         return pars
     
@@ -628,7 +633,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 else:
                     if self.hostedInSameSupervisor(value, threadMap): #Reference within same supervisor
                         if self.hostedInSynchronizingThread(value, threadMap):
-                            currSig.pop('Alias')
+                           # currSig.pop('Alias')
                             subsamplingRatio = self.getSubsamplingRatio(value, threadMap)
                             if  subsamplingRatio > 1:
                                 currSig['DataSource'] = self.getMarteDeviceName(sigNode)+'_Res_DDB'
@@ -637,9 +642,12 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                                       'Type': currSig['Type'],
                                                       'NumberOfDimensions': currSig['NumberOfDimensions'],
                                                       'NumberOfElements' : currSig['NumberOfElements'],
-                                                      #'Alias' : currSig['Alias'],
+                                                      ###GABRIELE AUG 2026
+                                                      'Alias' : currSig['Alias'],
                                                       'Samples': subsamplingRatio * samples,
                                                       })
+                                ###GABRIELE AUG 2026
+                                currSig.pop('Alias')
                             else:
                                 currSig['DataSource'] = self.getMarteDeviceName(value)+'_Output_Sync'
                         else:
@@ -833,6 +841,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
         retGam['Inputs'] = inputs
         outputs = []
         for resSig in resampledSyncSigs:
+###GABRIELE AUG 2026
 #            outputs.append({'Name': resSig['Alias'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
             outputs.append({'Name': resSig['Name'], 'Type': resSig['Type'], 'NumberOfDimensions': resSig['NumberOfDimensions'],
                 'NumberOfElements': resSig['NumberOfElements'], 'Samples': 1, 'DataSource': self.getMarteDeviceName(self)+'_Res_DDB'})
@@ -1320,6 +1329,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
     #Returns the dict definition of theIOGAM carrying out synchronized signals
     def handleSynchronoutOutputs(self, syncSignals):
+#        print('HANDLE SYNCHRONOUS ', syncSignals)
         retGam = {}
         retGam['Class'] = 'IOGAM'
         retGam['Name'] = self.getMarteDeviceName(self)+'_Output_Sync_IOGAM'
@@ -1332,7 +1342,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             outputs.append(currOutput)
         retGam['Inputs'] = inputs
         retGam['Outputs'] = outputs
-
+#        print('FATTA', retGam)
         return retGam
  
     #Returns the dict definition of theIOGAM carrying out synchronized signals

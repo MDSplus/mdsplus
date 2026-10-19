@@ -5,6 +5,7 @@
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_435st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_435tr.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_WRPG.py
+./usr/local/mdsplus/pydevices/HtsDevices/acq2106_DIOPG.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_WRTD.py
 ./usr/local/mdsplus/pydevices/HtsDevices/cryocon18i.py
 ./usr/local/mdsplus/pydevices/HtsDevices/cryocon24c.py

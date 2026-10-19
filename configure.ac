@@ -1375,6 +1375,7 @@ AC_OUTPUT(
   Makefile.inc
   _include/_mdsversion.h
   actions/Makefile
+  actions/testing/Makefile
   camshr/Makefile
   ccl/Makefile
   d3dshr/Makefile
@@ -1454,6 +1455,7 @@ AC_OUTPUT(
   treeshr/Makefile
   treeshr/testing/Makefile
   wfevent/Makefile
+  wfevent/testing/Makefile
   xmdsshr/Makefile
   xtreeshr/Makefile
 )

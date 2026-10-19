@@ -226,7 +226,8 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		{
 			try
 			{
-				if (subtree.getInt(varExpr + expressions[i]) == 0)
+				System.out.println("("+varExpr + expressions[i]+";)");
+				if (subtree.getInt("("+varExpr + expressions[i]+";)") == 0)
 					JOptionPane.showMessageDialog(this, messages[i], "Error in device configuration",
 							JOptionPane.WARNING_MESSAGE);
 			}
@@ -572,4 +573,6 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			{}
 		}
 	}
+	public void applyCallback()
+	{}
 }
