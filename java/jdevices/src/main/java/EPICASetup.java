@@ -151,7 +151,7 @@ public class EPICASetup extends DeviceSetup {
         deviceChoice17.setConvert(true);
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Frequency: ");
-        deviceChoice17.setOffsetNid(6);
+        deviceChoice17.setOffsetNid(5);
         deviceChoice17.setUpdateIdentifier("");
         jPanel4.add(deviceChoice17);
 
