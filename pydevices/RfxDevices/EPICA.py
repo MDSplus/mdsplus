@@ -363,46 +363,56 @@ class EPICA(MDSplus.Device):
             print('Error requesting DMA readout')
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
+        pts = pts // 4
         for chan in range(8):
             if self.getNode('INFO.MODULE_'+str(chan+1)+':IS_PRESENT').data() == 'YES':
-                remoteFile = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, chan)
-                localFile = '%05d_acq_CH%02d.dak'%(fileIdx, chan)
-                print('Copying '+remoteFile +'...')
-                subprocess.run(['scp', remoteFile, localFile], check=True,)
+                remoteFileA = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, 2*chan)
+                localFileA = '%05d_acq_CH%02d.dak'%(fileIdx, 2*chan)
+                print('Copying '+remoteFileA +'...')
+                subprocess.run(['scp', remoteFileA, localFileA], check=True,)
                 print('Copied')
 
-                currChanAVolt = np.zeros(pts//2, dtype=np.int16)
-                currChanACurr = np.zeros(pts//2, dtype=np.int16)
-                currChanBVolt = np.zeros(pts//2, dtype=np.int16)
-                currChanBCurr = np.zeros(pts//2, dtype=np.int16)
-                print('ALLOCATI ', pts//2)
+                remoteFileB = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, 2*chan+1)
+                localFileB = '%05d_acq_CH%02d.dak'%(fileIdx, 2*chan+1)
+                print('Copying '+remoteFileB +'...')
+                subprocess.run(['scp', remoteFileB, localFileB], check=True,)
+                print('Copied')
+
+                currChanAVolt = np.zeros(pts, dtype=np.int16)
+                currChanACurr = np.zeros(pts, dtype=np.int16)
+                currChanBVolt = np.zeros(pts, dtype=np.int16)
+                currChanBCurr = np.zeros(pts, dtype=np.int16)
                 try:
-                    chanArray = np.fromfile(localFile, dtype = np.int32)
+                    chanArrayA = np.fromfile(localFileA, dtype = np.int32)
                 except:
-                    print('Cannot read local file '+localFile)
+                    print('Cannot read local file '+localFileA)
+                try:
+                    chanArrayB = np.fromfile(localFileB, dtype = np.int32)
+                except:
+                    print('Cannot read local file '+localFileB)
         #Baco nel riportare i pts...sembra qualche volta uno di piu'
-                if len(chanArray) < pts:
-                    print('Unexpected number or read samples. Read: '+str(len(chanArray))+' Expected: '+str(pts))
+                if len(chanArrayA) < pts:
+                    print('Unexpected number or read samples for channel A. Read: '+str(len(chanArrayA))+' Expected: '+str(pts))
+                    raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+                if len(chanArrayB) < pts:
+                    print('Unexpected number or read samples for channel B. Read: '+str(len(chanArrayB))+' Expected: '+str(pts))
                     raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
-                if pts % 2 != 0:
-                    pts -= 1
         #################################################             
-                print(len(chanArray), pts//2)
                 sampleCount = np.uint32(0)
                 for sampleCount in range(pts):
-                    data = chanArray[sampleCount]
+                    data = chanArrayA[sampleCount]
                     curr = signed16(data)
                     volt = signed16(data >> 16)
+                    currChanAVolt[sampleCount] = volt
+                    currChanACurr[sampleCount] = curr
+ 
+                    data = chanArrayB[sampleCount]
+                    curr = signed16(data)
+                    volt = signed16(data >> 16)
+                    currChanBVolt[sampleCount] = volt
+                    currChanBCurr[sampleCount] = curr
 
-
-
-                    if sampleCount % 2 == 0:
-                        currChanAVolt[sampleCount//2] = volt
-                        currChanACurr[sampleCount//2] = curr
-                    else:
-                        currChanBVolt[sampleCount//2] = volt
-                        currChanBCurr[sampleCount//2] = curr
 
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanACurr))
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanAVolt))
