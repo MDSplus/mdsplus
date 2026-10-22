@@ -396,12 +396,13 @@ class EPICA(MDSplus.Device):
                     volt = signed16(data >> 16)
 
 
+
                     if sampleCount % 2 == 0:
                         currChanAVolt[sampleCount//2] = volt
                         currChanACurr[sampleCount//2] = curr
                     else:
-                        currChanBVolt[sampleCount//2+1] = volt
-                        currChanBCurr[sampleCount//2+1] = curr
+                        currChanBVolt[sampleCount//2] = volt
+                        currChanBCurr[sampleCount//2] = curr
 
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanACurr))
                 self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanAVolt))
