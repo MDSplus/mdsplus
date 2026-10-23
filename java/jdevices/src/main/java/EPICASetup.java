@@ -146,7 +146,7 @@ public class EPICASetup extends DeviceSetup {
         deviceField4.setOffsetNid(6);
         jPanel4.add(deviceField4);
 
-        deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5, 6, 7});
+        deviceChoice17.setChoiceIntValues(new int[] {1, 2, 3, 4, 5, 6, 7, 8});
         deviceChoice17.setChoiceItems(new String[] {"625000.00 Hz", "312500.00 Hz", "156250.00 Hz", "78125.00 Hz", "39062.50 Hz", "19531.25 Hz", "9765.62 Hz", "4882.81 Hz"});
         deviceChoice17.setConvert(true);
         deviceChoice17.setIdentifier("");
