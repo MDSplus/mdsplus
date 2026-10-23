@@ -6,6 +6,7 @@ from threading import Thread
 import time
 import subprocess
 import struct
+import re
 
 def signed16(value):
     value = int(value) & 0xFFFF
@@ -44,6 +45,37 @@ def recvall(sock):
             return None
         data.extend(packet)
     return data
+
+def extractPars(s):
+    print(s)
+    number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+    m = re.search( r"mA=(" + number + r")\s+qA=(" + number +r")\s+mB=(" + number + r")\s+qB=(" + number + r")", s)
+    mA, qA, mB, qB = map(float, m.groups())
+    return mA, qA, mB, qB
+
+def extractCalibration(lines, slotIdx):
+    lineNo = 0
+    while lineNo < len(lines) and not lines[lineNo].startswith('Slot '+str(slotIdx)+' CAL V'):
+        lineNo += 1
+    if lineNo == len(lines):
+        print('Error reading calibration file')
+        raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+    cal={}
+    mA, qA, mB, qB = extractPars(lines[lineNo])
+    cal['V'] = {'mA':mA, 'qA':qA, 'mB':mB, 'qB':qB}
+    mA, qA, mB, qB = extractPars(lines[lineNo+1])
+    cal['I1A'] = {'mA':mA, 'qA':qA, 'mB':mB, 'qB':qB}
+    mA, qA, mB, qB = extractPars(lines[lineNo+2])
+    cal['I100mA'] = {'mA':mA, 'qA':qA, 'mB':mB, 'qB':qB}
+    mA, qA, mB, qB = extractPars(lines[lineNo+3])
+    cal['I10mA'] = {'mA':mA, 'qA':qA, 'mB':mB, 'qB':qB}
+    mA, qA, mB, qB = extractPars(lines[lineNo+4])
+    cal['I1mA'] = {'mA':mA, 'qA':qA, 'mB':mB, 'qB':qB}
+    return cal
+    
+
+
+
 
 class EPICA(MDSplus.Device):
  
@@ -90,15 +122,31 @@ class EPICA(MDSplus.Device):
         parts.extend([
             {'path': '.ACQUISITION.MODULE_%d' % (i+1), 'type': 'structure'},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_A' % (i+1), 'type': 'structure'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:V_RAW' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_A:V' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:I_RAW' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_A:I' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:V_Q' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_A:V_M' % (i+1), 'type': 'numeric'},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_B' % (i+1), 'type': 'structure'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V_RAW' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V' % (i+1), 'type': 'signal', 'options': (
+                'no_write_model', 'compress_on_put')},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:I_RAW' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_B:I' % (i+1), 'type': 'signal', 'options': (
                 'no_write_model', 'compress_on_put')},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V_Q' % (i+1), 'type': 'numeric'},
+            {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V_M' % (i+1), 'type': 'numeric'},
     ])
     socketDict = {}
     startTimeDict = {}
@@ -304,11 +352,31 @@ class EPICA(MDSplus.Device):
             self.getNode(':ACQ_MS').putData(MDSplus.Int32(acqMs))
             print('Acquisition length set to '+str(acqMs)+' milliseconds')
             for chan in range(8):
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).deleteData()
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).deleteData()
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V' % (chan+1)).deleteData()
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I' % (chan+1)).deleteData()
-
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_RAW' % (chan+1)).deleteData()
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_RAW' % (chan+1)).deleteData()
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_RAW' % (chan+1)).deleteData()
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_RAW' % (chan+1)).deleteData()
+                
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).putData(
+                    self.tree.tdiCompile('('+self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_RAW' % (chan+1)).getFullPath()+' - '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_Q' % (chan+1)).getFullPath() + ') / '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_M' % (chan+1)).getFullPath())
+                )
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).putData(
+                    self.tree.tdiCompile('('+self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_RAW' % (chan+1)).getFullPath()+' - '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (chan+1)).getFullPath() + ') / '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (chan+1)).getFullPath())
+                )
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V' % (chan+1)).putData(
+                    self.tree.tdiCompile('('+self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_RAW' % (chan+1)).getFullPath()+' - '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_Q' % (chan+1)).getFullPath() + ') / '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_M' % (chan+1)).getFullPath())
+                )
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I' % (chan+1)).putData(
+                    self.tree.tdiCompile('('+self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_RAW' % (chan+1)).getFullPath()+' - '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).getFullPath() + ') / '+
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).getFullPath())
+                )
 
 
  
@@ -363,6 +431,18 @@ class EPICA(MDSplus.Device):
             print('Error requesting DMA readout')
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
+        remoteFileInfo = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq.info'%(fileIdx)
+        localFileInfo = '%05d_acq.info'%(fileIdx)
+        print('Copying '+remoteFileInfo +'...')
+        subprocess.run(['scp', remoteFileInfo, localFileInfo], check=True,)
+        print('Copied')
+        calibrationLines = open(localFileInfo).readlines()
+ 
+
+
+    
+        
+
         pts = pts // 4
         for chan in range(8):
             if self.getNode('INFO.MODULE_'+str(chan+1)+':IS_PRESENT').data() == 'YES':
@@ -414,7 +494,45 @@ class EPICA(MDSplus.Device):
                     currChanBCurr[sampleCount] = curr
 
 
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanACurr))
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanAVolt))
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanBCurr))
-                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanBVolt))
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_RAW' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanACurr))
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_RAW' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanAVolt))
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_RAW' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanBCurr))
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_RAW' % (chan+1)).makeSegment(startTime, endTime, timebase, MDSplus.Int16Array(currChanBVolt))
+
+                calibration = extractCalibration(calibrationLines, chan)
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_Q' % (chan+1)).putData(calibration['V']['qA'])
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:V_M' % (chan+1)).putData(calibration['V']['mA'])
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_Q' % (chan+1)).putData(calibration['V']['qB'])
+                self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:V_M' % (chan+1)).putData(calibration['V']['mB'])
+
+                mode = self.getNode('.CONFIG.MODULE_%d:SHUNT_A' % (chan+1)).data()
+                if mode == 0:
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (chan+1)).putData(calibration['I1mA']['qA'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (chan+1)).putData(calibration['I1mA']['mA'])
+                elif mode == 1:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (chan+1)).putData(calibration['I10mA']['qA'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (chan+1)).putData(calibration['I10mA']['mA'])
+                elif mode == 2:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (chan+1)).putData(calibration['I100mA']['qA'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (chan+1)).putData(calibration['I100mA']['mA'])
+                elif mode == 3:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_Q' % (chan+1)).putData(calibration['I1A']['qA'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_A:I_M' % (chan+1)).putData(calibration['I1A']['mA'])
+                else:
+                    print('Unexpected Shunt A mode')      
+
+                mode = self.getNode('.CONFIG.MODULE_%d:SHUNT_B' % (chan+1)).data()
+                if mode == 0:
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).putData(calibration['I1mA']['qB'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).putData(calibration['I1mA']['mB'])
+                elif mode == 1:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).putData(calibration['I10mA']['qB'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).putData(calibration['I10mA']['mB'])
+                elif mode == 2:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).putData(calibration['I100mA']['qB'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).putData(calibration['I100mA']['mB'])
+                elif mode == 3:      
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).putData(calibration['I1A']['qB'])
+                    self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).putData(calibration['I1A']['mB'])
+                else:
+                    print('Unexpected Shunt A mode')      
