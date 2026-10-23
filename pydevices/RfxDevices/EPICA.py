@@ -377,6 +377,7 @@ class EPICA(MDSplus.Device):
                     self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).getFullPath() + ') / '+
                     self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).getFullPath())
                 )
+        print('RAMP DURATION(us): ', len(rampStr.split())*delay)
 
 
  
