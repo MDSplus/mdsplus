@@ -220,7 +220,7 @@ class EPICA(MDSplus.Device):
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            decimation = self.getNode('DECIMATION').data()
+            decimation = self.getNode('DECIMATION').data() 
         except:
             print("Missing Decimation")
             raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
@@ -443,7 +443,7 @@ class EPICA(MDSplus.Device):
     
         
 
-        pts = pts // 4
+        pts = pts
         for chan in range(8):
             if self.getNode('INFO.MODULE_'+str(chan+1)+':IS_PRESENT').data() == 'YES':
                 remoteFileA = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, 2*chan)
