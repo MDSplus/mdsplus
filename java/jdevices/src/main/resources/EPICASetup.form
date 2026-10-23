@@ -75,14 +75,14 @@
             <Component class="DeviceField" name="deviceField4">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Delay(us):"/>
+                <Property name="labelString" type="java.lang.String" value="DeltaT(us):"/>
                 <Property name="offsetNid" type="int" value="6"/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice17">
               <Properties>
                 <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                  <PropertyValue value="[1, 2, 3, 4, 5, 6, 7, 8]"/>
+                  <PropertyValue value="[0, 1, 2, 3, 4, 5, 6, 7]"/>
                 </Property>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                   <StringArray count="8">
