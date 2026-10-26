@@ -160,6 +160,8 @@ class EPICA(MDSplus.Device):
     trigTimeDict = {}
 
     def init(self):
+        EPICA.startTimeDict = {}
+        EPICA.trigTimeDict = {}
         try:
             ip = self.ip.data()
         except:
