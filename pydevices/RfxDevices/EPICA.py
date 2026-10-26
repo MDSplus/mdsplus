@@ -116,7 +116,7 @@ class EPICA(MDSplus.Device):
             {'path': '.OUTPUTS.MODULE_%d:RAMP' % (i+1), 'type': 'text'},
             {'path': '.OUTPUTS.MODULE_%d:DC_VAL' % (i+1), 'type': 'numeric', 'value':0}
         ])
-
+    parts.extend([{'path': ':TRIG_DELAY', 'type': 'numeric', 'value': 15}])
     parts.extend([{'path': '.ACQUISITION', 'type': 'structure'}])
     for i in range(8):
         parts.extend([
@@ -148,6 +148,13 @@ class EPICA(MDSplus.Device):
             {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V_Q' % (i+1), 'type': 'numeric'},
             {'path': '.ACQUISITION.MODULE_%d.CHAN_B:V_M' % (i+1), 'type': 'numeric'},
     ])
+    parts.append({'path': ':INIT_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('EPICA_SERVER','INIT',50,None),Method(None,'init',head))",
+                  'options': ('no_write_shot',)})
+    parts.append({'path': ':STORE_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('EPICA_SERVER','PULSE_ON',50,None),Method(None,'store',head))",
+                  'options': ('no_write_shot',)})
+
     socketDict = {}
     startTimeDict = {}
     trigTimeDict = {}
@@ -379,7 +386,10 @@ class EPICA(MDSplus.Device):
                 )
         print('RAMP DURATION(us): ', len(rampStr.split())*delay)
 
-
+    def store(self):
+        waitSecs = self.getNode(':TRIG_DELAY').data()
+        time.sleep(int(waitSecs))
+        self.trigger()
  
     def trigger(self):
         try:
