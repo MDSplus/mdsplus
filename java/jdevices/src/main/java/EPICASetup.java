@@ -31,10 +31,12 @@ public class EPICASetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
+        deviceDispatch1 = new DeviceDispatch();
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceChoice17 = new DeviceChoice();
         deviceField6 = new DeviceField();
+        deviceField8 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -122,7 +124,7 @@ public class EPICASetup extends DeviceSetup {
         setDeviceType("EPICA");
         setHeight(300);
         setUpdateEvent("");
-        setWidth(800);
+        setWidth(1000);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 0));
@@ -138,6 +140,7 @@ public class EPICASetup extends DeviceSetup {
         deviceField3.setLabelString("Port: ");
         deviceField3.setOffsetNid(3);
         jPanel3.add(deviceField3);
+        jPanel3.add(deviceDispatch1);
 
         jPanel1.add(jPanel3);
 
@@ -159,6 +162,12 @@ public class EPICASetup extends DeviceSetup {
         deviceField6.setLabelString("Duration (ms):");
         deviceField6.setOffsetNid(7);
         jPanel4.add(deviceField6);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Trig. Delay(s): ");
+        deviceField8.setNumCols(6);
+        deviceField8.setOffsetNid(110);
+        jPanel4.add(deviceField8);
 
         jPanel1.add(jPanel4);
 
@@ -651,6 +660,7 @@ public class EPICASetup extends DeviceSetup {
     private DeviceChoice deviceChoice52;
     private DeviceChoice deviceChoice53;
     private DeviceChoice deviceChoice54;
+    private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField11;
     private DeviceField deviceField13;
@@ -670,6 +680,7 @@ public class EPICASetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
