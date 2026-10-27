@@ -386,8 +386,10 @@ class EPICA(MDSplus.Device):
                     self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_Q' % (chan+1)).getFullPath() + ') / '+
                     self.getNode('.ACQUISITION.MODULE_%d.CHAN_B:I_M' % (chan+1)).getFullPath())
                 )
-        print('RAMP DURATION(us): ', len(rampStr.split())*delay)
-
+        try:
+            print('RAMP DURATION(us): ', len(rampStr.split())*delay)
+        except:
+            pass
     def store(self):
         waitSecs = self.getNode(':TRIG_DELAY').data()
         time.sleep(int(waitSecs))
@@ -447,7 +449,8 @@ class EPICA(MDSplus.Device):
         remoteFileInfo = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq.info'%(fileIdx)
         localFileInfo = '%05d_acq.info'%(fileIdx)
         print('Copying '+remoteFileInfo +'...')
-        subprocess.run(['scp', remoteFileInfo, localFileInfo], check=True,)
+#        subprocess.run(['scp', remoteFileInfo, localFileInfo], check=True,)
+        subprocess.check_call(['scp', remoteFileInfo, localFileInfo])
         print('Copied')
         calibrationLines = open(localFileInfo).readlines()
  
@@ -462,13 +465,13 @@ class EPICA(MDSplus.Device):
                 remoteFileA = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, 2*chan)
                 localFileA = '%05d_acq_CH%02d.dak'%(fileIdx, 2*chan)
                 print('Copying '+remoteFileA +'...')
-                subprocess.run(['scp', remoteFileA, localFileA], check=True,)
+                subprocess.check_call(['scp', remoteFileA, localFileA])
                 print('Copied')
 
                 remoteFileB = 'petalinux@'+self.getNode('IP').data()+':dma/%05d_acq_CH%02d.dak'%(fileIdx, 2*chan+1)
                 localFileB = '%05d_acq_CH%02d.dak'%(fileIdx, 2*chan+1)
                 print('Copying '+remoteFileB +'...')
-                subprocess.run(['scp', remoteFileB, localFileB], check=True,)
+                subprocess.check_call(['scp', remoteFileB, localFileB])
                 print('Copied')
 
                 currChanAVolt = np.zeros(pts, dtype=np.int16)
