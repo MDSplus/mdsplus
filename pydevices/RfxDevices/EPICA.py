@@ -7,6 +7,7 @@ import time
 import subprocess
 import struct
 import re
+import threading
 
 def signed16(value):
     value = int(value) & 0xFFFF
@@ -390,7 +391,13 @@ class EPICA(MDSplus.Device):
             print('RAMP DURATION(us): ', len(rampStr.split())*delay)
         except:
             pass
+
     def store(self):
+        worker = threading.Thread(target=self.delayedTrigger)
+        worker.daemon = True
+        worker.start()
+
+    def delayedTrigger(self):
         waitSecs = self.getNode(':TRIG_DELAY').data()
         time.sleep(int(waitSecs))
         self.trigger()
