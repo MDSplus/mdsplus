@@ -393,14 +393,17 @@ class EPICA(MDSplus.Device):
             pass
 
     def store(self):
-        worker = threading.Thread(target=self.delayedTrigger)
+#        self.copy().delayedTrigger()
+        worker = threading.Thread(target=self.copy().delayedTrigger)
         worker.daemon = True
         worker.start()
 
     def delayedTrigger(self):
+        self.tree = MDSplus.Tree(self.tree.name, self.tree.shot)
         waitSecs = self.getNode(':TRIG_DELAY').data()
         time.sleep(int(waitSecs))
         self.trigger()
+        self.tree.close()
  
     def trigger(self):
         try:
