@@ -2,7 +2,7 @@ package MDSplus;
 
 import java.util.*;
 
-public class Connection
+public class Connection implements AutoCloseable
 {
 	boolean isConnected = false;
 	static
@@ -66,14 +66,13 @@ public class Connection
 
 	public void mdsdisconnect()
 	{
-		if (sockId >= 0)
+		if (isConnected && sockId >= 0)
 			disconnectFromMds(sockId);
 		isConnected = false;
 	}
 
-	// Deprecated in Java 9 to Java 22; will be removed in future Java.
 	@Override
-	protected void finalize()
+	public void close()
 	{
 		mdsdisconnect();
 	}

@@ -1416,6 +1416,8 @@ if(BUILD_TESTING)
     add_subdirectory(java/tests) # defines JAVA_TEST_ENV_MODS, JAVA_TEST_JAR_LIST
     add_subdirectory(java/mdsobjects/tests)
     add_subdirectory(java/mdsplus-api/tests)
+    add_subdirectory(java/jdispatcher/tests)
+    add_subdirectory(java/jscope/tests)
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
         message(STATUS "Setting GENERATE_VSCODE_LAUNCH_JSON=OFF, set it again to regenerate .vscode/launch.json")

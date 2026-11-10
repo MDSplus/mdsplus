@@ -1447,6 +1447,11 @@ public class MdsDataProvider implements DataProvider
 	@Override
 	public synchronized void close()
 	{
+		if (open)
+		{
+			mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
+			open = false;
+		}
 		if (is_tunneling && ssh_tunneling != null)
 			ssh_tunneling.close();
 		if (connected)
@@ -1472,15 +1477,6 @@ public class MdsDataProvider implements DataProvider
 	public void enableAsyncUpdate(boolean enable)
 	{
 		updateWorker.enableAsyncUpdate(enable);
-	}
-
-	@Override
-	protected void finalize()
-	{
-		if (open)
-			mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
-		if (connected)
-			mds.DisconnectFromMds();
 	}
 
 	public synchronized byte[] GetAllFrames(String in_frame) throws IOException
