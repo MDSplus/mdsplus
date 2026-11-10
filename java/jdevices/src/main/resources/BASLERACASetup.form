@@ -321,6 +321,7 @@
                               <StringArray count="2">
                                 <StringItem index="0" value="INTERNAL"/>
                                 <StringItem index="1" value="EXTERNAL"/>
+                                <StringItem index="2" value="MDSEVENT"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>

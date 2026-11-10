@@ -486,7 +486,11 @@ class MARTE2_NI6259_ADC(MC.MARTE2_COMPONENT):
         self.getNode('TIMEBASE').putData(t.tdiCompile('(0 : * : ('+ self.getNode('OUTPUTS.ADC0_0:SAMPLES').getFullPath()+
         ' * 1./'+str(frequency)+'))'))
 #Write SamplingFrequency
-        self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.Int32(frequency * numEnabledChannels))
+        if clockMode == 'INTERNAL':
+            self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.Int32(frequency))
+        else:
+            self.getNode('.PARAMETERS.PAR_9:VALUE').putData(MDSplus.Int32(frequency * numEnabledChannels))
+
 
 ####################################### Non MARTe2 Methods #############################################
 
