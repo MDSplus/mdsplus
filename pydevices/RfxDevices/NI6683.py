@@ -70,7 +70,7 @@ class NI6683(Device):
     del(chanName)
     parts.append({'path':':DEV_TYPE', 'type':'text'})
     parts.append({'path':':INIT','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':TRIGGER','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','PULSE_ON',10,None),Method(None,'trigger',head))",
@@ -87,7 +87,11 @@ class NI6683(Device):
     for chanName in chanNames:
         parts.append({'path':'.'+chanName+':CLOCK_SOURCE', 'type':'numeric'})  #added on 04/09/2025
     del(chanName)
-    
+
+    #fede 20260728: to call before init, prepare output lines to the correct logic level before init
+    parts.append({'path':':PREPARE', 'type':'action',
+        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'prepare',head))",
+        'options':('no_write_shot',)})
 
     DEV_IS_OPEN = 1
     DEV_OPEN = 2
@@ -161,16 +165,22 @@ class NI6683(Device):
         enabled = c_int8()
         activeEdge = c_int()
         decimationCount = c_int()
+        outputModes = ('CLOCK', 'HIGH PULSE', 'LOW PULSE', 'HIGH', 'LOW')
 
         print("RESETTING DEVICE...")
 
         for termName in NI6683.termNameDict.keys():
+            try:
+                mode = getattr(self, termName.lower() + '_mode').data()
+            except Exception:
+                mode = 'DISABLED'
+
             status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-            self.checkStatus(status, "Cannot abort future time events when resetting the device ")
+            self.checkStatus(status, "Cannot abort future time events for %s while resetting the device " % termName)
 
             status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
-            self.checkStatus(status, 'Cannot inquire future events in "DISABLED" mode')
-            if enabled.value != 0:
+            self.checkStatus(status, 'Cannot inquire future events while resetting ' + termName)
+            if enabled.value != 0 and mode not in outputModes:
                 print('DISABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                 status = NI6683.niLib.nisync_disable_future_time_events(c_int(self.termDict[termName]))
                 self.checkStatus(status, 'Cannot disable future events')
@@ -182,6 +192,66 @@ class NI6683(Device):
                 print('DISABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
                 status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                 self.checkStatus(status, 'Cannot disable timestamp triggers')
+
+    def prepare(self):
+        """Prepare output idle levels before INIT without scheduling events."""
+        safeLevels = {
+            'LOW PULSE': self.NISYNC_LEVEL_HIGH,
+            'HIGH PULSE': self.NISYNC_LEVEL_LOW,
+            'CLOCK': self.NISYNC_LEVEL_LOW,
+            'HIGH': self.NISYNC_LEVEL_LOW,
+            'LOW': self.NISYNC_LEVEL_HIGH,
+        }
+        validModes = tuple(safeLevels.keys()) + (
+            'DISABLED', 'RECORDER RISING', 'RECORDER FALLING',
+            'RECORDER ANY')
+        driverErrors = []
+        parameterErrors = []
+
+        self.debugPrint('================= PXI 6683 prepare ===============')
+        self.restoreInfo()
+        self.worker_check()
+
+        for termName in NI6683.termNameDict.keys():
+            try:
+                mode = getattr(self, termName.lower() + '_mode').data()
+            except Exception as exc:
+                parameterErrors.append("%s: cannot read mode (%s)" % (termName, exc))
+                continue
+
+            if mode not in validModes:
+                parameterErrors.append('%s: invalid mode "%s"' % (termName, mode))
+                continue
+            if mode not in safeLevels:
+                continue
+
+            fd = c_int(self.termDict[termName])
+            status = NI6683.niLib.nisync_abort_all_ftes(fd)
+            if status < 0:
+                driverErrors.append("%s: cannot abort future time events (driver status %d)" % (termName, status))
+
+            enabled = c_int8()
+            status = NI6683.niLib.nisync_future_time_events_configuration(fd, byref(enabled))
+            if status < 0:
+                driverErrors.append("%s: cannot inquire future time events (driver status %d)" % (termName, status))
+            elif enabled.value == 0:
+                status = NI6683.niLib.nisync_enable_future_time_events(fd)
+                if status < 0:
+                    driverErrors.append("%s: cannot enable future time events (driver status %d)" % (termName, status))
+
+            status = NI6683.niLib.nisync_set_terminal_level(fd, c_int(safeLevels[mode]))
+            if status < 0:
+                driverErrors.append("%s: cannot prepare idle level (driver status %d)" % (termName, status))
+
+        if parameterErrors or driverErrors:
+            for error in parameterErrors + driverErrors:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), error)
+        if driverErrors:
+            raise DevCOMM_ERROR
+        if parameterErrors:
+            raise DevBAD_PARAMETER
+
+        print("NI6683 OUTPUTS PREPARED!")
 
     def debugPrint(self, msg="", obj=""):
           print( self.name + ":" + msg, obj )
@@ -203,11 +273,15 @@ class NI6683(Device):
             NI6683.niInterfaceLib = CDLL('libNiInterface.so')
 
 # investigating the file descriptors to check if the device is already opened
-        if self.nid in NI6683.ni6683Fds.keys():
+        if (self.nid in NI6683.ni6683Fds and self.nid in NI6683.ni6683Dicts):
             self.fd = NI6683.ni6683Fds[self.nid]
             self.termDict = NI6683.ni6683Dicts[self.nid]
             return self.DEV_IS_OPEN
         else: # if not opened, initialize the device by reading the information stored in the pulse file
+            # Remove an inconsistent, partially saved state before reopening.
+            NI6683.ni6683Fds.pop(self.nid, None)
+            NI6683.ni6683Dicts.pop(self.nid, None)
+
             try:
                 boardId = self.board_id.data()
             except:
@@ -227,20 +301,39 @@ class NI6683(Device):
                 emsg = 'Cannot open device : %s'%(str(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
+            if self.fd < 0:
+                errorNumber = get_errno()
+                errorMessage = os.strerror(errorNumber) if errorNumber else 'driver status %d' % self.fd
+                emsg = 'Cannot open device: %s' % errorMessage
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevCOMM_ERROR
 
             self.termDict = {}
             for termName in NI6683.termNameDict.keys():
                 try:
-                    self.termDict[termName] = NI6683.niLib.nisync_open_terminal(c_int(devType), c_int(boardId), c_int(NI6683.termNameDict[termName]), c_int(self.NISYNC_READ_NONBLOCKING))
-                    print('Opening ' + termName + ' with FD: '+str(self.termDict[termName]))
-                    if (self.termDict[termName] == -1): # if terminal is busy, raise an exception
-                        emsg = 'Cannot open terminal ' + termName
-                        Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
-                        raise DevCOMM_ERROR
+                    termFd = NI6683.niLib.nisync_open_terminal(c_int(devType), c_int(boardId), c_int(NI6683.termNameDict[termName]), c_int(self.NISYNC_READ_NONBLOCKING))
                 except Exception as e:
                     emsg = 'Cannot open terminal %s : %s'%(termName, str(e))
+                    self.NI6683_close(list(self.termDict.values()))
+                    try:
+                        os.close(self.fd)
+                    except OSError:
+                        pass
                     Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                     raise DevCOMM_ERROR
+                print('Opening ' + termName + ' with FD: ' + str(termFd))
+                if termFd < 0:
+                    errorNumber = get_errno()
+                    errorMessage = os.strerror(errorNumber) if errorNumber else 'driver status %d' % termFd
+                    emsg = 'Cannot open terminal %s: %s' % (termName, errorMessage)
+                    self.NI6683_close(list(self.termDict.values()))
+                    try:
+                        os.close(self.fd)
+                    except OSError:
+                        pass
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                    raise DevCOMM_ERROR
+                self.termDict[termName] = termFd
         NI6683.ni6683Fds[self.nid] = self.fd
         NI6683.ni6683Dicts[self.nid] = self.termDict
         return self.DEV_OPEN
@@ -249,7 +342,7 @@ class NI6683(Device):
     def getAbsTime(self, relTime):
         print ('DEBUG -> Abs time: ', NI6683.ni6683AbsTime, ' Reltime: ', relTime, ' RelStart: ', NI6683.ni6683RelTime)
         try:
-            result = ((relTime - NI6683.ni6683RelTime)*1000000000 + NI6683.ni6683AbsTime)
+            result = int((relTime - NI6683.ni6683RelTime)*1000000000) + NI6683.ni6683AbsTime
             # print ('DEBUG -> Result: ', result)
             return result
         except:
@@ -262,16 +355,16 @@ class NI6683(Device):
         termNameNid = termName+str(self.nid)
         try:
             start = NI6683.ni6683TermStarts[termNameNid]
-            # if the start time of the selected terminal is less than the shot relative time -> error
-            if start < NI6683.ni6683RelTime:
-                emsg = 'Start time less than relative time in ' + termName
-                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
-                raise DevBAD_PARAMETER
-            else:
-                start = self.getAbsTime(start)
-        except:
-            print ("Exception in defining Start")
-            start = self.getAbsTime(start)
+        except Exception:
+            emsg = 'Cannot read CLOCK start time for ' + termName
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
+
+        if start < NI6683.ni6683RelTime:
+            emsg = ('CLOCK start time %.9f for %s is before REL_START %.9f' % (float(start), termName, float(NI6683.ni6683RelTime)))
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
+        start = self.getAbsTime(start)
 
         # retrieving the end time for the slected terminal
         try:
@@ -309,12 +402,25 @@ class NI6683(Device):
             raise DevBAD_PARAMETER
         if np.isscalar(pulseLen):
             pulseLen = [pulseLen]
-        minLen = len(start)
-        if minLen > len(pulseLen):
-            minLen = len(pulseLen)
+        if len(start) != len(pulseLen):
+            emsg = ('Pulse configuration length mismatch in %s: %d START value(s), %d PULSE_LEN value(s)' % (termName, len(start), len(pulseLen)))
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
+        if len(start) == 0:
+            emsg = 'No pulse START/PULSE_LEN values configured in ' + termName
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
+
         startNs = []
         endNs = []
-        for i in range(0, minLen):
+        for i in range(0, len(start)):
+            if pulseLen[i] <= 0:
+                emsg = (
+                    'Invalid PULSE_LEN[%d] in %s: %.9f s; '
+                    'pulse length must be greater than zero'
+                    % (i, termName, float(pulseLen[i])))
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
             print ('DEBUG -> START PULSE in GetStartPulse: ', start[i])
             currStartNs = self.getAbsTime(start[i])
             startNs.append(currStartNs)
@@ -324,47 +430,108 @@ class NI6683(Device):
 
     def checkStatus(self, status, message):
         if(status < 0):
-            Data.execute('DevLogErr($1,$2)', self.getNid(), message + 'status: %d'%(status))
+            emsg = '%s (driver status %d)' % (message.rstrip(), status)
+            print('ERROR: ' + emsg)
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevCOMM_ERROR
+
+    def checkFutureEventTime(self, termName, eventTimeNs, eventDescription):
+        """Reject an event time that has already passed with a clear error."""
+        currNanos = c_uint64()
+        status = NI6683.niLib.nisync_get_time_ns(c_int(self.fd), byref(currNanos))
+        self.checkStatus(status, 'Cannot read current device time ')
+
+        delayNs = int(eventTimeNs) - int(currNanos.value)
+        if delayNs <= 0:
+            lateSeconds = float(-delayNs) / 1000000000.0
+            emsg = (
+                '%s on %s cannot be scheduled: start time is %.9f s '
+                'in the past (requested %d ns, current %d ns). '
+                'Increase ABS_START or reduce the delay before TRIGGER.'
+                % (eventDescription, termName, lateSeconds,
+                   int(eventTimeNs), int(currNanos.value)))
+            print("ERROR: " + emsg)
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
 
     def NI6683_close(self, Fds):
         print("\nCLOSING NI6683...")
         print('FD to Close: ', Fds)
         for fd in Fds:
-            #print("Closing FD", fd)
-            os.close(fd)
+            try:
+                os.close(fd)
+            except OSError:
+                pass
         print("NI6683 CLOSED!")
         return 0
-    
-    def NI6683_stop(self, activeFds):
-        print("\nSTOPPING NI6683...")
-        status = NI6683.niLib.nisync_abort_all_ftes(self.fd)
-        if status == -1:
-            return -1
 
-        for fd in activeFds:
-            print("Disabling future events for FD %i" % fd)
-            status = NI6683.niLib.nisync_disable_future_time_events(fd)
-            errorNumber = get_errno()
-            message = os.strerror(errorNumber)
-            if status == -1:
-                print("Tried disabling future events for FD %i, failed with the errno: %i = %s" % (fd, get_errno(), message))
-                return -1
-            os.close(fd)
-        
-        os.close(self.fd)
-        print("NI6683 STOPPED!")
-        return 0   
+    def force_safe_state(self):
+        safeLevels = {
+            'LOW PULSE': self.NISYNC_LEVEL_HIGH,
+            'HIGH PULSE': self.NISYNC_LEVEL_LOW,
+            'CLOCK': self.NISYNC_LEVEL_LOW,
+            'HIGH': self.NISYNC_LEVEL_LOW,
+            'LOW': self.NISYNC_LEVEL_HIGH,
+        }
+        validModes = tuple(safeLevels.keys()) + (
+            'DISABLED', 'RECORDER RISING', 'RECORDER FALLING',
+            'RECORDER ANY')
+        driverErrors = []
+        parameterErrors = []
+
+        print("\nFORCING NI6683 SAFE STATE...")
+        for termName in NI6683.termNameDict.keys():
+            termNameNid = termName + str(self.nid)
+            mode = NI6683.ni6683Modes.get(termNameNid)
+            if mode is None:
+                try:
+                    mode = getattr(self, termName.lower() + '_mode').data()
+                except Exception as exc:
+                    parameterErrors.append(
+                        "%s: cannot read mode (%s)" % (termName, exc))
+                    continue
+
+            if mode not in validModes:
+                parameterErrors.append(
+                    '%s: invalid mode "%s"' % (termName, mode))
+                continue
+            if mode not in safeLevels:
+                continue
+
+            fd = c_int(self.termDict[termName])
+            status = NI6683.niLib.nisync_abort_all_ftes(fd)
+            if status < 0:
+                driverErrors.append("%s: cannot abort future time events (driver status %d)" % (termName, status))
+
+            # set_terminal_level() requires FTE generation to remain enabled on
+            # this driver.  Disabling FTEs here either restores the default LOW
+            # level or makes this call fail with status -1.  Pending events have
+            # already been removed above and the descriptor is closed by STOP.
+            status = NI6683.niLib.nisync_set_terminal_level(fd, c_int(safeLevels[mode]))
+            if status < 0:
+                driverErrors.append("%s: cannot force safe level (driver status %d)" % (termName, status))
+
+        if parameterErrors or driverErrors:
+            for error in parameterErrors + driverErrors:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), error)
+        if driverErrors:
+            raise DevCOMM_ERROR
+        if parameterErrors:
+            raise DevBAD_PARAMETER
+
+        print("NI6683 SAFE STATE FORCED!")
 
     #Stop worker process if it is running
     def worker_check(self):
-        if NI6683.ni6683WorkerDict:
+        if self.nid in NI6683.ni6683WorkerDict:
             worker = NI6683.ni6683WorkerDict[self.nid]
-            self.fd = NI6683.ni6683Fds[self.nid]
+            if self.nid in NI6683.ni6683Fds:
+                self.fd = NI6683.ni6683Fds[self.nid]
             if self.thread_alive(worker):
                 self.debugPrint("PXI 6683 stop_worker")
                 worker.stop()
                 worker.join()
+            del(NI6683.ni6683WorkerDict[self.nid])
 
     # saves the information contained in the pulse file in the module variables
     def init(self):
@@ -377,15 +544,22 @@ class NI6683(Device):
         NI6683.ni6683RecorderDict[self.nid] = []
         curr_nanos = c_uint64()
         status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
+        self.checkStatus(status, 'Cannot read device time during INIT')
 
         if (self.DEVMODE != 1):
             # Checking if the moduled is synchronized with the PTP network
             curr_state = c_int(0)
-            NI6683.niLib.nisync_get_ptpd_state(self.fd, byref(curr_state))
+            status = NI6683.niLib.nisync_get_ptpd_state(self.fd, byref(curr_state))
+            self.checkStatus(status, 'Cannot read PTP synchronization state')
             if (curr_state.value != 2):
-                Data.execute('DevLogErr($1,$2)', self.getNid(), "ERROR: MODULE NON SYNCHRONIZED WITH THE PTP NETWORK! EXITING...")
-                raise DevBAD_PARAMETER # DA METTERE A POSTO
+                emsg = (
+                    'Module is not synchronized with the PTP network '
+                    '(PTP state %d)' % curr_state.value)
+                print('ERROR: ' + emsg)
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevCOMM_ERROR
 
+        NI6683.useInternalReference = False
         try:
             NI6683.ni6683AbsStart = self.abs_start.data() # Trying to read the curr time from the ABS_START field
         except:
@@ -395,8 +569,11 @@ class NI6683(Device):
         if (not NI6683.useInternalReference):
             print ("ABS START RETRIEVED: %f, INTERNAL TIME: %f"%(NI6683.ni6683AbsStart, curr_nanos.value))
             if NI6683.ni6683AbsStart - curr_nanos.value < 0:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), "ERROR: CURRENT TIME GREATER THAN ABSOLUTE TIME")
-                raise DevBAD_PARAMETER 
+                lateSeconds = (float(curr_nanos.value - NI6683.ni6683AbsStart) / 1000000000.0)
+                emsg = ('ABS_START is %.9f s in the past during INIT (ABS_START %d ns, current %d ns)' % (lateSeconds, int(NI6683.ni6683AbsStart), int(curr_nanos.value)))
+                print('ERROR: ' + emsg)
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
             
 
         # if the trigger event is defined, the module will wait for it to be triggered
@@ -422,53 +599,50 @@ class NI6683(Device):
                 emsg = 'Invalid mode in ' + termName
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
+            validModes = (
+                'DISABLED', 'CLOCK', 'HIGH PULSE', 'LOW PULSE',
+                'HIGH', 'LOW', 'RECORDER RISING', 'RECORDER FALLING',
+                'RECORDER ANY')
+            if mode not in validModes:
+                emsg = 'Invalid mode "%s" in %s' % (mode, termName)
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
             NI6683.ni6683Modes[termNameNid] = mode
 
             # storing the terminal name in the ni6683RecorderDict
             if (mode == 'RECORDER RISING' or mode == 'RECORDER FALLING' or mode == 'RECORDER ANY'):
                 NI6683.ni6683RecorderDict[self.nid].append(termName)
 
-            # LOW PULSE initialization at level high mode
-            if (mode == 'LOW PULSE'):
-                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
-                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot enable future time events ")
-                # setting the terminal level to 1 before the trigger
-                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_HIGH))
-
-            # HIGH PULSE initialization at level high mode
-            if (mode == 'HIGH PULSE'):
-                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
-                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot enable future time events ")
-                # setting the terminal level to 0 before the trigger
-                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_LOW))
-
-            # HIGH initialization at level high mode
-            if (mode == 'HIGH'):
-                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
-                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot enable future time events ")
-                # setting the terminal level to 0 before the trigger
-                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_HIGH))
-
-            # LOW initialization at level high mode
-            if (mode == 'LOW'):
-                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot abort future time events for the LOW PULSE behavior ")
-                status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
-                self.checkStatus(status, "Cannot enable future time events ")
-                # setting the terminal level to 0 before the trigger
-                NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_LOW))
+            # Configure output modes without changing the electrical level.
+            # PREPARE has already established the idle level and normally
+            # enabled FTE generation.  Direct/manual INIT calls are also
+            # supported, but the driver must not be enabled twice.
+            if mode in ('LOW PULSE', 'HIGH PULSE', 'HIGH', 'LOW'):
+                enabled = c_int8()
+                status = NI6683.niLib.nisync_future_time_events_configuration(
+                    c_int(self.termDict[termName]), byref(enabled))
+                self.checkStatus(
+                    status, "Cannot inquire future time events for %s " % mode)
+                if enabled.value == 0:
+                    status = NI6683.niLib.nisync_enable_future_time_events(
+                        c_int(self.termDict[termName]))
+                    self.checkStatus(
+                        status, "Cannot enable future time events for %s " % mode)
 
             # retrieving the terminal frequency    
             try:
                 freq = getattr(self, termName.lower()+'_frequency').data()
             except:
                 emsg = 'Invalid frequency in ' + termName
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
+            try:
+                if float(freq) <= 0:
+                    raise ValueError
+            except (TypeError, ValueError):
+                emsg = (
+                    'Invalid frequency in %s: %s; frequency must be '
+                    'greater than zero' % (termName, str(freq)))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
             NI6683.ni6683Frequencies[termNameNid] = freq
@@ -481,11 +655,20 @@ class NI6683(Device):
                 emsg = 'Invalid Duty Cycle in ' + termName
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
-            if dutyCycle <= 0 or dutyCycle >= 100:
-                emsg = 'Invalid Duty Cycle in ' + termName
+            try:
+                dutyCycleValue = float(dutyCycle)
+            except (TypeError, ValueError):
+                emsg = ('Invalid duty cycle in %s: %s; duty cycle must be a number between 0 and 100' % (termName, str(dutyCycle)))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
-            dutyCycleNs = int(periodNs * dutyCycle/100.)
+            if dutyCycleValue <= 0 or dutyCycleValue >= 100:
+                emsg = (
+                    'Invalid duty cycle in %s: %.9f; duty cycle must be '
+                    'greater than 0 and less than 100'
+                    % (termName, dutyCycleValue))
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
+            dutyCycleNs = int(periodNs * dutyCycleValue/100.)
             NI6683.ni6683DutyCycles[termNameNid] = dutyCycleNs
 
             # retrieving the terminal end time
@@ -525,10 +708,19 @@ class NI6683(Device):
     # By using the information gained in the init() phase, the NI6683 triggers the future events associated to each terminal
     def trigger(self):
         self.debugPrint('=================  PXI 6683 trigger ===============')
-        #ERROR CHECKING
-        if not NI6683.ni6683Modes: #This is created by init, so if it doesn't exist init wasn't run
-            print("ERROR: Init not run first")
-            return -1
+        expectedModeKeys = [
+            termName + str(self.nid)
+            for termName in NI6683.termNameDict.keys()]
+        missingModeKeys = [
+            key for key in expectedModeKeys
+            if key not in NI6683.ni6683Modes]
+        if missingModeKeys:
+            emsg = (
+                'INIT has not completed for this NI6683 device; '
+                'TRIGGER cannot run')
+            print('ERROR: ' + emsg)
+            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+            raise DevBAD_PARAMETER
         self.restoreInfo()
         self.worker_check()
 
@@ -589,21 +781,20 @@ class NI6683(Device):
                 startNs, endNs = self.getStartEnd(termName)
                 periodNs = int(1000000000./float(freq))
                 dutyCycle = NI6683.ni6683DutyCycles[termNameNid]
+                self.checkFutureEventTime(termName, startNs, 'CLOCK start')
 
                 print('Generating Clock: '+ str(self.termDict[termName]) + '  ' + str(startNs) + '  '+str(endNs)+'  ' + str(periodNs) + '  '+str(NI6683.ni6683DutyCycles[termNameNid]))
                 status = NI6683.niLib.nisync_generate_clock_ns(c_int(self.termDict[termName]), c_uint64(int(startNs)),
                     c_uint64(int(endNs)), c_uint64(periodNs), c_uint64(dutyCycle))
 
-
-                if status != 0:
-                    print(os.strerror(get_errno()))
-                    print("Clock already present, replacing it...")
-                    status = NI6683.niLib.nisync_replace_clock_ns(c_int(self.termDict[termName]), c_uint64(int(startNs)),
-                        c_uint64(int(endNs)), c_uint64(periodNs), c_uint64(dutyCycle)) 
-                    if status != 0:
-                        emsg = 'Error in replace clock for %s status = %d '%(termName, status)
-                        Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
-                        raise DevCOMM_ERROR
+                if status < 0:
+                    print("Clock generation failed, retry...")
+                    status = NI6683.niLib.nisync_generate_clock_ns(c_int(self.termDict[termName]), c_uint64(int(startNs)),
+                            c_uint64(int(endNs)), c_uint64(periodNs), c_uint64(dutyCycle))
+ 
+ #                  status = NI6683.niLib.nisync_replace_clock_ns(c_int(self.termDict[termName]), c_uint64(int(startNs)),
+  #                      c_uint64(int(endNs)), c_uint64(periodNs), c_uint64(dutyCycle)) 
+                    self.checkStatus(status, 'Cannot generate CLOCK on ' + termName)
 
             # in the HIGH PULSE mode:
             #   - the terminal timestamp triggers are disabled (PERCHE? riguardare!!! TODO)
@@ -627,11 +818,14 @@ class NI6683(Device):
                         emsg = 'Start Time greater than End Time for ' + termName
                         Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                         raise DevBAD_PARAMETER
+                    self.checkFutureEventTime(termName, startNs[i], 'HIGH PULSE start')
                     print ("DEBUG -> PULSE AT: ", startNs[i])
                     status = NI6683.niLib.nisync_generate_fte_ns(c_int(int(self.termDict[termName])), c_uint64(int(startNs[i])), c_uint8(self.NISYNC_LEVEL_HIGH))
-                    self.checkStatus(status, 'Cannot generate future event at pulse start')
+                    self.checkStatus(status, 'Cannot generate HIGH PULSE start event on ' + termName)
+                    self.checkFutureEventTime(
+                        termName, endNs[i], 'HIGH PULSE end')
                     status = NI6683.niLib.nisync_generate_fte_ns(c_int(int(self.termDict[termName])), c_uint64(int(endNs[i])), c_uint8(self.NISYNC_LEVEL_LOW))
-                    self.checkStatus(status, 'Cannot generate future event at pulse end')
+                    self.checkStatus(status, 'Cannot generate HIGH PULSE end event on ' + termName)
 
             # in the LOW PULSE mode:
             #   - the terminal timestamp triggers are disabled (PERCHE? riguardare!!! TODO)
@@ -655,10 +849,12 @@ class NI6683(Device):
                         emsg = 'Start Time greater than End Time for ' + termName
                         Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                         raise DevBAD_PARAMETER
+                    self.checkFutureEventTime(termName, startNs[i], 'LOW PULSE start')
                     status = NI6683.niLib.nisync_generate_fte_ns(c_int(int(self.termDict[termName])), c_uint64(int(startNs[i])), c_uint8(self.NISYNC_LEVEL_LOW))
-                    self.checkStatus(status, 'Cannot generate future event at pulse start')
+                    self.checkStatus(status, 'Cannot generate LOW PULSE start event on ' + termName)
+                    self.checkFutureEventTime(termName, endNs[i], 'LOW PULSE end')
                     status = NI6683.niLib.nisync_generate_fte_ns(c_int(int(self.termDict[termName])), c_uint64(int(endNs[i])), c_uint8(self.NISYNC_LEVEL_HIGH))
-                    self.checkStatus(status, 'Cannot generate future event at pulse end')
+                    self.checkStatus(status, 'Cannot generate LOW PULSE end event on ' + termName)
             
             # in the HIGH mode:
             #   - the terminal timestamp triggers are disabled (PERCHE? riguardare!!! TODO)
@@ -823,71 +1019,34 @@ class NI6683(Device):
         worker.configure(self.copy())
         worker.start()
 
-    # closes all the opened terminals (WITHOUT ERASING THE FUTURE TIME EVENTS)
+    # Close the descriptors currently owned by this device instance.
     def closeInfo(self):
         self.debugPrint('================= PXI 6683 closing all terminals ================')
-        self.restoreInfo()
-        Fds = []
-        
-        self.termDict = NI6683.ni6683Dicts[self.nid]
-        for termName in NI6683.termNameDict.keys():
-            Fds.append(self.termDict[termName])
-        status = self.NI6683_close(Fds)
-        if status == -1:
-            print("PROBLEM WHILE CLOSING...")
+        termDict = NI6683.ni6683Dicts.get(self.nid, getattr(self, 'termDict', {}))
+        self.NI6683_close(list(termDict.values()))
 
-    # opens the used terminals in the last session, stops their FTEs and closes them again
-    def stop(self):
-        self.debugPrint('================= PXI 6683 stop ================')
-        self.closeInfo()
-        self.worker_check()
-
-        if self.nid in NI6683.ni6683Fds.keys():
-            self.fd = NI6683.ni6683Fds[self.nid]
-            del(NI6683.ni6683Fds[self.nid])
-
-        activeFds = []
-
-        try:
-            boardId = self.board_id.data()
-        except:
-            emsg = 'Missing Board Id'
-            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg )
-            raise DevBAD_PARAMETER
-        try:
-            devType = NI6683.typeDict[self.dev_type.data()]
-        except:
-            emsg = 'Missing Dev Type'
-            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg )
-            raise DevBAD_PARAMETER
-
-        self.termDict = NI6683.ni6683Dicts[self.nid]
-        for termName in NI6683.termNameDict.keys():
-            mode = getattr(self, termName.lower()+'_mode').data()
-            if mode != 'DISABLED':
-                term = NI6683.niLib.nisync_open_terminal(c_int(devType), c_int(boardId), c_int(NI6683.termNameDict[termName]), c_int(self.NISYNC_READ_NONBLOCKING))
-                print("Terminal open: ", term)
-                activeFds.append(term)
-
-        
-        status = self.NI6683_stop(activeFds)
-        if status == -1:
-            print("PROBLEM WHILE STOPPING...")
-        print("Cleaning up...") #-----------------------------Tim Robinson added code
-        for fd in activeFds:
+        fd = NI6683.ni6683Fds.get(self.nid, getattr(self, 'fd', None))
+        if fd is not None:
             try:
                 os.close(fd)
-                print("Closed terminal FD" , fd) 
-            except OSError as e:
-                #print ("Terminal FD", fd, " already closed")
+            except OSError:
                 pass
 
-        try:    
-            os.close(self.fd)
-            print("Closed Device FD" , self.fd)
-        except OSError as e:
-            #print("Device FD" , self.fd, " already closed")
-            pass
+        NI6683.ni6683Dicts.pop(self.nid, None)
+        NI6683.ni6683Fds.pop(self.nid, None)
+
+    # Stop the worker, force safe outputs, then close the original descriptors.
+    def stop(self):
+        self.debugPrint('================= PXI 6683 stop ================')
+        self.restoreInfo()
+        try:
+            self.worker_check()
+            self.force_safe_state()
+        finally:
+            self.closeInfo()
+        print("NI6683 STOPPED!")
+
+
     # AsynchStore inner class, it handles the MDSEvents geneneration triggered by hardware
     class AsynchStore(Thread):
         class nisync_timestamp_nanos(Structure):
@@ -933,9 +1092,9 @@ class NI6683(Device):
                         print ('POLL ERROR!!')
                         return
                     timestamp = self.nisync_timestamp_nanos(0,0)
+                    termName = self.nameDict.get(readyFd, 'terminal fd %d' % readyFd)
                     status = NI6683.niLib.nisync_read_timestamps_ns(c_int(readyFd), byref(timestamp), c_int(1))
-                    self.device.checkStatus(status, 'Cannot get current time')
-                    termName = self.nameDict[readyFd]
+                    self.device.checkStatus(status, 'Cannot read timestamp from ' + termName)
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
                     
                     eventRelTime = self.getRelTime(timestamp.nanos)
