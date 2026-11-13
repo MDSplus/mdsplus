@@ -41,7 +41,9 @@ def PyDoMethod(n, method, *args):
             if is_property(methodobj):
                 return methodobj
         else:
-            device = n.conglomerate_nids[0]
+            head_nid = n.nid_number - n.conglomerate_elt + 1
+            device = MDSplus.TreeNode(head_nid, n.tree, 0)
+            #device = n.conglomerate_nids[0]
             c = device.record
             model = str(c.model)
             if not isinstance(device, (MDSplus.Device,)):

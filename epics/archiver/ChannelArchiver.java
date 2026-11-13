@@ -1489,6 +1489,7 @@ public class ChannelArchiver
 	            ipPort = node.getInt();
 	           //Add check if port is in use
             }catch(Exception exc1) {
+                   System.out.println(exc1);
 	           ipPort = 9999;
             }
 	    }

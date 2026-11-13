@@ -81,7 +81,23 @@ class EPFES(Device):
 
                 self.local = 0
 
+                self.contextInitialized = False
+
+            def checkTree(self):
+                if not self.contextInitialized:
+                    t = time.time() 
+                    print("EPFES nid=%s checkTree BEGIN %.3f" % (self.device.nid, t))
+                    self.contextInitialized = True
+                    self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
+                    print("EPFES nid=%s Tree aperto dopo %.3f s" % (self.device.nid, time.time() - t))
+                    self.device = self.device.copy()
+                    print("EPFES nid=%s copy finita dopo %.3f s" % (self.device.nid, time.time() - t))
+
+
+
             def doAllOn(self):
+
+                self.checkTree()
 
                 try:
                     ip = self.device.getNode('IP').data()
@@ -123,6 +139,8 @@ class EPFES(Device):
 
             def doAllOff(self):
 
+                self.checkTree()
+
                 try:
                     ip = self.device.getNode('IP').data()
                 except:
@@ -162,6 +180,8 @@ class EPFES(Device):
                 sock.close()
 
             def doProgram(self):
+
+                self.checkTree()
 
                 now = datetime.datetime.now()
 
@@ -643,7 +663,12 @@ class EPFES(Device):
 
             del EPFES.workers[self.nid]
 
-        evt = self.MyEvent(evtName, self.copy())
+        t = time.time()
+        print("EPFES nid=%s creazione worker BEGIN %.3f" % (self.nid, t))
+        device_copy = self.copy()
+        print("EPFES nid=%s INIT copy finita dopo %.3f s" % (self.nid, time.time() - t))
+        evt = self.MyEvent(evtName, device_copy)
+        print("EPFES nid=%s creazione worker END dopo %.3f s" % (self.nid, time.time() - t))
 
         EPFES.workers[self.nid] = evt
 

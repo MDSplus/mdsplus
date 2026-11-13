@@ -117,13 +117,15 @@ class PI_SCT320(Device):
     WIDTH_NUM = 3
 
     def sendCommand(self, dev, cmd, out):
-        dev.write(cmd+'\r')
+        print(cmd)
+        dev.write((cmd+'\r').encode('utf-8'))
         time.sleep(1)
         count = 0
         while True:
-            answer = dev.read(5000)
+            answer = dev.read(5000).decode('utf-8')
             for line in answer.splitlines():
                 line = line.strip()
+                print(line)
                 #for ch in bytearray(line): print hex(ch),
                 ls = line.split()
                 if len(ls) == 0:
@@ -424,7 +426,9 @@ class PI_SCT320(Device):
 # Read sensor values
 
         try:
-            height = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:HEIGHT')
+           # height = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:HEIGHT')
+           #  height = self.getTree().tdiExecute(detector+'.SENSOR.INFORMATION.ACTIVE:HEIGHT')
+            height = self.getTree().getNode(detector+'.SENSOR.INFORMATION.ACTIVE:HEIGHT').data()
             print (height)
             self.sensor_height.putData(height)
         except Exception as e:
@@ -433,7 +437,8 @@ class PI_SCT320(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            width = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:WIDTH')
+           # width = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:WIDTH')
+            width = self.getTree().getNode(detector+'.SENSOR.INFORMATION.ACTIVE:WIDTH').data()
             print (width)
             self.sensor_width.putData(width)
         except Exception as e:
@@ -442,8 +447,8 @@ class PI_SCT320(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            pixelHeigh = Data.execute(
-                detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
+       #     pixelHeigh = Data.execute(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
+            pixelHeigh = self.getTree().getNode(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT').data()
             print (pixelHeigh)
             self.sensor_pixel_height.putData(pixelHeigh)
         except Exception as e:
@@ -452,8 +457,8 @@ class PI_SCT320(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            pixelWidth = Data.execute(
-                detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
+          #  pixelWidth = Data.execute(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
+            pixelWidth = self.getTree().getNode(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT').data()
             print (pixelWidth)
             self.sensor_pixel_width.putData(pixelWidth)
         except Exception as e:
