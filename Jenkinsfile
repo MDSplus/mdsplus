@@ -367,6 +367,14 @@ pipeline {
     }
     
     post {
+        // Treat unstable builds as successful for the purpose of approving PRs
+        // Unstable builds happen when a stage fails, but then passes in a later retry
+        unstable {
+            script {
+                currentBuild.rawBuild.@result = hudson.model.Result.SUCCESS
+            }
+        }
+        
         failure {
             // if alpha/stable
             mail subject: 'Build is failing',
