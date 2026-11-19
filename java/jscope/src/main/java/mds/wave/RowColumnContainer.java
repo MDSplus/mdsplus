@@ -714,6 +714,7 @@ public class RowColumnContainer extends JComponent
 		final int curr_rows[] = this.rows;// row_col_layout.GetRows();
 		int col;
 		int idx_w = getGridComponentCount() - 1;
+		System.out.println("NUMERO INIZIALE COMPONENTI: "+idx_w);
 		Btm b;
 		int idx = 0;
 		if (curr_rows.length > rows.length)
@@ -763,7 +764,7 @@ public class RowColumnContainer extends JComponent
 							add(c[idx++], idx_w);
 							add(b = new Btm(), 0);
 							setListener(b);
-							idx_w++;
+							idx_w+=2;
 						}
 					}
 				}
