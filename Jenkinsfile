@@ -65,7 +65,7 @@ def testStage(os, retries) {
 
     return {
         stage("Build & Test (Debug)") {
-            retry ${retries} {
+            retry(retries) {
                 try {
                     def threads = getNumThreads()
                     sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=Debug -DRELEASE_TAG=${env.RELEASE_TAG} --build --test --output-junit ${extraArgs}"
@@ -77,7 +77,7 @@ def testStage(os, retries) {
         }
 
         stage("Build & Test (Release)") {
-            retry ${retries} {
+            retry(retries) {
                 try {
                     def threads = getNumThreads()
                     sh "deploy/build.py -j${threads} --os=${os} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRELEASE_TAG=${env.RELEASE_TAG} --build --test --output-junit --junit-suite-name '${os}-release' ${extraArgs}"
