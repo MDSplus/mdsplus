@@ -58,7 +58,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv, int t
       continue;
     } // only exception from here on
     ssize_t received = bptr - (char *)buffer;
-    if (ans < 0)
+    if (ans < 0 || ((ans == 0) && (errno == ETIMEDOUT)))
     {
       MDSERR(CON_PRI " error %ld/%ld", CON_VAR(c),
              (long)received, (long)(received + bytes_to_recv));
@@ -116,7 +116,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
     unsigned long dlen;
     msg = malloc(msglen);
     msg->h = header;
-    *status = get_bytes_to(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
+    *status = get_bytes_to(c, msg->bytes, msglen - sizeof(MsgHdr), 10000);
     if (IS_OK(*status) && IsCompressed(header.client_type))
     {
       Message *m;
