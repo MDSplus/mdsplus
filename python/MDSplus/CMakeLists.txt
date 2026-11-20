@@ -23,4 +23,6 @@ install(
     PATTERN "tests" EXCLUDE
     PATTERN "*.pyc" EXCLUDE
     PATTERN "__pycache__" EXCLUDE
+    PATTERN "build" EXCLUDE
+    PATTERN "*.egg-info" EXCLUDE
 )
