@@ -117,8 +117,7 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
   INIT_STATUS;
   array_coeff arr = {1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAX_DIMS, 0, 0, {0}};
   array_int cvt = {sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
-  struct TdiFunctionStruct *fun_ptr =
-      (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
+  struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp = EMPTY_XD;
   length_t length;
   dtype_t dtype;
@@ -231,10 +230,9 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 {
   INIT_STATUS;
   static const int i0 = 0, i1 = 1;
-  static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S,
-                                         (char *)&i0};
+  static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S,(char *)&i0};
   static const struct descriptor con1 = {sizeof(int), DTYPE_L, CLASS_S,
-                                         (char *)&i1};
+    (char *)&i1};
   int i, n;
 
 #define LoadRamp(type)                    \
@@ -262,21 +260,37 @@ int Tdi3Ramp(struct descriptor *out_ptr)
   N_ELEMENTS(out_ptr, n);
   switch (out_ptr->dtype)
   {
-  case DTYPE_B:
-    LoadRamp(int8_t) case DTYPE_BU : LoadRamp(uint8_t) case DTYPE_W
-        : LoadRamp(int16_t) case DTYPE_WU : LoadRamp(uint16_t) case DTYPE_L
-        : LoadRamp(int32_t) case DTYPE_LU : LoadRamp(uint32_t) case DTYPE_Q
-        : LoadRamp(int64_t) case DTYPE_QU : LoadRamp(uint64_t) case DTYPE_F
-        : LoadRampF(float, DTYPE_F, DTYPE_NATIVE_FLOAT) case DTYPE_FS
-        : LoadRampF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT) case DTYPE_D
-        : LoadRampF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE) case DTYPE_G
-        : LoadRampF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE) case DTYPE_FT
-        : LoadRampF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_B:
+      LoadRamp(int8_t); 
+    case DTYPE_BU : 
+      LoadRamp(uint8_t); 
+    case DTYPE_W: 
+      LoadRamp(int16_t); 
+    case DTYPE_WU : 
+      LoadRamp(uint16_t); 
+    case DTYPE_L: 
+      LoadRamp(int32_t); 
+    case DTYPE_LU : 
+      LoadRamp(uint32_t); 
+    case DTYPE_Q: 
+      LoadRamp(int64_t); 
+    case DTYPE_QU : 
+      LoadRamp(uint64_t); 
+    case DTYPE_F: 
+      LoadRampF(float, DTYPE_F, DTYPE_NATIVE_FLOAT); 
+    case DTYPE_FS: 
+      LoadRampF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT); 
+    case DTYPE_D: 
+      LoadRampF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE); 
+    case DTYPE_G: 
+      LoadRampF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE); 
+    case DTYPE_FT: 
+      LoadRampF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE);
           /**********************************************************
           WARNING this depends on order of operations in ADD routine.
           Make a zero and a one. Add 1 to this starter, but offset.
           **********************************************************/
-          default:
+    default:
     {
       struct descriptor new = *out_ptr;
       new.class = CLASS_S;
@@ -300,7 +314,7 @@ int Tdi3Ramp(struct descriptor *out_ptr)
     }
     break;
   }
-  return status;
+  return status;;
 }
 
 /*---------------------------------------------------------------------
@@ -432,7 +446,6 @@ int Tdi3Random(struct descriptor_a *out_ptr)
 int Tdi3Zero(struct descriptor_a *out_ptr)
 {
   static const int i0 = 0;
-  static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S,
-                                         (char *)&i0};
+  static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S, (char *)&i0};
   return TdiConvert(&con0, out_ptr);
 }

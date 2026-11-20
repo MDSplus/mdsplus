@@ -431,25 +431,25 @@ extern EXPORT int TdiGetFloat(mdsdsc_t *in_ptr, float *val_ptr)
     case CLASS_D:
       switch (in_ptr->dtype)
       {
-      case DTYPE_BU:
-        *val_ptr = (float)*(unsigned char *)in_ptr->pointer;
-        break;
-      case DTYPE_B:
-        *val_ptr = (float)*(char *)in_ptr->pointer;
-        break;
-      case DTYPE_WU:
-        *val_ptr = (float)*(unsigned short *)in_ptr->pointer;
-        break;
-      case DTYPE_W:
-        *val_ptr = (float)*(short *)in_ptr->pointer;
-        break;
-      case DTYPE_LU:
-        *val_ptr = (float)*(unsigned int *)in_ptr->pointer;
-        break;
-      case DTYPE_L:
-        *val_ptr = (float)*(int *)in_ptr->pointer;
-        break;
-      default:
+        case DTYPE_BU:
+          *val_ptr = (float)*(unsigned char *)in_ptr->pointer;
+          break;
+        case DTYPE_B:
+          *val_ptr = (float)*(char *)in_ptr->pointer;
+          break;
+        case DTYPE_WU:
+          *val_ptr = (float)*(unsigned short *)in_ptr->pointer;
+          break;
+        case DTYPE_W:
+          *val_ptr = (float)*(short *)in_ptr->pointer;
+          break;
+        case DTYPE_LU:
+          *val_ptr = (float)*(unsigned int *)in_ptr->pointer;
+          break;
+        case DTYPE_L:
+          *val_ptr = (float)*(int *)in_ptr->pointer;
+          break;
+        default:
       {
         mdsdsc_t val_dsc = {sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, 0};
         val_dsc.pointer = (char *)val_ptr;
@@ -508,29 +508,29 @@ extern EXPORT int TdiGetLong(mdsdsc_t *in_ptr, int *val_ptr)
     case CLASS_D:
       switch (in_ptr->dtype)
       {
-      case DTYPE_BU:
-        *val_ptr = (int)*(unsigned char *)in_ptr->pointer;
+        case DTYPE_BU:
+          *val_ptr = (int)*(unsigned char *)in_ptr->pointer;
+          break;
+        case DTYPE_B:
+          *val_ptr = (int)*(char *)in_ptr->pointer;
+          break;
+        case DTYPE_WU:
+          *val_ptr = (int)*(unsigned short *)in_ptr->pointer;
+          break;
+        case DTYPE_W:
+          *val_ptr = (int)*(short *)in_ptr->pointer;
+          break;
+        case DTYPE_L:
+        case DTYPE_LU:
+          *val_ptr = *(int *)in_ptr->pointer;
+          break;
+        default:
+        {
+          mdsdsc_t val_dsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
+          val_dsc.pointer = (char *)val_ptr;
+          status = TdiConvert(in_ptr, &val_dsc MDS_END_ARG);
+        }
         break;
-      case DTYPE_B:
-        *val_ptr = (int)*(char *)in_ptr->pointer;
-        break;
-      case DTYPE_WU:
-        *val_ptr = (int)*(unsigned short *)in_ptr->pointer;
-        break;
-      case DTYPE_W:
-        *val_ptr = (int)*(short *)in_ptr->pointer;
-        break;
-      case DTYPE_L:
-      case DTYPE_LU:
-        *val_ptr = *(int *)in_ptr->pointer;
-        break;
-      default:
-      {
-        mdsdsc_t val_dsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
-        val_dsc.pointer = (char *)val_ptr;
-        status = TdiConvert(in_ptr, &val_dsc MDS_END_ARG);
-      }
-      break;
       }
       break;
     default:
@@ -544,14 +544,14 @@ extern EXPORT int TdiGetLong(mdsdsc_t *in_ptr, int *val_ptr)
     if (STATUS_OK)
       switch (tmp.pointer->class)
       {
-      case CLASS_S:
-      case CLASS_D:
-      case CLASS_A:
-        status = TdiGetLong(tmp.pointer, val_ptr);
-        break;
-      default:
-        status = TdiINVCLADSC;
-        break;
+        case CLASS_S:
+        case CLASS_D:
+        case CLASS_A:
+          status = TdiGetLong(tmp.pointer, val_ptr);
+          break;
+        default:
+          status = TdiINVCLADSC;
+          break;
       }
     MdsFree1Dx(&tmp, NULL);
   }
@@ -572,20 +572,20 @@ extern EXPORT int TdiGetNid(mdsdsc_t *in_ptr, int *nid_ptr)
   {
     switch (tmp.pointer->dtype)
     {
-    case DTYPE_T:
-    case DTYPE_PATH:
-    {
-      char *path = MdsDescrToCstring(tmp.pointer);
-      status = TreeFindNode(path, nid_ptr);
-      MdsFree(path);
-    }
-    break;
-    case DTYPE_NID:
-      *nid_ptr = *(unsigned int *)tmp.pointer->pointer;
+      case DTYPE_T:
+      case DTYPE_PATH:
+      {
+        char *path = MdsDescrToCstring(tmp.pointer);
+        status = TreeFindNode(path, nid_ptr);
+        MdsFree(path);
+      }
       break;
-    default:
-      status = TdiINVDTYDSC;
-      break;
+      case DTYPE_NID:
+        *nid_ptr = *(unsigned int *)tmp.pointer->pointer;
+        break;
+      default:
+        status = TdiINVDTYDSC;
+        break;
     }
     MdsFree1Dx(&tmp, NULL);
   }
@@ -627,12 +627,12 @@ int Tdi1Value(opcode_t opcode __attribute__((unused)),
   if (TDI_SELF_PTR)
     switch (TDI_SELF_PTR->dtype)
     {
-    case DTYPE_SIGNAL:
-      return MdsCopyDxXd(((mds_signal_t *)TDI_SELF_PTR)->raw, out_ptr);
-    case DTYPE_PARAM:
-      return MdsCopyDxXd(((mds_param_t *)TDI_SELF_PTR)->value, out_ptr);
-    default:
-      return TdiINVDTYDSC;
+      case DTYPE_SIGNAL:
+        return MdsCopyDxXd(((mds_signal_t *)TDI_SELF_PTR)->raw, out_ptr);
+      case DTYPE_PARAM:
+        return MdsCopyDxXd(((mds_param_t *)TDI_SELF_PTR)->value, out_ptr);
+      default:
+        return TdiINVDTYDSC;
     }
   else
     return TdiNO_SELF_PTR;
@@ -676,42 +676,42 @@ int Tdi1Units(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK)
     switch (rptr->dtype)
     {
-    case DTYPE_DIMENSION:
-      status = TdiUnits(((mds_dimension_t *)rptr)->axis, out_ptr MDS_END_ARG);
-      break;
-    case DTYPE_RANGE:
-    case DTYPE_SLOPE:
-      uni[1] = uni[0] = EMPTY_XD;
-      for (j = rptr->ndesc; --j >= 0 && STATUS_OK;)
-      {
-        if (rptr->dscptrs[j])
-          status = TdiUnits(rptr->dscptrs[j], &uni[1] MDS_END_ARG);
-        if (uni[1].pointer && STATUS_OK)
-          status = Tdi2Add(narg, uni, 0, cats, 0);
-      }
-      MdsFree1Dx(&uni[1], NULL);
-      if (uni[0].pointer)
-      {
-        MdsFree1Dx(out_ptr, NULL);
-        *out_ptr = uni[0];
-      }
-      else if (STATUS_OK)
-        status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
-      break;
-    case DTYPE_WINDOW:
-      status = TdiUnits(((struct descriptor_window *)rptr)->value_at_idx0,
+      case DTYPE_DIMENSION:
+        status = TdiUnits(((mds_dimension_t *)rptr)->axis, out_ptr MDS_END_ARG);
+        break;
+      case DTYPE_RANGE:
+      case DTYPE_SLOPE:
+        uni[1] = uni[0] = EMPTY_XD;
+        for (j = rptr->ndesc; --j >= 0 && STATUS_OK;)
+        {
+          if (rptr->dscptrs[j])
+            status = TdiUnits(rptr->dscptrs[j], &uni[1] MDS_END_ARG);
+          if (uni[1].pointer && STATUS_OK)
+            status = Tdi2Add(narg, uni, 0, cats, 0);
+        }
+        MdsFree1Dx(&uni[1], NULL);
+        if (uni[0].pointer)
+        {
+          MdsFree1Dx(out_ptr, NULL);
+          *out_ptr = uni[0];
+        }
+        else if (STATUS_OK)
+          status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
+        break;
+      case DTYPE_WINDOW:
+        status = TdiUnits(((struct descriptor_window *)rptr)->value_at_idx0,
+                          out_ptr MDS_END_ARG);
+        break;
+      case DTYPE_WITH_UNITS:
+        status = TdiData(((struct descriptor_with_units *)rptr)->units,
                         out_ptr MDS_END_ARG);
-      break;
-    case DTYPE_WITH_UNITS:
-      status = TdiData(((struct descriptor_with_units *)rptr)->units,
-                       out_ptr MDS_END_ARG);
-      break;
-    case DTYPE_WITH_ERROR:
-      status = TdiData(((mds_with_error_t *)rptr)->data, out_ptr MDS_END_ARG);
-      break;
-    default:
-      status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
-      break;
+        break;
+      case DTYPE_WITH_ERROR:
+        status = TdiData(((mds_with_error_t *)rptr)->data, out_ptr MDS_END_ARG);
+        break;
+      default:
+        status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
+        break;
     }
   MdsFree1Dx(&tmp, NULL);
   return status;
@@ -788,8 +788,7 @@ int Tdi1Validation(opcode_t opcode __attribute__((unused)),
      ******************************************/
       keep = TDI_SELF_PTR;
       TDI_SELF_PTR = (mdsdsc_xd_t *)rptr;
-      status = get_data(no_omits, ((mds_param_t *)rptr)->validation, out_ptr,
-                        TDITHREADSTATIC_VAR);
+      status = get_data(no_omits, ((mds_param_t *)rptr)->validation, out_ptr, TDITHREADSTATIC_VAR);
       TDI_SELF_PTR = keep;
       break;
     default:

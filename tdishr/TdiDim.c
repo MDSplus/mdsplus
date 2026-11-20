@@ -621,25 +621,40 @@ int Tdi3Max(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_T:
-    return TdiINVDTYDSC;
-  case DTYPE_B:
-    Operate(int8_t, *in1p > *in2p) case DTYPE_BU
-        : Operate(uint8_t, *in1p > *in2p) case DTYPE_W
-        : Operate(int16_t, *in1p > *in2p) case DTYPE_WU
-        : Operate(uint16_t, *in1p > *in2p) case DTYPE_L
-        : Operate(int32_t, *in1p > *in2p) case DTYPE_LU
-        : Operate(uint32_t, *in1p > *in2p) case DTYPE_Q
-        : Operate(int64_t, *in1p > *in2p) case DTYPE_QU
-        : Operate(uint64_t, *in1p > *in2p) case DTYPE_O
-        : Operate(octaword, TdiGtO(in1p, in2p, 1)) case DTYPE_OU
-        : Operate(octaword, TdiGtO(in1p, in2p, 0)) case DTYPE_F
-        : OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a > b) case DTYPE_FS
-        : OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a > b) case DTYPE_G
-        : OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a > b) case DTYPE_D
-        : OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a > b) case DTYPE_FT
-        : OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a > b) default
-        : return TdiINVDTYDSC;
+    case DTYPE_T:
+      return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, *in1p > *in2p);
+    case DTYPE_BU:
+      Operate(uint8_t, *in1p > *in2p);
+    case DTYPE_W:
+      Operate(int16_t, *in1p > *in2p);
+    case DTYPE_WU:
+      Operate(uint16_t, *in1p > *in2p);
+    case DTYPE_L:
+      Operate(int32_t, *in1p > *in2p);
+    case DTYPE_LU:
+      Operate(uint32_t, *in1p > *in2p);
+    case DTYPE_Q:
+      Operate(int64_t, *in1p > *in2p);
+    case DTYPE_QU:
+      Operate(uint64_t, *in1p > *in2p);
+    case DTYPE_O:
+      Operate(octaword, TdiGtO(in1p, in2p, 1));
+    case DTYPE_OU:
+      Operate(octaword, TdiGtO(in1p, in2p, 0));
+    case DTYPE_F:
+      OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a > b);
+    case DTYPE_FS:
+      OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a > b);
+    case DTYPE_G:
+      OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a > b);
+    case DTYPE_D:
+      OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a > b);
+    case DTYPE_FT:
+      OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a > b);
+    default:
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -649,25 +664,40 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_T:
-    return TdiINVDTYDSC;
-  case DTYPE_B:
-    Operate(int8_t, *in1p < *in2p) case DTYPE_BU
-        : Operate(uint8_t, *in1p < *in2p) case DTYPE_W
-        : Operate(int16_t, *in1p < *in2p) case DTYPE_WU
-        : Operate(uint16_t, *in1p < *in2p) case DTYPE_L
-        : Operate(int32_t, *in1p < *in2p) case DTYPE_LU
-        : Operate(uint32_t, *in1p < *in2p) case DTYPE_Q
-        : Operate(int64_t, *in1p < *in2p) case DTYPE_QU
-        : Operate(uint64_t, *in1p < *in2p) case DTYPE_O
-        : Operate(octaword, TdiLtO(in1p, in2p, 1)) case DTYPE_OU
-        : Operate(octaword, TdiLtO(in1p, in2p, 0)) case DTYPE_F
-        : OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a < b) case DTYPE_FS
-        : OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a < b) case DTYPE_G
-        : OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a < b) case DTYPE_D
-        : OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a < b) case DTYPE_FT
-        : OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a < b) default
-        : return TdiINVDTYDSC;
+    case DTYPE_T:
+      return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, *in1p < *in2p);
+    case DTYPE_BU:
+      Operate(uint8_t, *in1p < *in2p);
+    case DTYPE_W:
+      Operate(int16_t, *in1p < *in2p);
+    case DTYPE_WU:
+      Operate(uint16_t, *in1p < *in2p);
+    case DTYPE_L:
+      Operate(int32_t, *in1p < *in2p);
+    case DTYPE_LU:
+      Operate(uint32_t, *in1p < *in2p);
+    case DTYPE_Q:
+      Operate(int64_t, *in1p < *in2p);
+    case DTYPE_QU:
+      Operate(uint64_t, *in1p < *in2p);
+    case DTYPE_O:
+      Operate(octaword, TdiLtO(in1p, in2p, 1));
+    case DTYPE_OU:
+      Operate(octaword, TdiLtO(in1p, in2p, 0));
+    case DTYPE_F:
+      OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a < b);
+    case DTYPE_FS:
+      OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a < b);
+    case DTYPE_G:
+      OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a < b);
+    case DTYPE_D:
+      OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a < b);
+    case DTYPE_FT:
+      OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a < b);
+    default:
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -804,13 +834,23 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_BU:
-  case DTYPE_B:
-    Operate(uint8_t, int8_t) case DTYPE_WU : case DTYPE_W
-        : Operate(uint16_t, int16_t) case DTYPE_LU : case DTYPE_L
-        : Operate(uint32_t, int32_t) case DTYPE_QU : case DTYPE_Q
-        : Operate(uint64_t, int64_t) case DTYPE_OU : case DTYPE_O
-        : Operate128(uint128, ishft) default : return TdiINVDTYDSC;
+    case DTYPE_BU:
+    case DTYPE_B:
+      Operate(uint8_t, int8_t); 
+    case DTYPE_WU: 
+    case DTYPE_W:
+      Operate(uint16_t, int16_t);
+    case DTYPE_LU: 
+    case DTYPE_L:
+      Operate(uint32_t, int32_t);
+    case DTYPE_QU: 
+    case DTYPE_Q:
+      Operate(uint64_t, int64_t);
+    case DTYPE_OU: 
+    case DTYPE_O:
+      Operate128(uint128, ishft);
+    default: 
+    return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -865,17 +905,28 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, int8_t, >>) case DTYPE_BU
-        : Operate(uint8_t, int8_t, >>) case DTYPE_W
-        : Operate(int16_t, int16_t, >>) case DTYPE_WU
-        : Operate(uint16_t, int16_t, >>) case DTYPE_L
-        : Operate(int32_t, int32_t, >>) case DTYPE_LU
-        : Operate(uint32_t, int32_t, >>) case DTYPE_Q
-        : Operate(int64_t, int64_t, >>) case DTYPE_QU
-        : Operate(uint64_t, int64_t, >>) case DTYPE_O
-        : Operate128(int128, rshft) case DTYPE_OU
-        : Operate128(uint128, rshft) default : return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, int8_t, >>); 
+    case DTYPE_BU:
+      Operate(uint8_t, int8_t, >>);
+    case DTYPE_W:
+      Operate(int16_t, int16_t, >>);
+    case DTYPE_WU:
+      Operate(uint16_t, int16_t, >>);
+    case DTYPE_L:
+      Operate(int32_t, int32_t, >>);
+    case DTYPE_LU:
+      Operate(uint32_t, int32_t, >>);
+    case DTYPE_Q:
+      Operate(int64_t, int64_t, >>);
+    case DTYPE_QU:
+      Operate(uint64_t, int64_t, >>);
+    case DTYPE_O:
+      Operate128(int128, rshft);
+    case DTYPE_OU:
+      Operate128(uint128, rshft);
+    default : 
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -885,17 +936,28 @@ int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2,
 {
   SetupArgs switch (in1->dtype)
   {
-  case DTYPE_B:
-    Operate(int8_t, int8_t, <<) case DTYPE_BU
-        : Operate(uint8_t, int8_t, <<) case DTYPE_W
-        : Operate(int16_t, int16_t, <<) case DTYPE_WU
-        : Operate(uint16_t, int16_t, <<) case DTYPE_L
-        : Operate(int32_t, int32_t, <<) case DTYPE_LU
-        : Operate(uint32_t, int32_t, <<) case DTYPE_Q
-        : Operate(int64_t, int64_t, <<) case DTYPE_QU
-        : Operate(uint64_t, int64_t, <<) case DTYPE_O
-        : Operate128(int128, lshft) case DTYPE_OU
-        : Operate128(uint128, lshft) default : return TdiINVDTYDSC;
+    case DTYPE_B:
+      Operate(int8_t, int8_t, <<);
+    case DTYPE_BU:
+      Operate(uint8_t, int8_t, <<);
+    case DTYPE_W:
+      Operate(int16_t, int16_t, <<);
+    case DTYPE_WU:
+      Operate(uint16_t, int16_t, <<);
+    case DTYPE_L:
+      Operate(int32_t, int32_t, <<);
+    case DTYPE_LU:
+      Operate(uint32_t, int32_t, <<);
+    case DTYPE_Q:
+      Operate(int64_t, int64_t, <<);
+    case DTYPE_QU:
+      Operate(uint64_t, int64_t, <<);
+    case DTYPE_O:
+      Operate128(int128, lshft);
+    case DTYPE_OU:
+      Operate128(uint128, lshft);
+    default : 
+      return TdiINVDTYDSC;
   }
   return 1;
 }
