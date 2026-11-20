@@ -82,6 +82,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #define DEBUG
 #include <_mdsshr.h>
+#include "treefileio.h"
 
 static inline char *replaceBackslashes(char *filename)
 {
@@ -1017,6 +1018,9 @@ typedef struct
   int conid;
   int fd;
   int enhanced;
+  const TreeFileIo *io; /* backend for a local fd (NULL for remote/conid>=0).
+                           Carries the open/read/write/lseek/lock vtable used
+                           to service this descriptor. */
 } fdinfo_t;
 
 static struct fd_info_struct
@@ -1065,11 +1069,129 @@ char *ParseFile(char *filename, char **hostpart, char **filepart)
   return tmp;
 }
 
+/* ---- Pluggable tree-file IO backend (see treefileio.h) ---------------- */
+
+static int default_open(const char *filename, int options, mode_t mode)
+{
+  return open(filename, options, mode);
+}
+static int default_close(int fd) { return close(fd); }
+static ssize_t default_read(int fd, void *buff, size_t count)
+{
+  return read(fd, buff, count);
+}
+static ssize_t default_write(int fd, const void *buff, size_t count)
+{
+  return write(fd, buff, count);
+}
+static off_t default_lseek(int fd, off_t offset, int whence)
+{
+  return lseek(fd, offset, whence);
+}
+/* default_lock: the fcntl-based local lock. Defined below io_lock_local to keep
+ * the lock code together; forward-declared here because default_tree_file_io is
+ * initialized just below. */
+static int default_lock(int fd, off_t offset, size_t size, int mode_in,
+                        int *deleted);
+
+static const TreeFileIo default_tree_file_io = {
+    default_open, default_close, default_read,
+    default_write, default_lseek, default_lock,
+    /* .mmap_capable = */ 1};
+
+/* Per-scheme cache. Negative results (NULL io) are cached too, so an unknown
+ * scheme is only probed once. */
+static struct backend_cache_entry
+{
+  char *scheme; /* uppercased, no "://" */
+  const TreeFileIo *io;
+} *g_backends = NULL;
+static int g_nbackends = 0;
+static pthread_mutex_t g_backends_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static const TreeFileIo *load_backend(const char *scheme_upper)
+{
+  char *image = malloc(strlen(scheme_upper) + 12); /* "MdsTreeFile" (11) + NUL */
+  strcpy(image, "MdsTreeFile");
+  strcat(image, scheme_upper);
+  const TreeFileIo *(*rtn)(void) = NULL;
+  int status = LibFindImageSymbol_C(image, "FileIo", (void **)&rtn);
+  free(image);
+  if (STATUS_OK && rtn)
+    return rtn();
+  return NULL;
+}
+
+const TreeFileIo *GetTreeFileIo(const char *filename)
+{
+  const char *sep = filename ? strstr(filename, "://") : NULL;
+  if (!sep || sep == filename)
+    return &default_tree_file_io; /* no scheme -> default path */
+  size_t len = (size_t)(sep - filename);
+  char *scheme = malloc(len + 1);
+  size_t i;
+  for (i = 0; i < len; i++)
+    scheme[i] = (char)toupper((unsigned char)filename[i]);
+  scheme[len] = '\0';
+
+  const TreeFileIo *io = NULL;
+  int found = 0;
+  pthread_mutex_lock(&g_backends_lock);
+  for (i = 0; i < (size_t)g_nbackends; i++)
+  {
+    if (strcmp(g_backends[i].scheme, scheme) == 0)
+    {
+      io = g_backends[i].io;
+      found = 1;
+      break;
+    }
+  }
+  pthread_mutex_unlock(&g_backends_lock);
+
+  if (!found)
+  {
+    /* Resolve OUTSIDE the lock: load_backend() calls dlopen, whose library
+     * constructors could re-enter GetTreeFileIo and deadlock the non-recursive
+     * mutex. */
+    const TreeFileIo *loaded = load_backend(scheme); /* may be NULL */
+    pthread_mutex_lock(&g_backends_lock);
+    /* Re-scan: another thread may have inserted this scheme while we loaded. */
+    for (i = 0; i < (size_t)g_nbackends; i++)
+    {
+      if (strcmp(g_backends[i].scheme, scheme) == 0)
+      {
+        io = g_backends[i].io;
+        found = 1;
+        break;
+      }
+    }
+    if (!found)
+    {
+      /* Cache the result (negative results too). On realloc failure, skip
+       * caching rather than clobber the table; the caller still gets a usable
+       * result this call. */
+      struct backend_cache_entry *tmp = realloc(
+          g_backends, sizeof(*g_backends) * (size_t)(g_nbackends + 1));
+      if (tmp)
+      {
+        g_backends = tmp;
+        g_backends[g_nbackends].scheme = strdup(scheme);
+        g_backends[g_nbackends].io = loaded;
+        g_nbackends++;
+      }
+      io = loaded;
+    }
+    pthread_mutex_unlock(&g_backends_lock);
+  }
+  free(scheme);
+  return io; /* NULL for a URL scheme => fail-closed */
+}
+
 static pthread_mutex_t fds_lock = PTHREAD_MUTEX_INITIALIZER;
 #define FDS_LOCK MUTEX_LOCK_PUSH(&fds_lock)
 #define FDS_UNLOCK MUTEX_LOCK_POP(&fds_lock)
 
-int ADD_FD(int fd, int conid, int enhanced)
+int ADD_FD(int fd, int conid, int enhanced, const TreeFileIo *io)
 {
   int idx;
   FDS_LOCK;
@@ -1081,6 +1203,7 @@ int ADD_FD(int fd, int conid, int enhanced)
   FDS[idx].i.conid = conid;
   FDS[idx].i.fd = fd;
   FDS[idx].i.enhanced = enhanced;
+  FDS[idx].i.io = io;
   FDS_UNLOCK;
   return idx + 1;
 }
@@ -1095,7 +1218,7 @@ inline static fdinfo_t RM_FD(int idx)
     FDS[idx - 1].in_use = B_FALSE;
   }
   else
-    fdinfo = (fdinfo_t){-1, -1, -1};
+    fdinfo = (fdinfo_t){-1, -1, -1, NULL};
   FDS_UNLOCK;
   return fdinfo;
 }
@@ -1107,7 +1230,7 @@ inline static fdinfo_t GET_FD(int idx)
   if (idx > 0 && idx <= ALLOCATED_FDS && FDS[idx - 1].in_use)
     fdinfo = FDS[idx - 1].i;
   else
-    fdinfo = (fdinfo_t){-1, -1, -1};
+    fdinfo = (fdinfo_t){-1, -1, -1, NULL};
   FDS_UNLOCK;
   return fdinfo;
 }
@@ -1132,6 +1255,18 @@ EXPORT int MDS_IO_FD(int idx)
            : -1;
   FDS_UNLOCK;
   return fd;
+}
+
+EXPORT int MDS_IO_MMAP_CAPABLE(int idx)
+{
+  int cap;
+  FDS_LOCK;
+  if (idx > 0 && idx <= ALLOCATED_FDS && FDS[idx - 1].in_use && FDS[idx - 1].i.io)
+    cap = FDS[idx - 1].i.io->mmap_capable;
+  else
+    cap = 0; /* remote (conid>=0, io==NULL) or invalid: not mmap-able */
+  FDS_UNLOCK;
+  return cap;
 }
 
 static int (*SendArg)() = NULL;
@@ -1263,6 +1398,7 @@ EXPORT int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
   INIT_AND_FREE_ON_EXIT(char *, filename);
   INIT_AND_FREE_ON_EXIT(char *, tmp);
   int conid = -1, fd = -1, enhanced = 0;
+  const TreeFileIo *io = NULL;
   filename = replaceBackslashes(strdup(filename_in));
   char *hostpart, *filepart;
   tmp = ParseFile(filename, &hostpart, &filepart);
@@ -1270,15 +1406,15 @@ EXPORT int MDS_IO_OPEN(char *filename_in, int options, mode_t mode)
     fd = io_open_remote(hostpart, filepart, options, mode, &conid, &enhanced);
   else
   {
-
-    fd = open(filename, options | O_BINARY | O_RANDOM, mode);
+    io = GetTreeFileIo(filename);
+    fd = io ? io->open(filename, options | O_BINARY | O_RANDOM, mode) : -1;
     MDSDBG("fd=%d, filename='%s'", fd, filename);
 #ifndef _WIN32
     if ((fd >= 0) && ((options & O_CREAT) != 0))
       set_mdsplus_file_protection(filename);
 #endif
   }
-  idx = fd < 0 ? fd : ADD_FD(fd, conid, enhanced);
+  idx = fd < 0 ? fd : ADD_FD(fd, conid, enhanced, io);
   FREE_NOW(tmp);
   FREE_NOW(filename);
   return idx;
@@ -1313,7 +1449,7 @@ EXPORT int MDS_IO_CLOSE(int idx)
   if (i.conid >= 0)
     return io_close_remote(i.conid, i.fd);
   MDSDBG("I fd=%d", i.fd);
-  return close(i.fd);
+  return (i.io ? i.io : &default_tree_file_io)->close(i.fd);
 }
 
 inline static off_t io_lseek_remote(int conid, int fd, off_t offset,
@@ -1351,7 +1487,7 @@ EXPORT off_t MDS_IO_LSEEK(int idx, off_t offset, int whence)
     return -1;
   if (i.conid >= 0)
     return io_lseek_remote(i.conid, i.fd, offset, whence);
-  return lseek(i.fd, offset, whence);
+  return (i.io ? i.io : &default_tree_file_io)->lseek(i.fd, offset, whence);
 }
 
 inline static ssize_t io_write_remote(int conid, int fd, void *buff,
@@ -1391,7 +1527,7 @@ EXPORT ssize_t MDS_IO_WRITE(int idx, void *buff, size_t count)
 #ifdef USE_TREE_PERF
   TreePerfWrite(count);
 #endif
-  return write(i.fd, buff, (uint32_t)count);
+  return (i.io ? i.io : &default_tree_file_io)->write(i.fd, buff, count);
 }
 
 inline static ssize_t io_read_remote(int conid, int fd, void *buff,
@@ -1427,7 +1563,7 @@ EXPORT ssize_t MDS_IO_READ(int idx, void *buff, size_t count)
 #ifdef USE_TREE_PERF
   TreePerfRead(count);
 #endif
-  return read(i.fd, buff, count);
+  return (i.io ? i.io : &default_tree_file_io)->read(i.fd, buff, count);
 }
 
 inline static ssize_t io_read_x_remote(int conid, int fd, off_t offset,
@@ -1480,12 +1616,13 @@ EXPORT ssize_t MDS_IO_READ_X(int idx, off_t offset, void *buff, size_t count,
     return ans;
   }
   ssize_t ans;
+  const TreeFileIo *io = i.io ? i.io : &default_tree_file_io;
   IO_RDLOCK_FILE(io_lock_local, i, offset, count, deleted);
-  lseek(i.fd, offset, SEEK_SET);
+  io->lseek(i.fd, offset, SEEK_SET);
 #ifdef USE_TREE_PERF
   TreePerfRead(count);
 #endif
-  ans = read(i.fd, buff, (unsigned int)count);
+  ans = io->read(i.fd, buff, (unsigned int)count);
   IO_UNLOCK_FILE();
   return ans;
 }
@@ -1514,13 +1651,11 @@ inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size,
   return ret;
 }
 
-static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
-                         int mode_in, int *deleted)
+static int default_lock(int fd, off_t offset, size_t size, int mode_in,
+                        int *deleted)
 {
-
   MDSDBG("I fd=%d, offset=%" PRIu64 ", size=%" PRIu64 ", mode=%d",
-         fdinfo.fd, offset, size, mode_in);
-  int fd = fdinfo.fd;
+         fd, offset, size, mode_in);
   int err;
   int mode = mode_in & MDS_IO_LOCK_MASK;
   int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
@@ -1539,7 +1674,6 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
                 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait)
       flags |= LOCKFILE_FAIL_IMMEDIATELY;
-    // UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
     err = !LockFileEx(h, flags, 0, (DWORD)size, 0, &overlapped);
   }
   else
@@ -1560,7 +1694,7 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
       (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
   flock.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock.l_len = (mode == 0) ? 0 : size;
-  static int use_ofd_locks = 1; // atomic?
+  static int use_ofd_locks = 1;
   if (use_ofd_locks == 1)
   {
     flock.l_pid = 0;
@@ -1586,8 +1720,15 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
     *deleted = stat.st_nlink <= 0;
 #endif
   MDSDBG("O fd=%d, offset=%" PRIu64 ", size=%" PRIu64 ", mode=%d, err=%d",
-         fdinfo.fd, (uint64_t)offset, (uint64_t)size, mode_in, err);
+         fd, (uint64_t)offset, (uint64_t)size, mode_in, err);
   return err ? TreeLOCK_FAILURE : TreeSUCCESS;
+}
+
+static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
+                         int mode_in, int *deleted)
+{
+  const TreeFileIo *io = fdinfo.io ? fdinfo.io : &default_tree_file_io;
+  return io->lock(fdinfo.fd, offset, size, mode_in, deleted);
 }
 
 EXPORT int MDS_IO_LOCK(int idx, off_t offset, size_t size, int mode_in,
@@ -1857,7 +1998,7 @@ inline static int io_open_one_remote(char *host, char *filepath,
           status = *fd == -1 ? TreeFAILURE : TreeSUCCESS;
           if ((*fd >= 0) && edit && (type == TREE_TREEFILE_TYPE))
           {
-            if (IS_NOT_OK(io_lock_remote((fdinfo_t){*conid, *fd, *enhanced}, 1, 1,
+            if (IS_NOT_OK(io_lock_remote((fdinfo_t){*conid, *fd, *enhanced, NULL}, 1, 1,
                                          MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,
                                          0)))
             {
@@ -1917,6 +2058,7 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
   int enhanced = 0;
   int conid = -1;
   int fd = -1;
+  const TreeFileIo *io = NULL;
   char treename[13];
   char *hostpart, *filepart;
   size_t i;
@@ -1955,6 +2097,7 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
       free(fullpath);
       if (hostpart)
       {
+        io = NULL;
         fullpath = NULL;
         status =
             io_open_one_remote(hostpart, filepart, treename, shot, type, new,
@@ -1972,12 +2115,13 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
         fullpath = generate_fullpath(filepart, treename, shot, type);
         int options, mode;
         getOptionsMode(new, edit, &options, &mode);
-        fd = open(fullpath, options | O_BINARY | O_RANDOM, mode);
+        io = GetTreeFileIo(fullpath);
+        fd = io ? io->open(fullpath, options | O_BINARY | O_RANDOM, mode) : -1;
         if (type == TREE_DIRECTORY)
         {
           if (fd != -1)
           {
-            close(fd);
+            io->close(fd);
             fd = -3;
           }
         }
@@ -1989,8 +2133,12 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
 #endif
           if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE))
           {
-            if (IS_NOT_OK(io_lock_local((fdinfo_t){conid, fd, enhanced}, 1, 1,
-                                        MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)))
+            /* Probe editability with the DEFAULT (real fcntl) lock, not the
+             * fd's backend lock: a URL backend's pseudo-fd makes fcntl fail
+             * with EBADF, correctly surfacing TreeEDITING for read-only
+             * sources, while a real local file locks normally. */
+            if (IS_NOT_OK(default_tree_file_io.lock(fd, 1, 1,
+                          MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)))
             {
               status = TreeEDITING;
               fd = -2;
@@ -2014,7 +2162,7 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
     }
     free(filepath);
   }
-  *idx = fd < 0 ? fd : ADD_FD(fd, conid, enhanced);
+  *idx = fd < 0 ? fd : ADD_FD(fd, conid, enhanced, io);
   FREE_NOW(fullpath);
   return status;
 }

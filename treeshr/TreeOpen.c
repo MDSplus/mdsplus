@@ -279,7 +279,6 @@ int _TreeClose(void **dbid, char const *tree, int shot)
   PINO_DATABASE *prev_db;
   status = TreeNOT_OPEN;
 
-  // printf("TREE CLOSE\n");
   if (dblist && *dblist)
   {
     if (tree)
@@ -424,6 +423,8 @@ static int close_top_tree(PINO_DATABASE *dblist, int call_hook)
                      (size_t)local_info->alq * 512);
 #endif
             free(local_info->vm_addr);
+            local_info->vm_addr = NULL;
+            local_info->section_addr[0] = NULL;
           }
           TreeWait(local_info);
           if (local_info->data_file)
@@ -999,7 +1000,7 @@ int OpenOne(TREE_INFO *info, TREE_INFO *root, tree_type_t type, int new,
     else
     {
 #ifndef _WIN32
-      info->mapped = (MDS_IO_ID(fd) == -1);
+      info->mapped = (MDS_IO_ID(fd) == -1) && MDS_IO_MMAP_CAPABLE(fd);
 #ifdef __APPLE__
       /* from python-mmap Issue #11277: fsync(2) is not enough on OS X - a
            special, OS X specific fcntl(2) is necessary to force DISKSYNC and
@@ -1049,6 +1050,7 @@ static int MapTree(TREE_INFO *info, TREE_INFO *root, int edit_flag)
       nomap = !info->mapped;
     }
   }
+
   if (status == TreeSUCCESS)
     status = MapFile(fd, info, nomap);
   return status;
@@ -1089,7 +1091,6 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
   First we get virtual memory for the tree to
   be mapped into.
   ********************************************/
-
   status = GetVmForTree(info, nomap);
   if (status == TreeSUCCESS)
   {
@@ -1149,7 +1150,11 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
       status = TreeSUCCESS;
     }
     else
+    {
       free(info->vm_addr);
+      info->vm_addr = NULL;
+      info->section_addr[0] = NULL;
+    }
   }
   return status;
 }

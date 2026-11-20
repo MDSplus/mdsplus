@@ -943,6 +943,7 @@ extern int tree_put_dsc(PINO_DATABASE *dbid, TREE_INFO *info, int nid,
 
 extern int MDS_IO_ID(int fd);
 extern int MDS_IO_FD(int fd);
+extern int MDS_IO_MMAP_CAPABLE(int fd);
 #ifdef _WIN32
 #ifndef HAVE_PTHREAD_H
 #define ssize_t int64_t

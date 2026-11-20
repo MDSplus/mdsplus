@@ -2,6 +2,7 @@
 set(_test_source_list
     TreeDeleteNodeTest.c
     TreeSegmentTest.c
+    TreeFileIoTest.c
 )
 
 foreach(_test_source ${_test_source_list})
@@ -32,3 +33,25 @@ foreach(_test_source ${_test_source_list})
     )
 
 endforeach()
+
+###
+### Reference TreeFileIo backend for TreeFileIoTest (scheme "testmem://")
+###
+# A loadable backend the seam test dlopens by image name "MdsTreeFileTESTMEM"
+# (-> libMdsTreeFileTESTMEM.so), exercising GetTreeFileIo() dispatch through a
+# non-default backend. It builds into CMAKE_LIBRARY_OUTPUT_DIRECTORY, which
+# mdsplus_add_test() already puts on MDSPLUS_LIBRARY_PATH / LD_LIBRARY_PATH, so
+# the loader finds it at test time with no extra environment wiring.
+add_library(
+    MdsTreeFileTESTMEM
+    MdsTreeFileTESTMEM.c
+)
+
+target_include_directories(
+    MdsTreeFileTESTMEM
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+# Ensure the backend is built before the test that loads it runs.
+add_dependencies(TreeFileIoTest MdsTreeFileTESTMEM)
