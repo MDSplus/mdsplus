@@ -7,14 +7,13 @@
     authors = [
         {name = "MDSplus Development Team", email = "mdsplusadmin@psfc.mit.edu"},
     ]
-    license = {text = "MIT License"}
+    license = "MIT"
     description = "MDSplus Python Object interface"
     classifiers = [
         "Programming Language :: Python",
         "Intended Audience :: Science/Research",
         "Environment :: Console",
         "Topic :: Scientific/Engineering",
-        "License :: OSI Approved :: MIT License",
     ]
     keywords=['physics', 'mdsplus']
     dynamic = ["version"]
@@ -28,22 +27,18 @@
     Issues = "https://github.com/MDSplus/mdsplus/issues"
 
 [project.optional-dependencies]
-    widgets = ["gtk", "gobject"]
+    widgets = ["pygobject"]
 
 [tool.setuptools]
     packages = [
         'MDSplus',
         'MDSplus.widgets', 
         'MDSplus.wsgi',
-        'MDSplus.tests',
     ]
     include-package-data = false  # use package-data below
 
 [tool.setuptools.package-dir]
     'MDSplus' = '.'
-    'MDSplus.widgets' = 'widgets'
-    'MDSplus.wsgi' = 'wsgi'
-    'MDSplus.tests' = 'tests'
     
 [tool.setuptools.package-data]
     'MDSplus.wsgi' = [ 
@@ -51,6 +46,9 @@
         'conf/*',
         'js/*',
         '*.tbl',
+    ]
+    'MDSplus.widgets' = [
+        '*.xml',
     ]
 
 [tool.setuptools.dynamic]
