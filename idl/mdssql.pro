@@ -70,7 +70,7 @@ pro MDSDbConnect, host
    endif
    if (host ne "" and host ne "local") then begin
        socket=-1
-       MdsConnect, host, socket=socket
+       MdsConnect, host, socket=socket, /database
        !MDSDB_SOCKET = socket
        !MDSDB_HOST=host
    endif
