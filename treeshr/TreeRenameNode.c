@@ -256,8 +256,8 @@ static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr,
     in the flag longword and the parent state argument
     to SET_PARENT_STATE are negative boolean logic.
   ****************************************************/
-  parent_state = _TreeIsOn(dblist, *(int *)&parent_nid) & 1;
-  status = _TreeGetNci(dblist, *(int *)&child_nid, child_itm_list);
+  parent_state = _TreeIsOn(dblist, nid_to_int(&parent_nid)) & 1;
+  status = _TreeGetNci(dblist, nid_to_int(&child_nid), child_itm_list);
   if (STATUS_OK)
   {
     child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
