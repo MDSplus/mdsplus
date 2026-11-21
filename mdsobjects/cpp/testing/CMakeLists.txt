@@ -59,6 +59,7 @@ set(_test_source_list
     MdsEventSuppression.cpp
     MdsEventTest.cpp
     MdsConnectionTest.cpp
+    MdsGetManyTest.cpp
 
     # SKIP_TEST is not supported
     # MdsCallTest.cpp
