@@ -38,12 +38,10 @@ public class DIO4Setup extends DeviceSetup
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceChoice1 = new DeviceChoice();
-        deviceField5 = new DeviceField();
         deviceChoice2 = new DeviceChoice();
+        deviceDispatch1 = new DeviceDispatch();
         jPanel5 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
         jPanel7 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
@@ -87,6 +85,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel15 = new javax.swing.JPanel();
         deviceField17 = new DeviceField();
         deviceField20 = new DeviceField();
+        deviceChoice1 = new DeviceChoice();
+        deviceChoice3 = new DeviceChoice();
         jPanel16 = new javax.swing.JPanel();
         deviceField21 = new DeviceField();
         deviceField18 = new DeviceField();
@@ -160,6 +160,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel32 = new javax.swing.JPanel();
         deviceField47 = new DeviceField();
         deviceField48 = new DeviceField();
+        deviceChoice148 = new DeviceChoice();
+        deviceChoice149 = new DeviceChoice();
         jPanel33 = new javax.swing.JPanel();
         deviceField49 = new DeviceField();
         deviceField50 = new DeviceField();
@@ -233,6 +235,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel49 = new javax.swing.JPanel();
         deviceField76 = new DeviceField();
         deviceField77 = new DeviceField();
+        deviceChoice150 = new DeviceChoice();
+        deviceChoice151 = new DeviceChoice();
         jPanel50 = new javax.swing.JPanel();
         deviceField78 = new DeviceField();
         deviceField79 = new DeviceField();
@@ -306,6 +310,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel66 = new javax.swing.JPanel();
         deviceField105 = new DeviceField();
         deviceField106 = new DeviceField();
+        deviceChoice152 = new DeviceChoice();
+        deviceChoice153 = new DeviceChoice();
         jPanel67 = new javax.swing.JPanel();
         deviceField107 = new DeviceField();
         deviceField108 = new DeviceField();
@@ -379,6 +385,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel83 = new javax.swing.JPanel();
         deviceField134 = new DeviceField();
         deviceField135 = new DeviceField();
+        deviceChoice154 = new DeviceChoice();
+        deviceChoice155 = new DeviceChoice();
         jPanel84 = new javax.swing.JPanel();
         deviceField136 = new DeviceField();
         deviceField137 = new DeviceField();
@@ -452,6 +460,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel100 = new javax.swing.JPanel();
         deviceField163 = new DeviceField();
         deviceField164 = new DeviceField();
+        deviceChoice156 = new DeviceChoice();
+        deviceChoice157 = new DeviceChoice();
         jPanel101 = new javax.swing.JPanel();
         deviceField165 = new DeviceField();
         deviceField166 = new DeviceField();
@@ -525,6 +535,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel117 = new javax.swing.JPanel();
         deviceField192 = new DeviceField();
         deviceField193 = new DeviceField();
+        deviceChoice158 = new DeviceChoice();
+        deviceChoice159 = new DeviceChoice();
         jPanel118 = new javax.swing.JPanel();
         deviceField194 = new DeviceField();
         deviceField195 = new DeviceField();
@@ -598,6 +610,8 @@ public class DIO4Setup extends DeviceSetup
         jPanel134 = new javax.swing.JPanel();
         deviceField221 = new DeviceField();
         deviceField222 = new DeviceField();
+        deviceChoice160 = new DeviceChoice();
+        deviceChoice161 = new DeviceChoice();
         jPanel135 = new javax.swing.JPanel();
         deviceField223 = new DeviceField();
         deviceField224 = new DeviceField();
@@ -658,25 +672,13 @@ public class DIO4Setup extends DeviceSetup
         deviceField1.setOffsetNid(1);
         jPanel2.add(deviceField1);
 
-        deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("MODE :");
-        deviceChoice1.setOffsetNid(2);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel2.add(deviceChoice1);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("IP :");
-        deviceField5.setOffsetNid(3);
-        deviceField5.setTextOnly(true);
-        jPanel2.add(deviceField5);
-
         deviceChoice2.setChoiceItems(new String[] {"HIGHWAY", "INTERNAL", "EXTERNAL"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("CLOCK SOURCE :");
         deviceChoice2.setOffsetNid(5);
         deviceChoice2.setUpdateIdentifier("");
         jPanel2.add(deviceChoice2);
+        jPanel2.add(deviceDispatch1);
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -688,7 +690,6 @@ public class DIO4Setup extends DeviceSetup
         deviceField3.setOffsetNid(4);
         deviceField3.setTextOnly(true);
         jPanel5.add(deviceField3);
-        jPanel5.add(deviceDispatch1);
 
         jPanel1.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
@@ -921,6 +922,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField20.setLabelString("DUTY CYCLE :");
         deviceField20.setOffsetNid(22);
         jPanel15.add(deviceField20);
+
+        deviceChoice1.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Level 1: ");
+        deviceChoice1.setOffsetNid(20);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel15.add(deviceChoice1);
+
+        deviceChoice3.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("Level 2: ");
+        deviceChoice3.setOffsetNid(21);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel15.add(deviceChoice3);
 
         deviceChannel5.getContainer().add(jPanel15);
 
@@ -1328,6 +1343,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField48.setOffsetNid(51);
         jPanel32.add(deviceField48);
 
+        deviceChoice148.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice148.setIdentifier("");
+        deviceChoice148.setLabelString("Level 1: ");
+        deviceChoice148.setOffsetNid(20);
+        deviceChoice148.setUpdateIdentifier("");
+        jPanel32.add(deviceChoice148);
+
+        deviceChoice149.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice149.setIdentifier("");
+        deviceChoice149.setLabelString("Level 2: ");
+        deviceChoice149.setOffsetNid(50);
+        deviceChoice149.setUpdateIdentifier("");
+        jPanel32.add(deviceChoice149);
+
         deviceChannel14.getContainer().add(jPanel32);
 
         deviceField49.setIdentifier("");
@@ -1733,6 +1762,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField77.setLabelString("DUTY CYCLE :");
         deviceField77.setOffsetNid(80);
         jPanel49.add(deviceField77);
+
+        deviceChoice150.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice150.setIdentifier("");
+        deviceChoice150.setLabelString("Level 1: ");
+        deviceChoice150.setOffsetNid(78);
+        deviceChoice150.setUpdateIdentifier("");
+        jPanel49.add(deviceChoice150);
+
+        deviceChoice151.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice151.setIdentifier("");
+        deviceChoice151.setLabelString("Level 2: ");
+        deviceChoice151.setOffsetNid(79);
+        deviceChoice151.setUpdateIdentifier("");
+        jPanel49.add(deviceChoice151);
 
         deviceChannel23.getContainer().add(jPanel49);
 
@@ -2140,6 +2183,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField106.setOffsetNid(109);
         jPanel66.add(deviceField106);
 
+        deviceChoice152.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice152.setIdentifier("");
+        deviceChoice152.setLabelString("Level 1: ");
+        deviceChoice152.setOffsetNid(107);
+        deviceChoice152.setUpdateIdentifier("");
+        jPanel66.add(deviceChoice152);
+
+        deviceChoice153.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice153.setIdentifier("");
+        deviceChoice153.setLabelString("Level 2: ");
+        deviceChoice153.setOffsetNid(108);
+        deviceChoice153.setUpdateIdentifier("");
+        jPanel66.add(deviceChoice153);
+
         deviceChannel32.getContainer().add(jPanel66);
 
         deviceField107.setIdentifier("");
@@ -2545,6 +2602,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField135.setLabelString("DUTY CYCLE :");
         deviceField135.setOffsetNid(138);
         jPanel83.add(deviceField135);
+
+        deviceChoice154.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice154.setIdentifier("");
+        deviceChoice154.setLabelString("Level 1: ");
+        deviceChoice154.setOffsetNid(136);
+        deviceChoice154.setUpdateIdentifier("");
+        jPanel83.add(deviceChoice154);
+
+        deviceChoice155.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice155.setIdentifier("");
+        deviceChoice155.setLabelString("Level 2: ");
+        deviceChoice155.setOffsetNid(137);
+        deviceChoice155.setUpdateIdentifier("");
+        jPanel83.add(deviceChoice155);
 
         deviceChannel41.getContainer().add(jPanel83);
 
@@ -2952,6 +3023,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField164.setOffsetNid(167);
         jPanel100.add(deviceField164);
 
+        deviceChoice156.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice156.setIdentifier("");
+        deviceChoice156.setLabelString("Level 1: ");
+        deviceChoice156.setOffsetNid(165);
+        deviceChoice156.setUpdateIdentifier("");
+        jPanel100.add(deviceChoice156);
+
+        deviceChoice157.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice157.setIdentifier("");
+        deviceChoice157.setLabelString("Level 2: ");
+        deviceChoice157.setOffsetNid(166);
+        deviceChoice157.setUpdateIdentifier("");
+        jPanel100.add(deviceChoice157);
+
         deviceChannel50.getContainer().add(jPanel100);
 
         deviceField165.setIdentifier("");
@@ -3357,6 +3442,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField193.setLabelString("DUTY CYCLE :");
         deviceField193.setOffsetNid(196);
         jPanel117.add(deviceField193);
+
+        deviceChoice158.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice158.setIdentifier("");
+        deviceChoice158.setLabelString("Level 1: ");
+        deviceChoice158.setOffsetNid(194);
+        deviceChoice158.setUpdateIdentifier("");
+        jPanel117.add(deviceChoice158);
+
+        deviceChoice159.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice159.setIdentifier("");
+        deviceChoice159.setLabelString("Level 2: ");
+        deviceChoice159.setOffsetNid(195);
+        deviceChoice159.setUpdateIdentifier("");
+        jPanel117.add(deviceChoice159);
 
         deviceChannel59.getContainer().add(jPanel117);
 
@@ -3764,6 +3863,20 @@ public class DIO4Setup extends DeviceSetup
         deviceField222.setOffsetNid(225);
         jPanel134.add(deviceField222);
 
+        deviceChoice160.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice160.setIdentifier("");
+        deviceChoice160.setLabelString("Level 1: ");
+        deviceChoice160.setOffsetNid(223);
+        deviceChoice160.setUpdateIdentifier("");
+        jPanel134.add(deviceChoice160);
+
+        deviceChoice161.setChoiceItems(new String[] {"HIGH", "LOW"});
+        deviceChoice161.setIdentifier("");
+        deviceChoice161.setLabelString("Level 2: ");
+        deviceChoice161.setOffsetNid(224);
+        deviceChoice161.setUpdateIdentifier("");
+        jPanel134.add(deviceChoice161);
+
         deviceChannel68.getContainer().add(jPanel134);
 
         deviceField223.setIdentifier("");
@@ -4130,8 +4243,22 @@ public class DIO4Setup extends DeviceSetup
     private DeviceChoice deviceChoice145;
     private DeviceChoice deviceChoice146;
     private DeviceChoice deviceChoice147;
+    private DeviceChoice deviceChoice148;
+    private DeviceChoice deviceChoice149;
     private DeviceChoice deviceChoice15;
+    private DeviceChoice deviceChoice150;
+    private DeviceChoice deviceChoice151;
+    private DeviceChoice deviceChoice152;
+    private DeviceChoice deviceChoice153;
+    private DeviceChoice deviceChoice154;
+    private DeviceChoice deviceChoice155;
+    private DeviceChoice deviceChoice156;
+    private DeviceChoice deviceChoice157;
+    private DeviceChoice deviceChoice158;
+    private DeviceChoice deviceChoice159;
     private DeviceChoice deviceChoice16;
+    private DeviceChoice deviceChoice160;
+    private DeviceChoice deviceChoice161;
     private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice18;
     private DeviceChoice deviceChoice19;
@@ -4146,6 +4273,7 @@ public class DIO4Setup extends DeviceSetup
     private DeviceChoice deviceChoice27;
     private DeviceChoice deviceChoice28;
     private DeviceChoice deviceChoice29;
+    private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice30;
     private DeviceChoice deviceChoice31;
     private DeviceChoice deviceChoice32;
@@ -4408,7 +4536,6 @@ public class DIO4Setup extends DeviceSetup
     private DeviceField deviceField47;
     private DeviceField deviceField48;
     private DeviceField deviceField49;
-    private DeviceField deviceField5;
     private DeviceField deviceField50;
     private DeviceField deviceField51;
     private DeviceField deviceField52;
