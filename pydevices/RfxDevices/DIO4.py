@@ -270,13 +270,18 @@ class _DIO4Hardware(object):
         return 1
 
     def SetGClockChan(self, c, trigger, frequency, delay, duration, events,
-                      duty, cyclic, term):
+                      duty, cyclic, term, init_level_1=0, init_level_2=1):
         c = self.channel(c)
+        if init_level_1 not in (0, 1) or init_level_2 not in (0, 1):
+            raise ValueError('GCLOCK phase levels must be 0 or 1')
+        init_level_1, init_level_2 = int(init_level_1), int(init_level_2)
         continuous = float(duration) > 420
         cycles = self.clock_cycles(frequency, duty)
         self.trigger_settings(c, trigger)
         self.phases(c, int(bool(cyclic)) | (2 if continuous else 0),
-                    [0, 0, 1, 0], [1, 1] + cycles,
+                    # Phase 1 is constant; Phase 2 starts at INIT_LEV_2.
+                    [init_level_1, init_level_1, init_level_2, 1-init_level_2],
+                    [1, 1] + cycles,
                     self.ticks(delay, rounded=False),
                     0 if continuous else self.ticks(duration, rounded=False))
         self.decode_events(c, trigger, events)
@@ -647,6 +652,9 @@ class DIO4(Device):
                     try:
                         trigMode = getattr(self, 'channel_%d_trig_mode' % (c + 1)).data()
                         trigModeCode = trigModeDict[trigMode]
+                        levelDict = {'LOW': 0, 'HIGH': 1}
+                        initLev1 = levelDict[getattr(self, 'channel_%d_init_lev_1' % (c + 1)).data()]
+                        initLev2 = levelDict[getattr(self, 'channel_%d_init_lev_2' % (c + 1)).data()]
                         eventCodes = []
                         if trigMode == 'EVENT':
                             try:
@@ -688,7 +696,7 @@ class DIO4(Device):
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d' % (c + 1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
-                    status = self._hardware('SetGClockChan', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic, evTermCode)
+                    status = self._hardware('SetGClockChan', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic, evTermCode, initLev1, initLev2)
                     if status == 0:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW GClock setup')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
